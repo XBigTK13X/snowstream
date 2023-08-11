@@ -1,6 +1,6 @@
 # snowstream
 
-Snowman's Streaming Solution
+Snowman's streaming solution
 
 Open Source all in one self-hosted media streaming solution.
 
