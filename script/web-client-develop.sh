@@ -1,2 +1,2 @@
 cd web-client
-npm run dev
+npm start
