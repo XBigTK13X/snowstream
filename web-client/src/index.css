@@ -1,5 +1,7 @@
 body {
-  margin: 0;
+  margin: 1em;
+  padding: 1em;
+  font-size: 2em;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -10,4 +12,16 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.edit-text {
+  font-size: 1em;
+  line-height: 1.5em;
+  width: 85%;
+}
+
+.action-button {
+  font-size: 1em;
+  padding: .5em;
+  margin: .5em;
 }
