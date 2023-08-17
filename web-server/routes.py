@@ -5,7 +5,6 @@ from database import DbSession
 import api_models as am
 import crud
 
-# Dependency
 def get_db():
     db = DbSession()
     try:
