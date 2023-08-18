@@ -14,5 +14,5 @@ def create():
         stack_timeout=None
     ))
     channel = connection.channel()
-    channel.queue_declare(queue=settings.MESSAGE_QUEUE, durable=True)
+    channel.queue_declare(queue=settings.rabbit_queue, durable=True)
     return connection, channel

@@ -12,6 +12,9 @@ class Config:
         self.rabbit_password = "snowstream"
         self.rabbit_host = "localhost"
         self.rabbit_port = ""
+        self.rabbit_queue = "snowstream"
+        self.rabbit_max_failures = 4
+        self.rabbit_delay_seconds = 5
 
 config = Config()
 

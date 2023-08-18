@@ -11,3 +11,10 @@ class StreamSource(BaseModel):
     url = Column(String, unique=True)
     username = Column(String)
     password = Column(String)
+
+class Job(BaseModel):
+    __tablename__ = "jobs"
+    id = Column(Integer, primary_key=True, index=True)
+    kind = Column(String)
+    message = Column(String)
+    status = Column(String)

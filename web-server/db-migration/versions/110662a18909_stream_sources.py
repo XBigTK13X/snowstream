@@ -22,7 +22,7 @@ def upgrade() -> None:
     op.create_table(
         'stream_sources',
         sa.Column('id', sa.Integer, primary_key = True),
-        sa.Column('kind', sa.String(15), nullable=False),
+        sa.Column('kind', sa.String(256), nullable=False),
         sa.Column('name', sa.String(256)),
         sa.Column('url', sa.String(256)),
         sa.Column('username', sa.String(256)),

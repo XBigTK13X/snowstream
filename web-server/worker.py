@@ -1,12 +1,12 @@
-max_failures = 4
-delay_seconds = 5
+from settings import config
+
+max_failures = config.rabbit_max_failures
+delay_seconds = config.rabbit_delay_seconds
 
 def start():
     global max_failures
     global delay_seconds
     import traceback
-    from common import orm
-    orm.connect()
 
     import json
     import message.read
@@ -21,10 +21,12 @@ def start():
     from message.handler import regenerate_thumbnails
 
 
-    default_status = JobStatus.objects.get(name="running")
-    failed_status = JobStatus.objects.get(name="failed")
+    default_status = "running"
+    failed_status = "failed"
 
     def callback(channel, method, properties, body):
+        global max_failures
+        global delay_seconds
         print(f"Message received {body}. {message.read.count()} messages remain in queue.")
         payload = json.loads(body)
         errors = False
