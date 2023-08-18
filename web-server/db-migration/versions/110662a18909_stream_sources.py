@@ -22,6 +22,8 @@ def upgrade() -> None:
     op.create_table(
         'stream_sources',
         sa.Column('id', sa.Integer, primary_key = True),
+        sa.Column('created_at', sa.DateTime, nullable=False ),
+        sa.Column('updated_at', sa.DateTime, nullable=False ),
         sa.Column('kind', sa.String(256), nullable=False),
         sa.Column('name', sa.String(256)),
         sa.Column('url', sa.String(256)),
@@ -39,6 +41,17 @@ def upgrade() -> None:
         'stream_sources', ['url']
     )
 
+    op.create_table(
+        'jobs',
+        sa.Column('id', sa.Integer, primary_key = True),
+        sa.Column('created_at', sa.DateTime, nullable=False ),
+        sa.Column('updated_at', sa.DateTime, nullable=False ),
+        sa.Column('kind', sa.String(256), nullable=False),
+        sa.Column('message', sa.String(256)),
+        sa.Column('status', sa.String(256))
+    )
+
 
 def downgrade() -> None:
     op.drop_table('stream_sources')
+    op.drop_table('jobs')
