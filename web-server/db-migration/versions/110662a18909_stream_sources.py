@@ -1,4 +1,4 @@
-"""iptv_sources
+"""stream_sources
 
 Revision ID: 110662a18909
 Revises:
@@ -20,7 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        'iptv_sources',
+        'stream_sources',
         sa.Column('id', sa.Integer, primary_key = True),
         sa.Column('kind', sa.String(15), nullable=False),
         sa.Column('name', sa.String(256)),
@@ -30,15 +30,15 @@ def upgrade() -> None:
     )
 
     op.create_unique_constraint(
-        'unique_iptv_sources_name',
-        'iptv_sources', ['name']
+        'unique_stream_sources_name',
+        'stream_sources', ['name']
     )
 
     op.create_unique_constraint(
-        'unique_iptv_sources_url',
-        'iptv_sources', ['url']
+        'unique_stream_sources_url',
+        'stream_sources', ['url']
     )
 
 
 def downgrade() -> None:
-    op.drop_table('iptv_sources')
+    op.drop_table('stream_sources')

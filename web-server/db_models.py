@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship
 
 from database import BaseModel
 
-class IptvSource(BaseModel):
-    __tablename__ = "iptv_sources"
+class StreamSource(BaseModel):
+    __tablename__ = "stream_sources"
     id = Column(Integer, primary_key=True, index=True)
     kind = Column(String)
     name = Column(String, unique=True)

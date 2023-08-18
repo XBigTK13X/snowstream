@@ -14,15 +14,15 @@ def get_db():
 
 def register(router):
 
-    @router.get("/iptv/source")
-    def get_iptv_source_list(db: Session = Depends(get_db)):
-        return crud.get_iptv_source_list(db)
+    @router.get("/stream/source")
+    def get_stream_source_list(db: Session = Depends(get_db)):
+        return crud.get_stream_source_list(db)
 
-    @router.put("/iptv/source")
-    def create_iptv_source(iptv_source: am.IptvSource, db: Session = Depends(get_db)):
-        db_source = crud.get_iptv_source_by_url(db, url=iptv_source.url)
+    @router.put("/stream/source")
+    def create_stream_source(stream_source: am.StreamSource, db: Session = Depends(get_db)):
+        db_source = crud.get_stream_source_by_url(db, url=stream_source.url)
         if db_source:
             raise HTTPException(status_code=400, detail="URL already tracked")
-        return crud.create_iptv_source(db=db, iptv_source=iptv_source)
+        return crud.create_stream_source(db=db, stream_source=stream_source)
 
     return router

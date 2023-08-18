@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class IptvSource(BaseModel):
+class StreamSource(BaseModel):
     kind: str
     url: str | None = None
     name: str
