@@ -23,9 +23,20 @@ def upgrade() -> None:
         'iptv_sources',
         sa.Column('id', sa.Integer, primary_key = True),
         sa.Column('kind', sa.String(15), nullable=False),
-        sa.Column('url', sa.String(256), nullable=False),
+        sa.Column('name', sa.String(256)),
+        sa.Column('url', sa.String(256)),
         sa.Column('username', sa.String(256)),
         sa.Column('password', sa.String(256))
+    )
+
+    op.create_unique_constraint(
+        'unique_iptv_sources_name',
+        'iptv_sources', ['name']
+    )
+
+    op.create_unique_constraint(
+        'unique_iptv_sources_url',
+        'iptv_sources', ['url']
     )
 
 

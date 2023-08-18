@@ -1,3 +1,4 @@
+seed-data.sh
 venv/
 .docker-volume/
 logs/
