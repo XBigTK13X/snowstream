@@ -1,6 +1,8 @@
+from log import log
 import message.connect
 
 from settings import config
+
 
 def watch(callback):
     connection, channel = message.connect.create()
@@ -13,8 +15,9 @@ def watch(callback):
         on_message_callback=callback
     )
 
-    print('Waiting for messages.')
+    log.info('Waiting for messages.')
     channel.start_consuming()
+
 
 def count():
     connection, channel = message.connect.create()

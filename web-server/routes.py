@@ -1,44 +1,33 @@
-from fastapi import Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
-from database import DbSession
 import api_models as am
 import crud
 
-def get_db():
-    db = DbSession()
-    try:
-        yield db
-    finally:
-        db.close()
 
 def register(router):
 
     @router.get("/stream/source/list")
-    def get_stream_source_list(db: Session = Depends(get_db)):
-        return crud.get_stream_source_list(db)
+    def get_stream_source_list():
+        return crud.get_stream_source_list()
 
     @router.put("/stream/source")
-    def create_stream_source(stream_source: am.StreamSource, db: Session = Depends(get_db)):
-        db_source = crud.get_stream_source_by_url(db, url=stream_source.url)
+    def create_stream_source(stream_source: am.StreamSource):
+        db_source = crud.get_stream_source_by_url(url=stream_source.url)
         if db_source:
             raise HTTPException(status_code=400, detail="URL already tracked")
-        return crud.create_stream_source(db=db, stream_source=stream_source)
+        return crud.create_stream_source(stream_source=stream_source)
 
     @router.put("/job")
-    def create_job(kind: str, db: Session = Depends(get_db)):
-        return crud.create_job(db=db, kind=kind)
+    def create_job(kind: str):
+        job = crud.create_job(kind=kind)
+        return job
 
     @router.get("/job")
-    def get_job(job_id: int, db: Session = Depends(get_db)):
-        return crud.get_job_by_id(db=db, job_id=job_id)
-
-    @router.put("/job/message")
-    def update_job_message(job_id: int, message: str, db: Session = Depends(get_db)):
-        return crud.update_job_log(db=db, job_id=job_id, message=message)
+    def get_job(job_id: int):
+        return crud.get_job_by_id(job_id=job_id)
 
     @router.get("/job/list")
-    def get_job_list(db: Session = Depends(get_db)):
-        return crud.get_job_list(db=db)
+    def get_job_list():
+        return crud.get_job_list()
 
     return router
