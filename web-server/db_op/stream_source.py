@@ -29,9 +29,9 @@ def get_stream_source_by_url(url: str):
         return db.query(dm.StreamSource).filter(dm.StreamSource.url == url).first()
 
 
-def update_stream_source(url: str, remote_data: str):
+def update_stream_source(id: str, remote_data: str):
     with DbSession() as db:
-        db_source = db.query(dm.StreamSource).filter(dm.StreamSource.url == url).first()
+        db_source = db.query(dm.StreamSource).filter(dm.StreamSource.id == id).first()
         db_source.remote_data = remote_data
         db.commit()
         return db_source

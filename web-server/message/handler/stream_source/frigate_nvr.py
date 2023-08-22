@@ -18,7 +18,7 @@ class FrigateNvr(base.BaseHandler):
         config_url = f'{stream_source.url}/api/config'
         frigate_response = requests.get(config_url)
         stream_source.remote_data = frigate_response.text
-        return db_op.update_stream_source(url=stream_source.url, remote_data=stream_source.remote_data)
+        return db_op.update_stream_source(id=stream_source.id, remote_data=stream_source.remote_data)
 
     def parse_watchable_urls(self, stream_source):
         frigate_config = json.loads(stream_source.remote_data)
