@@ -16,7 +16,7 @@ class FrigateNvr(base.BaseHandler):
 
         log.info("Remote data not cached. Get the latest from the NVR API")
         config_url = f'{stream_source.url}/api/config'
-        frigate_response = requests.get(config_url)
+        frigate_response = requests.get(config_url, headers={'User-Agent': 'Snowstream 1.0.0'})
         stream_source.remote_data = frigate_response.text
         return db_op.update_stream_source(id=stream_source.id, remote_data=stream_source.remote_data)
 
@@ -35,7 +35,11 @@ class FrigateNvr(base.BaseHandler):
                                         'url': input['path'].replace('127.0.0.1', frigate_domain),
                                         'name': camera_name
                                     })
+        new_count = 0
         for camera_stream in camera_streams:
             if not any(x.url == camera_stream['url'] for x in stream_source.streamables):
                 db_op.create_streamable(stream_source_id=stream_source.id, url=camera_stream['url'], name=camera_stream['name'])
+                new_count += 1
+        if new_count > 0:
+            log.info(f"Found {new_count} new streams")
         return stream_source

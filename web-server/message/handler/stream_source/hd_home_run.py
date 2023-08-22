@@ -18,8 +18,8 @@ class HdHomeRun(base.BaseHandler):
 
         log.info("Remote data not cached. Get the latest from the HDHomeRun API")
         config_url = f'{stream_source.url}/lineup.json'
-        frigate_response = requests.get(config_url)
-        stream_source.remote_data = frigate_response.text
+        hdhomerun_response = requests.get(config_url, headers={'User-Agent': 'Snowstream 1.0.0'})
+        stream_source.remote_data = hdhomerun_response.text
         return db_op.update_stream_source(id=stream_source.id, remote_data=stream_source.remote_data)
 
     def parse_watchable_urls(self, stream_source):
@@ -30,8 +30,11 @@ class HdHomeRun(base.BaseHandler):
                 'url': entry['URL'],
                 'name': entry['GuideName']
             })
+        new_count = 0
         for stream in streams:
             if not any(x.url == stream['url'] for x in stream_source.streamables):
                 db_op.create_streamable(stream_source_id=stream_source.id, url=stream['url'], name=stream['name'])
-
+                new_count += 1
+        if new_count > 0:
+            log.info(f"Found {new_count} new streams")
         return stream_source
