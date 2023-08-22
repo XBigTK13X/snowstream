@@ -2,7 +2,7 @@ from settings import config
 
 from log import log
 
-import crud
+import db_op
 
 max_failures = config.rabbit_max_failures
 delay_seconds = config.rabbit_delay_seconds
@@ -28,21 +28,30 @@ def start():
         payload = json.loads(body)
         job_id = payload['job_id']
         if 'kind' in payload:
-            crud.update_job(job_id=job_id, status="running", message="A worker is processing the job.")
+            db_op.update_job(job_id=job_id, status="running", message="A worker is processing the job.")
             try:
                 kind = payload['kind']
                 if kind in handlers:
-                    handlers[kind].handle(job_id, payload)
+                    if handlers[kind].handle(job_id, payload):
+                        db_op.update_job(
+                            job_id=job_id,
+                            status="complete"
+                        )
+                    else:
+                        db_op.update_job(
+                            job_id=job_id,
+                            status="failed"
+                        )
                 else:
-                    crud.update_job(
+                    db_op.update_job(
                         job_id=job_id,
                         status="ignored",
                         message=f"No registered handler for kind [{payload['kind']}]"
                     )
             except Exception as e:
-                crud.update_job(job_id=job_id, status="failed", message=f"{e}\n {traceback.format_exc()}")
+                db_op.update_job(job_id=job_id, status="failed", message=f"{e}\n {traceback.format_exc()}")
         else:
-            crud.update_job(job_id=job_id, status="ignored", message=f"No handler provided for {payload['handler']}")
+            db_op.update_job(job_id=job_id, status="ignored", message=f"No handler provided for {payload['handler']}")
         channel.basic_ack(delivery_tag=method.delivery_tag)
         max_failures = 4
         delay_seconds = 5
@@ -59,8 +68,8 @@ while True:
     except Exception as e:
         if max_failures <= 0:
             log.error(f"Unable to launch after multiple retries. Aborting.")
-            import system
-            system.exit(-1)
+            import sys
+            sys.exit(-1)
         import traceback
         log.error(f"{traceback.format_exc()}")
         log.error(f"An exception occurred while running the worker. Waiting {delay_seconds} seconds and trying again.")

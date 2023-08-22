@@ -1,4 +1,4 @@
-"""stream_sources
+"""setup_db
 
 Revision ID: 110662a18909
 Revises:
@@ -21,21 +21,20 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table(
         'stream_sources',
-        sa.Column('id', sa.Integer, primary_key = True),
-        sa.Column('created_at', sa.DateTime, nullable=False ),
-        sa.Column('updated_at', sa.DateTime, nullable=False ),
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('updated_at', sa.DateTime, nullable=False),
         sa.Column('kind', sa.String(256), nullable=False),
         sa.Column('name', sa.String(256)),
         sa.Column('url', sa.String(256)),
         sa.Column('username', sa.String(256)),
-        sa.Column('password', sa.String(256))
+        sa.Column('password', sa.String(256)),
+        sa.Column('remote_data', sa.Text)
     )
-
     op.create_unique_constraint(
         'unique_stream_sources_name',
         'stream_sources', ['name']
     )
-
     op.create_unique_constraint(
         'unique_stream_sources_url',
         'stream_sources', ['url']
@@ -43,15 +42,26 @@ def upgrade() -> None:
 
     op.create_table(
         'jobs',
-        sa.Column('id', sa.Integer, primary_key = True),
-        sa.Column('created_at', sa.DateTime, nullable=False ),
-        sa.Column('updated_at', sa.DateTime, nullable=False ),
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('updated_at', sa.DateTime, nullable=False),
         sa.Column('kind', sa.String(256), nullable=False),
-        sa.Column('message', sa.String(256)),
+        sa.Column('message', sa.Text),
         sa.Column('status', sa.String(256))
+    )
+
+    op.create_table(
+        'streamables',
+        sa.Column('stream_source_id', sa.Integer, sa.ForeignKey('stream_sources.id'), nullable=False),
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('updated_at', sa.DateTime, nullable=False),
+        sa.Column('url', sa.String(256), nullable=False),
+        sa.Column('name', sa.String(256), nullable=False)
     )
 
 
 def downgrade() -> None:
-    op.drop_table('stream_sources')
+    op.drop_table('streamables')
     op.drop_table('jobs')
+    op.drop_table('stream_sources')
