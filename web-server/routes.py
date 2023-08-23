@@ -9,7 +9,7 @@ def register(router):
 
     @router.get("/stream/source/list")
     def get_stream_source_list():
-        return db_op.get_stream_source_list(streamables=True)
+        return db_op.get_stream_source_list()
 
     @router.put("/stream/source")
     def create_stream_source(stream_source: am.StreamSource):
