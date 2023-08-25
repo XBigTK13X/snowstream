@@ -4,7 +4,11 @@ import db_op
 import json
 from log import log
 
-# http://nvr.9914.us:5000/api/config
+# Docs
+# https://docs.frigate.video/
+
+# Important endpoint
+# http://frigate.domain:5000/api/config
 
 
 class FrigateNvr(base.BaseHandler):

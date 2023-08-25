@@ -4,6 +4,10 @@ import db_op
 import json
 from log import log
 
+# Docs
+# https://info.hdhomerun.com/info/http_api
+
+# Important endpoints
 # http://hdhomerun.local/lineup.json
 # http://hdhomerun.local/lineup.xml
 # http://hdhomerun.local/lineup.m3u
