@@ -86,8 +86,6 @@ def upgrade() -> None:
         sa.Column('channel_id', sa.Integer, sa.ForeignKey('streamable_channels.id'), nullable=False),
         sa.Column('name', sa.String(256), nullable=False),
         sa.Column('description', sa.Text),
-        sa.Column('start_timestamp', sa.Integer),
-        sa.Column('stop_timestamp', sa.Integer),
         sa.Column('start_datetime', sa.DateTime),
         sa.Column('stop_datetime', sa.DateTime)
     )

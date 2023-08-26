@@ -2,11 +2,13 @@ import message.handler.stream_source.base_handler as base
 
 import requests
 import db_op
+import db_models as dbm
 from log import log
 from datetime import datetime, timedelta
 from itertools import islice
 # requests param conflict
 import json as JSON
+from database import DbSession
 
 # https://github.com/SchedulesDirect/JSON-Service/wiki/API-20141201
 
@@ -15,6 +17,9 @@ RESPONSE_CODE_OFFLINE = 3000
 API_BATCH_SIZE = 5000
 
 # https://stackoverflow.com/a/61435714
+
+# Example datetime 2015-03-03T00:00:00Z
+SD_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def batches(it, size):
@@ -72,21 +77,78 @@ class SchedulesDirect(base.BaseHandler):
             schedules_response = schedules_response + api_response
 
         program_ids = []
-        for station in schedules_response:
-            program_ids = program_ids + [x['programID'] for x in station['programs']]
+        for program in schedules_response:
+            program_ids = program_ids + [x['programID'] for x in program['programs']]
         programs_response = []
         for program_id_batch in batches(program_ids, API_BATCH_SIZE):
             api_response = requests.post(self.api_url+'/programs', headers=self.headers, json=program_id_batch).json()
             programs_response = programs_response + api_response
         results = {
             'status': status_response,
-            'linup': lineup_response,
+            'lineup': lineup_response,
             'schedules': schedules_response,
             'programs': programs_response
         }
-        return db_op.update_stream_source(id=stream_source.id, remote_data=JSON.dumps(results))
+        stream_source.remote_data = JSON.dumps(results)
+        return db_op.update_stream_source(id=stream_source.id, remote_data=stream_source.remote_data)
 
     def parse_guide_info(self, stream_source):
         remote_data = JSON.loads(stream_source.remote_data)
-        # TODO Import EPG data that was cached from SchedulesDirect
+        channel_lookup = {}
+        program_lookup = {}
+        for station in remote_data['lineup']['stations']:
+            channel_lookup[station['stationID']] = {
+                'name': station['name'],
+                'programs': [],
+                'station_id': station['stationID']
+            }
+        for program in remote_data['programs']:
+            entry = {
+                'program_id': program['programID'],
+                'name': program['titles'][0]['title120']
+            }
+            if 'eventDetails' in program and 'subType' in program['eventDetails']:
+                entry['kind'] = program['eventDetails']['subType']
+            if 'episodeTitle150' in program:
+                entry['episode_name'] = program['episodeTitle150']
+            if 'descriptions' in program:
+                entry['description'] = program['descriptions']['description1000'][0]['description'],
+            else:
+                entry['description'] = None
+            program_lookup[program['programID']] = entry
+        program_count = 0
+        for schedule in remote_data['schedules']:
+            channel = channel_lookup[schedule['stationID']]
+            for program in schedule['programs']:
+                start_datetime = datetime.strptime(program['airDateTime'], SD_DATE_TIME_FORMAT)
+                end_datetime = start_datetime + timedelta(seconds=program['duration'])
+                channel['programs'].append({
+                    'start_datetime': start_datetime,
+                    'stop_datetime': end_datetime,
+                    'name': program_lookup[program['programID']]['name'],
+                    'description': program_lookup[program['programID']]['description']
+                })
+                program_count += 1
+
+        initial_count = len(channel_lookup.keys())
+        log.info(f"About to import {initial_count} channels with {program_count} programs")
+        prune_count = 0
+        channel_count = 0
+        for key, val in channel_lookup.items():
+            if not 'programs' in val or len(val['programs']) == 0:
+                prune_count += 1
+            else:
+                channel_count += 1
+                channel_name = channel_lookup[key]['name']
+                log.debug(f"({channel_count}/{initial_count}) Processing channel {channel_name}")
+                channel = db_op.get_channel_by_parsed_id(channel_name)
+                if not channel:
+                    channel = db_op.create_channel({'parsed_id': channel_name})
+                for program in val['programs']:
+                    program['channel_id'] = channel.id
+                with DbSession() as db:
+                    db.bulk_insert_mappings(dbm.StreamableSchedule, val['programs'])
+
+        log.info(f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
+
         return True

@@ -46,8 +46,6 @@ class StreamableSchedule(BaseModel):
     __tablename__ = 'streamable_schedules'
     name = sa.Column(sa.String)
     description = sa.Column(sa.String)
-    start_timestamp = sa.Column(sa.Integer)
-    stop_timestamp = sa.Column(sa.Integer)
     start_datetime = sa.Column(sa.DateTime)
     stop_datetime = sa.Column(sa.DateTime)
     channel_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("streamable_channels.id"))

@@ -44,9 +44,7 @@ class IptvEpg(base.BaseHandler):
                     channels[channel_id]['programs'] = []
                 program = {
                     'start_datetime': top_node.get('start'),
-                    'stop_datetime': top_node.get('stop'),
-                    'start_timestamp': int(top_node.get('start_timestamp')),
-                    'stop_timestamp': int(top_node.get('stop_timestamp')),
+                    'stop_datetime': top_node.get('stop')
                 }
                 program['start_datetime'] = datetime.strptime(
                     program['start_datetime'],
@@ -79,8 +77,6 @@ class IptvEpg(base.BaseHandler):
                     program['channel_id'] = channel.id
                 with DbSession() as db:
                     db.bulk_insert_mappings(dbm.StreamableSchedule, val['programs'])
-                program['channel_id'] = channel.id
-                db_op.create_schedule(program)
 
         log.info(f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
         return True
