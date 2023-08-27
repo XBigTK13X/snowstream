@@ -1,5 +1,5 @@
 import message.handler.stream_source.base_handler as base
-import db_op
+from db import db
 import cloudscraper
 from log import log
 
@@ -13,7 +13,7 @@ class IptvM3u(base.BaseHandler):
             return True
         scraper = cloudscraper.create_scraper()
         m3u_response = scraper.get(self.stream_source.url)
-        self.cached_data = db_op.create_cached_text(key=self.cache_key, data=m3u_response.text)
+        self.cached_data = db.op.create_cached_text(key=self.cache_key, data=m3u_response.text)
         return True
 
     def parse_watchable_urls(self):
@@ -31,7 +31,7 @@ class IptvM3u(base.BaseHandler):
         new_count = 0
         for stream in streams:
             if not any(x.url == stream['url'] for x in self.stream_source.streamables):
-                db_op.create_streamable(stream_source_id=self.stream_source.id, url=stream['url'], name=stream['name'])
+                db.op.create_streamable(stream_source_id=self.stream_source.id, url=stream['url'], name=stream['name'])
                 new_count += 1
         if new_count > 0:
             log.info(f"Found {new_count} new streams")

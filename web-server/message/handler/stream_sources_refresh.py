@@ -1,8 +1,6 @@
 from log import log
 
-import db_op
-
-from database import DbTruncate
+from db import db
 
 import message.handler.stream_source.hd_home_run as hhr
 import message.handler.stream_source.iptv_epg as ie
@@ -22,8 +20,8 @@ source_handlers = {
 def handle(job_id, message_payload):
     log.info(f'[WORKER] Handling a stream_sources_refresh job')
     log.info("Removing existing streamable schedule info")
-    DbTruncate('streamable_schedules')
-    stream_sources = db_op.get_stream_source_list(streamables=True)
+    db.sql.truncate('streamable_schedules')
+    stream_sources = db.op.get_stream_source_list(streamables=True)
     refresh_results = {
 
     }

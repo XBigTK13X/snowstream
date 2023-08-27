@@ -1,6 +1,4 @@
-import requests
-import db_op
-import json
+from db import db
 from log import log
 
 
@@ -13,11 +11,10 @@ class BaseHandler:
 
     def download(self):
         log.info(f"{self.kind} stream source updating")
-        self.cached_data = db_op.get_cached_text_by_key(key=self.cache_key)
+        self.cached_data = db.op.get_cached_text_by_key(key=self.cache_key)
         if self.cached_data:
-            self.cached_data = self.cached_data.data
+            self.cached_data = self.cached_data
             log.info(f"Using cached data from previous {self.kind} download")
-            log.info(self.cached_data)
             return True
         log.info(f"Remote data not cached. Get the latest from {self.kind} data provider.")
         return False

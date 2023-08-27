@@ -1,7 +1,5 @@
 import message.handler.stream_source.base_handler as base
-import db_op
-from database import DbSession
-import db_models as dbm
+from db import db
 import cloudscraper
 from log import log
 from lxml import etree
@@ -20,7 +18,7 @@ class IptvEpg(base.BaseHandler):
             return True
         scraper = cloudscraper.create_scraper()
         xml_response = scraper.get(self.stream_source.url)
-        self.cached_data = db_op.create_cached_text(key=self.cache_key, data=xml_response.text)
+        self.cached_data = db.op.create_cached_text(key=self.cache_key, data=xml_response.text)
         return True
 
     def parse_guide_info(self):
@@ -69,13 +67,12 @@ class IptvEpg(base.BaseHandler):
             else:
                 channel_count += 1
                 log.debug(f"({channel_count}/{initial_count}) Processing channel {key}")
-                channel = db_op.get_channel_by_parsed_id(key)
+                channel = db.op.get_channel_by_parsed_id(key)
                 if not channel:
-                    channel = db_op.create_channel({'parsed_id': key})
+                    channel = db.op.create_channel({'parsed_id': key})
                 for program in val['programs']:
                     program['channel_id'] = channel.id
-                with DbSession() as db:
-                    db.bulk_insert_mappings(dbm.StreamableSchedule, val['programs'])
+                db.sql.bulk_insert(db.model.StreamableSchedule, val['programs'])
 
         log.info(f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
         return True

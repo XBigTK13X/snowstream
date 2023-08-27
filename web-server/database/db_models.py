@@ -2,7 +2,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 from typing import List
 
-from database import BaseModel
+from database.sql_alchemy import BaseModel
 
 
 class StreamSource(BaseModel):

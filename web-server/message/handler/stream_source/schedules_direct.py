@@ -1,14 +1,12 @@
 import message.handler.stream_source.base_handler as base
 
+from db import db
 import requests
-import db_op
-import db_models as dbm
 from log import log
 from datetime import datetime, timedelta
 from itertools import islice
 # requests param conflict
 import json as JSON
-from database import DbSession
 
 # https://github.com/SchedulesDirect/JSON-Service/wiki/API-20141201
 
@@ -90,7 +88,7 @@ class SchedulesDirect(base.BaseHandler):
             'schedules': schedules_response,
             'programs': programs_response
         }
-        self.cached_data = db_op.create_cached_text(key=self.cache_key, data=JSON.dumps(results))
+        self.cached_data = db.op.create_cached_text(key=self.cache_key, data=JSON.dumps(results))
         return True
 
     def parse_guide_info(self):
@@ -142,13 +140,12 @@ class SchedulesDirect(base.BaseHandler):
                 channel_count += 1
                 channel_name = channel_lookup[key]['name']
                 log.debug(f"({channel_count}/{initial_count}) Processing channel {channel_name}")
-                channel = db_op.get_channel_by_parsed_id(channel_name)
+                channel = db.op.get_channel_by_parsed_id(channel_name)
                 if not channel:
-                    channel = db_op.create_channel({'parsed_id': channel_name})
+                    channel = db.op.create_channel({'parsed_id': channel_name})
                 for program in val['programs']:
                     program['channel_id'] = channel.id
-                with DbSession() as db:
-                    db.bulk_insert_mappings(dbm.StreamableSchedule, val['programs'])
+                db.sql.bulk_insert(db.model.StreamableSchedule, val['programs'])
 
         log.info(f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
 

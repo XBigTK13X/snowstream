@@ -7,8 +7,6 @@ from sqlalchemy.sql import func
 
 from settings import config
 
-# TODO Merge access to this, db_models, and db_op to something like db.models, db.op, db.X
-
 engine = create_engine(
     config.postgres_url
 )

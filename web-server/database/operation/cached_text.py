@@ -1,5 +1,5 @@
-import db_models as dm
-from database import DbSession
+import database.db_models as dm
+from database.sql_alchemy import DbSession
 
 
 def create_cached_text(key: str, data: str):
