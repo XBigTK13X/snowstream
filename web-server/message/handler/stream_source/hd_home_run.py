@@ -14,20 +14,20 @@ from log import log
 
 
 class HdHomeRun(base.BaseHandler):
-    def download(self, stream_source):
-        log.info("HDHomeRun stream source updating")
-        if stream_source.remote_data:
-            log.info("Using cached data from HDHomeRun")
-            return stream_source
+    def __init__(self, stream_source):
+        super().__init__('HDHomeRun', stream_source)
 
-        log.info("Remote data not cached. Get the latest from the HDHomeRun API")
-        config_url = f'{stream_source.url}/lineup.json'
+    def download(self):
+        if super().download():
+            return True
+
+        config_url = f'{self.stream_source.url}/lineup.json'
         hdhomerun_response = requests.get(config_url, headers={'User-Agent': 'Snowstream 1.0.0'})
-        stream_source.remote_data = hdhomerun_response.text
-        return db_op.update_stream_source(id=stream_source.id, remote_data=stream_source.remote_data)
+        self.cached_data = db_op.create_cached_text(key=self.cache_key, data=hdhomerun_response.text)
+        return True
 
-    def parse_watchable_urls(self, stream_source):
-        hhr_lineup = json.loads(stream_source.remote_data)
+    def parse_watchable_urls(self):
+        hhr_lineup = json.loads(self.cached_data)
         streams = []
         for entry in hhr_lineup:
             streams.append({
@@ -36,9 +36,9 @@ class HdHomeRun(base.BaseHandler):
             })
         new_count = 0
         for stream in streams:
-            if not any(x.url == stream['url'] for x in stream_source.streamables):
-                db_op.create_streamable(stream_source_id=stream_source.id, url=stream['url'], name=stream['name'])
+            if not any(x.url == stream['url'] for x in self.stream_source.streamables):
+                db_op.create_streamable(stream_source_id=self.stream_source.id, url=stream['url'], name=stream['name'])
                 new_count += 1
         if new_count > 0:
             log.info(f"Found {new_count} new streams")
-        return stream_source
+        return True

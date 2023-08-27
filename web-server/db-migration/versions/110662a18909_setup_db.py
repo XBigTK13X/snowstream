@@ -29,7 +29,6 @@ def upgrade() -> None:
         sa.Column('url', sa.String(256)),
         sa.Column('username', sa.String(256)),
         sa.Column('password', sa.String(256)),
-        sa.Column('remote_data', sa.Text)
     )
     op.create_unique_constraint(
         'unique_stream_sources_name',
@@ -88,6 +87,15 @@ def upgrade() -> None:
         sa.Column('description', sa.Text),
         sa.Column('start_datetime', sa.DateTime),
         sa.Column('stop_datetime', sa.DateTime)
+    )
+
+    op.create_table(
+        'cached_texts',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('updated_at', sa.DateTime, nullable=False),
+        sa.Column('key', sa.String(256), nullable=False),
+        sa.Column('data', sa.Text, nullable=False),
     )
 
 

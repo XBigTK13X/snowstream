@@ -12,21 +12,20 @@ EPG_DATE_TIME_FORMAT = '%Y%m%d%H%M%S %z'
 
 
 class IptvEpg(base.BaseHandler):
-    def download(self, stream_source):
-        log.info("IptvEpg stream source updating")
-        if stream_source.remote_data:
-            log.info("Using cached data from IptvEpg")
-            return stream_source
+    def __init__(self, stream_source):
+        super().__init__('IPTV EPG', stream_source)
 
-        log.info("Remote data not cached. Get the latest EPG contents")
+    def download(self):
+        if super().download():
+            return True
         scraper = cloudscraper.create_scraper()
-        m3u_response = scraper.get(stream_source.url)
-        stream_source.remote_data = m3u_response.text
-        return db_op.update_stream_source(id=stream_source.id, remote_data=stream_source.remote_data)
+        xml_response = scraper.get(self.stream_source.url)
+        self.cached_data = db_op.create_cached_text(key=self.cache_key, data=xml_response.text)
+        return True
 
-    def parse_guide_info(self, stream_source):
+    def parse_guide_info(self):
         channels = {}
-        tree = etree.fromstring(bytes(stream_source.remote_data, encoding='utf8'))
+        tree = etree.fromstring(bytes(self.cached_data, encoding='utf8'))
         program_count = 0
         for top_node in tree:
             if 'channel' in top_node.tag:

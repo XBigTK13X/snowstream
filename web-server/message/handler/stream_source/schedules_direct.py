@@ -31,20 +31,21 @@ def batches(it, size):
 
 
 class SchedulesDirect(base.BaseHandler):
-    def __init__(self):
+    def __init__(self, stream_source):
+        super().__init__('Schedules Direct', stream_source)
         self.api_url = "https://json.schedulesdirect.org/20141201"
         self.headers = {
             'User-Agent': 'Snowstream 1.0.0'
         }
 
-    def download(self, stream_source):
-        if stream_source.remote_data:
-            log.info("Using cached data from SchedulesDirect")
-            return stream_source
-        token_payload = {'username': stream_source.username, 'password': stream_source.password}
+    def download(self):
+        if super().download():
+            return True
+
+        token_payload = {'username': self.stream_source.username, 'password': self.stream_source.password}
         token_response = requests.post(self.api_url+"/token", headers=self.headers, json=token_payload).json()
         if token_response['code'] == RESPONSE_CODE_OFFLINE:
-            log.error("SchedulesDirect reports that it is offline. Try again in an hour.")
+            log.error("Schedules Direct reports that it is offline. Try again in an hour.")
             return False
         self.headers['token'] = token_response['token']
 
@@ -54,7 +55,7 @@ class SchedulesDirect(base.BaseHandler):
         # For now, let's assume a simple account setup with a single lineup.
         # This may grow to support multiple lineups in the future.
         if len(lineups) == 0:
-            log.info(f"Schedules Direct found no lineups for account [{stream_source.username}]")
+            log.info(f"Schedules Direct found no lineups for account [{self.stream_source.username}]")
             return False
         lineup = lineups[0]
         lineup_response = requests.get(self.api_url+'/lineups/'+lineup['lineup'], headers=self.headers).json()
@@ -89,11 +90,11 @@ class SchedulesDirect(base.BaseHandler):
             'schedules': schedules_response,
             'programs': programs_response
         }
-        stream_source.remote_data = JSON.dumps(results)
-        return db_op.update_stream_source(id=stream_source.id, remote_data=stream_source.remote_data)
+        self.cached_data = db_op.create_cached_text(key=self.cache_key, data=JSON.dumps(results))
+        return True
 
-    def parse_guide_info(self, stream_source):
-        remote_data = JSON.loads(stream_source.remote_data)
+    def parse_guide_info(self):
+        remote_data = JSON.loads(self.cached_data)
         channel_lookup = {}
         program_lookup = {}
         for station in remote_data['lineup']['stations']:

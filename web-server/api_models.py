@@ -13,7 +13,6 @@ class StreamSource(BaseModel):
     name: str
     username: str | None = None
     password: str | None = None
-    remote_data: str | None = None
 
 
 class Job(BaseModel):

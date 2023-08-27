@@ -3,3 +3,4 @@ from db_op.stream_source import *
 from db_op.streamable import *
 from db_op.streamable_channel import *
 from db_op.streamable_schedule import *
+from db_op.cached_text import *

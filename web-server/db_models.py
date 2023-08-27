@@ -12,7 +12,6 @@ class StreamSource(BaseModel):
     url = sa.Column(sa.String, unique=True)
     username = sa.Column(sa.String)
     password = sa.Column(sa.String)
-    remote_data = sa.Column(sa.Text)
     streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(back_populates="stream_source")
 
 
@@ -45,8 +44,14 @@ class StreamableChannel(BaseModel):
 class StreamableSchedule(BaseModel):
     __tablename__ = 'streamable_schedules'
     name = sa.Column(sa.String)
-    description = sa.Column(sa.String)
+    description = sa.Column(sa.Text)
     start_datetime = sa.Column(sa.DateTime)
     stop_datetime = sa.Column(sa.DateTime)
     channel_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("streamable_channels.id"))
     channel: sorm.Mapped["StreamableChannel"] = sorm.relationship(back_populates="schedules")
+
+
+class CachedText(BaseModel):
+    __tablename__ = 'cached_texts'
+    key = sa.Column(sa.String)
+    data = sa.Column(sa.Text)
