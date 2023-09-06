@@ -1,8 +1,10 @@
 from fastapi import HTTPException
+from fastapi.responses import PlainTextResponse
 
 import api_models as am
 from db import db
 import message.write
+import cache
 
 
 def register(router):
@@ -31,5 +33,13 @@ def register(router):
     @router.get("/job/list")
     def get_job_list():
         return db.op.get_job_list()
+
+    @router.get('/streamable.m3u', response_class=PlainTextResponse)
+    def get_streamable_m3u():
+        return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_M3U)
+
+    @router.get('/streamable.xml', response_class=PlainTextResponse)
+    def get_streamable_epg():
+        return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_EPG)
 
     return router

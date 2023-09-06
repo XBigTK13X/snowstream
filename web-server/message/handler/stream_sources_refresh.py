@@ -1,6 +1,7 @@
 from log import log
 
 from db import db
+import cache
 
 import message.handler.stream_source.hd_home_run as hhr
 import message.handler.stream_source.iptv_epg as ie
@@ -20,11 +21,11 @@ source_handlers = {
 def generate_streamable_m3u():
     log.info("Generating streamable M3U content")
     stream_sources = db.op.get_stream_source_list(streamables=True)
-    m3u = '#EXTM3u'
+    m3u = '#EXTM3U'
     stream_count = 0
-    stream_channel_count = 0
     channel_count = 0
     for stream_source in stream_sources:
+        stream_channel_count = 0
         stream_count += 1
         for streamable in stream_source.streamables:
             stream_channel_count += 1
@@ -33,7 +34,7 @@ def generate_streamable_m3u():
             m3u += f'\n{streamable.url}'
     m3u += '\n'
     log.info(f"Generated m3u with {channel_count} channels")
-    db.op.upsert_cached_text(key="SNOWSTREAM_STREAMABLES_URL_M3U", data=m3u)
+    db.op.upsert_cached_text(key=cache.key.STREAMABLE_M3U, data=m3u)
     return True
 
 
@@ -55,7 +56,7 @@ def generate_streamable_epg():
         xml += '\n  <\channel>'
     xml += '\n</tv>'
     log.info(f'Generated EPG XML with {channel_count} channels and {schedule_count} programs')
-    db.op.upsert_cached_text(key="SNOWSTREAM_STREAMABLES_EPG_XML", data=xml)
+    db.op.upsert_cached_text(key=cache.key.STREAMABLE_EPG, data=xml)
     return True
 
 
