@@ -20,8 +20,7 @@ def get_stream_source_list(streamables=False):
         if streamables:
             sql = sa.select(dm.StreamSource).options(sorm.joinedload(dm.StreamSource.streamables))
             return db.scalars(sql).unique().all()
-        else:
-            return db.query(dm.StreamSource).all()
+        return db.query(dm.StreamSource).all()
 
 
 def get_stream_source_by_url(url: str):

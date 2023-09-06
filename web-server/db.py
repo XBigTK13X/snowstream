@@ -4,12 +4,14 @@ import database.db_models
 
 
 class DbSql:
-    def __init__(self):
+    def __init__(self, DbWrapper):
+        self.db_wrapper = DbWrapper
         self.truncate = database.sql_alchemy.DbTruncate
 
     def bulk_insert(self, Model, items):
-        with self.Session() as con:
+        with self.db_wrapper.Session() as con:
             con.bulk_insert_mappings(Model, items)
+            con.commit()
 
 
 class DbWrapper:
@@ -17,7 +19,7 @@ class DbWrapper:
         self.Session = database.sql_alchemy.DbSession
         self.op = database.operation
         self.model = database.db_models
-        self.sql = DbSql()
+        self.sql = DbSql(self)
 
 
 db = DbWrapper()

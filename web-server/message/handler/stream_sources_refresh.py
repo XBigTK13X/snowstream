@@ -17,6 +17,48 @@ source_handlers = {
 }
 
 
+def generate_streamable_m3u():
+    log.info("Generating streamable M3U content")
+    stream_sources = db.op.get_stream_source_list(streamables=True)
+    m3u = '#EXTM3u'
+    stream_count = 0
+    stream_channel_count = 0
+    channel_count = 0
+    for stream_source in stream_sources:
+        stream_count += 1
+        for streamable in stream_source.streamables:
+            stream_channel_count += 1
+            channel_count += 1
+            m3u += f'\n#EXTINF: tvg-id="{streamable.name}" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{stream_count}.{stream_channel_count}"'
+            m3u += f'\n{streamable.url}'
+    m3u += '\n'
+    log.info(f"Generated m3u with {channel_count} channels")
+    db.op.upsert_cached_text(key="SNOWSTREAM_STREAMABLES_URL_M3U", data=m3u)
+    return True
+
+
+def generate_streamable_epg():
+    log.info("Generating streamable EPG XML")
+    xml = '<?xml version="1.0" encoding="utf-8" ?>\n<!DOCTYPE tv SYSTEM "xmltv.dtd">\n<tv generator-info-name="snowstream">'
+    channels = db.op.get_channels_list(schedules=True)
+    channel_count = 0
+    schedule_count = 0
+    for channel in channels:
+        channel_count += 1
+        xml += f'\n  <channel id="{channel.parsed_name}">'
+        for schedule in channel.schedules:
+            schedule_count += 1
+            xml += f'\n    <program start="{schedule.start_datetime}" stop="{schedule.stop_datetime}" start_timestamp="{schedule.start_datetime.timestamp()}" stop_timestamp="{schedule.stop_datetime.timestamp()}" channel="{channel.parsed_name}" >'
+            xml += f'\n    <title>{schedule.name}</title>'
+            xml += f'\n    <desc>{schedule.description}</desc>'
+            xml += f'\n    </program>'
+        xml += '\n  <\channel>'
+    xml += '\n</tv>'
+    log.info(f'Generated EPG XML with {channel_count} channels and {schedule_count} programs')
+    db.op.upsert_cached_text(key="SNOWSTREAM_STREAMABLES_EPG_XML", data=xml)
+    return True
+
+
 def handle(job_id, message_payload):
     log.info(f'[WORKER] Handling a stream_sources_refresh job')
     log.info("Removing existing streamable schedule info")
@@ -43,9 +85,8 @@ def handle(job_id, message_payload):
         refresh_results[stream_source.url] = True
 
     log.info("Finished refreshing stream sources")
-    log.info("Generating streamable M3U content")
-
-    log.info("Generating streamable EPG XML")
+    generate_streamable_m3u()
+    generate_streamable_epg()
     log.info("Finished stream_sources_refresh job")
     for key, val in refresh_results.items():
         if not val:

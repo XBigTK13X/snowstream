@@ -15,8 +15,11 @@ def create_channel(channel: dict):
         return dbm
 
 
-def get_channels_list():
+def get_channels_list(schedules=False):
     with DbSession() as db:
+        if schedules:
+            sql = sa.select(dm.StreamableChannel).options(sorm.joinedload(dm.StreamableChannel.schedules))
+            return db.scalars(sql).unique().all()
         return db.query(dm.StreamableChannel).all()
 
 

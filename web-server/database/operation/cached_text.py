@@ -27,3 +27,10 @@ def update_cached_text(key: str, data: str):
         dbm.data = data
         db.commit()
         return dbm.data
+
+
+def upsert_cached_text(key: str, data: str):
+    cached_text = get_cached_text_by_key(key=key)
+    if cached_text:
+        return update_cached_text(key=key, data=data)
+    return create_cached_text(key=key, data=data)
