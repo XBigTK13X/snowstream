@@ -26,6 +26,8 @@ COPY ./docker /app/docker
 
 COPY ./script /app/script
 
+COPY docker/alembic.ini /app/alembic.ini
+
 RUN chmod -R 777 /app/script
 
 RUN chmod -R 777 /app/docker
