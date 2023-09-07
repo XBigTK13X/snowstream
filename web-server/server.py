@@ -1,18 +1,21 @@
 from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import RedirectResponse
+from settings import config
 import routes
 
-app = FastAPI(swagger_ui_parameters={"syntaxHighlight": False})
+app = FastAPI(
+    swagger_ui_parameters={"syntaxHighlight": False},
+    openapi_url="/api/docs/openapi.json",
+    docs_url="/api/docs/swagger",
+    redoc_url="/api/docs/redoc"
+)
 
 api_router = APIRouter(prefix="/api")
 
-# TODO - For dev, use the web client watch server
-#        For prod, deploy a static bundle
 
-
-@app.get("/", response_class=RedirectResponse, include_in_schema=False)
+@ app.get("/", response_class=RedirectResponse, include_in_schema=False)
 def serve_web_app():
-    return "http://localhost:3000"
+    return config.frontend_url
 
 
 routes.register(api_router)

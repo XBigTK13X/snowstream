@@ -9,6 +9,12 @@ import cache
 
 def register(router):
 
+    @router.get("/heartbeat")
+    def heartbeat():
+        return {
+            'alive': True
+        }
+
     @router.get("/stream/source/list")
     def get_stream_source_list():
         return db.op.get_stream_source_list()

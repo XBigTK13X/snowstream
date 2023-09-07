@@ -3,6 +3,9 @@ import os
 
 class Config:
     def __init__(self):
+        self.server_version = "1.0.0"
+        self.server_build_date = "September 7, 2023"
+        self.frontend_url = "http://localhost:3000"
         self.postgres_username = "snowstream"
         self.postgres_password = "snowstream"
         self.postgres_host = "localhost"
