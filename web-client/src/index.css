@@ -20,8 +20,20 @@ code {
   width: 85%;
 }
 
+.edit-dropdown {
+  font-size: 1em;
+  line-height: 1.5em;
+  width: 85%;
+}
+
 .action-button {
   font-size: 1em;
   padding: .5em;
   margin: .5em;
+  display: block;
+}
+
+label {
+  display: block;
+  margin-top: 1em;
 }

@@ -1,13 +1,23 @@
 from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from settings import config
 import routes
+
 
 app = FastAPI(
     swagger_ui_parameters={"syntaxHighlight": False},
     openapi_url="/api/docs/openapi.json",
     docs_url="/api/docs/swagger",
     redoc_url="/api/docs/redoc"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 api_router = APIRouter(prefix="/api")

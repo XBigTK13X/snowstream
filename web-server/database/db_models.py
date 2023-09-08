@@ -12,7 +12,8 @@ class StreamSource(BaseModel):
     url = sa.Column(sa.String, unique=True)
     username = sa.Column(sa.String)
     password = sa.Column(sa.String)
-    streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(back_populates="stream_source")
+    streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(
+        back_populates="stream_source", cascade="delete", passive_deletes=True)
 
 
 class Job(BaseModel):
@@ -38,7 +39,8 @@ class StreamableChannel(BaseModel):
     edited_id = sa.Column(sa.String)
     edited_name = sa.Column(sa.String)
     edited_number = sa.Column(sa.Float)
-    schedules: sorm.Mapped[List["StreamableSchedule"]] = sorm.relationship(back_populates="channel")
+    schedules: sorm.Mapped[List["StreamableSchedule"]] = sorm.relationship(
+        back_populates="channel", cascade="delete", passive_deletes=True)
 
 
 class StreamableSchedule(BaseModel):
