@@ -1,7 +1,10 @@
 from log import log
+import requests
 
 from db import db
 import cache
+from settings import config
+from requests.auth import HTTPBasicAuth
 
 import message.handler.stream_source.hd_home_run as hhr
 import message.handler.stream_source.iptv_epg as ie
@@ -21,6 +24,7 @@ source_handlers = {
 def generate_streamable_m3u():
     log.info("Generating streamable M3U content")
     stream_sources = db.op.get_stream_source_list(streamables=True)
+    go2rtc_config = ''
     m3u = '#EXTM3U'
     stream_count = 0
     channel_count = 0
@@ -30,11 +34,27 @@ def generate_streamable_m3u():
         for streamable in stream_source.streamables:
             stream_channel_count += 1
             channel_count += 1
-            m3u += f'\n#EXTINF: tvg-id="{streamable.name}" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{stream_count}.{stream_channel_count}"'
-            m3u += f'\n{streamable.url}'
+            channel_id = f'{stream_count:02}.{stream_channel_count:04}'
+            m3u += f'\n#EXTINF: tvg-id="{streamable.name}" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{channel_id}"'
+            m3u += f'\n{config.go2rtc_url}/api/stream.mp4?src=channel_{channel_id}'
+            go2rtc_config += f'\n  channel_{channel_id}: {streamable.url}'
     m3u += '\n'
+    go2rtc_config += '\n'
     log.info(f"Generated m3u with {channel_count} channels")
     db.op.upsert_cached_text(key=cache.key.STREAMABLE_M3U, data=m3u)
+
+    log.info("Updating transcode stream config")
+    with open("./message/handler/go2rtc.template") as rp:
+        go2rtc_config = rp.read().replace("<SNOWSTREAM_GO2RTC_STREAMS>", go2rtc_config)
+    api_response = requests.post(config.go2rtc_url+"/api/config", data=go2rtc_config)
+    if not api_response.status_code == 200:
+        log.error(f"Unable to update go2rtc config. HTTP Code {api_response.status_code}")
+    else:
+        supervisor_auth = HTTPBasicAuth(config.supervisor_username, config.supervisor_password)
+        supervisor_response = requests.get(
+            config.supervisor_url+"/index.html?processname=go2rtc&action=restart", auth=supervisor_auth)
+        if not supervisor_response.status_code == 200:
+            log.error(f"Unable to restart go2rtc after changing config. HTTP Code {supervisor_response.status_code}")
     return True
 
 

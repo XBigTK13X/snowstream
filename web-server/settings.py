@@ -3,9 +3,10 @@ import os
 
 class Config:
     def __init__(self):
-        self.server_version = "1.0.0"
-        self.server_build_date = "September 7, 2023"
+        self.server_version = "1.0.1"
+        self.server_build_date = "September 18, 2023"
         self.frontend_url = "http://localhost:3000"
+        self.web_api_url = ""
         self.postgres_username = "snowstream"
         self.postgres_password = "snowstream"
         self.postgres_host = "localhost"
@@ -20,6 +21,10 @@ class Config:
         self.rabbit_delay_seconds = 5
         self.log_level = 'INFO'
         self.log_file_path = '../logs/snowstream.log'
+        self.go2rtc_url = "http://localhost:9066"
+        self.supervisor_username = "snowstream"
+        self.supervisor_password = "snowstream"
+        self.supervisor_url = "http://localhost:9065"
         self.refresh_postgres_url()
 
     def refresh_postgres_url(self):

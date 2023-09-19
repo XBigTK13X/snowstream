@@ -1,7 +1,7 @@
 #! /bin/bash
 
-find /app/prod-frontend -type f -exec sed -i -e 's/SNOWSTREAM_WEB_API_URL/'"$SNOWSTREAM_WEB_API_URL"'/g' {} \;
-
+echo "Updating the database with the latest schema"
 /app/script/db-migrate.sh docker
 
+echo "Launching the web api"
 uvicorn --fd 0 server:app

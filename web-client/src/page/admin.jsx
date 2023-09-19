@@ -49,6 +49,7 @@ class ContextualizedAdminPage extends React.Component {
     if (this.state.streamSources) {
       streamSourcesMarkup = (
         <div>
+          <h3>Configured Stream Sources</h3>
           <ul>
             {this.state.streamSources.map((streamSource) => {
               return (
@@ -70,7 +71,7 @@ class ContextualizedAdminPage extends React.Component {
     }
     return (
       <div>
-        Create a new Stream Source
+        <h3>Create a new Stream Source</h3>
         <div>
           <label htmlFor="kind">Kind</label>
           <select

@@ -1,11 +1,31 @@
+from log import log
 from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from settings import config
 import routes
 
+import os
+
+# This should only happen inside a deployed docker container
+if os.environ.get("SNOWSTREAM_WEB_API_URL"):
+    frontend_content = ''
+    log.info(f"Token swapping web api url [{config.web_api_url}] into the frontend static resources")
+    for root, dirs, files in os.walk('/app/prod-frontend'):
+        for f in files:
+            if f.endswith('.js'):
+                file_path = os.path.join(root, f)
+                log.info(f"Found frontend file to token swap [{file_path}]")
+                js_content = ''
+                with open(file_path, 'r') as read_pointer:
+                    js_content = read_pointer.read()
+                js_content = js_content.replace("SNOWSTREAM_WEB_API_URL", f'"{config.web_api_url}"')
+                with open(file_path, 'w') as write_pointer:
+                    write_pointer.write(js_content)
 
 app = FastAPI(
+    title="snowstream",
+    version="1.0.1",
     swagger_ui_parameters={"syntaxHighlight": False},
     openapi_url="/api/docs/openapi.json",
     docs_url="/api/docs/swagger",

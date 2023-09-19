@@ -14,7 +14,11 @@ RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.5/install.sh
 ENV NODE_VERSION v16.13.0
 RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
 ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH
+ENV PATH $NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH
+
+RUN curl -L https://github.com/AlexxIT/go2rtc/releases/download/v1.7.0/go2rtc_linux_amd64 --output /usr/bin/go2rtc
+
+RUN chmod +x /usr/bin/go2rtc
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
@@ -49,6 +53,8 @@ RUN chmod -R 777 /app/script
 RUN chmod -R 777 /app/docker
 
 RUN mkdir /docker-entrypoint-initdb.d
+
+RUN mkdir -p /go2rtc
 
 WORKDIR /app
 
