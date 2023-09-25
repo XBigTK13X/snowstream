@@ -21,6 +21,7 @@ docker run -d \
     -e POSTGRES_DB=snowstream \
     -e PGDATA=/var/lib/postgresql/data \
     -e RABBITMQ_LOGS=- \
+    -e SNOWSTREAM_LOG_FILE_PATH=/app/logs/snowstream.log \
     --name snowstream \
     -p 9060:5432 \
     -p 9061:15672 \

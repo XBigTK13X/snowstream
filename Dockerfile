@@ -20,6 +20,18 @@ RUN curl -L https://github.com/AlexxIT/go2rtc/releases/download/v1.7.0/go2rtc_li
 
 RUN chmod +x /usr/bin/go2rtc
 
+RUN curl -L https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz --output /app/ffmpeg.tar.xz
+
+RUN tar -xvf /app/ffmpeg.tar.xz
+
+RUN bash -c "cp /app/ffmpeg-git*/ffprobe /usr/bin/ffprobe; cp /app/ffmpeg-git*/ffmpeg /usr/bin/ffmpeg"
+
+RUN bash -c "rm -rf /app/ffmpeg*"
+
+RUN chmod +x /usr/bin/ffmpeg
+
+RUN chmod +x /usr/bin/ffprobe
+
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
 COPY docker/pg_hba.conf /etc/postgresql/15/main/pg_hba.conf

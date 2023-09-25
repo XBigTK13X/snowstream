@@ -24,6 +24,16 @@ source_handlers = {
 def generate_streamable_m3u():
     log.info("Generating streamable M3U content")
     stream_sources = db.op.get_stream_source_list(streamables=True)
+    # go2rtc seems to work for IP cams and IPTV, but not HDHomeRun
+    # Here's an ffmpeg command that did finally work
+    # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f flv -listen 1 http://0.0.0.0:9090/stream/v41.1
+    # However, when streaming multiple things, you cannot reuse that same port
+    # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f flv -listen 1 v41.1
+    # Maybe put these into a directory for nginx to proxy
+    # That first attempt creates large files that need to be cleaned up, this is a bit better
+    # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f hls -hls_flags delete_segments v41.1.m3u
+    # Best so far
+    # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f hls -hls_flags delete_segments -hls_time 6 v41/v41.1.m3u8
     go2rtc_config = ''
     m3u = '#EXTM3U'
     stream_count = 0
