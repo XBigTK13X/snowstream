@@ -34,9 +34,17 @@ RUN chmod +x /usr/bin/ffprobe
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
+RUN bash -c "echo \"include = '/etc/postgresql/15/main/my_postgresql.conf'\" >> /etc/postgresql/15/main/postgresql.conf"
+
 COPY docker/pg_hba.conf /etc/postgresql/15/main/pg_hba.conf
 
+COPY docker/postgresql.conf /etc/postgresql/15/main/mod-postgresql.conf
+
 RUN chown postgres:postgres /etc/postgresql/15/main/pg_hba.conf
+
+RUN chown postgres:postgres /etc/postgresql/15/main/mod-postgresql.conf
+
+RUN mkdir -p /usr/share/nginx/html/transcode
 
 COPY ./web-server/requirements.txt /app/requirements.txt
 

@@ -10,6 +10,7 @@ ffmpeg:
   file: "-re -stream_loop -1 -i {input}"
   http: "-fflags nobuffer -flags low_delay -i {input}"
   rtsp: "-fflags nobuffer -flags low_delay -timeout 5000000 -user_agent go2rtc/ffmpeg -rtsp_transport tcp -i {input}"
+  snowstream_hdhomerun: "-reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i {input} -c:v libx264 -vf 'bwdif,format=yuv420p' -crf 21 -preset veryfast -c:a aac -f hls -hls_flags delete_segments -hls_time 6"
   output: "-user_agent ffmpeg/go2rtc -rtsp_transport tcp -f rtsp {output}"
 
 hass:
@@ -24,7 +25,7 @@ ngrok:
 
 rtsp:
   #listen: ":8554"
-  listen: ""
+  listen: ":9067"
   username: ""
   password: ""
 
@@ -32,8 +33,7 @@ srtp:
   #listen: ":8443"
   listen: ""
 
-streams:
-  <SNOWSTREAM_GO2RTC_STREAMS>
+streams:<SNOWSTREAM_GO2RTC_STREAMS>
 
 
 webrtc:

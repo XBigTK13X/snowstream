@@ -15,6 +15,10 @@ docker pull xbigtk13x/snowstream
 # 9001  - supervisord gui
 # 1984  - go2rtc
 
+mkdir -p .docker-volume/web-transcode
+
+chmod -R 777 .docker-volume/web-transcode
+
 docker run -d \
     -e POSTGRES_PASSWORD=snowstream \
     -e POSTGRES_USER=snowstream \
@@ -30,10 +34,12 @@ docker run -d \
     -p 9064:80 \
     -p 9065:9001 \
     -p 9066:1984 \
+    -p 9067:9067 \
     -v $(pwd)/.docker-volume/logs:/app/logs \
     -v $(pwd)/.docker-volume/postgresql:/var/lib/postgresql/data \
     -v $(pwd)/.docker-volume/rabbitmq:/var/lib/rabbitmq \
     -v $(pwd)/.docker-volume/go2rtc:/go2rtc \
+    -v $(pwd)/.docker-volume/web-transcode:/usr/share/nginx/html/transcode \
     xbigtk13x/snowstream
 
 sleep 8

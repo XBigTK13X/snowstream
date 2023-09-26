@@ -1,3 +1,4 @@
+test-hdhomerun.sh
 seed-data.sh
 venv/
 .docker-volume/

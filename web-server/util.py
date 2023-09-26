@@ -3,7 +3,9 @@ import sys
 from log import log
 
 
-def run_cli(command):
+def run_cli(command, background=False):
+    if background:
+        return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, executable="/bin/bash")
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, executable="/bin/bash")
     stdout, stderr = process.communicate()
     result = process.returncode

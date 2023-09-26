@@ -24,6 +24,8 @@ source_handlers = {
 def generate_streamable_m3u():
     log.info("Generating streamable M3U content")
     stream_sources = db.op.get_stream_source_list(streamables=True)
+    # put a TTL in cache_text, derived property on the object to see if expired
+
     # go2rtc seems to work for IP cams and IPTV, but not HDHomeRun
     # Here's an ffmpeg command that did finally work
     # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f flv -listen 1 http://0.0.0.0:9090/stream/v41.1
@@ -47,7 +49,10 @@ def generate_streamable_m3u():
             channel_id = f'{stream_count:02}.{stream_channel_count:04}'
             m3u += f'\n#EXTINF: tvg-id="{streamable.name}" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{channel_id}"'
             m3u += f'\n{config.go2rtc_url}/api/stream.mp4?src=channel_{channel_id}'
-            go2rtc_config += f'\n  channel_{channel_id}: {streamable.url}'
+            if stream_source.kind == "HdHomeRun":
+                go2rtc_config += f'\n  channel_{channel_id}: ffmpeg:{streamable.url}#video=snowstream_hdhomerun'
+            else:
+                go2rtc_config += f'\n  channel_{channel_id}: {streamable.url}'
     m3u += '\n'
     go2rtc_config += '\n'
     log.info(f"Generated m3u with {channel_count} channels")

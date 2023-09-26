@@ -1,6 +1,7 @@
 import database.sql_alchemy
 import database.operation
 import database.db_models
+import sqlalchemy.orm as orm
 
 
 class DbSql:
@@ -20,6 +21,7 @@ class DbWrapper:
         self.op = database.operation
         self.model = database.db_models
         self.sql = DbSql(self)
+        self.orm = orm
 
 
 db = DbWrapper()

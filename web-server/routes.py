@@ -1,10 +1,14 @@
+from log import log
 from fastapi import HTTPException
 from fastapi.responses import PlainTextResponse
+from fastapi.responses import RedirectResponse
 
 import api_models as am
 from db import db
 import message.write
 import cache
+
+import transcode
 
 
 def register(router):
@@ -47,5 +51,12 @@ def register(router):
     @router.get('/streamable.xml', response_class=PlainTextResponse)
     def get_streamable_epg():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_EPG)
+
+    @router.get('/streamable/transcode', response_class=RedirectResponse)
+    def get_streamable_transcode(streamable_id: int):
+        streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
+        transcode_url = transcode.stream(streamable)
+        log.info(transcode_url)
+        return transcode_url
 
     return router
