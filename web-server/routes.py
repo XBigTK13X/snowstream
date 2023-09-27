@@ -8,7 +8,7 @@ from db import db
 import message.write
 import cache
 
-import transcode
+from transcode import transcode
 
 
 def register(router):
@@ -55,8 +55,13 @@ def register(router):
     @router.get('/streamable/transcode', response_class=RedirectResponse)
     def get_streamable_transcode(streamable_id: int):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
-        transcode_url = transcode.stream(streamable)
+        transcode_url = transcode.open(streamable)
         log.info(transcode_url)
         return transcode_url
+
+    @router.delete('/streamable/transcode')
+    def delete_streamable_transcode(streamable_id):
+        transcode.close(streamable_id=streamable_id)
+        return True
 
     return router

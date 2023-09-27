@@ -52,8 +52,6 @@ RUN pip install -r /app/requirements.txt
 
 COPY ./web-server /app
 
-COPY ./web-server/server.py /app/main.py
-
 COPY ./docker /app/docker
 
 COPY ./script /app/script

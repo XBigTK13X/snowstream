@@ -6,7 +6,7 @@ class Config:
         self.server_version = "1.0.1"
         self.server_build_date = "September 18, 2023"
         self.frontend_url = "http://localhost:3000"
-        self.web_api_url = ""
+        self.web_api_url = "http://localhost:8000"
         self.postgres_username = "snowstream"
         self.postgres_password = "snowstream"
         self.postgres_host = "localhost"
@@ -27,6 +27,7 @@ class Config:
         self.supervisor_url = "http://localhost:9065"
         self.transcode_dir = "../.docker-volume/web-transcode"
         self.transcode_url = "http://localhost:9064/transcode"
+        self.nginx_log_path = '../.docker-volume/logs/nginx-out.log'
 
         self.refresh_postgres_url()
 

@@ -2,5 +2,4 @@
 
 cd web-server
 source venv/bin/activate
-pip install -r requirements.txt
-python -m uvicorn server:app --reload
+python -m uvicorn bin.server:app --reload --host 0.0.0.0 --port 8000

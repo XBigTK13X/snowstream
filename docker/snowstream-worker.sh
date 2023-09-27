@@ -1,3 +1,3 @@
 #! /bin/bash
 
-python worker.py
+python bin/worker.py
