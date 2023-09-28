@@ -1,6 +1,7 @@
 from log import log
 from fastapi import HTTPException
 from fastapi.responses import PlainTextResponse
+from fastapi.responses import RedirectResponse
 from fastapi import Response
 
 import api_models as am
@@ -66,6 +67,11 @@ def register(router):
     def get_streamable_transcode_segment(streamable_id: int, segment_file: str):
         segment = transcode.get_segment(streamable_id=streamable_id, segment_file=segment_file)
         return Response(segment, status_code=200, media_type="video/mp4")
+
+    @router.get('/streamable/direct', response_class=RedirectResponse)
+    def get_streamable_direct(streamable_id: int):
+        streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
+        return streamable.url
 
     @router.delete('/streamable/transcode')
     def delete_streamable_transcode(streamable_id):

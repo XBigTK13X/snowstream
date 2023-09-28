@@ -27,10 +27,10 @@ class Transcode:
         if os.path.exists(output_dir):
             shutil.rmtree(output_dir)
         os.makedirs(output_dir)
-        hls_options = f'-f hls -hls_flags delete_segments -hls_time 6 -hls_base_url "{transcode_base_url}"'
+        hls_options = f'-f hls -hls_flags delete_segments -hls_time 4 -hls_base_url "{transcode_base_url}"'
         av_options = "-c:v copy -c:a copy"
         protocol_options = ''
-        live_stream_options = '-reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5'
+        live_stream_options = '-reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 6'
         if streamable.stream_source.kind == "HdHomeRun":
             av_options = f'-c:v h264_nvenc -preset fast -vf "bwdif,format=yuv420p" -c:a aac'
         if 'rtsp' in streamable.url:
