@@ -42,6 +42,8 @@ app.add_middleware(
 
 api_router = APIRouter(prefix="/api")
 
+# TODO Could probably use a static route and get rid of nginx now that transcoding is handled via the API
+
 
 @ app.get("/", response_class=RedirectResponse, include_in_schema=False)
 def serve_web_app():

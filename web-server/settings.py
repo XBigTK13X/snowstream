@@ -25,9 +25,8 @@ class Config:
         self.supervisor_username = "snowstream"
         self.supervisor_password = "snowstream"
         self.supervisor_url = "http://localhost:9065"
-        self.transcode_dir = "../.docker-volume/web-transcode"
-        self.transcode_url = "http://localhost:9064/transcode"
-        self.nginx_log_path = '../.docker-volume/logs/nginx-out.log'
+        self.transcode_dir = "./cache-transcode"
+        self.transcode_disconnect_seconds = 20
 
         self.refresh_postgres_url()
 
