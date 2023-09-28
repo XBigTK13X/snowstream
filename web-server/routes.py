@@ -55,6 +55,7 @@ def register(router):
 
     # TODO It would be neat if I had a little placeholder video here to let the video player show that the stream is getting ready
     @router.get('/streamable/transcode')
+    @router.head('/streamable/transcode')
     def get_streamable_transcode(streamable_id: int):
         if not transcode.is_open(streamable_id=streamable_id):
             streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
@@ -64,11 +65,13 @@ def register(router):
         return Response(playlist, status_code=200, media_type="video/mp4")
 
     @router.get('/streamable/transcode/segment')
+    @router.head('/streamable/transcode/segment')
     def get_streamable_transcode_segment(streamable_id: int, segment_file: str):
         segment = transcode.get_segment(streamable_id=streamable_id, segment_file=segment_file)
         return Response(segment, status_code=200, media_type="video/mp4")
 
     @router.get('/streamable/direct', response_class=RedirectResponse)
+    @router.head('/streamable/direct', response_class=RedirectResponse)
     def get_streamable_direct(streamable_id: int):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
         return streamable.url

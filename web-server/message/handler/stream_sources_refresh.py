@@ -26,17 +26,6 @@ def generate_streamable_m3u():
     stream_sources = db.op.get_stream_source_list(streamables=True)
     # put a TTL in cache_text, derived property on the object to see if expired
 
-    # go2rtc seems to work for IP cams and IPTV, but not HDHomeRun
-    # Here's an ffmpeg command that did finally work
-    # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f flv -listen 1 http://0.0.0.0:9090/stream/v41.1
-    # However, when streaming multiple things, you cannot reuse that same port
-    # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f flv -listen 1 v41.1
-    # Maybe put these into a directory for nginx to proxy
-    # That first attempt creates large files that need to be cleaned up, this is a bit better
-    # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f hls -hls_flags delete_segments v41.1.m3u
-    # Best so far
-    # ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i http://192.168.1.5:5004/auto/v41.1 -c:v libx264 -vf "bwdif,format=yuv420p" -crf 21 -preset veryfast -c:a aac -f hls -hls_flags delete_segments -hls_time 6 v41/v41.1.m3u8
-    go2rtc_config = ''
     m3u = '#EXTM3U'
     stream_count = 0
     channel_count = 0
@@ -48,28 +37,12 @@ def generate_streamable_m3u():
             channel_count += 1
             channel_id = f'{stream_count:02}.{stream_channel_count:04}'
             m3u += f'\n#EXTINF: tvg-id="{streamable.name}" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{channel_id}"'
-            m3u += f'\n{config.go2rtc_url}/api/stream.mp4?src=channel_{channel_id}'
-            if stream_source.kind == "HdHomeRun":
-                go2rtc_config += f'\n  channel_{channel_id}: ffmpeg:{streamable.url}#video=snowstream_hdhomerun'
-            else:
-                go2rtc_config += f'\n  channel_{channel_id}: {streamable.url}'
+            m3u += f'\n{config.web_api_url}/api/streamable/transcode?streamable_id={streamable.id}'
+            m3u += f'\n#EXTINF: tvg-id="{streamable.name} (d)" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{channel_id} (d)"'
+            m3u += f'\n{config.web_api_url}/api/streamable/direct?streamable_id={streamable.id}'
     m3u += '\n'
-    go2rtc_config += '\n'
     log.info(f"Generated m3u with {channel_count} channels")
     db.op.upsert_cached_text(key=cache.key.STREAMABLE_M3U, data=m3u)
-
-    log.info("Updating transcode stream config")
-    with open("./message/handler/go2rtc.template") as rp:
-        go2rtc_config = rp.read().replace("<SNOWSTREAM_GO2RTC_STREAMS>", go2rtc_config)
-    api_response = requests.post(config.go2rtc_url+"/api/config", data=go2rtc_config)
-    if not api_response.status_code == 200:
-        log.error(f"Unable to update go2rtc config. HTTP Code {api_response.status_code}")
-    else:
-        supervisor_auth = HTTPBasicAuth(config.supervisor_username, config.supervisor_password)
-        supervisor_response = requests.get(
-            config.supervisor_url+"/index.html?processname=go2rtc&action=restart", auth=supervisor_auth)
-        if not supervisor_response.status_code == 200:
-            log.error(f"Unable to restart go2rtc after changing config. HTTP Code {supervisor_response.status_code}")
     return True
 
 

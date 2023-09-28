@@ -4,7 +4,7 @@ import config from "./settings";
 export class ApiClient {
   constructor() {
     this.httpClient = axios.create({
-      baseURL: config.webApiUrl,
+      baseURL: config.webApiUrl + "/api",
     });
     this.get = async (url) => {
       return this.httpClient.get(url).then((response) => {
