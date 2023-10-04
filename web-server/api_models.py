@@ -2,7 +2,7 @@ from typing import Union, Literal
 from pydantic import BaseModel
 
 
-class Kind(BaseModel):
+class JobKind(BaseModel):
     name: Union[Literal['stream-sources-refresh'], Literal['directories-scan']]
 
 
@@ -27,3 +27,48 @@ class Streamable(BaseModel):
     url: str
     name: str
     stream_source_id: int
+
+
+class ShelfKind(BaseModel):
+    name: Union[Literal['movies'], Literal['shows']]
+
+
+class Shelf(BaseModel):
+    id: int | None = None
+    kind: str
+    name: str
+    directory: str
+
+
+class VideoFile(BaseModel):
+    id: int | None = None
+
+
+class Movie(BaseModel):
+    id: int | None = None
+    name: str
+    directory: str
+
+
+class Show(BaseModel):
+    id: int | None = None
+    name: str
+    directory: str
+
+
+class ShowSeason(BaseModel):
+    id: int | None = None
+    name: str
+    directory: str
+
+
+class ShowEpisode(BaseModel):
+    id: int | None = None
+
+
+class ShowVideoFile(BaseModel):
+    id: int | None = None
+
+
+class MovieVideoFile(BaseModel):
+    id: int | None = None

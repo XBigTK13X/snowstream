@@ -11,7 +11,8 @@ export class ApiClient {
         return response.data;
       });
     };
-    this.put = async (url, payload) => {
+
+    this.post = async (url, payload) => {
       return this.httpClient.put(url, payload).then((response) => {
         return response.data;
       });
@@ -23,16 +24,28 @@ export class ApiClient {
   }
 
   scheduleStreamSourcesRefresh() {
-    return this.put("/job", { name: "stream-sources-refresh" });
+    return this.post("/job", { name: "stream-sources-refresh" });
   }
 
   createStreamSource(payload) {
-    return this.put("/stream/source", {
+    return this.post("/stream/source", {
       url: payload.url,
       username: payload.username,
       password: payload.password,
       kind: payload.kind,
       name: payload.name,
+    });
+  }
+
+  getShelves() {
+    return this.get("/shelf/list");
+  }
+
+  createShelf(payload) {
+    return this.post("/shelf", {
+      name: payload.name,
+      kind: payload.kind,
+      directory: payload.directory,
     });
   }
 }

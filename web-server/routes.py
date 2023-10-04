@@ -24,15 +24,15 @@ def register(router):
     def get_stream_source_list():
         return db.op.get_stream_source_list()
 
-    @router.put("/stream/source")
+    @router.post("/stream/source")
     def create_stream_source(stream_source: am.StreamSource):
         db_source = db.op.get_stream_source_by_url(url=stream_source.url)
         if db_source:
             raise HTTPException(status_code=400, detail="URL already tracked")
         return db.op.create_stream_source(stream_source=stream_source)
 
-    @router.put("/job")
-    def create_job(kind: am.Kind):
+    @router.post("/job")
+    def create_job(kind: am.JobKind):
         job = db.op.create_job(kind=kind.name)
         message.write.send(job_id=job.id, kind=kind.name)
         return job
@@ -80,5 +80,21 @@ def register(router):
     def delete_streamable_transcode(streamable_id):
         transcode.close(streamable_id=streamable_id)
         return True
+
+    @router.get('/shelf/list')
+    def get_shelf_list():
+        pass
+
+    @router.get('/shelf')
+    def get_shelf(shelf_id: int):
+        pass
+
+    @router.post('/shelf')
+    def create_shelf(shelf: am.Shelf):
+        pass
+
+    @router.post('/shelf/scan')
+    def scan_shelf(shelf_id: int):
+        pass
 
     return router

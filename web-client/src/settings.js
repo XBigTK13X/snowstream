@@ -5,7 +5,7 @@ class Config {
       // eslint-disable-next-line no-undef
       this.webApiUrl = SNOWSTREAM_WEB_API_URL;
     } catch {
-      this.webApiUrl = "http://localhost:8000/api";
+      this.webApiUrl = "http://localhost:8000";
     }
   }
 }

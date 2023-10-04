@@ -2,7 +2,66 @@ import React from "react";
 import { useContext } from "react";
 import { ApiClientContext } from "../contexts";
 
-class ContextualizedAdminPage extends React.Component {
+class MediaLibraryAdminTab extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.apiClient = this.props.apiClient;
+
+    this.state = {
+      directory: null,
+      name: null,
+      kind: "Movies",
+    };
+    this.reloadShelves = this.reloadShelves.bind(this);
+  }
+  componentDidMount() {
+    this.reloadShelves();
+  }
+  reloadShelves() {
+    this.apiClient.getShelves().then((shelves) => {
+      this.setState({
+        shelves,
+      });
+    });
+  }
+  render() {
+    let shelvesMarkup = null;
+    if (this.state.streamSources) {
+      shelvesMarkup = (
+        <div>
+          <h4>Configured Shelves</h4>
+          <ul>
+            {this.state.shelves.map((shelf) => {
+              return (
+                <div key={shelf.id}>
+                  <li>
+                    {shelf.name} - {shelf.kind} - {shelf.directory}
+                  </li>
+                </div>
+              );
+            })}
+          </ul>
+          <button
+            onClick={this.scheduleRefresh}
+            id="action-stream-sources-refresh"
+            className="action-button"
+          >
+            Schedule Refresh
+          </button>
+        </div>
+      );
+    }
+    return (
+      <div>
+        <h3>Media Library</h3>
+        {shelvesMarkup}
+      </div>
+    );
+  }
+}
+
+class StreamSourceAdminTab extends React.Component {
   constructor(props) {
     super(props);
 
@@ -20,9 +79,18 @@ class ContextualizedAdminPage extends React.Component {
     this.changeForm = this.changeForm.bind(this);
     this.scheduleRefresh = this.scheduleRefresh.bind(this);
     this.createStreamSource = this.createStreamSource.bind(this);
+    this.reloadStreamSources = this.reloadStreamSources.bind(this);
   }
 
   componentDidMount() {
+    this.reloadStreamSources();
+  }
+
+  scheduleRefresh() {
+    this.apiClient.scheduleStreamSourcesRefresh();
+  }
+
+  reloadStreamSources() {
     this.apiClient.getStreamSources().then((streamSources) => {
       this.setState({
         streamSources,
@@ -30,12 +98,10 @@ class ContextualizedAdminPage extends React.Component {
     });
   }
 
-  scheduleRefresh() {
-    this.apiClient.scheduleStreamSourcesRefresh();
-  }
-
   createStreamSource() {
-    this.apiClient.createStreamSource();
+    this.apiClient.createStreamSource(this.state).then(() => {
+      this.reloadStreamSources();
+    });
   }
 
   changeForm(ev) {
@@ -49,7 +115,7 @@ class ContextualizedAdminPage extends React.Component {
     if (this.state.streamSources) {
       streamSourcesMarkup = (
         <div>
-          <h3>Configured Stream Sources</h3>
+          <h4>Configured Stream Sources</h4>
           <ul>
             {this.state.streamSources.map((streamSource) => {
               return (
@@ -71,7 +137,8 @@ class ContextualizedAdminPage extends React.Component {
     }
     return (
       <div>
-        <h3>Create a new Stream Source</h3>
+        <h3>Stream Sources</h3>
+        <h4>Create a new Stream Source</h4>
         <div>
           <label htmlFor="kind">Kind</label>
           <select
@@ -128,6 +195,18 @@ class ContextualizedAdminPage extends React.Component {
           </button>
         </div>
         {streamSourcesMarkup}
+      </div>
+    );
+  }
+}
+
+class ContextualizedAdminPage extends React.Component {
+  render() {
+    return (
+      <div>
+        <MediaLibraryAdminTab apiClient={this.props.apiClient} />
+        <hr />
+        <StreamSourceAdminTab apiClient={this.props.apiClient} />
       </div>
     );
   }
