@@ -26,7 +26,7 @@ class FrigateNvr(base.BaseHandler):
     def parse_watchable_urls(self):
         frigate_config = json.loads(self.cached_data)
         camera_streams = []
-        frigate_domain = self.stream_source.url.split('://')[1].split(':')[0]
+        stream_url = f'{self.stream_source.url.replace(":5000",":1984")}/api/stream.mp4?src='
         if 'cameras' in frigate_config:
             for camera_name, camera_settings in frigate_config['cameras'].items():
                 if 'ffmpeg' in camera_settings:
@@ -35,7 +35,7 @@ class FrigateNvr(base.BaseHandler):
                             if 'roles' in input:
                                 if 'record' in input['roles']:
                                     camera_streams.append({
-                                        'url': input['path'].replace('127.0.0.1', frigate_domain),
+                                        'url': f'{stream_url}{camera_name}',
                                         'name': camera_name
                                     })
         new_count = 0

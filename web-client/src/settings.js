@@ -4,8 +4,10 @@ class Config {
     try {
       // eslint-disable-next-line no-undef
       this.webApiUrl = SNOWSTREAM_WEB_API_URL;
+      console.log("[DEBUG] Using the prod web api URL: " + this.webApiUrl);
     } catch {
       this.webApiUrl = "http://localhost:8000";
+      console.log("[DEBUG] Using the dev web api URL: " + this.webApiUrl);
     }
   }
 }

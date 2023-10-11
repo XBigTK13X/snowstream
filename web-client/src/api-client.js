@@ -13,7 +13,7 @@ export class ApiClient {
     };
 
     this.post = async (url, payload) => {
-      return this.httpClient.put(url, payload).then((response) => {
+      return this.httpClient.post(url, payload).then((response) => {
         return response.data;
       });
     };

@@ -3,7 +3,7 @@ import os
 
 class Config:
     def __init__(self):
-        self.server_version = "1.0.2"
+        self.server_version = "1.0.3"
         self.server_build_date = "September 18, 2023"
         self.frontend_url = "http://localhost:3000"
         self.web_api_url = "http://localhost:8000"

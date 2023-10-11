@@ -25,7 +25,7 @@ if os.environ.get("SNOWSTREAM_WEB_API_URL"):
 
 app = FastAPI(
     title="snowstream",
-    version="1.0.2",
+    version="1.0.3",
     swagger_ui_parameters={"syntaxHighlight": False},
     openapi_url="/api/docs/openapi.json",
     docs_url="/api/docs/swagger",
@@ -44,10 +44,10 @@ api_router = APIRouter(prefix="/api")
 
 # TODO Could probably use a static route and get rid of nginx now that transcoding is handled via the API
 
-
-@ app.get("/", response_class=RedirectResponse, include_in_schema=False)
-def serve_web_app():
-    return config.frontend_url
+if not os.environ.get("SNOWSTREAM_WEB_API_URL"):
+    @ app.get("/", response_class=RedirectResponse, include_in_schema=False)
+    def serve_web_app():
+        return config.frontend_url
 
 
 routes.register(api_router)

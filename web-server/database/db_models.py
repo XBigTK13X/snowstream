@@ -63,51 +63,52 @@ class Shelf(BaseModel):
     __tablename__ = 'shelves'
     name = sa.Column(sa.String)
     directory = sa.Column(sa.String)
-
-
-class VideoFile(BaseModel):
-    __tablename__ = 'video_files'
-    kind = sa.Column(sa.String)
-    path = sa.Column(sa.Text)
-
-
-class Tag(BaseModel):
-    __tablename__ = 'tags'
-    name = sa.Column(sa.String)
-
-
-class Movie(BaseModel):
-    __tablename__ = 'movies'
-    name = sa.Column(sa.Text)
-    directory = sa.Column(sa.Text)
-    tags = sorm.Mapped[List['MovieTag']] = sorm.relationship(back_populates='movie')
-
-
-class MovieTag(BaseModel):
-    __tablename__ = 'movie_tags'
-    movie = sorm.Mapped['Movie'] = sorm.relationship(back_populates='tags')
-    tag = sorm.Mapped['Tag'] = sorm.relationship(back_populates='movie')
-
-
-class Show(BaseModel):
-    __tablename__ = 'shows'
-    name = sa.Column(sa.Text)
-    directory = sa.Column(sa.Text)
-    tags = sorm.Mapped[List['ShowTag']] = sorm.relationship(back_populates='show')
-
-
-class ShowTag(BaseModel):
-    __tablename__ = 'show_tags'
-    show = sorm.Mapped['Show'] = sorm.relationship(back_populates='tags')
-    tag = sorm.Mapped['Tag'] = sorm.relationship(back_populates='show')
-
-
-class ShowSeason(BaseModel):
-    __tablename__ = 'show_seasons'
-    name = sa.Column(sa.Text)
-    directory = sa.Column(sa.Text)
-
-
-class ShowEpisode(BaseModel):
-    __tablename__ = 'show_episodes'
-    name = sa.Column(sa.Text)
+#
+#
+# class VideoFile(BaseModel):
+#    __tablename__ = 'video_files'
+#    kind = sa.Column(sa.String)
+#    path = sa.Column(sa.Text)
+#
+#
+# class Tag(BaseModel):
+#    __tablename__ = 'tags'
+#    name = sa.Column(sa.String)
+#
+#
+# class Movie(BaseModel):
+#    __tablename__ = 'movies'
+#    name = sa.Column(sa.Text)
+#    directory = sa.Column(sa.Text)
+#    tags: sorm.Mapped[List['MovieTag']] = sorm.relationship(back_populates='movie')
+#
+#
+# class MovieTag(BaseModel):
+#    __tablename__ = 'movie_tags'
+#    movie: sorm.Mapped['Movie'] = sorm.relationship(back_populates='tags')
+#    tag: sorm.Mapped['Tag'] = sorm.relationship(back_populates='movie')
+#
+#
+# class Show(BaseModel):
+#    __tablename__ = 'shows'
+#    name = sa.Column(sa.Text)
+#    directory = sa.Column(sa.Text)
+#    tags: sorm.Mapped[List['ShowTag']] = sorm.relationship(back_populates='show')
+#
+#
+# class ShowTag(BaseModel):
+#    __tablename__ = 'show_tags'
+#    show: sorm.Mapped['Show'] = sorm.relationship(back_populates='tags')
+#    tag: sorm.Mapped['Tag'] = sorm.relationship(back_populates='show')
+#
+#
+# class ShowSeason(BaseModel):
+#    __tablename__ = 'show_seasons'
+#    name = sa.Column(sa.Text)
+#    directory = sa.Column(sa.Text)
+#
+#
+# class ShowEpisode(BaseModel):
+#    __tablename__ = 'show_episodes'
+#    name = sa.Column(sa.Text)
+#
