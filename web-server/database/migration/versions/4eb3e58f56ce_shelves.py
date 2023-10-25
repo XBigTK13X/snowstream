@@ -20,7 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        'shelves',
+        'shelf',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
@@ -29,7 +29,7 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        'video_files',
+        'video_file',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
@@ -37,7 +37,7 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        'tags',
+        'tag',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
@@ -45,7 +45,7 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        'movies',
+        'movie',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
@@ -54,13 +54,13 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        'movie_tags',
-        sa.Column('tag_id', sa.Integer, sa.ForeignKey('tags.id'), nullable=False),
+        'movie_tag',
+        sa.Column('tag_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False),
         sa.Column('movie_id', sa.Integer, sa.ForeignKey('movie.id'), nullable=False),
     )
 
     op.create_table(
-        'shows',
+        'show',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
@@ -69,16 +69,16 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        'show_tags',
+        'show_tag',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('tag_id', sa.Integer, sa.ForeignKey('tags.id'), nullable=False),
+        sa.Column('tag_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False),
         sa.Column('show_id', sa.Integer, sa.ForeignKey('show.id'), nullable=False),
     )
 
     op.create_table(
-        'show_seasons',
+        'show_season',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
@@ -87,7 +87,7 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        'show_episodes',
+        'show_episode',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
@@ -95,31 +95,31 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        'show_episode_video_files',
+        'show_episode_video_file',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('show_episode_id', sa.Integer, sa.ForeignKey('tags.id'), nullable=False),
+        sa.Column('show_episode_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False),
         sa.Column('video_file_id', sa.Integer, sa.ForeignKey('show.id'), nullable=False),
     )
 
     op.create_table(
-        'movie_video_files',
+        'movie_video_file',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('movie_id', sa.Integer, sa.ForeignKey('tags.id'), nullable=False),
+        sa.Column('movie_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False),
         sa.Column('video_file_id', sa.Integer, sa.ForeignKey('show.id'), nullable=False),
     )
 
 
 def downgrade() -> None:
-    op.drop_table('show_episodes')
-    op.drop_table('show_seasons')
-    op.drop_table('movies')
-    op.drop_table('movie_tags')
-    op.drop_table('shows')
-    op.drop_table('show_tags')
-    op.drop_table('tags')
-    op.drop_table('video_files')
-    op.drop_table('shelves')
+    op.drop_table('show_episode')
+    op.drop_table('show_season')
+    op.drop_table('movie')
+    op.drop_table('movie_tag')
+    op.drop_table('show')
+    op.drop_table('show_tag')
+    op.drop_table('tag')
+    op.drop_table('video_file')
+    op.drop_table('shelf')

@@ -74,6 +74,7 @@ def register(router):
     @router.head('/streamable/direct', response_class=RedirectResponse)
     def get_streamable_direct(streamable_id: int):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
+        log.info(streamable.url)
         return streamable.url
 
     @router.delete('/streamable/transcode')
