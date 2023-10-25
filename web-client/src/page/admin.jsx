@@ -12,8 +12,12 @@ class MediaLibraryAdminTab extends React.Component {
       directory: null,
       name: null,
       kind: "Movies",
+      shelves: null,
     };
     this.reloadShelves = this.reloadShelves.bind(this);
+    this.changeForm = this.changeForm.bind(this);
+    this.createShelf = this.createShelf.bind(this);
+    this.scanShelvesContent = this.scanShelvesContent.bind(this);
   }
   componentDidMount() {
     this.reloadShelves();
@@ -25,12 +29,23 @@ class MediaLibraryAdminTab extends React.Component {
       });
     });
   }
+  changeForm(ev) {
+    this.setState({
+      [ev.target.name]: ev.target.value,
+    });
+  }
+  createShelf() {
+    this.apiClient.createShelf(this.state).then(() => {
+      this.reloadShelves();
+    });
+  }
+  scanShelvesContent() {}
   render() {
-    let shelvesMarkup = null;
-    if (this.state.streamSources) {
+    let shelvesMarkup = "No shelves were found. Try adding one.";
+    if (this.state.shelves) {
       shelvesMarkup = (
         <div>
-          <h4>Configured Shelves</h4>
+          <h4>Shelves</h4>
           <ul>
             {this.state.shelves.map((shelf) => {
               return (
@@ -43,19 +58,55 @@ class MediaLibraryAdminTab extends React.Component {
             })}
           </ul>
           <button
-            onClick={this.scheduleRefresh}
-            id="action-stream-sources-refresh"
+            onClick={this.scanShelvesContent}
+            id="action-scan-shelves-content"
             className="action-button"
           >
-            Schedule Refresh
+            Scan Shelves Content
           </button>
         </div>
       );
     }
     return (
       <div>
-        <h3>Media Library</h3>
+        <h3>Media Shelves</h3>
         {shelvesMarkup}
+        <div>
+          <label htmlFor="kind">Kind</label>
+          <select
+            value={this.state.kind}
+            onChange={this.changeForm}
+            className="edit-dropdown"
+            id="kind"
+            name="kind"
+          >
+            <option value="Movies">Movies</option>
+            <option value="Shows">Shows</option>
+          </select>
+          <label htmlFor="name">Name</label>
+          <input
+            onChange={this.changeForm}
+            className="edit-text"
+            type="text"
+            id="name"
+            name="name"
+          />
+          <label htmlFor="directory">Directory</label>
+          <input
+            onChange={this.changeForm}
+            className="edit-text"
+            type="text"
+            id="directory"
+            name="directory"
+          />
+          <button
+            onClick={this.createShelf}
+            id="action-create-shelf"
+            className="action-button"
+          >
+            Create
+          </button>
+        </div>
       </div>
     );
   }
@@ -69,7 +120,7 @@ class StreamSourceAdminTab extends React.Component {
 
     this.state = {
       kind: "IptvM3u",
-      streamSources: [],
+      streamSources: null,
       url: null,
       username: null,
       password: null,
@@ -111,11 +162,11 @@ class StreamSourceAdminTab extends React.Component {
   }
 
   render() {
-    let streamSourcesMarkup = null;
+    let streamSourcesMarkup = "No stream sources were found. Try adding one.";
     if (this.state.streamSources) {
       streamSourcesMarkup = (
         <div>
-          <h4>Configured Stream Sources</h4>
+          <h4>Stream Sources</h4>
           <ul>
             {this.state.streamSources.map((streamSource) => {
               return (
@@ -138,6 +189,7 @@ class StreamSourceAdminTab extends React.Component {
     return (
       <div>
         <h3>Stream Sources</h3>
+        {streamSourcesMarkup}
         <h4>Create a new Stream Source</h4>
         <div>
           <label htmlFor="kind">Kind</label>
@@ -194,7 +246,6 @@ class StreamSourceAdminTab extends React.Component {
             Create
           </button>
         </div>
-        {streamSourcesMarkup}
       </div>
     );
   }

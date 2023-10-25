@@ -62,68 +62,39 @@ class CachedText(BaseModel):
 class Shelf(BaseModel):
     __tablename__ = 'shelf'
     name = sa.Column(sa.String)
+    kind = sa.Column(sa.String)
     directory = sa.Column(sa.String)
-
-
-movie_video_file_association = sa.Table(
-    'movie_video_file',
-    sa.Base.metadata,
-    sa.Column('movie_id', sa.ForeignKey('movie.id', primary_key=True)),
-    sa.Column('video_file_id', sa.ForeignKey('video_file.id', primary_key=True))
-)
-
-show_episode_video_file_association = sa.Table(
-    'show_episode_video_file',
-    sa.Base.metadata,
-    sa.Column('show_episode_id', sa.ForeignKey('show_episode.id', primary_key=True)),
-    sa.Column('video_file_id', sa.ForeignKey('video_file.id', primary_key=True))
-)
 
 
 class VideoFile(BaseModel):
     __tablename__ = 'video_file'
     kind = sa.Column(sa.String)
     path = sa.Column(sa.Text)
-    show_episode: sorm.Mapped['ShowEpisode'] = sorm.relationship(
-        secondary=show_episode_video_file_association, back_populates="video_file")
-    movie: sorm.Mapped['Movie'] = sorm.relationship(secondary=movie_video_file_association, back_populates="video_file")
-
-
-movie_tag_association = sa.Table(
-    'movie_tag',
-    sa.Base.metadata,
-    sa.Column('movie_id', sa.ForeignKey('movie.id', primary_key=True)),
-    sa.Column('tag_id', sa.ForeignKey('tag.id', primary_key=True))
-)
-
-show_tag_association = sa.Table(
-    'show_tag',
-    sa.Base.metadata,
-    sa.Column('show_id', sa.ForeignKey('show.id', primary_key=True)),
-    sa.Column('tag_id', sa.ForeignKey('tag.id', primary_key=True))
-)
+    # show_episode: sorm.Mapped['ShowEpisode'] = sorm.relationship(
+    #    secondary=show_episode_video_file_association, back_populates="video_file")
+    movie: sorm.Mapped['Movie'] = sorm.relationship(secondary='movie_video_file', back_populates="video_file")
 
 
 class Tag(BaseModel):
     __tablename__ = 'tag'
     name = sa.Column(sa.String)
-    movies: sorm.Mapped[List["Movie"]] = sorm.relationship(secondary=movie_tag_association, back_populates="tags")
-    shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary=show_tag_association, back_populates="tags")
+    #movies: sorm.Mapped[List["Movie"]] = sorm.relationship(secondary=movie_tag_association, back_populates="tags")
+    #shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary=show_tag_association, back_populates="tags")
 
 
 class Movie(BaseModel):
     __tablename__ = 'movie'
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
-    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=movie_tag_association, back_populates="movies")
-    video_file: sorm.Mapped["VideoFile"] = sorm.relationship(secondary=movie_video_file_association, back_populates="movie")
+    #tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=movie_tag_association, back_populates="movies")
+    video_file: sorm.Mapped["VideoFile"] = sorm.relationship(secondary='movie_video_file', back_populates="movie")
 
 
 class Show(BaseModel):
     __tablename__ = 'show'
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
-    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=show_tag_association, back_populates="shows")
+    #tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=show_tag_association, back_populates="shows")
 
 
 class ShowSeason(BaseModel):
@@ -135,5 +106,29 @@ class ShowSeason(BaseModel):
 class ShowEpisode(BaseModel):
     __tablename__ = 'show_episode'
     name = sa.Column(sa.Text)
-    video_file: sorm.Mapped["VideoFile"] = sorm.relationship(
-        secondary=show_episode_video_file_association, back_populates="show")
+    # video_file: sorm.Mapped["VideoFile"] = sorm.relationship(
+    #    secondary=show_episode_video_file_association, back_populates="show")
+
+
+class MovieVideoFile(BaseModel):
+    __tablename__ = 'movie_video_file'
+    movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'), primary_key=True)
+    video_file_id = sa.Column(sa.Integer, sa.ForeignKey('video_file.id'), primary_key=True)
+
+
+class MovieTag(BaseModel):
+    __tablename__ = 'movie_tag'
+    movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'), primary_key=True)
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'), primary_key=True)
+
+
+class ShowEpisodeVideoFile(BaseModel):
+    __tablename__ = 'show_episode_video_file'
+    show_episode_id = sa.Column(sa.Integer, sa.ForeignKey('show_episode.id'), primary_key=True)
+    video_file_id = sa.Column(sa.Integer, sa.ForeignKey('video_file.id'), primary_key=True)
+
+
+class ShowTag(BaseModel):
+    __tablename__ = 'show_tag'
+    show_id = sa.Column(sa.Integer, sa.ForeignKey('show.id'), primary_key=True)
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'), primary_key=True)

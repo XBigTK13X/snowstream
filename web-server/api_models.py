@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class JobKind(BaseModel):
-    name: Union[Literal['stream-sources-refresh'], Literal['directories-scan']]
+    name: Union[Literal['stream-sources-refresh'], Literal['scan-shelves-content']]
 
 
 class StreamSource(BaseModel):
@@ -30,7 +30,7 @@ class Streamable(BaseModel):
 
 
 class ShelfKind(BaseModel):
-    name: Union[Literal['movies'], Literal['shows']]
+    name: Union[Literal['Movies'], Literal['Shows']]
 
 
 class Shelf(BaseModel):

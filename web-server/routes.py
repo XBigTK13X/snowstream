@@ -84,15 +84,15 @@ def register(router):
 
     @router.get('/shelf/list')
     def get_shelf_list():
-        pass
+        return db.op.get_shelf_list()
 
     @router.get('/shelf')
     def get_shelf(shelf_id: int):
-        pass
+        return db.op.get_shelf_by_id(shelf_id=shelf_id)
 
     @router.post('/shelf')
     def create_shelf(shelf: am.Shelf):
-        pass
+        return db.op.create_shelf(shelf=shelf)
 
     @router.post('/shelf/scan')
     def scan_shelf(shelf_id: int):

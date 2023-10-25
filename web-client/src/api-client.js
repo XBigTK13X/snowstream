@@ -48,4 +48,8 @@ export class ApiClient {
       directory: payload.directory,
     });
   }
+
+  scheduleShelvesScan() {
+    return this.post("/job", { name: "scan-shelves-content" });
+  }
 }
