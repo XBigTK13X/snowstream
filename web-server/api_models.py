@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class JobKind(BaseModel):
-    name: Union[Literal['stream-sources-refresh'], Literal['scan-shelves-content']]
+    name: Union[Literal['stream_sources_refresh'], Literal['scan_shelves_content']]
 
 
 class StreamSource(BaseModel):

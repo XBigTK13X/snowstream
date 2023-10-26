@@ -24,7 +24,7 @@ source_handlers = {
 def generate_streamable_m3u():
     log.info("Generating streamable M3U content")
     stream_sources = db.op.get_stream_source_list(streamables=True)
-    # put a TTL in cache_text, derived property on the object to see if expired
+    # TODO put a TTL in cache_text, derived property on the object to see if expired
 
     m3u = '#EXTM3U'
     stream_count = 0
@@ -71,7 +71,7 @@ def generate_streamable_epg():
 def handle(job_id, message_payload):
     log.info(f'[WORKER] Handling a stream_sources_refresh job')
     log.info("Removing existing streamable schedule info")
-    db.sql.truncate('streamable_schedules')
+    db.sql.truncate('streamable_schedule')
     stream_sources = db.op.get_stream_source_list(streamables=True)
     refresh_results = {
 

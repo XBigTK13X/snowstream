@@ -24,7 +24,7 @@ export class ApiClient {
   }
 
   scheduleStreamSourcesRefresh() {
-    return this.post("/job", { name: "stream-sources-refresh" });
+    return this.post("/job", { name: "stream_sources_refresh" });
   }
 
   createStreamSource(payload) {
@@ -50,6 +50,6 @@ export class ApiClient {
   }
 
   scheduleShelvesScan() {
-    return this.post("/job", { name: "scan-shelves-content" });
+    return this.post("/job", { name: "scan_shelves_content" });
   }
 }

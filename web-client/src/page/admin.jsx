@@ -17,7 +17,7 @@ class MediaLibraryAdminTab extends React.Component {
     this.reloadShelves = this.reloadShelves.bind(this);
     this.changeForm = this.changeForm.bind(this);
     this.createShelf = this.createShelf.bind(this);
-    this.scanShelvesContent = this.scanShelvesContent.bind(this);
+    this.scheduleShelvesScan = this.scheduleShelvesScan.bind(this);
   }
   componentDidMount() {
     this.reloadShelves();
@@ -39,7 +39,9 @@ class MediaLibraryAdminTab extends React.Component {
       this.reloadShelves();
     });
   }
-  scanShelvesContent() {}
+  scheduleShelvesScan() {
+    this.apiClient.scheduleShelvesScan();
+  }
   render() {
     let shelvesMarkup = "No shelves were found. Try adding one.";
     if (this.state.shelves) {
@@ -58,7 +60,7 @@ class MediaLibraryAdminTab extends React.Component {
             })}
           </ul>
           <button
-            onClick={this.scanShelvesContent}
+            onClick={this.scheduleShelvesScan}
             id="action-scan-shelves-content"
             className="action-button"
           >

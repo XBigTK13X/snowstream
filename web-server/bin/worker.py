@@ -16,9 +16,11 @@ def start():
     import json
     import message.read
     import message.handler.stream_sources_refresh
+    import message.handler.scan_shelves_content
 
     handlers = {
-        'stream-sources-refresh': message.handler.stream_sources_refresh
+        'stream_sources_refresh': message.handler.stream_sources_refresh,
+        'scan_shelves_content': message.handler.scan_shelves_content
     }
 
     def callback(channel, method, properties, body):
