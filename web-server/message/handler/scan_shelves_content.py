@@ -16,6 +16,7 @@ def handle(job_id, message_payload):
     results = {
 
     }
+    handlers = []
     for shelf in shelves:
         # TODO Unit tests for file name parsing
         log.info(f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
@@ -33,10 +34,17 @@ def handle(job_id, message_payload):
         if not handler.ingest_metadata():
             results[shelf.name] = False
             continue
+        handlers.append(handler)
         results[shelf.name] = True
 
-    log.info("Finished scan_shelves_content job")
+    log.info("Checking if all scan_shelves_content job tasks were successful")
     for key, val in results.items():
         if not val:
             return False
+
+    log.info("File imports successful. Building the library.")
+    for handler in handlers:
+        log.info(f"Organizing [{handler.shelf.name} -> {handler.shelf.kind}] files into the library")
+        handler.organize()
+
     return True

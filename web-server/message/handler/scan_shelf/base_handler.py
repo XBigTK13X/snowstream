@@ -4,6 +4,7 @@ from log import log
 import mimetypes
 mimetypes.init()
 
+from typing import Callable
 
 def get_file_kind(file_path):
     if file_path.endswith('.nfo'):
@@ -32,12 +33,36 @@ class BaseHandler:
             'metadata': [],
             'unhandled': []
         }
+        self.file_info_lookup = {
+            'video': [],
+            'image': [],
+            'metadata': [],
+        }
+        self.batch_lookup = {}
 
     def get_files_in_directory(self):
         for root, dirs, files in os.walk(self.shelf.directory):
             for shelf_file in files:
                 file_path = os.path.join(root, shelf_file)
                 self.file_lookup[get_file_kind(file_path)].append(file_path)
+        return True
+
+    def ingest_files(self, kind:str, parser:Callable[[str], dict], identifier:Callable[[dict],str]):
+        parsed_files = []
+        for media_path in self.file_lookup[kind]:
+            #log.info(f"Found a {kind} file [{media_path}]")
+            media_info = parser(file_path=media_path)
+            if media_info == None:
+                #log.info(f"Wasn't able to parse {kind} info for [{media_path}]")
+                continue
+            media_info['kind'] = identifier(media_info)
+            media_info['file_path'] = media_path
+            parsed_files.append(media_info)
+        log.info(f"Ingested info for ({len(parsed_files)}/{len(self.file_lookup[kind])}) parsed {kind} file paths")
+        parsed_files = sorted(parsed_files, key=lambda x: x['file_path'])
+        return parsed_files
+
+    def organize(self):
         return True
 
     def ingest_videos(self):

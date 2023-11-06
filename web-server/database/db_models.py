@@ -68,11 +68,12 @@ class Shelf(BaseModel):
 
 class VideoFile(BaseModel):
     __tablename__ = 'video_file'
+    shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
     kind = sa.Column(sa.String)
     path = sa.Column(sa.Text)
     # show_episode: sorm.Mapped['ShowEpisode'] = sorm.relationship(
     #    secondary=show_episode_video_file_association, back_populates="video_file")
-    movie: sorm.Mapped['Movie'] = sorm.relationship(secondary='movie_video_file', back_populates="video_file")
+    movie: sorm.Mapped['Movie'] = sorm.relationship(secondary='movie_video_file', back_populates="video_files")
 
 
 class Tag(BaseModel):
@@ -85,9 +86,9 @@ class Tag(BaseModel):
 class Movie(BaseModel):
     __tablename__ = 'movie'
     name = sa.Column(sa.Text)
-    directory = sa.Column(sa.Text)
+    release_year = sa.Column(sa.Integer)
     #tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=movie_tag_association, back_populates="movies")
-    video_file: sorm.Mapped["VideoFile"] = sorm.relationship(secondary='movie_video_file', back_populates="movie")
+    video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary='movie_video_file', back_populates="movie")
 
 
 class Show(BaseModel):
@@ -112,8 +113,8 @@ class ShowEpisode(BaseModel):
 
 class MovieVideoFile(BaseModel):
     __tablename__ = 'movie_video_file'
-    movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'), primary_key=True)
-    video_file_id = sa.Column(sa.Integer, sa.ForeignKey('video_file.id'), primary_key=True)
+    movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'))
+    video_file_id = sa.Column(sa.Integer, sa.ForeignKey('video_file.id'))
 
 
 class MovieTag(BaseModel):

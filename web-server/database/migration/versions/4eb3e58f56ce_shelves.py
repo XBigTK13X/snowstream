@@ -29,12 +29,24 @@ def upgrade() -> None:
         sa.Column('directory', sa.Text)
     )
 
+    op.create_unique_constraint(
+        'unique_shelf_directory',
+        'shelf', ['directory']
+    )
+
     op.create_table(
         'video_file',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
+        sa.Column('shelf_id', sa.Integer, sa.ForeignKey('shelf.id'), nullable=False),
+        sa.Column('kind', sa.Text, nullable=False),
         sa.Column('path', sa.Text, nullable=False)
+    )
+
+    op.create_unique_constraint(
+        'unique_video_file_path',
+        'video_file', ['path']
     )
 
     op.create_table(
@@ -51,13 +63,14 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
         sa.Column('name', sa.Text, nullable=False),
-        sa.Column('directory', sa.Text, nullable=False)
+        sa.Column('release_year', sa.Integer)
     )
 
     op.create_table(
         'movie_tag',
-        sa.Column('tag_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False, primary_key=True),
-        sa.Column('movie_id', sa.Integer, sa.ForeignKey('movie.id'), nullable=False, primary_key=True),
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('tag_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False),
+        sa.Column('movie_id', sa.Integer, sa.ForeignKey('movie.id'), nullable=False),
     )
 
     op.create_table(
@@ -65,8 +78,8 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('movie_id', sa.Integer, sa.ForeignKey('movie.id'), nullable=False, primary_key=True),
-        sa.Column('video_file_id', sa.Integer, sa.ForeignKey('video_file.id'), nullable=False, primary_key=True),
+        sa.Column('movie_id', sa.Integer, sa.ForeignKey('movie.id'), nullable=False),
+        sa.Column('video_file_id', sa.Integer, sa.ForeignKey('video_file.id'), nullable=False),
     )
 
     op.create_table(
@@ -83,8 +96,8 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('tag_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False, primary_key=True),
-        sa.Column('show_id', sa.Integer, sa.ForeignKey('show.id'), nullable=False, primary_key=True),
+        sa.Column('tag_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False),
+        sa.Column('show_id', sa.Integer, sa.ForeignKey('show.id'), nullable=False),
     )
 
     op.create_table(
@@ -109,8 +122,8 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('show_episode_id', sa.Integer, sa.ForeignKey('show_episode.id'), nullable=False, primary_key=True),
-        sa.Column('video_file_id', sa.Integer, sa.ForeignKey('video_file.id'), nullable=False, primary_key=True),
+        sa.Column('show_episode_id', sa.Integer, sa.ForeignKey('show_episode.id'), nullable=False),
+        sa.Column('video_file_id', sa.Integer, sa.ForeignKey('video_file.id'), nullable=False),
     )
 
 
