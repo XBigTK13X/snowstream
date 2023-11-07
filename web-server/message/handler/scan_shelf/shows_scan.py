@@ -3,6 +3,7 @@ import message.handler.scan_shelf.base_handler as base
 import ingest as db_ingest
 from pathlib import Path
 import re
+from db import db
 
 SHOW_REGEX = re.compile(
     r"(?P<show_name>[^\/]*?)\/(Season (?P<season_index>\d{1,6})|Specials|Extras)\/S(?P<season_start>\d{0,5})E(?P<episode_start>\d{1,6})(-S(?P<season_end>\d{1,6})E(?P<episode_end>\d{0,5}))*", re.IGNORECASE)
@@ -50,4 +51,28 @@ class ShowsScanHandler(base.BaseHandler):
         return True
 
     def organize(self):
-        pass
+        for info in self.file_info_lookup['video']:
+            show_slug = f'{info["show_name"]}'
+            if not show_slug in self.batch_lookup:
+                show = db.op.get_show_by_name(name=info['show_name'])
+                if not show:
+                    show = db.op.create_show(name=info['show_name'])
+                self.batch_lookup[show_slug] = {
+                    'show':show
+                }
+            show = self.batch_lookup[show_slug]['show']
+            season_slug = f'{info["show_name"]}-{info["season"]}'
+            if not season_slug in self.batch_lookup[show_slug]:
+                season = db.op.get_show_season(show_id=show.id,season_index=info['season'])
+                if not season:
+                    season = db.op.create_show_season(show_id=show.id,season_index=info['season'])
+                self.batch_lookup[show_slug][season_slug] = {
+                    'season': season
+                }
+            season = self.batch_lookup[show_slug][season_slug]['season']
+            for episode_index in range(info['episode_start'],info['episode_start'] if info['episode_end'] == None else info['episode_end']):
+                episode = db.op.get_show_episode(show_id=show.id,season_id=season.id,episode_index=episode_index)
+                if not episode:
+                    episode = db.op.create_show_episode(show_id=show.id, season_id=season.id, episode_index=episode_index)
+                log.info(f"Matched [{show.name} S{season.index}E{episode.index}] to [{info['file_path']}]")
+                db.op.add_video_file_to_show_episode(episode_id=episode.id,video_file_id=info['id'])
