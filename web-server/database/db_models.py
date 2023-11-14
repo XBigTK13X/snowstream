@@ -64,6 +64,7 @@ class Shelf(BaseModel):
     name = sa.Column(sa.String)
     kind = sa.Column(sa.String)
     directory = sa.Column(sa.String)
+    direct_stream_url = sa.Column(sa.Text)
 
 
 class VideoFile(BaseModel):

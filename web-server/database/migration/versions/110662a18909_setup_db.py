@@ -24,11 +24,11 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('kind', sa.String(256), nullable=False),
-        sa.Column('name', sa.String(256)),
-        sa.Column('url', sa.String(256)),
-        sa.Column('username', sa.String(256)),
-        sa.Column('password', sa.String(256)),
+        sa.Column('kind', sa.Text, nullable=False),
+        sa.Column('name', sa.Text),
+        sa.Column('url', sa.Text),
+        sa.Column('username', sa.Text),
+        sa.Column('password', sa.Text),
     )
     op.create_unique_constraint(
         'unique_stream_source_name',
@@ -44,9 +44,9 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('kind', sa.String(256), nullable=False),
+        sa.Column('kind', sa.Text, nullable=False),
         sa.Column('message', sa.Text),
-        sa.Column('status', sa.String(256))
+        sa.Column('status', sa.Text)
     )
 
     op.create_table(
@@ -55,8 +55,8 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
         sa.Column('stream_source_id', sa.Integer, sa.ForeignKey('stream_source.id'), nullable=False),
-        sa.Column('url', sa.String(256), nullable=False),
-        sa.Column('name', sa.String(256), nullable=False)
+        sa.Column('url', sa.Text, nullable=False),
+        sa.Column('name', sa.Text, nullable=False)
     )
 
     op.create_table(
@@ -64,11 +64,11 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('parsed_id', sa.String(256), nullable=False),
-        sa.Column('parsed_name', sa.String(256)),
+        sa.Column('parsed_id', sa.Text, nullable=False),
+        sa.Column('parsed_name', sa.Text),
         sa.Column('parsed_number', sa.Float),
-        sa.Column('edited_id', sa.String(256)),
-        sa.Column('edited_name', sa.String(256)),
+        sa.Column('edited_id', sa.Text),
+        sa.Column('edited_name', sa.Text),
         sa.Column('edited_number', sa.Float)
     )
 
@@ -83,7 +83,7 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
         sa.Column('channel_id', sa.Integer, sa.ForeignKey('streamable_channel.id'), nullable=False),
-        sa.Column('name', sa.String(256), nullable=False),
+        sa.Column('name', sa.Text, nullable=False),
         sa.Column('description', sa.Text),
         sa.Column('start_datetime', sa.DateTime),
         sa.Column('stop_datetime', sa.DateTime)
@@ -94,7 +94,7 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
-        sa.Column('key', sa.String(256), nullable=False),
+        sa.Column('key', sa.Text, nullable=False),
         sa.Column('data', sa.Text, nullable=False),
     )
 
