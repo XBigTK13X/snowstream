@@ -19,7 +19,7 @@ def create_movie(name: str, release_year: int):
 
 def get_movie(name: str, release_year: int):
     with DbSession() as db:
-        return db.query(dm.Movie).filter(dm.Movie.release_year == release_year and dm.Movie.name == name).first()
+        return db.query(dm.Movie).filter(dm.Movie.release_year == release_year).filter(dm.Movie.name == name).first()
 
 def create_movie_video_file(movie_id: int, video_file_id: int):
     with DbSession() as db:
@@ -33,4 +33,4 @@ def create_movie_video_file(movie_id: int, video_file_id: int):
 
 def get_movie_video_file(movie_id: int, video_file_id:int):
     with DbSession() as db:
-        return db.query(dm.MovieVideoFile).filter(dm.Movie.id == movie_id and dm.VideoFile.id == video_file_id).first()
+        return db.query(dm.MovieVideoFile).filter(dm.MovieVideoFile.movie_id == movie_id).filter(dm.MovieVideoFile.video_file_id == video_file_id).first()

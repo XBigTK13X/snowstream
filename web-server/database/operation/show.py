@@ -33,7 +33,7 @@ def create_show_season(show_id:int, season_order_counter: int):
 
 def get_show_season(show_id:int,season_order_counter:int):
     with DbSession() as db:
-        return db.query(dm.ShowSeason).filter(dm.ShowSeason.show_id == show_id and dm.ShowSeason.season_order_counter == season_order_counter).first()
+        return db.query(dm.ShowSeason).filter(dm.ShowSeason.show_id == show_id).filter(dm.ShowSeason.season_order_counter == season_order_counter).first()
 
 def create_show_episode(show_season_id: int, episode_order_counter:int):
     with DbSession() as db:
@@ -47,7 +47,7 @@ def create_show_episode(show_season_id: int, episode_order_counter:int):
 
 def get_season_episode(show_season_id:int, episode_order_counter:int):
     with DbSession() as db:
-        return db.query(dm.ShowEpisode).filter(dm.ShowEpisode.show_season_id == show_season_id and dm.ShowEpisode.episode_order_counter == episode_order_counter).first()
+        return db.query(dm.ShowEpisode).filter(dm.ShowEpisode.show_season_id == show_season_id).filter(dm.ShowEpisode.episode_order_counter == episode_order_counter).first()
 
 def create_show_episode_video_file(show_episode_id:int, video_file_id: int):
     with DbSession() as db:
@@ -61,4 +61,4 @@ def create_show_episode_video_file(show_episode_id:int, video_file_id: int):
 
 def get_show_episode_video_file(show_episode_id: int, video_file_id: int):
     with DbSession() as db:
-        return db.query(dm.ShowEpisodeVideoFile).filter(dm.ShowEpisode.id == show_episode_id and dm.VideoFile.id == video_file_id).first()
+        return db.query(dm.ShowEpisodeVideoFile).filter(dm.ShowEpisodeVideoFile.show_episode_id == show_episode_id).filter(dm.ShowEpisodeVideoFile.video_file_id == video_file_id).first()

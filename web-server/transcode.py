@@ -37,7 +37,7 @@ class Transcode:
             protocol_options = "-rtsp_transport tcp"
             live_stream_options = ''
         command = f'ffmpeg -hide_banner {live_stream_options} {protocol_options} -i "{streamable.url}" {av_options} {hls_options} -user_agent ffmpeg/snowstream "{output_file}"'
-        log.info(command)
+        #DEBUG log.info(command)
         transcode_process = util.run_cli(command, background=True)
         self.transcode_processes[streamable.id] = {
             'process': transcode_process,

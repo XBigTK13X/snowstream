@@ -63,23 +63,18 @@ class ShowsScanHandler(base.BaseHandler):
                     'show':show
                 }
             show = self.batch_lookup[show_slug]['show']
-            season_slug = f'{info["show_name"]}-{info["season"]}'
+            season_slug = f'season-{info["season"]}'
             if not season_slug in self.batch_lookup[show_slug]:
                 season = db.op.get_show_season(show_id=show.id,season_order_counter=info['season'])
                 if not season:
                     season = db.op.create_show_season(show_id=show.id,season_order_counter=info['season'])
-                log.info(f'Season ID [{season.id}]')
-                self.batch_lookup[show_slug][season_slug] = {
-                    'id': season.id,
-                    'order_counter': season.season_order_counter
-                }
-            season_info = self.batch_lookup[show_slug][season_slug]
+                self.batch_lookup[show_slug][season_slug] = season
+            season = self.batch_lookup[show_slug][season_slug]
             for episode_order_counter in range(info['episode_start'], info['episode_start'] + 1 if info['episode_end'] == None else info['episode_end']):
-                episode = db.op.get_season_episode(show_season_id=season_info['id'], episode_order_counter=episode_order_counter)
+                episode = db.op.get_season_episode(show_season_id=season.id, episode_order_counter=episode_order_counter)
                 if not episode:
-                    episode = db.op.create_show_episode(show_season_id=season_info['id'], episode_order_counter=episode_order_counter)
-                log.info(f"Matched [{show.name} S{season_info['order_counter']}E{episode.episode_order_counter}] to [{info['file_path']}]")
+                    episode = db.op.create_show_episode(show_season_id=season.id, episode_order_counter=episode_order_counter)
+                log.info(f"Matched [{show.name} S{season.season_order_counter:02}E{episode.episode_order_counter:04}] to [{info['file_path']}]")
                 video_file_association = db.op.get_show_episode_video_file(show_episode_id=episode.id, video_file_id=info['id'])
                 if not video_file_association:
                     db.op.create_show_episode_video_file(show_episode_id=episode.id, video_file_id=info['id'])
-                log.info(video_file_association.id)

@@ -60,7 +60,7 @@ def register(router):
         if not transcode.is_open(streamable_id=streamable_id):
             streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
             transcode_url = transcode.open(streamable)
-            log.info(transcode_url)
+            #DEBUG log.info(transcode_url)
         playlist = transcode.get_playlist(streamable_id=streamable_id)
         return Response(playlist, status_code=200, media_type="video/mp4")
 
@@ -74,7 +74,7 @@ def register(router):
     @router.head('/streamable/direct', response_class=RedirectResponse)
     def get_streamable_direct(streamable_id: int):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
-        log.info(streamable.url)
+        #DEBUG log.info(streamable.url)
         return streamable.url
 
     @router.delete('/streamable/transcode')
