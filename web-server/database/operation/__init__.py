@@ -2,6 +2,7 @@ from database.operation.cached_text import *
 from database.operation.job import *
 from database.operation.movie import *
 from database.operation.shelf import *
+from database.operation.show import *
 from database.operation.stream_source import *
 from database.operation.streamable import *
 from database.operation.streamable_channel import *

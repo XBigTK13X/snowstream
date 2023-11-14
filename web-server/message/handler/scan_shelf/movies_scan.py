@@ -6,9 +6,9 @@ import re
 from db import db
 
 MOVIE_REGEX = re.compile(
-    r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<movie_file_name>.*?)\s\((?P<movie_file_year>\d{4,5})\)\s(?P<quality>.*)?\..*", re.IGNORECASE)
+    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<movie_file_name>.*?)\s\((?P<movie_file_year>\d{4,5})\)\s(?P<quality>.*)?\..*", re.IGNORECASE)
 MOVIE_EXTRAS_REGEX = re.compile(
-    r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<subdirectory>Extras)\/(?P<extra_name>.*)\..*", re.IGNORECASE)
+    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<subdirectory>Extras)\/(?P<extra_name>.*)\..*", re.IGNORECASE)
 
 
 def parse_movie_info(file_path):
@@ -66,4 +66,5 @@ class MoviesScanHandler(base.BaseHandler):
                 self.batch_lookup[movie_slug] = movie
             movie = self.batch_lookup[movie_slug]
             log.info(f"Matched [{movie.name}] to [{info['file_path']}]")
-            db.op.add_video_file_to_movie(movie_id=movie.id,video_file_id=info['id'])
+            if not db.op.get_movie_video_file(movie_id=movie.id, video_file_id=info['id']):
+                db.op.create_movie_video_file(movie_id=movie.id,video_file_id=info['id'])

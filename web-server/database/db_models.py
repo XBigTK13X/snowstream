@@ -102,11 +102,15 @@ class ShowSeason(BaseModel):
     __tablename__ = 'show_season'
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
+    season_order_counter = sa.Column(sa.Integer)
+    show_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show.id"))
 
 
 class ShowEpisode(BaseModel):
     __tablename__ = 'show_episode'
     name = sa.Column(sa.Text)
+    episode_order_counter = sa.Column(sa.Integer)
+    show_season_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_season.id"))
     # video_file: sorm.Mapped["VideoFile"] = sorm.relationship(
     #    secondary=show_episode_video_file_association, back_populates="show")
 
@@ -119,17 +123,17 @@ class MovieVideoFile(BaseModel):
 
 class MovieTag(BaseModel):
     __tablename__ = 'movie_tag'
-    movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'), primary_key=True)
-    tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'), primary_key=True)
+    movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'))
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'))
 
 
 class ShowEpisodeVideoFile(BaseModel):
     __tablename__ = 'show_episode_video_file'
-    show_episode_id = sa.Column(sa.Integer, sa.ForeignKey('show_episode.id'), primary_key=True)
-    video_file_id = sa.Column(sa.Integer, sa.ForeignKey('video_file.id'), primary_key=True)
+    show_episode_id = sa.Column(sa.Integer, sa.ForeignKey('show_episode.id'))
+    video_file_id = sa.Column(sa.Integer, sa.ForeignKey('video_file.id'))
 
 
 class ShowTag(BaseModel):
     __tablename__ = 'show_tag'
-    show_id = sa.Column(sa.Integer, sa.ForeignKey('show.id'), primary_key=True)
-    tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'), primary_key=True)
+    show_id = sa.Column(sa.Integer, sa.ForeignKey('show.id'))
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'))

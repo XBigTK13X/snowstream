@@ -4,9 +4,10 @@ import ingest as db_ingest
 from pathlib import Path
 import re
 from db import db
+import os
 
 SHOW_REGEX = re.compile(
-    r"(?P<show_name>[^\/]*?)\/(Season (?P<season_index>\d{1,6})|Specials|Extras)\/S(?P<season_start>\d{0,5})E(?P<episode_start>\d{1,6})(-S(?P<season_end>\d{1,6})E(?P<episode_end>\d{0,5}))*", re.IGNORECASE)
+    r"(?P<directory>.*?)(?P<show_name>[^\/]*?)\/(Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/S(?P<season_start>\d{0,5})E(?P<episode_start>\d{1,6})(-S(?P<season_end>\d{1,6})E(?P<episode_end>\d{0,5}))*", re.IGNORECASE)
 
 
 def parse_show_info(file_path: str):
@@ -17,11 +18,12 @@ def parse_show_info(file_path: str):
     match_lookup = matches.groupdict()
     result = {}
     result['show_name'] = matches.group('show_name')
-    result['season'] = 0 if match_lookup['season_index'] == None else int(matches.group('season_index'))
+    result['season'] = 0 if match_lookup['season_order_counter'] == None else int(matches.group('season_order_counter'))
     result['season_start'] = int(matches.group('season_start'))
     result['episode_start'] = int(matches.group('episode_start'))
     result['season_end'] = None if match_lookup['season_end'] == None else int(matches.group('season_end'))
     result['episode_end'] = None if match_lookup['episode_end'] == None else int(matches.group('episode_end'))
+    result['directory'] = Path(os.path.join(matches.group('directory'),matches.group('show_name')+'/')).as_posix()
     return result
 
 def identify_show_kind(info:dict):
@@ -56,23 +58,28 @@ class ShowsScanHandler(base.BaseHandler):
             if not show_slug in self.batch_lookup:
                 show = db.op.get_show_by_name(name=info['show_name'])
                 if not show:
-                    show = db.op.create_show(name=info['show_name'])
+                    show = db.op.create_show(name=info['show_name'],directory=info['directory'])
                 self.batch_lookup[show_slug] = {
                     'show':show
                 }
             show = self.batch_lookup[show_slug]['show']
             season_slug = f'{info["show_name"]}-{info["season"]}'
             if not season_slug in self.batch_lookup[show_slug]:
-                season = db.op.get_show_season(show_id=show.id,season_index=info['season'])
+                season = db.op.get_show_season(show_id=show.id,season_order_counter=info['season'])
                 if not season:
-                    season = db.op.create_show_season(show_id=show.id,season_index=info['season'])
+                    season = db.op.create_show_season(show_id=show.id,season_order_counter=info['season'])
+                log.info(f'Season ID [{season.id}]')
                 self.batch_lookup[show_slug][season_slug] = {
-                    'season': season
+                    'id': season.id,
+                    'order_counter': season.season_order_counter
                 }
-            season = self.batch_lookup[show_slug][season_slug]['season']
-            for episode_index in range(info['episode_start'],info['episode_start'] if info['episode_end'] == None else info['episode_end']):
-                episode = db.op.get_show_episode(show_id=show.id,season_id=season.id,episode_index=episode_index)
+            season_info = self.batch_lookup[show_slug][season_slug]
+            for episode_order_counter in range(info['episode_start'], info['episode_start'] + 1 if info['episode_end'] == None else info['episode_end']):
+                episode = db.op.get_season_episode(show_season_id=season_info['id'], episode_order_counter=episode_order_counter)
                 if not episode:
-                    episode = db.op.create_show_episode(show_id=show.id, season_id=season.id, episode_index=episode_index)
-                log.info(f"Matched [{show.name} S{season.index}E{episode.index}] to [{info['file_path']}]")
-                db.op.add_video_file_to_show_episode(episode_id=episode.id,video_file_id=info['id'])
+                    episode = db.op.create_show_episode(show_season_id=season_info['id'], episode_order_counter=episode_order_counter)
+                log.info(f"Matched [{show.name} S{season_info['order_counter']}E{episode.episode_order_counter}] to [{info['file_path']}]")
+                video_file_association = db.op.get_show_episode_video_file(show_episode_id=episode.id, video_file_id=info['id'])
+                if not video_file_association:
+                    db.op.create_show_episode_video_file(show_episode_id=episode.id, video_file_id=info['id'])
+                log.info(video_file_association.id)

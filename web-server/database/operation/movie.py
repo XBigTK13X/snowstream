@@ -21,7 +21,7 @@ def get_movie(name: str, release_year: int):
     with DbSession() as db:
         return db.query(dm.Movie).filter(dm.Movie.release_year == release_year and dm.Movie.name == name).first()
 
-def add_video_file_to_movie(movie_id: int, video_file_id: int):
+def create_movie_video_file(movie_id: int, video_file_id: int):
     with DbSession() as db:
         dbm = dm.MovieVideoFile()
         dbm.movie_id = movie_id
@@ -30,3 +30,7 @@ def add_video_file_to_movie(movie_id: int, video_file_id: int):
         db.commit()
         db.refresh(dbm)
         return dbm
+
+def get_movie_video_file(movie_id: int, video_file_id:int):
+    with DbSession() as db:
+        return db.query(dm.MovieVideoFile).filter(dm.Movie.id == movie_id and dm.VideoFile.id == video_file_id).first()
