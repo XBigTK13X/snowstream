@@ -140,7 +140,7 @@ class ShowTag(BaseModel):
     tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'))
 
 class User(BaseModel):
-    __tablename__ = 'user'
+    __tablename__ = 'snowstream_user'
     username = sa.Column(sa.Text,nullable=False)
     display_name = sa.Column(sa.Text,nullable=True)
     hashed_password = sa.Column(sa.Text,nullable=False)

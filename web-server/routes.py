@@ -12,6 +12,7 @@ import api_models as am
 from db import db
 import message.write
 import cache
+import auth
 from auth import AuthUser
 from transcode import transcode
 
@@ -61,6 +62,10 @@ def auth_required(router):
     def scan_shelf(auth_user: AuthUser, shelf_id: int):
         pass
 
+    @router.post('/user')
+    def create_user(auth_user: AuthUser, user: am.User):
+        return db.op.create_user(user=user)
+
     return router
 
 def no_auth_required(router):
@@ -69,6 +74,10 @@ def no_auth_required(router):
         return {
             'alive': True
         }
+    @router.get('/password/hash')
+    def password_hash(password:str):
+        return auth.get_password_hash(password)
+
     @router.get('/streamable.m3u', response_class=PlainTextResponse)
     def get_streamable_m3u():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_M3U)

@@ -20,7 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        'user',
+        'snowstream_user',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('updated_at', sa.DateTime, nullable=False),
@@ -30,6 +30,17 @@ def upgrade() -> None:
         sa.Column('enabled', sa.Boolean, default=True)
     )
 
+    op.create_unique_constraint(
+        'unique_user_username',
+        'snowstream_user',
+        ['username']
+    )
+
+    # admin user
+    # username: 'admin'
+    # password: 'admin'
+    op.execute("INSERT INTO snowstream_user (id, created_at, updated_at, username, display_name, hashed_password, enabled) VALUES (1,NOW(),NOW(),'admin','admin','$2b$12$Mm.mD4U2Ws7tyBeBwUXD7ehxZhH8RcClHkY.mi34VMGeQKAv98ek6','true');")
+
 
 def downgrade() -> None:
-    op.drop_table('user')
+    op.drop_table('snowstream_user')

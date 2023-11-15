@@ -2,7 +2,7 @@ import threading
 import subprocess
 import sys
 from log import log
-
+from passlib.context import CryptContext
 
 def run_cli(command, background=False):
     if background:
@@ -43,3 +43,11 @@ def debounce(wait_seconds):
         return debounced
 
     return decorator
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
