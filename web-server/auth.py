@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import Depends, status, HTTPException
 from typing import Annotated
-
+from log import log
 from jose import JWTError, jwt
 import util
 
@@ -16,6 +16,7 @@ from db import db
 # https://github.com/pycasbin/sqlalchemy-adapter
 auth_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
+# After restarting snowstream, all existing tokens will be invalid
 SECRET_KEY=secrets.token_hex(32)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 30
