@@ -11,7 +11,7 @@ import secrets
 import api_models as am
 from db import db
 
-# https://fastapi.tiangolo.com/tutorial/security/get-current-user/
+# https://fastapi.tiangolo.com/tutorial/security
 # https://casbin.org/docs/how-it-works/
 # https://github.com/pycasbin/sqlalchemy-adapter
 auth_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
@@ -92,12 +92,12 @@ async def get_current_user(token: Annotated[str, Depends(auth_scheme)]):
     return user
 
 
-async def get_current_active_user(
-    current_user: Annotated[am.User, Depends(get_current_user)]
-):
-    if not current_user.enabled:
+AuthUser = Annotated[am.User, Depends(get_current_user)]
+
+async def get_current_active_user(auth_user: AuthUser):
+    if not auth_user.enabled:
         raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+    return auth_user
 
 def register(router):
     @router.post("/login")
@@ -117,7 +117,5 @@ def register(router):
 
 
     @router.get("/users/me")
-    async def read_users_me(
-        current_user: Annotated[am.User, Depends(get_current_active_user)]
-    ):
-        return current_user
+    async def read_users_me(auth_user: AuthUser):
+        return auth_user
