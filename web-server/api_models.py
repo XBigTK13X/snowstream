@@ -72,3 +72,17 @@ class ShowVideoFile(BaseModel):
 
 class MovieVideoFile(BaseModel):
     id: int | None = None
+
+class User(BaseModel):
+    id: int | None = None
+    username: str
+    display_name: str | None = None
+    hashed_password: str
+    enabled: bool | None = True
+
+class AuthToken(BaseModel):
+    access_token: str
+    token_type: str
+
+class AuthTokenContent(BaseModel):
+    username: str | None = None

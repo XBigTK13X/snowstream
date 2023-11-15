@@ -6,6 +6,7 @@ from settings import config
 import routes
 
 import os
+import auth
 
 # This should only happen inside a deployed docker container
 if os.environ.get("SNOWSTREAM_WEB_API_URL"):
@@ -50,7 +51,8 @@ if not os.environ.get("SNOWSTREAM_WEB_API_URL"):
         return config.frontend_url
 
 
-routes.register(api_router)
+auth.register(router=api_router)
+routes.register(router=api_router)
 
 app.include_router(api_router)
 

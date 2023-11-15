@@ -142,13 +142,15 @@ def upgrade() -> None:
 
 
     op.create_unique_constraint(
-        'unqiue_episode_video_file',
+        'unique_episode_video_file',
         'show_episode_video_file',
         ['show_episode_id', 'video_file_id']
     )
 
 
 def downgrade() -> None:
+    op.drop_table('movie_video_file')
+    op.drop_table('show_episode_video_file')
     op.drop_table('show_episode')
     op.drop_table('show_season')
     op.drop_table('movie')

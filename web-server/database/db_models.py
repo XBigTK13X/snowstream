@@ -7,37 +7,37 @@ from database.sql_alchemy import BaseModel
 
 class StreamSource(BaseModel):
     __tablename__ = "stream_source"
-    kind = sa.Column(sa.String)
-    name = sa.Column(sa.String, unique=True)
-    url = sa.Column(sa.String, unique=True)
-    username = sa.Column(sa.String)
-    password = sa.Column(sa.String)
+    kind = sa.Column(sa.Text)
+    name = sa.Column(sa.Text, unique=True)
+    url = sa.Column(sa.Text, unique=True)
+    username = sa.Column(sa.Text)
+    password = sa.Column(sa.Text)
     streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(
         back_populates="stream_source", cascade="delete", passive_deletes=True)
 
 
 class Job(BaseModel):
     __tablename__ = "job"
-    kind = sa.Column(sa.String)
+    kind = sa.Column(sa.Text)
     message = sa.Column(sa.Text)
-    status = sa.Column(sa.String)
+    status = sa.Column(sa.Text)
 
 
 class Streamable(BaseModel):
     __tablename__ = 'streamable'
-    url = sa.Column(sa.String)
-    name = sa.Column(sa.String)
+    url = sa.Column(sa.Text)
+    name = sa.Column(sa.Text)
     stream_source_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("stream_source.id"))
     stream_source: sorm.Mapped["StreamSource"] = sorm.relationship(back_populates="streamables")
 
 
 class StreamableChannel(BaseModel):
     __tablename__ = 'streamable_channel'
-    parsed_id = sa.Column(sa.String)
-    parsed_name = sa.Column(sa.String)
+    parsed_id = sa.Column(sa.Text)
+    parsed_name = sa.Column(sa.Text)
     parsed_number = sa.Column(sa.Float)
-    edited_id = sa.Column(sa.String)
-    edited_name = sa.Column(sa.String)
+    edited_id = sa.Column(sa.Text)
+    edited_name = sa.Column(sa.Text)
     edited_number = sa.Column(sa.Float)
     schedules: sorm.Mapped[List["StreamableSchedule"]] = sorm.relationship(
         back_populates="channel", cascade="delete", passive_deletes=True)
@@ -45,7 +45,7 @@ class StreamableChannel(BaseModel):
 
 class StreamableSchedule(BaseModel):
     __tablename__ = 'streamable_schedule'
-    name = sa.Column(sa.String)
+    name = sa.Column(sa.Text)
     description = sa.Column(sa.Text)
     start_datetime = sa.Column(sa.DateTime)
     stop_datetime = sa.Column(sa.DateTime)
@@ -55,22 +55,22 @@ class StreamableSchedule(BaseModel):
 
 class CachedText(BaseModel):
     __tablename__ = 'cached_text'
-    key = sa.Column(sa.String)
+    key = sa.Column(sa.Text)
     data = sa.Column(sa.Text)
 
 
 class Shelf(BaseModel):
     __tablename__ = 'shelf'
-    name = sa.Column(sa.String)
-    kind = sa.Column(sa.String)
-    directory = sa.Column(sa.String)
+    name = sa.Column(sa.Text)
+    kind = sa.Column(sa.Text)
+    directory = sa.Column(sa.Text)
     direct_stream_url = sa.Column(sa.Text)
 
 
 class VideoFile(BaseModel):
     __tablename__ = 'video_file'
     shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
-    kind = sa.Column(sa.String)
+    kind = sa.Column(sa.Text)
     path = sa.Column(sa.Text)
     # show_episode: sorm.Mapped['ShowEpisode'] = sorm.relationship(
     #    secondary=show_episode_video_file_association, back_populates="video_file")
@@ -79,7 +79,7 @@ class VideoFile(BaseModel):
 
 class Tag(BaseModel):
     __tablename__ = 'tag'
-    name = sa.Column(sa.String)
+    name = sa.Column(sa.Text)
     #movies: sorm.Mapped[List["Movie"]] = sorm.relationship(secondary=movie_tag_association, back_populates="tags")
     #shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary=show_tag_association, back_populates="tags")
 
@@ -138,3 +138,10 @@ class ShowTag(BaseModel):
     __tablename__ = 'show_tag'
     show_id = sa.Column(sa.Integer, sa.ForeignKey('show.id'))
     tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'))
+
+class User(BaseModel):
+    __tablename__ = 'user'
+    username = sa.Column(sa.Text,nullable=False)
+    display_name = sa.Column(sa.Text,nullable=True)
+    hashed_password = sa.Column(sa.Text,nullable=False)
+    enabled = sa.Boolean()

@@ -2,18 +2,21 @@ from log import log
 from fastapi import HTTPException
 from fastapi.responses import PlainTextResponse
 from fastapi.responses import RedirectResponse
+
 from fastapi import Response
+from typing import Annotated
+from fastapi import Depends
+
 
 import api_models as am
 from db import db
 import message.write
 import cache
+import auth
 
 from transcode import transcode
 
-
 def register(router):
-
     @router.get("/heartbeat")
     def heartbeat():
         return {
@@ -21,7 +24,7 @@ def register(router):
         }
 
     @router.get("/stream/source/list")
-    def get_stream_source_list():
+    def get_stream_source_list(current_user: Annotated[am.User, Depends(auth.get_current_user)]):
         return db.op.get_stream_source_list()
 
     @router.post("/stream/source")
