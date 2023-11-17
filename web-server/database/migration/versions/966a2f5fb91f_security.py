@@ -27,7 +27,8 @@ def upgrade() -> None:
         sa.Column('username', sa.Text, nullable=False),
         sa.Column('display_name', sa.Text),
         sa.Column('hashed_password', sa.Text, nullable=False),
-        sa.Column('enabled', sa.Boolean, default=True)
+        sa.Column('enabled', sa.Boolean, default=True),
+        sa.Column('permissions', sa.Text)
     )
 
     op.create_unique_constraint(

@@ -79,6 +79,7 @@ class User(BaseModel):
     display_name: str | None = None
     hashed_password: str
     enabled: bool | None = True
+    permissions: str
 
 class AuthToken(BaseModel):
     access_token: str
@@ -86,3 +87,4 @@ class AuthToken(BaseModel):
 
 class AuthTokenContent(BaseModel):
     username: str | None = None
+    scopes: list[str] = []

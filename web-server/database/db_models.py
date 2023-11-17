@@ -144,4 +144,5 @@ class User(BaseModel):
     username = sa.Column(sa.Text,nullable=False)
     display_name = sa.Column(sa.Text,nullable=True)
     hashed_password = sa.Column(sa.Text,nullable=False)
-    enabled = sa.Boolean()
+    enabled = sa.Column(sa.Boolean)
+    permissions = sa.Column(sa.Text)
