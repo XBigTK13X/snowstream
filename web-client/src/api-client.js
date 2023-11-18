@@ -6,6 +6,8 @@ export class ApiClient {
     this.httpClient = axios.create({
       baseURL: config.webApiUrl + "/api",
     });
+
+    this.authToken = localStorage.getItem("snowstream-auth-token");
     this.get = async (url) => {
       return this.httpClient.get(url).then((response) => {
         return response.data;
@@ -17,6 +19,29 @@ export class ApiClient {
         return response.data;
       });
     };
+  }
+
+  isAuthenticated() {
+    return this.authToken !== null;
+  }
+
+  login(payload) {
+    this.post("/login", {
+      username: payload.username,
+      password: payload.password,
+    }).then((data) => {
+      console.log({ data });
+      if (data.access_token) {
+        this.authToken = data.access_token;
+        localStorage.setItem("snowstream-auth-token", this.authToken);
+      }
+      return true;
+    });
+  }
+
+  logout() {
+    localStorage.removeItem("snowstream-auth-token");
+    this.authToken = null;
   }
 
   getStreamSources() {

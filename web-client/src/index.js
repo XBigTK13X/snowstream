@@ -1,14 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { MantineProvider, createTheme } from "@mantine/core";
+import "@mantine/core/styles.css";
 import "./index.css";
-import routes from "./routes";
+import AppRoutes from "./routes";
 
-const router = createBrowserRouter(routes);
+const theme = createTheme({
+  /* Put your mantine theme override here */
+  /* https://mantine.dev */
+  /* https://ui.mantine.dev */
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <MantineProvider theme={theme}>
+      <AppRoutes />
+    </MantineProvider>
   </React.StrictMode>
 );

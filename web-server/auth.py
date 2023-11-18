@@ -18,8 +18,6 @@ from db import db
 auth_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/login",
     scopes={
-        'me': 'Read information about the current user.',
-        'items': 'Read items.',
         'transcode': 'Convert media streams server-side.',
         'media-delete': 'Remove media from the library and the file system.'
     }
@@ -116,8 +114,3 @@ def register(router):
             expires_delta=access_token_expires
         )
         return {"access_token": access_token, "token_type": "bearer"}
-
-
-    @router.get("/users/me")
-    async def read_users_me(auth_user: AuthUser("items")):
-        return auth_user
