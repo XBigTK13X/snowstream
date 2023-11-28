@@ -5,7 +5,7 @@ from fastapi.responses import RedirectResponse
 
 from fastapi import Response
 from typing import Annotated
-from fastapi import Depends
+from fastapi import Security
 
 
 import api_models as am
@@ -13,7 +13,7 @@ from db import db
 import message.write
 import cache
 import auth
-from auth import AuthUser
+from auth import get_current_user
 from transcode import transcode
 
 def register(router):
@@ -22,48 +22,48 @@ def register(router):
 
 def auth_required(router):
     @router.get("/stream/source/list")
-    def get_stream_source_list(auth_user: AuthUser):
+    def get_stream_source_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])]):
         return db.op.get_stream_source_list()
 
     @router.post("/stream/source")
-    def create_stream_source(auth_user: AuthUser, stream_source: am.StreamSource):
+    def create_stream_source(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], stream_source: am.StreamSource):
         db_source = db.op.get_stream_source_by_url(url=stream_source.url)
         if db_source:
             raise HTTPException(status_code=400, detail="URL already tracked")
         return db.op.create_stream_source(stream_source=stream_source)
 
     @router.post("/job")
-    def create_job(auth_user: AuthUser, kind: am.JobKind):
+    def create_job(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], kind: am.JobKind):
         job = db.op.create_job(kind=kind.name)
         message.write.send(job_id=job.id, kind=kind.name)
         return job
 
     @router.get("/job")
-    def get_job(auth_user: AuthUser, job_id: int):
+    def get_job(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], job_id: int):
         return db.op.get_job_by_id(job_id=job_id)
 
     @router.get("/job/list")
-    def get_job_list(auth_user: AuthUser):
+    def get_job_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])]):
         return db.op.get_job_list()
 
     @router.get('/shelf/list')
-    def get_shelf_list(auth_user: AuthUser):
+    def get_shelf_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])]):
         return db.op.get_shelf_list()
 
     @router.get('/shelf')
-    def get_shelf(auth_user: AuthUser, shelf_id: int):
+    def get_shelf(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
         return db.op.get_shelf_by_id(shelf_id=shelf_id)
 
     @router.post('/shelf')
-    def create_shelf(auth_user: AuthUser, shelf: am.Shelf):
+    def create_shelf(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf: am.Shelf):
         return db.op.create_shelf(shelf=shelf)
 
     @router.post('/shelf/scan')
-    def scan_shelf(auth_user: AuthUser, shelf_id: int):
+    def scan_shelf(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
         pass
 
     @router.post('/user')
-    def create_user(auth_user: AuthUser, user: am.User):
+    def create_user(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], user: am.User):
         return db.op.create_user(user=user)
 
     return router

@@ -3,11 +3,8 @@ import config from "./settings";
 
 export class ApiClient {
   constructor() {
-    this.httpClient = axios.create({
-      baseURL: config.webApiUrl + "/api",
-    });
+    this.createClient();
 
-    this.authToken = localStorage.getItem("snowstream-auth-token");
     this.get = async (url) => {
       return this.httpClient.get(url).then((response) => {
         return response.data;
@@ -21,22 +18,42 @@ export class ApiClient {
     };
   }
 
+  createClient() {
+    this.httpClient = axios.create({
+      baseURL: config.webApiUrl + "/api",
+    });
+
+    this.authToken = localStorage.getItem("snowstream-auth-token");
+
+    if (this.authToken) {
+      console.log("Using authed client");
+      this.httpClient = axios.create({
+        baseURL: config.webApiUrl + "/api",
+        headers: {
+          Authorization: "Bearer " + this.authToken,
+        },
+      });
+    }
+  }
+
   isAuthenticated() {
     return this.authToken !== null;
   }
 
   login(payload) {
-    this.post("/login", {
-      username: payload.username,
-      password: payload.password,
-    }).then((data) => {
-      console.log({ data });
-      if (data.access_token) {
-        this.authToken = data.access_token;
-        localStorage.setItem("snowstream-auth-token", this.authToken);
-      }
-      return true;
-    });
+    return this.httpClient
+      .postForm("/login", {
+        username: payload.username,
+        password: payload.password,
+      })
+      .then((data) => {
+        if (data && data.data && data.data.access_token) {
+          this.authToken = data.data.access_token;
+          localStorage.setItem("snowstream-auth-token", this.authToken);
+          this.createClient();
+        }
+        return true;
+      });
   }
 
   logout() {

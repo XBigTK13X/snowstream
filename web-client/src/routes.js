@@ -8,8 +8,8 @@ import HomePage from "./page/home";
 import LoginPage from "./page/login";
 
 import { Navigate, Outlet } from "react-router-dom";
-const AuthRoutes = () => {
-  return this.props.apiClient.isAuthenticated() ? (
+const AuthRoutes = (props) => {
+  return props.apiClient.isAuthenticated() ? (
     <Outlet />
   ) : (
     <Navigate to="/login" />

@@ -76,19 +76,6 @@ async def get_current_user(security_scopes: SecurityScopes, token: Annotated[str
             )
     return user
 
-
-AuthUser = Annotated[am.User, Depends(get_current_user)]
-
-def AuthUser(scope):
-    if scope:
-        return Annotated[am.User, Security(get_current_user, scopes=[scope])]
-    return Annotated[am.User, Depends(get_current_user)]
-
-async def get_current_active_user(auth_user: AuthUser("me")):
-    if not auth_user.enabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return auth_user
-
 def register(router):
     @router.post("/login")
     async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):

@@ -10,6 +10,7 @@ import {
 import classes from "./login.module.css";
 
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { ApiClientContext } from "../contexts";
 
 class ContextualizedLoginPage extends React.Component {
@@ -18,9 +19,7 @@ class ContextualizedLoginPage extends React.Component {
 
     this.apiClient = this.props.apiClient;
 
-    this.state = {
-      auth: null,
-    };
+    this.state = {};
     this.changeForm = this.changeForm.bind(this);
     this.login = this.login.bind(this);
   }
@@ -37,7 +36,10 @@ class ContextualizedLoginPage extends React.Component {
     };
     this.apiClient
       .login(payload)
-      .then((success) => {})
+      .then((success) => {
+        console.log("Redirecting");
+        this.props.navigate("/");
+      })
       .catch((failure) => {});
   }
   render() {
@@ -74,8 +76,12 @@ class ContextualizedLoginPage extends React.Component {
 
 export default function LoginPage() {
   let apiClient = useContext(ApiClientContext);
+  let navigate = useNavigate();
 
   return (
-    <ContextualizedLoginPage apiClient={apiClient}></ContextualizedLoginPage>
+    <ContextualizedLoginPage
+      apiClient={apiClient}
+      navigate={navigate}
+    ></ContextualizedLoginPage>
   );
 }
