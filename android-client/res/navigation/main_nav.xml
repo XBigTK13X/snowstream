@@ -19,4 +19,9 @@
         android:name="com.simplepathstudios.snowstream.fragment.AuthenticateFragment"
         android:label="Authenticate"
         tools:layout="@layout/authenticate_fragment" />
+    <fragment
+        android:id="@+id/home_fragment"
+        android:name="com.simplepathstudios.snowstream.fragment.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/home_fragment" />
 </navigation>

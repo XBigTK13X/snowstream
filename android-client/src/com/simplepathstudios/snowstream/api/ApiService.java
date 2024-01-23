@@ -1,10 +1,13 @@
 package com.simplepathstudios.snowstream.api;
 
 import com.simplepathstudios.snowstream.api.model.ServerInfo;
+import com.simplepathstudios.snowstream.api.model.SnowstreamAuthToken;
+import com.simplepathstudios.snowstream.api.model.SnowstreamUser;
 import com.simplepathstudios.snowstream.api.model.UserList;
 
 import java.util.List;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -21,4 +24,6 @@ public interface ApiService {
    @GET("api/user/list")
    Call<UserList> getUserList();
 
+   @POST("api/login")
+   Call<SnowstreamAuthToken> login(@Body RequestBody body);
 }

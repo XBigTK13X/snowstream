@@ -99,7 +99,7 @@ public class OptionsFragment extends Fragment {
                         devRadio.setChecked(false);
                     }
                     lastServer = settings.ServerUrl;
-                    ApiClient.retarget(settings.ServerUrl,null);
+                    ApiClient.retarget(settings.ServerUrl,settings.Username, settings.AuthToken);
                 }
                 SnowstreamSettings.EnableDebugLog = settings.EnableDebugLog;
                 debugLogStatus.setText("Debug logging is "+(SnowstreamSettings.EnableDebugLog ? "enabled" : "disabled"));

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.simplepathstudios.snowstream.SnowstreamSettings;
+import com.simplepathstudios.snowstream.api.model.SnowstreamAuthToken;
 
 import java.net.URLEncoder;
 
@@ -21,6 +22,8 @@ public class SettingsViewModel extends ViewModel {
         settings.Preferences = preferences;
         settings.EnableDebugLog = settings.Preferences.getBoolean("EnableDebugLog", false);
         settings.ServerUrl = settings.Preferences.getString("ServerUrl", SnowstreamSettings.ProdServerUrl);
+        settings.Username = settings.Preferences.getString("Username", null);
+        settings.AuthToken = settings.Preferences.getString("Token", null);
         SnowstreamSettings.EnableDebugLog = settings.EnableDebugLog;
         Data.setValue(settings);
     }
@@ -45,9 +48,22 @@ public class SettingsViewModel extends ViewModel {
         Data.setValue(settings);
     }
 
+    public void setAuthToken(String username, SnowstreamAuthToken token){
+        Settings settings = Data.getValue();
+        settings.Username = username;
+        settings.AuthToken = token.access_token;
+        SharedPreferences.Editor editor = settings.Preferences.edit();
+        editor.putString("Username", username);
+        editor.putString("Token", token.access_token);
+        editor.commit();
+        Data.setValue(settings);
+    }
+
     public class Settings {
         public SharedPreferences Preferences;
         public boolean EnableDebugLog;
         public String ServerUrl;
+        public String Username;
+        public String AuthToken;
     }
 }

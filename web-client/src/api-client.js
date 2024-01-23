@@ -3,18 +3,34 @@ import config from "./settings";
 
 export class ApiClient {
   constructor() {
+    this.authToken = null;
+
     this.createClient();
 
     this.get = async (url) => {
-      return this.httpClient.get(url).then((response) => {
-        return response.data;
-      });
+      return this.httpClient
+        .get(url)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((err) => {
+          if (err && err.response && err.response.status === 401)
+            localStorage.removeItem("snowstream-auth-token");
+          this.authToken = null;
+        });
     };
 
     this.post = async (url, payload) => {
-      return this.httpClient.post(url, payload).then((response) => {
-        return response.data;
-      });
+      return this.httpClient
+        .post(url, payload)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((err) => {
+          if (err && err.response && err.response.status === 401)
+            localStorage.removeItem("snowstream-auth-token");
+          this.authToken = null;
+        });
     };
   }
 
@@ -26,7 +42,6 @@ export class ApiClient {
     this.authToken = localStorage.getItem("snowstream-auth-token");
 
     if (this.authToken) {
-      console.log("Using authed client");
       this.httpClient = axios.create({
         baseURL: config.webApiUrl + "/api",
         headers: {

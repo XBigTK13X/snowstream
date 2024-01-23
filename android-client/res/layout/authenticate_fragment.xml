@@ -7,13 +7,18 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter the user's password.">
+        android:text="Username">
     </TextView>
     <EditText
         android:id="@+id/username_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </EditText>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Password">
+    </TextView>
     <EditText
         android:id="@+id/password_field"
         android:layout_width="match_parent"

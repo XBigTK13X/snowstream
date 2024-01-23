@@ -104,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
         this.settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
         this.settingsViewModel.initialize(this.getSharedPreferences("Snowstream", Context.MODE_PRIVATE));
         SettingsViewModel.Settings settings = settingsViewModel.Data.getValue();
-
-        ApiClient.retarget(settings.ServerUrl, null);
+        ApiClient.retarget(settings.ServerUrl, settings.Username, settings.AuthToken);
 
         setContentView(R.layout.main_activity);
 
@@ -132,7 +131,9 @@ public class MainActivity extends AppCompatActivity {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         // Pages that show full nav, not just the back button
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.authenticate_fragment,
                 R.id.login_fragment,
+                R.id.home_fragment,
                 R.id.options_fragment)
                 .setDrawerLayout(drawerLayout)
                 .build();

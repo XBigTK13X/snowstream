@@ -30,6 +30,7 @@ public class UserListViewModel extends ViewModel {
          @Override
          public void onFailure(Call<UserList> call, Throwable t) {
             Util.error("UserListViewModel.load",t);
+            Util.toast("Unable to load user list");
             LoadingIndicator.setLoading(false);
          }
       });

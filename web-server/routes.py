@@ -67,6 +67,10 @@ def auth_required(router):
     def create_user(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], user: am.User):
         return db.op.create_user(user=user)
 
+    @router.get('/auth/check')
+    def auth_check(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], user: am.User):
+        return True
+
     return router
 
 def no_auth_required(router):
