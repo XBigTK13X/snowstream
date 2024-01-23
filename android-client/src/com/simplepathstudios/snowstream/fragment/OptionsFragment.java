@@ -20,6 +20,7 @@ import com.simplepathstudios.snowstream.MainActivity;
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.SnowstreamSettings;
 import com.simplepathstudios.snowstream.Util;
+import com.simplepathstudios.snowstream.api.ApiClient;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 
 public class OptionsFragment extends Fragment {
@@ -98,6 +99,7 @@ public class OptionsFragment extends Fragment {
                         devRadio.setChecked(false);
                     }
                     lastServer = settings.ServerUrl;
+                    ApiClient.retarget(settings.ServerUrl,null);
                 }
                 SnowstreamSettings.EnableDebugLog = settings.EnableDebugLog;
                 debugLogStatus.setText("Debug logging is "+(SnowstreamSettings.EnableDebugLog ? "enabled" : "disabled"));
