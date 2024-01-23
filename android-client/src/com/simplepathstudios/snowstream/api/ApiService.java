@@ -1,9 +1,8 @@
 package com.simplepathstudios.snowstream.api;
 
 import com.simplepathstudios.snowstream.api.model.ServerInfo;
+import com.simplepathstudios.snowstream.api.model.Shelf;
 import com.simplepathstudios.snowstream.api.model.SnowstreamAuthToken;
-import com.simplepathstudios.snowstream.api.model.SnowstreamUser;
-import com.simplepathstudios.snowstream.api.model.UserList;
 
 import java.util.List;
 
@@ -22,8 +21,11 @@ public interface ApiService {
    Call<ServerInfo> getServerInfo();
 
    @GET("api/user/list")
-   Call<UserList> getUserList();
+   Call<List<String>> getUserList();
 
    @POST("api/login")
    Call<SnowstreamAuthToken> login(@Body RequestBody body);
+
+   @GET("api/shelf/list")
+   Call<List<Shelf>> getShelfList();
 }

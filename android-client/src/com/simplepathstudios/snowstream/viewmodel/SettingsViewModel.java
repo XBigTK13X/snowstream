@@ -51,10 +51,10 @@ public class SettingsViewModel extends ViewModel {
     public void setAuthToken(String username, SnowstreamAuthToken token){
         Settings settings = Data.getValue();
         settings.Username = username;
-        settings.AuthToken = token.access_token;
+        settings.AuthToken = token == null ? null : token.access_token;
         SharedPreferences.Editor editor = settings.Preferences.edit();
         editor.putString("Username", username);
-        editor.putString("Token", token.access_token);
+        editor.putString("Token", token == null ? null : token.access_token);
         editor.commit();
         Data.setValue(settings);
     }

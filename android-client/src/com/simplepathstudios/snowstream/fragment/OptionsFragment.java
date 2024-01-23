@@ -34,6 +34,7 @@ public class OptionsFragment extends Fragment {
     private RadioButton prodRadio;
     private RadioButton devRadio;
     private String lastServer;
+    private Button logoutButton;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -103,6 +104,14 @@ public class OptionsFragment extends Fragment {
                 }
                 SnowstreamSettings.EnableDebugLog = settings.EnableDebugLog;
                 debugLogStatus.setText("Debug logging is "+(SnowstreamSettings.EnableDebugLog ? "enabled" : "disabled"));
+            }
+        });
+
+        logoutButton = view.findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                settingsViewModel.setAuthToken(null,null);
             }
         });
     }

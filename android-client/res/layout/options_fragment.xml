@@ -61,7 +61,11 @@
                 android:textColor="@color/primary_text"/>
         </RadioGroup>
 
-
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Logout" />
 
     </LinearLayout>
 </ScrollView>

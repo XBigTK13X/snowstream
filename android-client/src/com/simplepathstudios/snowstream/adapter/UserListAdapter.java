@@ -12,18 +12,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.simplepathstudios.snowstream.MainActivity;
 import com.simplepathstudios.snowstream.R;
-import com.simplepathstudios.snowstream.api.model.SnowstreamUser;
-import com.simplepathstudios.snowstream.api.model.UserList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
-   private UserList data;
+   private List<String> data;
    public UserListAdapter(){
       this.data = null;
    }
 
-   public void setData(UserList data){
+   public void setData(List<String> data){
       this.data = data;
    }
 
@@ -36,7 +35,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
    @Override
    public void onBindViewHolder(UserListAdapter.ViewHolder holder, int position) {
-      holder.username = this.data.users.get(position);
+      holder.username = this.data.get(position);
       TextView view = holder.textView;
       view.setText(holder.username);
    }
@@ -46,7 +45,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
       if(this.data == null){
          return 0;
       }
-      return this.data.users.size();
+      return this.data.size();
    }
 
    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

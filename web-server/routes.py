@@ -129,6 +129,6 @@ def no_auth_required(router):
     @router.get('/user/list')
     def get_user_list():
         users = db.op.get_user_list()
-        return {'users':[user.username for user in users]}
+        return [user.username for user in users]
 
     return router

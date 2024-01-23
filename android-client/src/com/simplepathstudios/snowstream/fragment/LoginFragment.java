@@ -21,9 +21,10 @@ import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.SnowstreamSettings;
 import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.adapter.UserListAdapter;
-import com.simplepathstudios.snowstream.api.model.UserList;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 import com.simplepathstudios.snowstream.viewmodel.UserListViewModel;
+
+import java.util.List;
 
 public class LoginFragment extends Fragment {
     private UserListViewModel userListViewModel;
@@ -51,9 +52,9 @@ public class LoginFragment extends Fragment {
                 layoutManager = new LinearLayoutManager(getActivity());
                 listElement.setLayoutManager(layoutManager);
                 userListViewModel = new ViewModelProvider(this).get(UserListViewModel.class);
-                userListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<UserList>() {
+                userListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
                     @Override
-                    public void onChanged(UserList userList) {
+                    public void onChanged(List<String> userList) {
                         userListAdapter.setData(userList);
                         userListAdapter.notifyDataSetChanged();
                     }
@@ -61,7 +62,7 @@ public class LoginFragment extends Fragment {
                 userListViewModel.load();
             } else {
                 NavController navController = Navigation.findNavController(MainActivity.getInstance(), R.id.nav_host_fragment);
-                navController.navigate(R.id.home_fragment);
+                navController.navigate(R.id.login_fragment);
             }
         });
     }
