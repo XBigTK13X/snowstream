@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/login_fragment">
+    <fragment
+        android:id="@+id/options_fragment"
+        android:name="com.simplepathstudios.snowstream.fragment.OptionsFragment"
+        android:label="Options"
+        tools:layout="@layout/options_fragment" />
+    <fragment
+        android:id="@+id/login_fragment"
+        android:name="com.simplepathstudios.snowstream.fragment.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/login_fragment" />
+    <fragment
+        android:id="@+id/authenticate_fragment"
+        android:name="com.simplepathstudios.snowstream.fragment.AuthenticateFragment"
+        android:label="Authenticate"
+        tools:layout="@layout/authenticate_fragment" />
+</navigation>

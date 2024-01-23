@@ -21,3 +21,7 @@ def create_user(username: str, password:str):
 def get_user_by_name(username: str):
     with DbSession() as db:
         return db.query(dm.User).filter(dm.User.username == username).first()
+
+def get_user_list():
+    with DbSession() as db:
+        return db.query(dm.User).all()

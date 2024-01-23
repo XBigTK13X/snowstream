@@ -15,6 +15,7 @@ import cache
 import auth
 from auth import get_current_user
 from transcode import transcode
+from settings import config
 
 def register(router):
     router = no_auth_required(router)
@@ -74,6 +75,12 @@ def no_auth_required(router):
         return {
             'alive': True
         }
+    @router.get("/info")
+    def info():
+        return {
+            'serverVersion': config.server_version,
+            'serverBuildDate': config.server_build_date
+        }
     @router.get('/password/hash')
     def password_hash(password:str):
         return auth.get_password_hash(password)
@@ -114,5 +121,10 @@ def no_auth_required(router):
     def delete_streamable_transcode(streamable_id):
         transcode.close(streamable_id=streamable_id)
         return True
+
+    @router.get('/user/list')
+    def get_user_list():
+        users = db.op.get_user_list()
+        return {'users':[user.username for user in users]}
 
     return router
