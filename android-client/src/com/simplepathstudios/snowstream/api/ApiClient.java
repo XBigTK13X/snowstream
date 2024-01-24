@@ -91,4 +91,23 @@ public class ApiClient {
               .build();
       return this.httpClient.login(requestBody);
    }
+
+   public Call getShelfList(){
+      return this.httpClient.getShelfList();
+   }
+   public Call getMovieList(int shelf_id){
+      return this.httpClient.getMovieList(shelf_id);
+   }
+
+   public Call getShowList(int shelf_id){
+      return this.httpClient.getShowList(shelf_id);
+   }
+
+   public Call getSeasonList(int show_id){
+      return this.httpClient.getSeasonList(show_id);
+   }
+
+   public Call getEpisodeList(int show_season_id){
+      return this.httpClient.getEpisodeList(show_season_id);
+   }
 }

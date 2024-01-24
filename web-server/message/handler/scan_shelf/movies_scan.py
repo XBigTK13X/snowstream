@@ -63,6 +63,7 @@ class MoviesScanHandler(base.BaseHandler):
                 movie = db.op.get_movie(name=info['movie_name'], release_year=info['movie_year'])
                 if not movie:
                     movie = db.op.create_movie(name=info['movie_name'], release_year=info['movie_year'])
+                    db.op.add_movie_to_shelf(shelf_id=self.shelf.id,movie_id=movie.id)
                 self.batch_lookup[movie_slug] = movie
             movie = self.batch_lookup[movie_slug]
             log.info(f"Matched [{movie.name}] to [{info['file_path']}]")

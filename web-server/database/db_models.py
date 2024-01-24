@@ -99,6 +99,7 @@ class Show(BaseModel):
     #tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=show_tag_association, back_populates="shows")
 
 
+
 class ShowSeason(BaseModel):
     __tablename__ = 'show_season'
     name = sa.Column(sa.Text)
@@ -121,12 +122,20 @@ class MovieVideoFile(BaseModel):
     movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'))
     video_file_id = sa.Column(sa.Integer, sa.ForeignKey('video_file.id'))
 
+class MovieShelf(BaseModel):
+    __tablename__ = 'movie_shelf'
+    movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'))
+    shelf_id = sa.Column(sa.Integer, sa.ForeignKey('shelf.id'))
 
 class MovieTag(BaseModel):
     __tablename__ = 'movie_tag'
     movie_id = sa.Column(sa.Integer, sa.ForeignKey('movie.id'))
     tag_id = sa.Column(sa.Integer, sa.ForeignKey('tag.id'))
 
+class ShowShelf(BaseModel):
+    __tablename__ = 'show_shelf'
+    show_id = sa.Column(sa.Integer, sa.ForeignKey('show.id'))
+    shelf_id = sa.Column(sa.Integer, sa.ForeignKey('shelf.id'))
 
 class ShowEpisodeVideoFile(BaseModel):
     __tablename__ = 'show_episode_video_file'

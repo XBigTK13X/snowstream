@@ -71,6 +71,22 @@ def auth_required(router):
     def auth_check(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], user: am.User):
         return True
 
+    @router.get('/movie/list')
+    def get_movie_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
+        return db.op.get_movie_list_by_shelf(shelf_id=shelf_id)
+
+    @router.get('/show/list')
+    def get_show_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
+        return db.op.get_show_list_by_shelf(shelf_id=shelf_id)
+
+    @router.get('/show/season/list')
+    def get_show_season_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], show_id: int):
+        return db.op.get_show_season_list(show_id=show_id)
+
+    @router.get('/show/season/episode/list')
+    def get_show_season_episode_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], show_season_id: int):
+        return db.op.get_season_episode_list(show_season_id=show_season_id)
+
     return router
 
 def no_auth_required(router):

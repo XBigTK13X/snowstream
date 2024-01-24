@@ -62,7 +62,7 @@ public class LoginFragment extends Fragment {
                 userListViewModel.load();
             } else {
                 NavController navController = Navigation.findNavController(MainActivity.getInstance(), R.id.nav_host_fragment);
-                navController.navigate(R.id.login_fragment);
+                navController.navigate(R.id.home_fragment);
             }
         });
     }

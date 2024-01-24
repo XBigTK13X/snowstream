@@ -59,6 +59,7 @@ class ShowsScanHandler(base.BaseHandler):
                 show = db.op.get_show_by_name(name=info['show_name'])
                 if not show:
                     show = db.op.create_show(name=info['show_name'],directory=info['directory'])
+                    db.op.add_show_to_shelf(shelf_id=self.shelf.id,show_id=show.id)
                 self.batch_lookup[show_slug] = {
                     'show':show
                 }

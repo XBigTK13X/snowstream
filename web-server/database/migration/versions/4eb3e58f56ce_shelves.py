@@ -67,14 +67,31 @@ def upgrade() -> None:
         sa.Column('updated_at', sa.DateTime, nullable=False),
         sa.Column('name', sa.Text, nullable=False),
         sa.Column('release_year', sa.Integer),
-        sa.Column('directory', sa.Text, nullable=True)
+        sa.Column('directory', sa.Text, nullable=True),
     )
 
     op.create_table(
         'movie_tag',
         sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('updated_at', sa.DateTime, nullable=False),
         sa.Column('tag_id', sa.Integer, sa.ForeignKey('tag.id'), nullable=False),
         sa.Column('movie_id', sa.Integer, sa.ForeignKey('movie.id'), nullable=False),
+    )
+
+    op.create_table(
+        'movie_shelf',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('updated_at', sa.DateTime, nullable=False),
+        sa.Column('shelf_id', sa.Integer, sa.ForeignKey('shelf.id'), nullable=False),
+        sa.Column('movie_id', sa.Integer, sa.ForeignKey('movie.id'), nullable=False),
+    )
+
+    op.create_unique_constraint(
+        'unique_movie_shelf',
+        'movie_shelf',
+        ['shelf_id', 'movie_id']
     )
 
     op.create_table(
@@ -99,6 +116,21 @@ def upgrade() -> None:
         sa.Column('updated_at', sa.DateTime, nullable=False),
         sa.Column('name', sa.Text, nullable=False),
         sa.Column('directory', sa.Text, nullable=False)
+    )
+
+    op.create_table(
+        'show_shelf',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('updated_at', sa.DateTime, nullable=False),
+        sa.Column('shelf_id', sa.Integer, sa.ForeignKey('shelf.id'), nullable=False),
+        sa.Column('show_id', sa.Integer, sa.ForeignKey('show.id'), nullable=False),
+    )
+
+    op.create_unique_constraint(
+        'unique_show_shelf',
+        'show_shelf',
+        ['shelf_id', 'show_id']
     )
 
     op.create_table(

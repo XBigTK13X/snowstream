@@ -16,10 +16,23 @@ def create_movie(name: str, release_year: int):
         db.refresh(dbm)
         return dbm
 
+def add_movie_to_shelf(movie_id:int, shelf_id:int):
+    with DbSession() as db:
+        dbm = dm.MovieShelf()
+        dbm.shelf_id = shelf_id
+        dbm.movie_id = movie_id
+        db.add(dbm)
+        db.commit()
+        db.refresh(dbm)
+        return dbm
 
 def get_movie(name: str, release_year: int):
     with DbSession() as db:
         return db.query(dm.Movie).filter(dm.Movie.release_year == release_year).filter(dm.Movie.name == name).first()
+
+def get_movie_list_by_shelf(shelf_id: int):
+    with DbSession() as db:
+        return db.query(dm.Movie).join(dm.MovieShelf).filter(dm.MovieShelf.shelf_id == shelf_id).all()
 
 def create_movie_video_file(movie_id: int, video_file_id: int):
     with DbSession() as db:

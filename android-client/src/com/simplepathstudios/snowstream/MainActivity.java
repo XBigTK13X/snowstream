@@ -143,22 +143,13 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setSubtitle("");
                 CharSequence name = destination.getLabel();
                 currentLocation = destination;
-                if(name.toString().equals("Book")){
-                    toolbar.setVisibility(View.GONE);
-                } else {
-                    toolbar.setVisibility(View.VISIBLE);
-                }
-                if (arguments != null && arguments.size() > 0) {
-                    String category = arguments.getString("Category");
-                    if (category != null) {
-                        getSupportActionBar().setTitle(category);
-                    } else {
-                        getSupportActionBar().setTitle(name);
+                String label = name.toString();
+                if(!label.equals("Login") && !label.equals("Authenticate")){
+                    if(settingsViewModel.Data.getValue().AuthToken == null){
+                        controller.navigate(R.id.login_fragment);
                     }
-                } else {
-                    getSupportActionBar().setTitle(name);
                 }
-
+                getSupportActionBar().setTitle(name);
             }
         });
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);

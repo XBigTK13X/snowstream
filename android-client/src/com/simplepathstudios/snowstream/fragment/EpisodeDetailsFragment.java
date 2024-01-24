@@ -26,33 +26,15 @@ import com.simplepathstudios.snowstream.viewmodel.UserListViewModel;
 
 import java.util.List;
 
-public class HomeFragment extends Fragment {
-   private ShelfListViewModel shelfListViewModel;
-   private RecyclerView shelfListElement;
-   private LinearLayoutManager shelfListLayoutManager;
-   private ShelfListAdapter shelfListAdapter;
+public class EpisodeDetailsFragment extends Fragment {
    @Override
    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                             @Nullable Bundle savedInstanceState) {
-      return inflater.inflate(R.layout.home_fragment, container, false);
+      return inflater.inflate(R.layout.episode_details_fragment, container, false);
    }
 
    @Override
    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
       super.onViewCreated(view, savedInstanceState);
-      shelfListElement = view.findViewById(R.id.shelf_list);
-      shelfListAdapter = new ShelfListAdapter();
-      shelfListElement.setAdapter(shelfListAdapter);
-      shelfListLayoutManager = new LinearLayoutManager(getActivity());
-      shelfListElement.setLayoutManager(shelfListLayoutManager);
-      shelfListViewModel = new ViewModelProvider(this).get(ShelfListViewModel.class);
-      shelfListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Shelf>>() {
-         @Override
-         public void onChanged(List<Shelf> shelfList) {
-            shelfListAdapter.setData(shelfList);
-            shelfListAdapter.notifyDataSetChanged();
-         }
-      });
-      shelfListViewModel.load();
    }
 }
