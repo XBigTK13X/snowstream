@@ -45,7 +45,7 @@ public class HomeFragment extends Fragment {
       shelfListElement.setAdapter(shelfListAdapter);
       shelfListLayoutManager = new LinearLayoutManager(getActivity());
       shelfListElement.setLayoutManager(shelfListLayoutManager);
-      shelfListViewModel = new ViewModelProvider(this).get(ShelfListViewModel.class);
+      shelfListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(ShelfListViewModel.class);
       shelfListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Shelf>>() {
          @Override
          public void onChanged(List<Shelf> shelfList) {

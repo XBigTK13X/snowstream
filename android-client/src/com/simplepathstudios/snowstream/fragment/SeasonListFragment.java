@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.simplepathstudios.snowstream.MainActivity;
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.adapter.SeasonListAdapter;
 import com.simplepathstudios.snowstream.api.model.Season;
@@ -41,7 +42,7 @@ public class SeasonListFragment extends Fragment {
       seasonListElement.setAdapter(seasonListAdapter);
       seasonListLayoutManager = new LinearLayoutManager(getActivity());
       seasonListElement.setLayoutManager(seasonListLayoutManager);
-      seasonListViewModel = new ViewModelProvider(this).get(SeasonListViewModel.class);
+      seasonListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(SeasonListViewModel.class);
       seasonListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Season>>() {
          @Override
          public void onChanged(List<Season> seasonList) {

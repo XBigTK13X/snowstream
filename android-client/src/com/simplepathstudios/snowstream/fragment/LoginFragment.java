@@ -51,7 +51,7 @@ public class LoginFragment extends Fragment {
                 listElement.setAdapter(userListAdapter);
                 layoutManager = new LinearLayoutManager(getActivity());
                 listElement.setLayoutManager(layoutManager);
-                userListViewModel = new ViewModelProvider(this).get(UserListViewModel.class);
+                userListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(UserListViewModel.class);
                 userListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
                     @Override
                     public void onChanged(List<String> userList) {

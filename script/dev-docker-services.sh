@@ -38,6 +38,8 @@ docker run -d \
     -v $(pwd)/.docker-volume/postgresql:/var/lib/postgresql/data \
     -v $(pwd)/.docker-volume/rabbitmq:/var/lib/rabbitmq \
     -v $(pwd)/.docker-volume/transcode:/app/cache-transcode \
+    -v /media/kretst/LINDATA/snowstream/library/movies:/web-media/movies \
+    -v /media/kretst/LINDATA/snowstream/library/shows:/web-media/shows \
     xbigtk13x/snowstream
 
 sleep 8

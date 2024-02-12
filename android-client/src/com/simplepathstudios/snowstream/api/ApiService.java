@@ -42,4 +42,10 @@ public interface ApiService {
 
    @GET("api/show/season/episode/list")
    Call<List<Episode>> getEpisodeList(@Query("show_season_id") int show_season_id);
+
+   @GET("api/movie")
+   Call<Movie> getMovieDetails(@Query("movie_id") int movie_id);
+
+   @GET("api/show/season/episode")
+   Call<Episode> getEpisodeDetails(@Query("episode_id") int episode_id);
 }

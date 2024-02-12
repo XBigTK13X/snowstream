@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.simplepathstudios.snowstream.MainActivity;
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.adapter.MovieListAdapter;
 import com.simplepathstudios.snowstream.api.model.Movie;
@@ -41,7 +42,7 @@ public class MovieShelfFragment extends Fragment {
         movieListElement.setAdapter(movieListAdapter);
         movieListLayoutManager = new LinearLayoutManager(getActivity());
         movieListElement.setLayoutManager(movieListLayoutManager);
-        movieListViewModel = new ViewModelProvider(this).get(MovieListViewModel.class);
+        movieListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(MovieListViewModel.class);
         movieListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Movie>>() {
             @Override
             public void onChanged(List<Movie> movieList) {

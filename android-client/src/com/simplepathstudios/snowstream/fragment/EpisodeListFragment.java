@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.simplepathstudios.snowstream.MainActivity;
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.adapter.EpisodeListAdapter;
 import com.simplepathstudios.snowstream.api.model.Episode;
@@ -41,7 +42,7 @@ public class EpisodeListFragment extends Fragment {
       episodeListElement.setAdapter(episodeListAdapter);
       episodeListLayoutManager = new LinearLayoutManager(getActivity());
       episodeListElement.setLayoutManager(episodeListLayoutManager);
-      episodeListViewModel = new ViewModelProvider(this).get(EpisodeListViewModel.class);
+      episodeListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(EpisodeListViewModel.class);
       episodeListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Episode>>() {
          @Override
          public void onChanged(List<Episode> episodeList) {

@@ -75,6 +75,17 @@ def auth_required(router):
     def get_movie_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
         return db.op.get_movie_list_by_shelf(shelf_id=shelf_id)
 
+    @router.get('/movie')
+    def get_movie_details(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], movie_id: int):
+        movie = db.op.get_movie_details_by_id(movie_id=movie_id)
+        # TODO Automate this for all joined calls as a computed property
+        shelf_root = movie.shelf.directory.split('/')
+        shelf_root.pop()
+        shelf_root = '/'.join(shelf_root)
+        for video_file in movie.video_files:
+            video_file.set_web_path(video_file.path.replace(shelf_root,config.web_media_url))
+        return movie
+
     @router.get('/show/list')
     def get_show_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
         return db.op.get_show_list_by_shelf(shelf_id=shelf_id)
@@ -86,6 +97,18 @@ def auth_required(router):
     @router.get('/show/season/episode/list')
     def get_show_season_episode_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], show_season_id: int):
         return db.op.get_season_episode_list(show_season_id=show_season_id)
+
+    @router.get('/show/season/episode')
+    def get_season_episode_details(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], episode_id: int):
+        episode = db.op.get_season_episode_details_by_id(episode_id=episode_id)
+        # TODO Automate this for all joined calls as a computed property
+        shelf_root = episode.shelf.directory.split('/')
+        shelf_root.pop()
+        shelf_root = '/'.join(shelf_root)
+        for video_file in episode.video_files:
+            video_file.set_web_path(video_file.path.replace(shelf_root,config.web_media_url))
+        return episode
+
 
     return router
 

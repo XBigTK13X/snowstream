@@ -1,22 +1,13 @@
 package com.simplepathstudios.snowstream;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,14 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.MotionEventCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
@@ -101,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
         Util.registerGlobalExceptionHandler();
 
-        this.settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        this.settingsViewModel = new ViewModelProvider(MainActivity.getInstance()).get(SettingsViewModel.class);
         this.settingsViewModel.initialize(this.getSharedPreferences("Snowstream", Context.MODE_PRIVATE));
         SettingsViewModel.Settings settings = settingsViewModel.Data.getValue();
         ApiClient.retarget(settings.ServerUrl, settings.Username, settings.AuthToken);

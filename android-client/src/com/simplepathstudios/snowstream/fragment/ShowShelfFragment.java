@@ -49,7 +49,7 @@ public class ShowShelfFragment extends Fragment {
         showListElement.setAdapter(showListAdapter);
         showListLayoutManager = new LinearLayoutManager(getActivity());
         showListElement.setLayoutManager(showListLayoutManager);
-        showListViewModel = new ViewModelProvider(this).get(ShowListViewModel.class);
+        showListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(ShowListViewModel.class);
         showListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Show>>() {
             @Override
             public void onChanged(List<Show> showList) {

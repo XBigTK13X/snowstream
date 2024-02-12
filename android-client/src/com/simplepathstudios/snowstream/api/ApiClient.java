@@ -110,4 +110,12 @@ public class ApiClient {
    public Call getEpisodeList(int show_season_id){
       return this.httpClient.getEpisodeList(show_season_id);
    }
+
+   public Call getMovieDetails(int movie_id){
+      return this.httpClient.getMovieDetails(movie_id);
+   }
+
+   public Call getEpisodeDetails(int episode_id){
+      return this.httpClient.getEpisodeDetails(episode_id);
+   }
 }

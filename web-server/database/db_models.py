@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
+from sqlalchemy.ext.hybrid import hybrid_method
 from typing import List
 
 from database.sql_alchemy import BaseModel
@@ -65,6 +66,8 @@ class Shelf(BaseModel):
     kind = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
     direct_stream_url = sa.Column(sa.Text)
+    movies: sorm.Mapped[List["Movie"]] = sorm.relationship(secondary="movie_shelf",back_populates="shelf")
+    shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary="show_shelf",back_populates="shelf")
 
 
 class VideoFile(BaseModel):
@@ -72,9 +75,13 @@ class VideoFile(BaseModel):
     shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
     kind = sa.Column(sa.Text)
     path = sa.Column(sa.Text)
-    # show_episode: sorm.Mapped['ShowEpisode'] = sorm.relationship(
-    #    secondary=show_episode_video_file_association, back_populates="video_file")
     movie: sorm.Mapped['Movie'] = sorm.relationship(secondary='movie_video_file', back_populates="video_files")
+    show_episode: sorm.Mapped['ShowEpisode'] = sorm.relationship(secondary='show_episode_video_file', back_populates="video_files")
+
+    @hybrid_method
+    def set_web_path(self,path) -> str:
+        self.web_path = path
+        return self.web_path
 
 
 class Tag(BaseModel):
@@ -90,12 +97,14 @@ class Movie(BaseModel):
     release_year = sa.Column(sa.Integer)
     #tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=movie_tag_association, back_populates="movies")
     video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary='movie_video_file', back_populates="movie")
+    shelf: sorm.Mapped['Shelf'] = sorm.relationship(secondary="movie_shelf",back_populates="movies")
 
 
 class Show(BaseModel):
     __tablename__ = 'show'
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
+    shelf: sorm.Mapped['Shelf'] = sorm.relationship(secondary='show_shelf',back_populates="shows")
     #tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=show_tag_association, back_populates="shows")
 
 
@@ -113,6 +122,7 @@ class ShowEpisode(BaseModel):
     name = sa.Column(sa.Text)
     episode_order_counter = sa.Column(sa.Integer)
     show_season_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_season.id"))
+    video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary='show_episode_video_file', back_populates="show_episode")
     # video_file: sorm.Mapped["VideoFile"] = sorm.relationship(
     #    secondary=show_episode_video_file_association, back_populates="show")
 

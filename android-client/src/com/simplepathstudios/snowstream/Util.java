@@ -15,6 +15,11 @@ import android.widget.Toast;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.simplepathstudios.snowstream.api.model.Movie;
+import com.simplepathstudios.snowstream.viewmodel.MovieListViewModel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
