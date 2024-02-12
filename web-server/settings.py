@@ -30,7 +30,7 @@ class Config:
         self.jwt_algorithm = "HS256"
         self.jwt_expire_value = 30
         self.jwt_expire_unit = 'days'
-        self.web_media_url = 'http://localhost:9064/media'
+        self.web_media_url = 'http://192.168.1.20:9064/media'
 
         self.refresh_postgres_url()
 

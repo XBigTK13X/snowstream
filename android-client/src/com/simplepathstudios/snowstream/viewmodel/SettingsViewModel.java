@@ -20,8 +20,8 @@ public class SettingsViewModel extends ViewModel {
     public void initialize(SharedPreferences preferences){
         Settings settings = new Settings();
         settings.Preferences = preferences;
-        settings.EnableDebugLog = settings.Preferences.getBoolean("EnableDebugLog", false);
-        settings.ServerUrl = settings.Preferences.getString("ServerUrl", SnowstreamSettings.ProdServerUrl);
+        settings.EnableDebugLog = settings.Preferences.getBoolean("EnableDebugLog", true);
+        settings.ServerUrl = settings.Preferences.getString("ServerUrl", SnowstreamSettings.DevServerUrl);
         settings.Username = settings.Preferences.getString("Username", null);
         settings.AuthToken = settings.Preferences.getString("Token", null);
         SnowstreamSettings.EnableDebugLog = settings.EnableDebugLog;

@@ -1,18 +1,15 @@
 package com.simplepathstudios.snowstream;
 
 import android.net.Uri;
+import android.view.Surface;
+import android.view.SurfaceView;
 
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.Media;
-import org.videolan.libvlc.MediaPlayer;
-import org.videolan.libvlc.util.VLCVideoLayout;
+import dev.jdtech.mpv.MPVLib;
 
 
-// https://code.videolan.org/videolan/libvlc-android-samples/-/blob/master/java_sample/src/main/java/org/videolan/javasample/JavaActivity.java?ref_type=heads
-// https://code.videolan.org/videolan/libvlc-android-samples/-/blob/master/java_sample/src/main/res/layout/activity_main.xml?ref_type=heads
-//https://code.videolan.org/videolan/vlc-androidpublic
+//https://github.com/jarnedemeulemeester/libmpv-android/releases/tag/v0.1.4
+//https://github.com/jarnedemeulemeester/findroid/blob/main/player/video/src/main/java/dev/jdtech/jellyfin/mpv/MPVPlayer.kt
 public class VideoPlayer {
-
    private static final String TAG = "VideoPlayer";
    private static VideoPlayer __instance;
    public static VideoPlayer getInstance(){
@@ -25,34 +22,58 @@ public class VideoPlayer {
       }
       return __instance;
    }
-   LibVLC libVLC;
-   MediaPlayer mediaPlayer;
-   VLCVideoLayout vlcLayout;
+
    private VideoPlayer(){
-      libVLC = new LibVLC(Util.getGlobalContext());
-      mediaPlayer = new MediaPlayer(libVLC);
    }
 
    public void setup(){
-      libVLC = new LibVLC(Util.getGlobalContext());
-      mediaPlayer = new MediaPlayer(libVLC);
    }
 
    public void cleanup(){
-      mediaPlayer.release();
-      libVLC.release();
    }
 
-   public void useLayout(VLCVideoLayout layout){
-      mediaPlayer.attachViews(layout,null,true,true);
+   public void useSurface(Surface surface){
+      MPVLib.create(Util.getGlobalContext());
+
+      MPVLib.setOptionString("tls-verify","no");
+      MPVLib.setOptionString("profile", "fast");
+      MPVLib.setOptionString("vo", "gpu-next");
+      MPVLib.setOptionString("ao", "audiotrack");
+      MPVLib.setOptionString("gpu-context", "android");
+      MPVLib.setOptionString("opengl-es", "yes");
+      MPVLib.setOptionString("hwdec", "mediacodec");
+      MPVLib.setOptionString("hwdec-codecs", "h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1");
+
+      // Cache
+      MPVLib.setOptionString("cache", "yes");
+      MPVLib.setOptionString("cache-pause-initial", "yes");
+      MPVLib.setOptionString("demuxer-max-bytes", "32MiB");
+      MPVLib.setOptionString("demuxer-max-back-bytes", "32MiB");
+
+      // Subs
+      MPVLib.setOptionString("sub-scale-with-window", "yes");
+      MPVLib.setOptionString("sub-use-margins", "no");
+
+      // Language
+      MPVLib.setOptionString("alang", "");
+      MPVLib.setOptionString("slang", "");
+
+      // Other options
+      MPVLib.setOptionString("force-window", "no");
+      MPVLib.setOptionString("keep-open", "always");
+      MPVLib.setOptionString("save-position-on-quit", "no");
+      MPVLib.setOptionString("sub-font-provider", "none");
+      MPVLib.setOptionString("ytdl", "no");
+
+      MPVLib.init();
+
+      MPVLib.attachSurface(surface);
+      MPVLib.setOptionString("force-window", "yes");
+      MPVLib.setOptionString("vo", "gpu-next");
    }
 
    public void play(String url){
-      Util.log(TAG,url);
-      final Media media = new Media(libVLC,Uri.parse(url));
-      mediaPlayer.setMedia(media);
-      media.release();
-      mediaPlayer.play();
-      //media.release();
+      MPVLib.command(new String[]{"loadfile",url});
+
    }
 }
