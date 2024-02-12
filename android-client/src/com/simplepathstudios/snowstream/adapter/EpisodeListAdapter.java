@@ -65,7 +65,7 @@ public class EpisodeListAdapter extends RecyclerView.Adapter<EpisodeListAdapter.
          Bundle bundle = new Bundle();
          bundle.putInt("ShowId", episode.show_season_id);
          bundle.putInt("EpisodeId", episode.id);
-         bundle.putString("EpisodeId", episode.name);
+         bundle.putString("EpisodeName", episode.name);
          navController.navigate(R.id.episode_details_fragment, bundle);
       }
    }

@@ -61,9 +61,9 @@ def create_show_episode(show_season_id: int, episode_order_counter:int):
         db.refresh(dbm)
         return dbm
 
-def get_season_episode_by_id(episode_id:int):
+def get_season_episode_details_by_id(episode_id:int):
     with DbSession() as db:
-        return db.query(dm.ShowEpisode).options(sorm.joinedload(dm.ShowEpisode.video_files)).options(sorm.joinedload(dm.ShowEpisode.shelf)).filter(dm.ShowEpisode.id == episode_id).first()
+        return db.query(dm.ShowEpisode).options(sorm.joinedload(dm.ShowEpisode.video_files)).options(sorm.joinedload(dm.ShowEpisode.season)).options(sorm.joinedload(dm.ShowEpisode.season.show)).options(sorm.joinedload(dm.ShowEpisode.season.show.shelf)).filter(dm.ShowEpisode.id == episode_id).first()
         #show.video_files = db.scalars(sa.select(dm.ShowEpisodeVideoFile).filter(dm.ShowEpisodeVideoFile.episode_id == episode_id)).all();
         #return show
 
