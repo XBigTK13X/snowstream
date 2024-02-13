@@ -6,4 +6,5 @@ public class Season {
    public String name;
    public String directory;
    public Integer season_order_counter;
+   public Show show;
 }

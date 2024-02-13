@@ -116,8 +116,8 @@ class ShowSeason(BaseModel):
     directory = sa.Column(sa.Text)
     season_order_counter = sa.Column(sa.Integer)
     show_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show.id"))
-    episodes: sorm.Mapped[List["ShowEpisode"]] = sorm.relationship(back_populates="season")
     show: sorm.Mapped['Show'] = sorm.relationship(back_populates="seasons")
+    episodes: sorm.Mapped[List["ShowEpisode"]] = sorm.relationship(back_populates="season")
 
 class ShowEpisode(BaseModel):
     __tablename__ = 'show_episode'
@@ -126,8 +126,6 @@ class ShowEpisode(BaseModel):
     show_season_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_season.id"))
     video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary='show_episode_video_file', back_populates="show_episode")
     season: sorm.Mapped['ShowSeason'] = sorm.relationship(back_populates="episodes")
-    # video_file: sorm.Mapped["VideoFile"] = sorm.relationship(
-    #    secondary=show_episode_video_file_association, back_populates="show")
 
 
 class MovieVideoFile(BaseModel):

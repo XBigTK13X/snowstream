@@ -28,7 +28,12 @@ def add_movie_to_shelf(movie_id:int, shelf_id:int):
 
 def get_movie_details_by_id(movie_id:int):
     with DbSession() as db:
-        movie = db.query(dm.Movie).options(sorm.joinedload(dm.Movie.video_files)).options(sorm.joinedload(dm.Movie.shelf)).filter(dm.Movie.id == movie_id).first()
+        movie = (
+            db.query(dm.Movie)
+                .options(sorm.joinedload(dm.Movie.video_files))
+                .options(sorm.joinedload(dm.Movie.shelf))
+                .filter(dm.Movie.id == movie_id).first()
+        )
         return movie
         #movie.video_files = db.scalars(sa.select(dm.MovieVideoFile).filter(dm.MovieVideoFile.movie_id == movie_id)).all();
         #return movie

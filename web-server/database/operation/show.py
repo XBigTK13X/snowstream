@@ -61,11 +61,35 @@ def create_show_episode(show_season_id: int, episode_order_counter:int):
         db.refresh(dbm)
         return dbm
 
+# https://docs.sqlalchemy.org/en/20/orm/queryguide/inheritance.html
+
 def get_season_episode_details_by_id(episode_id:int):
     with DbSession() as db:
-        return db.query(dm.ShowEpisode).options(sorm.joinedload(dm.ShowEpisode.video_files)).options(sorm.joinedload(dm.ShowEpisode.season)).options(sorm.joinedload(dm.ShowEpisode.season.show)).options(sorm.joinedload(dm.ShowEpisode.season.show.shelf)).filter(dm.ShowEpisode.id == episode_id).first()
-        #show.video_files = db.scalars(sa.select(dm.ShowEpisodeVideoFile).filter(dm.ShowEpisodeVideoFile.episode_id == episode_id)).all();
-        #return show
+        # return (
+        #     db.query()
+        #     .select_from(dm.ShowEpisode)
+        #     .join(dm.ShowEpisodeVideoFile,dm.ShowEpisodeVideoFile.show_episode_id == dm.ShowEpisode.id)
+        #     .join(dm.VideoFile,dm.VideoFile.id == dm.ShowEpisodeVideoFile.id)
+        #     .join(dm.ShowSeason,dm.ShowSeason.id == dm.ShowEpisode.show_season_id)
+        #     .join(dm.Show, dm.Show.id == dm.ShowSeason.show_id)
+        #     .join(dm.ShowShelf, dm.ShowShelf.show_id == dm.Show.id)
+        #     .join(dm.Shelf, dm.Shelf.id == dm.ShowShelf.shelf_id)
+        #     .filter(dm.ShowEpisode.id == episode_id)
+        #     .add_columns(dm.ShowEpisode.id,dm.VideoFile.path)
+        #     .all()
+        # )
+        episode = (
+            db.query(dm.ShowEpisode)
+                .options(
+                    sorm.joinedload(dm.ShowEpisode.video_files)
+                )
+                .options(
+                    sorm.joinedload(dm.ShowEpisode.season).joinedload(dm.ShowSeason.show).joinedload(dm.Show.shelf)
+                )
+                .filter(dm.ShowEpisode.id == episode_id)
+                .first()
+        )
+        return episode
 
 def get_season_episode(show_season_id:int, episode_order_counter:int):
     with DbSession() as db:

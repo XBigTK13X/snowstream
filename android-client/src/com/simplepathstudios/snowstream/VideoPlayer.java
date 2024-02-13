@@ -7,8 +7,9 @@ import android.view.SurfaceView;
 import dev.jdtech.mpv.MPVLib;
 
 
-//https://github.com/jarnedemeulemeester/libmpv-android/releases/tag/v0.1.4
-//https://github.com/jarnedemeulemeester/findroid/blob/main/player/video/src/main/java/dev/jdtech/jellyfin/mpv/MPVPlayer.kt
+// https://mpv.io/manual/stable/
+// https://github.com/jarnedemeulemeester/libmpv-android/releases/tag/v0.1.4
+// https://github.com/jarnedemeulemeester/findroid/blob/main/player/video/src/main/java/dev/jdtech/jellyfin/mpv/MPVPlayer.kt
 public class VideoPlayer {
    private static final String TAG = "VideoPlayer";
    private static VideoPlayer __instance;
@@ -44,26 +45,23 @@ public class VideoPlayer {
       MPVLib.setOptionString("hwdec", "mediacodec");
       MPVLib.setOptionString("hwdec-codecs", "h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1");
 
-      // Cache
       MPVLib.setOptionString("cache", "yes");
       MPVLib.setOptionString("cache-pause-initial", "yes");
       MPVLib.setOptionString("demuxer-max-bytes", "32MiB");
       MPVLib.setOptionString("demuxer-max-back-bytes", "32MiB");
 
-      // Subs
       MPVLib.setOptionString("sub-scale-with-window", "yes");
       MPVLib.setOptionString("sub-use-margins", "no");
 
-      // Language
       MPVLib.setOptionString("alang", "");
       MPVLib.setOptionString("slang", "");
 
-      // Other options
       MPVLib.setOptionString("force-window", "no");
       MPVLib.setOptionString("keep-open", "always");
       MPVLib.setOptionString("save-position-on-quit", "no");
       MPVLib.setOptionString("sub-font-provider", "none");
       MPVLib.setOptionString("ytdl", "no");
+      MPVLib.setOptionString("msg-level", "all=no");
 
       MPVLib.init();
 

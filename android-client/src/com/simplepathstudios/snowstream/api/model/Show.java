@@ -4,4 +4,5 @@ public class Show {
       public Integer id;
       public String name;
       public String directory;
+      public Shelf shelf;
 }

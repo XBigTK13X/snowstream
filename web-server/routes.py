@@ -102,7 +102,7 @@ def auth_required(router):
     def get_season_episode_details(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], episode_id: int):
         episode = db.op.get_season_episode_details_by_id(episode_id=episode_id)
         # TODO Automate this for all joined calls as a computed property
-        shelf_root = episode.shelf.directory.split('/')
+        shelf_root = episode.season.show.shelf.directory.split('/')
         shelf_root.pop()
         shelf_root = '/'.join(shelf_root)
         for video_file in episode.video_files:
