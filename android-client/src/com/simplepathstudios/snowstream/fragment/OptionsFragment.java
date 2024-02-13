@@ -56,7 +56,7 @@ public class OptionsFragment extends Fragment {
             }
         });
 
-        String versionInfo = String.format("Client Version: %s\nClient Built: %s",SnowstreamSettings.ClientVersion, SnowstreamSettings.BuildDate);
+        String versionInfo = String.format("Client Version: %s\nClient Built: %s",SnowstreamSettings.ClientVersion, SnowstreamSettings.ClientBuildDate);
         versionText = view.findViewById(R.id.version_text);
         versionText.setText(versionInfo);
 
