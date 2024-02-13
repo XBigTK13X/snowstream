@@ -4,7 +4,7 @@ package com.simplepathstudios.snowstream;
 import android.net.Uri;
 
 public class SnowstreamSettings {
-    public static final String BuildDate = "January 22, 2024";
+    public static final String ClientBuildDate = "January 22, 2024";
     public static final String ClientVersion = "1.0.0";
     public static boolean EnableDebugLog = true;
     public static final Uri UpdateSnowstreamUrl = Uri.parse("http://9914.us:8091/software/android/snowstream.apk");
