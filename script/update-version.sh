@@ -2,7 +2,7 @@
 
 if [ -z $1 ]; then
   echo "First argument of version string is required, current version is below"
-  cat ./web-server/src/settings.py | grep server_version
+  cat ./web-server/settings.py | grep server_version
   exit 1
 fi
 
