@@ -41,10 +41,14 @@ class BaseHandler:
         self.batch_lookup = {}
 
     def get_files_in_directory(self):
+        log.info(f"Scanning directory [{self.shelf.directory}]")
+        file_count = 0
         for root, dirs, files in os.walk(self.shelf.directory):
             for shelf_file in files:
                 file_path = os.path.join(root, shelf_file)
+                file_count += 1
                 self.file_lookup[get_file_kind(file_path)].append(file_path)
+        log.info(f"Found [{file_count}] files to process")
         return True
 
     def ingest_files(self, kind:str, parser:Callable[[str], dict], identifier:Callable[[dict],str]):

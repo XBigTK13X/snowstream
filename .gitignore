@@ -1,3 +1,6 @@
+variables.sh
+seed-data.py
+.web-media/
 cache-transcode/
 test-hdhomerun.sh
 seed-data.sh
