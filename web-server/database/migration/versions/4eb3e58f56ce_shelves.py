@@ -104,7 +104,7 @@ def upgrade() -> None:
     )
 
     op.create_unique_constraint(
-        'unique_movie_file_file',
+        'unique_movie_video_file',
         'movie_video_file',
         ['movie_id', 'video_file_id']
     )
