@@ -6,7 +6,9 @@ class BaseHandler:
     def __init__(self, kind, stream_source):
         self.kind = kind
         self.stream_source = stream_source
-        self.cache_key = f'stream-source-{self.stream_source.id}-{self.stream_source.kind}'
+        self.cache_key = (
+            f"stream-source-{self.stream_source.id}-{self.stream_source.kind}"
+        )
         self.cached_data = None
 
     def download(self):
@@ -16,7 +18,9 @@ class BaseHandler:
             self.cached_data = self.cached_data
             log.info(f"Using cached data from previous {self.kind} download")
             return True
-        log.info(f"Remote data not cached. Get the latest from {self.kind} data provider.")
+        log.info(
+            f"Remote data not cached. Get the latest from {self.kind} data provider."
+        )
         return False
 
     def parse_watchable_urls(self):

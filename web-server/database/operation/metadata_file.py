@@ -6,7 +6,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 
 
-def create_metadata_file(shelf_id:int, kind: str, file_path: str):
+def create_metadata_file(shelf_id: int, kind: str, file_path: str):
     with DbSession() as db:
         dbm = dm.MetadataFile()
         dbm.path = file_path
@@ -20,8 +20,11 @@ def create_metadata_file(shelf_id:int, kind: str, file_path: str):
 
 def get_metadata_file_by_path(file_path: str):
     with DbSession() as db:
-        return db.query(dm.MetadataFile).filter(dm.MetadataFile.path == file_path).first()
+        return (
+            db.query(dm.MetadataFile).filter(dm.MetadataFile.path == file_path).first()
+        )
 
-def get_metadata_files_by_shelf(shelf_id:int):
+
+def get_metadata_files_by_shelf(shelf_id: int):
     with DbSession() as db:
         return db.query(dm.MetadataFile).filter(dm.MetadataFile.shelf_id == shelf_id)

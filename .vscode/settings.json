@@ -2,5 +2,8 @@
     "python.analysis.diagnosticSeverityOverrides": {
         "reportUnusedImport": "information",
         "reportMissingImports": "none"
+    },
+    "[python]": {
+        "editor.formatOnType": false
     }
 }

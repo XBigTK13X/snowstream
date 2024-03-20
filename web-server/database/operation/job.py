@@ -30,10 +30,10 @@ def update_job(job_id: int, message: str = None, status: str = None):
     with DbSession() as db:
         job = db.query(dm.Job).filter(dm.Job.id == job_id).first()
         if message:
-            log.info(f'Updating job {job_id} to message {message}')
+            log.info(f"Updating job {job_id} to message {message}")
             job.message = message
         if status:
-            log.info(f'Updating job {job_id} to status {status}')
+            log.info(f"Updating job {job_id} to status {status}")
             job.status = status
         db.commit()
         return job

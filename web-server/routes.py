@@ -17,155 +17,211 @@ from auth import get_current_user
 from transcode import transcode
 from settings import config
 
+
 def register(router):
     router = no_auth_required(router)
     return auth_required(router)
 
+
 def auth_required(router):
     @router.get("/stream/source/list")
-    def get_stream_source_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])]):
+    def get_stream_source_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
         return db.op.get_stream_source_list()
 
     @router.post("/stream/source")
-    def create_stream_source(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], stream_source: am.StreamSource):
+    def create_stream_source(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        stream_source: am.StreamSource,
+    ):
         db_source = db.op.get_stream_source_by_url(url=stream_source.url)
         if db_source:
             raise HTTPException(status_code=400, detail="URL already tracked")
         return db.op.create_stream_source(stream_source=stream_source)
 
     @router.post("/job")
-    def create_job(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], kind: am.JobKind):
+    def create_job(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        kind: am.JobKind,
+    ):
         job = db.op.create_job(kind=kind.name)
         message.write.send(job_id=job.id, kind=kind.name)
         return job
 
     @router.get("/job")
-    def get_job(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], job_id: int):
+    def get_job(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        job_id: int,
+    ):
         return db.op.get_job_by_id(job_id=job_id)
 
     @router.get("/job/list")
-    def get_job_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])]):
+    def get_job_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
         return db.op.get_job_list()
 
-    @router.get('/shelf/list')
-    def get_shelf_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])]):
+    @router.get("/shelf/list")
+    def get_shelf_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
         return db.op.get_shelf_list()
 
-    @router.get('/shelf')
-    def get_shelf(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
+    @router.get("/shelf")
+    def get_shelf(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        shelf_id: int,
+    ):
         return db.op.get_shelf_by_id(shelf_id=shelf_id)
 
-    @router.post('/shelf')
-    def create_shelf(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf: am.Shelf):
+    @router.post("/shelf")
+    def create_shelf(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        shelf: am.Shelf,
+    ):
         return db.op.create_shelf(shelf=shelf)
 
-    @router.post('/shelf/scan')
-    def scan_shelf(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
+    @router.post("/shelf/scan")
+    def scan_shelf(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        shelf_id: int,
+    ):
         pass
 
-    @router.post('/user')
-    def create_user(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], user: am.User):
+    @router.post("/user")
+    def create_user(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        user: am.User,
+    ):
         return db.op.create_user(user=user)
 
-    @router.get('/auth/check')
-    def auth_check(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], user: am.User):
+    @router.get("/auth/check")
+    def auth_check(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        user: am.User,
+    ):
         return True
 
-    @router.get('/movie/list')
-    def get_movie_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
+    @router.get("/movie/list")
+    def get_movie_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        shelf_id: int,
+    ):
         return db.op.get_movie_list_by_shelf(shelf_id=shelf_id)
 
-    @router.get('/movie')
-    def get_movie_details(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], movie_id: int):
+    @router.get("/movie")
+    def get_movie_details(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        movie_id: int,
+    ):
         movie = db.op.get_movie_details_by_id(movie_id=movie_id)
         # TODO Automate this for all joined calls as a computed property
-        shelf_root = movie.shelf.directory.split('/')
+        shelf_root = movie.shelf.directory.split("/")
         shelf_root.pop()
-        shelf_root = '/'.join(shelf_root)
+        shelf_root = "/".join(shelf_root)
         for video_file in movie.video_files:
-            video_file.set_web_path(video_file.path.replace(shelf_root,config.web_media_url))
+            video_file.set_web_path(
+                video_file.path.replace(shelf_root, config.web_media_url)
+            )
         return movie
 
-    @router.get('/show/list')
-    def get_show_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], shelf_id: int):
+    @router.get("/show/list")
+    def get_show_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        shelf_id: int,
+    ):
         return db.op.get_show_list_by_shelf(shelf_id=shelf_id)
 
-    @router.get('/show/season/list')
-    def get_show_season_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], show_id: int):
+    @router.get("/show/season/list")
+    def get_show_season_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        show_id: int,
+    ):
         return db.op.get_show_season_list(show_id=show_id)
 
-    @router.get('/show/season/episode/list')
-    def get_show_season_episode_list(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], show_season_id: int):
+    @router.get("/show/season/episode/list")
+    def get_show_season_episode_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        show_season_id: int,
+    ):
         return db.op.get_season_episode_list(show_season_id=show_season_id)
 
-    @router.get('/show/season/episode')
-    def get_season_episode_details(auth_user:Annotated[am.User, Security(get_current_user, scopes=[])], episode_id: int):
+    @router.get("/show/season/episode")
+    def get_season_episode_details(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        episode_id: int,
+    ):
         episode = db.op.get_season_episode_details_by_id(episode_id=episode_id)
         # TODO Automate this for all joined calls as a computed property
-        shelf_root = episode.season.show.shelf.directory.split('/')
+        shelf_root = episode.season.show.shelf.directory.split("/")
         shelf_root.pop()
-        shelf_root = '/'.join(shelf_root)
+        shelf_root = "/".join(shelf_root)
         for video_file in episode.video_files:
-            video_file.set_web_path(video_file.path.replace(shelf_root,config.web_media_url))
+            video_file.set_web_path(
+                video_file.path.replace(shelf_root, config.web_media_url)
+            )
         return episode
 
-
     return router
+
 
 def no_auth_required(router):
     @router.get("/heartbeat")
     def heartbeat():
-        return {
-            'alive': True
-        }
+        return {"alive": True}
+
     @router.get("/info")
     def info():
         return {
-            'serverVersion': config.server_version,
-            'serverBuildDate': config.server_build_date
+            "serverVersion": config.server_version,
+            "serverBuildDate": config.server_build_date,
         }
-    @router.get('/password/hash')
-    def password_hash(password:str):
+
+    @router.get("/password/hash")
+    def password_hash(password: str):
         return auth.get_password_hash(password)
 
-    @router.get('/streamable.m3u', response_class=PlainTextResponse)
+    @router.get("/streamable.m3u", response_class=PlainTextResponse)
     def get_streamable_m3u():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_M3U)
 
-    @router.get('/streamable.xml', response_class=PlainTextResponse)
+    @router.get("/streamable.xml", response_class=PlainTextResponse)
     def get_streamable_epg():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_EPG)
 
     # TODO It would be neat if I had a little placeholder video here to let the video player show that the stream is getting ready
-    @router.get('/streamable/transcode')
-    @router.head('/streamable/transcode')
+    @router.get("/streamable/transcode")
+    @router.head("/streamable/transcode")
     def get_streamable_transcode(streamable_id: int):
         if not transcode.is_open(streamable_id=streamable_id):
             streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
             transcode_url = transcode.open(streamable)
-            #DEBUG log.info(transcode_url)
+            # DEBUG log.info(transcode_url)
         playlist = transcode.get_playlist(streamable_id=streamable_id)
         return Response(playlist, status_code=200, media_type="video/mp4")
 
-    @router.get('/streamable/transcode/segment')
-    @router.head('/streamable/transcode/segment')
+    @router.get("/streamable/transcode/segment")
+    @router.head("/streamable/transcode/segment")
     def get_streamable_transcode_segment(streamable_id: int, segment_file: str):
-        segment = transcode.get_segment(streamable_id=streamable_id, segment_file=segment_file)
+        segment = transcode.get_segment(
+            streamable_id=streamable_id, segment_file=segment_file
+        )
         return Response(segment, status_code=200, media_type="video/mp4")
 
-    @router.get('/streamable/direct', response_class=RedirectResponse)
-    @router.head('/streamable/direct', response_class=RedirectResponse)
+    @router.get("/streamable/direct", response_class=RedirectResponse)
+    @router.head("/streamable/direct", response_class=RedirectResponse)
     def get_streamable_direct(streamable_id: int):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
-        #DEBUG log.info(streamable.url)
+        # DEBUG log.info(streamable.url)
         return streamable.url
 
-    @router.delete('/streamable/transcode')
+    @router.delete("/streamable/transcode")
     def delete_streamable_transcode(streamable_id):
         transcode.close(streamable_id=streamable_id)
         return True
 
-    @router.get('/user/list')
+    @router.get("/user/list")
     def get_user_list():
         users = db.op.get_user_list()
         return [user.username for user in users]

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class JobKind(BaseModel):
-    name: Union[Literal['stream_sources_refresh'], Literal['scan_shelves_content']]
+    name: Union[Literal["stream_sources_refresh"], Literal["scan_shelves_content"]]
 
 
 class StreamSource(BaseModel):
@@ -30,7 +30,7 @@ class Streamable(BaseModel):
 
 
 class ShelfKind(BaseModel):
-    name: Union[Literal['Movies'], Literal['Shows']]
+    name: Union[Literal["Movies"], Literal["Shows"]]
 
 
 class Shelf(BaseModel):
@@ -73,6 +73,7 @@ class ShowVideoFile(BaseModel):
 class MovieVideoFile(BaseModel):
     id: int | None = None
 
+
 class User(BaseModel):
     id: int | None = None
     username: str
@@ -81,9 +82,11 @@ class User(BaseModel):
     enabled: bool | None = True
     permissions: str
 
+
 class AuthToken(BaseModel):
     access_token: str
     token_type: str
+
 
 class AuthTokenContent(BaseModel):
     username: str | None = None

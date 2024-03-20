@@ -6,7 +6,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 
 
-def create_video_file(shelf_id:int, kind: str, file_path: str):
+def create_video_file(shelf_id: int, kind: str, file_path: str):
     with DbSession() as db:
         dbm = dm.VideoFile()
         dbm.path = file_path
@@ -22,6 +22,7 @@ def get_video_file_by_path(file_path: str):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.path == file_path).first()
 
-def get_video_files_by_shelf(shelf_id:int):
+
+def get_video_files_by_shelf(shelf_id: int):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.shelf_id == shelf_id)

@@ -7,9 +7,7 @@ from sqlalchemy.sql import func
 
 from settings import config
 
-engine = create_engine(
-    config.postgres_url
-)
+engine = create_engine(config.postgres_url)
 DbSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 BaseModel = declarative_base()

@@ -18,7 +18,9 @@ def create_stream_source(stream_source: am.StreamSource):
 def get_stream_source_list(streamables=False):
     with DbSession() as db:
         if streamables:
-            sql = sa.select(dm.StreamSource).options(sorm.joinedload(dm.StreamSource.streamables))
+            sql = sa.select(dm.StreamSource).options(
+                sorm.joinedload(dm.StreamSource.streamables)
+            )
             return db.scalars(sql).unique().all()
         return db.query(dm.StreamSource).all()
 

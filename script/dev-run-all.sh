@@ -2,7 +2,8 @@
 mkdir -p logs
 cd web-server
 source venv/bin/activate
-pip install -r requirements.txt
+echo "Quietly installing requirements"
+pip install -r requirements.txt > /dev/null 2>&1 || true
 cd ..
 kill -TERM -$(cat logs/running.pid) > /dev/null 2>&1 || true
 fuser -k 8000/tcp || true

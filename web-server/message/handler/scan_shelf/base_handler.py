@@ -2,41 +2,38 @@ import os
 from log import log
 
 import mimetypes
+
 mimetypes.init()
 
 from typing import Callable
 
+
 def get_file_kind(file_path):
-    if file_path.endswith('.nfo'):
-        return 'metadata'
+    if file_path.endswith(".nfo"):
+        return "metadata"
 
     mime = mimetypes.guess_type(file_path)[0]
 
     if mime != None:
-        mime = mime.split('/')[0]
+        mime = mime.split("/")[0]
 
-        if 'video' in mime:
-            return 'video'
-        if 'image' in mime:
-            return 'image'
+        if "video" in mime:
+            return "video"
+        if "image" in mime:
+            return "image"
 
-    return 'unhandled'
+    return "unhandled"
 
 
 class BaseHandler:
     def __init__(self, job_id, shelf):
         self.job_id = job_id
         self.shelf = shelf
-        self.file_lookup = {
-            'video': [],
-            'image': [],
-            'metadata': [],
-            'unhandled': []
-        }
+        self.file_lookup = {"video": [], "image": [], "metadata": [], "unhandled": []}
         self.file_info_lookup = {
-            'video': [],
-            'image': [],
-            'metadata': [],
+            "video": [],
+            "image": [],
+            "metadata": [],
         }
         self.batch_lookup = {}
 
@@ -51,19 +48,26 @@ class BaseHandler:
         log.info(f"Found [{file_count}] files to process")
         return True
 
-    def ingest_files(self, kind:str, parser:Callable[[str], dict], identifier:Callable[[dict],str]):
+    def ingest_files(
+        self,
+        kind: str,
+        parser: Callable[[str], dict],
+        identifier: Callable[[dict], str],
+    ):
         parsed_files = []
         for media_path in self.file_lookup[kind]:
-            #log.info(f"Found a {kind} file [{media_path}]")
+            # log.info(f"Found a {kind} file [{media_path}]")
             media_info = parser(file_path=media_path)
             if media_info == None:
-                #log.info(f"Wasn't able to parse {kind} info for [{media_path}]")
+                # log.info(f"Wasn't able to parse {kind} info for [{media_path}]")
                 continue
-            media_info['kind'] = identifier(media_info)
-            media_info['file_path'] = media_path
+            media_info["kind"] = identifier(media_info)
+            media_info["file_path"] = media_path
             parsed_files.append(media_info)
-        log.info(f"Ingested info for ({len(parsed_files)}/{len(self.file_lookup[kind])}) parsed {kind} file paths")
-        parsed_files = sorted(parsed_files, key=lambda x: x['file_path'])
+        log.info(
+            f"Ingested info for ({len(parsed_files)}/{len(self.file_lookup[kind])}) parsed {kind} file paths"
+        )
+        parsed_files = sorted(parsed_files, key=lambda x: x["file_path"])
         return parsed_files
 
     def organize(self):

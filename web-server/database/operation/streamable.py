@@ -20,4 +20,9 @@ def create_streamable(stream_source_id: int, url: str, name: str):
 
 def get_streamable_by_id(streamable_id: int):
     with DbSession() as db:
-        return db.query(dm.Streamable).options(sorm.joinedload(dm.Streamable.stream_source)).filter(dm.Streamable.id == streamable_id).first()
+        return (
+            db.query(dm.Streamable)
+            .options(sorm.joinedload(dm.Streamable.stream_source))
+            .filter(dm.Streamable.id == streamable_id)
+            .first()
+        )

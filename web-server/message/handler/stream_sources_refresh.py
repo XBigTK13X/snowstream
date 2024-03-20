@@ -13,11 +13,11 @@ import message.handler.stream_source.frigate_nvr as fn
 import message.handler.stream_source.schedules_direct as sd
 
 source_handlers = {
-    'HdHomeRun': hhr.HdHomeRun,
-    'IptvEpg': ie.IptvEpg,
-    'IptvM3u': im.IptvM3u,
-    'FrigateNvr': fn.FrigateNvr,
-    'SchedulesDirect': sd.SchedulesDirect
+    "HdHomeRun": hhr.HdHomeRun,
+    "IptvEpg": ie.IptvEpg,
+    "IptvM3u": im.IptvM3u,
+    "FrigateNvr": fn.FrigateNvr,
+    "SchedulesDirect": sd.SchedulesDirect,
 }
 
 
@@ -26,7 +26,7 @@ def generate_streamable_m3u():
     stream_sources = db.op.get_stream_source_list(streamables=True)
     # TODO put a TTL in cache_text, derived property on the object to see if expired
 
-    m3u = '#EXTM3U'
+    m3u = "#EXTM3U"
     stream_count = 0
     channel_count = 0
     for stream_source in stream_sources:
@@ -35,12 +35,12 @@ def generate_streamable_m3u():
         for streamable in stream_source.streamables:
             stream_channel_count += 1
             channel_count += 1
-            channel_id = f'{stream_count:02}.{stream_channel_count:04}'
+            channel_id = f"{stream_count:02}.{stream_channel_count:04}"
             m3u += f'\n#EXTINF: tvg-id="{streamable.name}" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{channel_id}"'
-            m3u += f'\n{config.web_api_url}/api/streamable/transcode?streamable_id={streamable.id}'
+            m3u += f"\n{config.web_api_url}/api/streamable/transcode?streamable_id={streamable.id}"
             m3u += f'\n#EXTINF: tvg-id="{streamable.name} (d)" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{channel_id} (d)"'
-            m3u += f'\n{config.web_api_url}/api/streamable/direct?streamable_id={streamable.id}'
-    m3u += '\n'
+            m3u += f"\n{config.web_api_url}/api/streamable/direct?streamable_id={streamable.id}"
+    m3u += "\n"
     log.info(f"Generated m3u with {channel_count} channels")
     db.op.upsert_cached_text(key=cache.key.STREAMABLE_M3U, data=m3u)
     return True
@@ -58,28 +58,28 @@ def generate_streamable_epg():
         for schedule in channel.schedules:
             schedule_count += 1
             xml += f'\n    <program start="{schedule.start_datetime}" stop="{schedule.stop_datetime}" start_timestamp="{schedule.start_datetime.timestamp()}" stop_timestamp="{schedule.stop_datetime.timestamp()}" channel="{channel.parsed_name}" >'
-            xml += f'\n    <title>{schedule.name}</title>'
-            xml += f'\n    <desc>{schedule.description}</desc>'
-            xml += f'\n    </program>'
-        xml += '\n  <\channel>'
-    xml += '\n</tv>'
-    log.info(f'Generated EPG XML with {channel_count} channels and {schedule_count} programs')
+            xml += f"\n    <title>{schedule.name}</title>"
+            xml += f"\n    <desc>{schedule.description}</desc>"
+            xml += f"\n    </program>"
+        xml += "\n  <\channel>"
+    xml += "\n</tv>"
+    log.info(
+        f"Generated EPG XML with {channel_count} channels and {schedule_count} programs"
+    )
     db.op.upsert_cached_text(key=cache.key.STREAMABLE_EPG, data=xml)
     return True
 
 
 def handle(job_id, message_payload):
-    log.info(f'[WORKER] Handling a stream_sources_refresh job')
+    log.info(f"[WORKER] Handling a stream_sources_refresh job")
     log.info("Removing existing streamable schedule info")
-    db.sql.truncate('streamable_schedule')
+    db.sql.truncate("streamable_schedule")
     stream_sources = db.op.get_stream_source_list(streamables=True)
-    refresh_results = {
-
-    }
+    refresh_results = {}
     for stream_source in stream_sources:
         # TODO Purge all program data that ended at least five minutes ago
         # TODO Most of the backend is dumb pipes, but these handlers could use some unit tests
-        log.info("Refreshing stream source "+stream_source.kind)
+        log.info("Refreshing stream source " + stream_source.kind)
         handler = source_handlers[stream_source.kind](stream_source)
 
         if not handler.download():

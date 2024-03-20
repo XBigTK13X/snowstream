@@ -6,7 +6,8 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 import util
 
-def create_user(username: str, password:str):
+
+def create_user(username: str, password: str):
     with DbSession() as db:
         dbm = dm.User()
         dbm.username = username
@@ -21,6 +22,7 @@ def create_user(username: str, password:str):
 def get_user_by_name(username: str):
     with DbSession() as db:
         return db.query(dm.User).filter(dm.User.username == username).first()
+
 
 def get_user_list():
     with DbSession() as db:

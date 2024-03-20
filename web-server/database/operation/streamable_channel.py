@@ -18,11 +18,17 @@ def create_channel(channel: dict):
 def get_channels_list(schedules=False):
     with DbSession() as db:
         if schedules:
-            sql = sa.select(dm.StreamableChannel).options(sorm.joinedload(dm.StreamableChannel.schedules))
+            sql = sa.select(dm.StreamableChannel).options(
+                sorm.joinedload(dm.StreamableChannel.schedules)
+            )
             return db.scalars(sql).unique().all()
         return db.query(dm.StreamableChannel).all()
 
 
 def get_channel_by_parsed_id(parsed_id: str):
     with DbSession() as db:
-        return db.query(dm.StreamableChannel).filter(dm.StreamableChannel.parsed_id == parsed_id).first()
+        return (
+            db.query(dm.StreamableChannel)
+            .filter(dm.StreamableChannel.parsed_id == parsed_id)
+            .first()
+        )
