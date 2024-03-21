@@ -1,5 +1,7 @@
 from database.operation.cached_text import *
+from database.operation.image_file import *
 from database.operation.job import *
+from database.operation.metadata_file import *
 from database.operation.movie import *
 from database.operation.shelf import *
 from database.operation.show import *

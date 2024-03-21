@@ -1,6 +1,5 @@
 from log import log
 import message.handler.scan_shelf.base_handler as base
-import ingest as db_ingest
 from pathlib import Path
 import re
 from db import db
@@ -14,19 +13,29 @@ MOVIE_EXTRAS_REGEX = re.compile(
     re.IGNORECASE,
 )
 
+MOVIE_QUALITY_REGEX = re.compile(
+    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<movie_file_name>.*?)\s\((?P<movie_file_year>\d{4,5})\)\s(?P<quality>.*)?\..*",
+    re.IGNORECASE,
+)
+MOVIE_EXTRAS_QUALITY_REGEX = re.compile(
+    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<subdirectory>Extras)\/(?P<extra_name>.*)\..*",
+    re.IGNORECASE,
+)
 
+
+# TODO get info from files without a quality/version designation
 def parse_movie_info(file_path):
     location = Path(file_path).as_posix()
     result = {}
     if "/Extras/" in location:
-        matches = re.search(MOVIE_EXTRAS_REGEX, location)
+        matches = re.search(MOVIE_EXTRAS_QUALITY_REGEX, location)
         if matches == None:
             return None
         result["movie_name"] = matches.group("movie_folder_name")
         result["movie_year"] = matches.group("movie_folder_year")
         result["extra_name"] = matches.group("extra_name")
         return result
-    matches = re.search(MOVIE_REGEX, location)
+    matches = re.search(MOVIE_QUALITY_REGEX, location)
     if matches == None:
         return None
     result["movie_name"] = matches.group("movie_file_name")
@@ -41,32 +50,14 @@ def identify_movie_kind(info: dict):
 
 class MoviesScanHandler(base.BaseHandler):
     def __init__(self, job_id, shelf):
-        super().__init__(job_id=job_id, shelf=shelf)
-
-    def ingest(self, kind: str):
-        return self.ingest_files(
-            kind=kind, parser=parse_movie_info, identifier=identify_movie_kind
+        super().__init__(
+            job_id=job_id,
+            shelf=shelf,
+            identifier=identify_movie_kind,
+            parser=parse_movie_info,
         )
 
-    def ingest_videos(self):
-        parsed_videos = self.ingest(kind="video")
-        for info in parsed_videos:
-            dbm = db_ingest.video(
-                shelf_id=self.shelf.id, kind=info["kind"], file_path=info["file_path"]
-            )
-            info["id"] = dbm.id
-        self.file_info_lookup["video"] = parsed_videos
-        return True
-
-    def ingest_images(self):
-        parsed_images = self.ingest(kind="image")
-        return True
-
-    def ingest_metadata(self):
-        parsed_metadata = self.ingest(kind="metadata")
-        return True
-
-    def organize(self):
+    def organize_videos(self):
         for info in self.file_info_lookup["video"]:
             movie_slug = f'{info["movie_name"]}-{info["movie_year"]}'
             if not movie_slug in self.batch_lookup:

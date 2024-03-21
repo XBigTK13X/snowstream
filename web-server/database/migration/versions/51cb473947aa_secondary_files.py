@@ -44,7 +44,7 @@ def upgrade() -> None:
     )
 
     op.create_unique_constraint(
-        "unique_movie_image_file", "movie_video_file", ["movie_id", "video_file_id"]
+        "unique_movie_image_file", "movie_image_file", ["movie_id", "image_file_id"]
     )
 
     op.create_table(
@@ -133,7 +133,9 @@ def upgrade() -> None:
     )
 
     op.create_unique_constraint(
-        "unique_movie_metadata_file", "movie_video_file", ["movie_id", "video_file_id"]
+        "unique_movie_metadata_file",
+        "movie_metadata_file",
+        ["movie_id", "metadata_file_id"],
     )
 
     op.create_table(

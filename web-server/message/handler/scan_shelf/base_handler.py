@@ -7,6 +7,8 @@ mimetypes.init()
 
 from typing import Callable
 
+import ingest as db_ingest
+
 
 def get_file_kind(file_path):
     if file_path.endswith(".nfo"):
@@ -26,7 +28,13 @@ def get_file_kind(file_path):
 
 
 class BaseHandler:
-    def __init__(self, job_id, shelf):
+    def __init__(
+        self,
+        job_id,
+        shelf,
+        identifier: Callable[[dict], str],
+        parser: Callable[[str], dict],
+    ):
         self.job_id = job_id
         self.shelf = shelf
         self.file_lookup = {"video": [], "image": [], "metadata": [], "unhandled": []}
@@ -36,6 +44,8 @@ class BaseHandler:
             "metadata": [],
         }
         self.batch_lookup = {}
+        self.file_kind_identifier = identifier
+        self.file_info_parser = parser
 
     def get_files_in_directory(self):
         log.info(f"Scanning directory [{self.shelf.directory}]")
@@ -48,20 +58,15 @@ class BaseHandler:
         log.info(f"Found [{file_count}] files to process")
         return True
 
-    def ingest_files(
-        self,
-        kind: str,
-        parser: Callable[[str], dict],
-        identifier: Callable[[dict], str],
-    ):
+    def ingest_files(self, kind: str):
         parsed_files = []
         for media_path in self.file_lookup[kind]:
             # log.info(f"Found a {kind} file [{media_path}]")
-            media_info = parser(file_path=media_path)
+            media_info = self.file_info_parser(file_path=media_path)
             if media_info == None:
-                # log.info(f"Wasn't able to parse {kind} info for [{media_path}]")
+                log.info(f"Wasn't able to parse {kind} info for [{media_path}]")
                 continue
-            media_info["kind"] = identifier(media_info)
+            media_info["kind"] = self.file_kind_identifier(info=media_info)
             media_info["file_path"] = media_path
             parsed_files.append(media_info)
         log.info(
@@ -70,14 +75,30 @@ class BaseHandler:
         parsed_files = sorted(parsed_files, key=lambda x: x["file_path"])
         return parsed_files
 
-    def organize(self):
+    def organize_videos(self):
+        return True
+
+    def organize_images(self):
+        return True
+
+    def organize_metadata(self):
+        return True
+
+    def ingest_content(self, kind):
+        items = self.ingest_files(kind=kind)
+        for info in items:
+            dbm = getattr(db_ingest, kind)(
+                shelf_id=self.shelf.id, kind=info["kind"], file_path=info["file_path"]
+            )
+            info["id"] = dbm.id
+        self.file_info_lookup[kind] = items
         return True
 
     def ingest_videos(self):
-        return True
+        return self.ingest_content("video")
 
     def ingest_images(self):
-        return True
+        return self.ingest_content("image")
 
     def ingest_metadata(self):
-        return True
+        return self.ingest_content("metadata")
