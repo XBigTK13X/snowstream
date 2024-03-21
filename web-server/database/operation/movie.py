@@ -81,3 +81,45 @@ def get_movie_video_file(movie_id: int, video_file_id: int):
             .filter(dm.MovieVideoFile.video_file_id == video_file_id)
             .first()
         )
+
+
+def create_movie_image_file(movie_id: int, image_file_id: int):
+    with DbSession() as db:
+        dbm = dm.MovieImageFile()
+        dbm.movie_id = movie_id
+        dbm.image_file_id = image_file_id
+        db.add(dbm)
+        db.commit()
+        db.refresh(dbm)
+        return dbm
+
+
+def get_movie_image_file(movie_id: int, image_file_id: int):
+    with DbSession() as db:
+        return (
+            db.query(dm.MovieImageFile)
+            .filter(dm.MovieImageFile.movie_id == movie_id)
+            .filter(dm.MovieImageFile.image_file_id == image_file_id)
+            .first()
+        )
+
+
+def create_movie_metadata_file(movie_id: int, metadata_file_id: int):
+    with DbSession() as db:
+        dbm = dm.MovieMetadataFile()
+        dbm.movie_id = movie_id
+        dbm.metadata_file_id = metadata_file_id
+        db.add(dbm)
+        db.commit()
+        db.refresh(dbm)
+        return dbm
+
+
+def get_movie_metadata_file(movie_id: int, metadata_file_id: int):
+    with DbSession() as db:
+        return (
+            db.query(dm.MovieMetadataFile)
+            .filter(dm.MovieMetadataFile.movie_id == movie_id)
+            .filter(dm.MovieMetadataFile.metadata_file_id == metadata_file_id)
+            .first()
+        )

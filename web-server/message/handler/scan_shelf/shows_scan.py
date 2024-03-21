@@ -6,6 +6,16 @@ import re
 from db import db
 import os
 
+from enum import Flag, auto
+
+
+class AssetScope(Flag):
+    EPISODE = auto()
+    SEASON = auto()
+    SHOW = auto()
+    HAS_SEASON = EPISODE | SEASON
+
+
 SHOW_REGEX = re.compile(
     r"(?P<directory>.*)\/(?P<show_name>[^\/]*)\/(?P<asset_name>.*)", re.IGNORECASE
 )
@@ -26,6 +36,7 @@ def parse_show_file_info(matches):
     result["directory"] = Path(
         os.path.join(matches.group("directory"), matches.group("show_name") + "/")
     ).as_posix()
+    result["asset_scope"] = AssetScope.SHOW
     result["show_name"] = matches.group("show_name")
     result["asset_name"] = matches.group("asset_name")
     return result
@@ -34,6 +45,7 @@ def parse_show_file_info(matches):
 def parse_season_file_info(matches):
     match_lookup = matches.groupdict()
     result = {}
+    result["asset_scope"] = AssetScope.SEASON
     result["show_name"] = matches.group("show_name")
     result["season"] = (
         0
@@ -43,7 +55,7 @@ def parse_season_file_info(matches):
     result["directory"] = Path(
         os.path.join(matches.group("directory"), matches.group("show_name") + "/")
     ).as_posix()
-    result["asset_name"] = matches.group(["asset_name"])
+    result["asset_name"] = matches.group("asset_name")
     return result
 
 
@@ -51,6 +63,7 @@ def parse_episode_file_info(matches):
     match_lookup = matches.groupdict()
     result = {}
     result["show_name"] = matches.group("show_name")
+    result["asset_scope"] = AssetScope.EPISODE
     result["season"] = (
         0
         if match_lookup["season_order_counter"] == None
@@ -89,25 +102,27 @@ def parse_show_info(file_path: str):
     return None
 
 
-def identify_show_kind(info: dict):
-    if "asset_name" in info:
-        if '.nfo' in info['asset_name']:
-            if 'season' in info:
-                return 'season_info'
-            if 'episode_start' in info:
-                return 'episode_info'
-            return 'show_info'
-        image_kind = 'poster'
-        if 'banner' in info['asset_name']:
-            image_kind = 'banner'
-        if 'backdrop' in info['asset_name']:
-            image_kind = 'backdrop'
-        if 'season' in info:
-            
-        if "folder" in info["asset_name"] or "poster" in info["asset_name"]:
-            return "show_poster"
-        if ''
-    return "show_extra" if info["season"] == 0 else "show_episode"
+def identify_show_file_kind(extension_kind: str, info: dict):
+    if extension_kind == "video":
+        return "show_extra" if info["season"] == 0 else "show_episode"
+    if extension_kind == "image":
+        image_kind = "poster"
+        if "banner" in info["asset_name"]:
+            image_kind = "banner"
+        if "backdrop" in info["asset_name"]:
+            image_kind = "backdrop"
+        if "season" in info:
+            return f"season_{image_kind}"
+        if "episode_start" in info:
+            return f"episode_{image_kind}"
+        return f"show_{image_kind}"
+    if extension_kind == "metadata":
+        if "season" in info:
+            return "season_info"
+        if "episode_start" in info:
+            return "episode_info"
+        return "show_info"
+    return None
 
 
 class ShowsScanHandler(base.BaseHandler):
@@ -115,7 +130,7 @@ class ShowsScanHandler(base.BaseHandler):
         super().__init__(
             job_id=job_id,
             shelf=shelf,
-            identifier=identify_show_kind,
+            identifier=identify_show_file_kind,
             parser=parse_show_info,
         )
 
@@ -158,12 +173,87 @@ class ShowsScanHandler(base.BaseHandler):
             )
         return episode
 
+    def organize_metadata(self):
+        for info in self.file_info_lookup["metadata"]:
+            show_slug, show = self.get_or_create_show(info=info)
+            season_slug = None
+            season = None
+            if info["asset_scope"] in AssetScope.HAS_SEASON:
+                season_slug, season = self.get_or_create_season(
+                    show_slug=show_slug, show=show, info=info
+                )
+
+            if info["asset_scope"] == AssetScope.SHOW:
+                if not db.op.get_show_metadata_file(
+                    show_id=show.id, metadata_file_id=info["id"]
+                ):
+                    db.op.create_show_metadata_file(
+                        show_id=show.id, metadata_file_id=info["id"]
+                    )
+            elif info["asset_scope"] == AssetScope.SEASON:
+                if not db.op.get_show_season_metadata_file(
+                    show_season_id=season.id, metadata_file_id=info["id"]
+                ):
+                    db.op.create_show_season_metadata_file(
+                        show_season_id=season.id, metadata_file_id=info["id"]
+                    )
+            else:
+                episode_end = (
+                    info["episode_start"] + 1
+                    if info["episode_end"] == None
+                    else info["episode_end"]
+                )
+                for episode_order_counter in range(info["episode_start"], episode_end):
+                    episode = self.get_or_create_episode(
+                        season=season, episode_order_counter=episode_order_counter
+                    )
+                    if not db.op.get_show_episode_metadata_file(
+                        show_episode_id=episode.id, metadata_file_id=info["id"]
+                    ):
+                        db.op.create_show_episode_metadata_file(
+                            show_episode_id=episode.id, metadata_file_id=info["id"]
+                        )
+
     def organize_images(self):
         for info in self.file_info_lookup["image"]:
             show_slug, show = self.get_or_create_show(info=info)
-            season_slug, season = self.get_or_create_season(
-                show_slug=show_slug, show=show, info=info
-            )
+            season_slug = None
+            season = None
+            if info["asset_scope"] in AssetScope.HAS_SEASON:
+                season_slug, season = self.get_or_create_season(
+                    show_slug=show_slug, show=show, info=info
+                )
+            if info["asset_scope"] == AssetScope.SHOW:
+                if not db.op.get_show_image_file(
+                    show_id=show.id, image_file_id=info["id"]
+                ):
+                    db.op.create_show_image_file(
+                        show_id=show.id, image_file_id=info["id"]
+                    )
+            elif info["asset_scope"] == AssetScope.SEASON:
+                if not db.op.get_show_season_image_file(
+                    show_season_id=season.id, image_file_id=info["id"]
+                ):
+                    db.op.create_show_season_image_file(
+                        show_season_id=season.id, image_file_id=info["id"]
+                    )
+            else:
+                episode_end = (
+                    info["episode_start"] + 1
+                    if info["episode_end"] == None
+                    else info["episode_end"]
+                )
+                for episode_order_counter in range(info["episode_start"], episode_end):
+                    episode = self.get_or_create_episode(
+                        season=season, episode_order_counter=episode_order_counter
+                    )
+                    image_file_association = db.op.get_show_episode_image_file(
+                        show_episode_id=episode.id, image_file_id=info["id"]
+                    )
+                    if not image_file_association:
+                        db.op.create_show_episode_image_file(
+                            show_episode_id=episode.id, image_file_id=info["id"]
+                        )
 
     def organize_videos(self):
         for info in self.file_info_lookup["video"]:
@@ -177,9 +267,8 @@ class ShowsScanHandler(base.BaseHandler):
                 else info["episode_end"]
             )
             for episode_order_counter in range(info["episode_start"], episode_end):
-                episode = self.get_or_create_episode(season=season, info=info)
-                log.info(
-                    f"Matched [{show.name} S{season.season_order_counter:02}E{episode.episode_order_counter:04}] to [{info['file_path']}]"
+                episode = self.get_or_create_episode(
+                    season=season, episode_order_counter=episode_order_counter
                 )
                 video_file_association = db.op.get_show_episode_video_file(
                     show_episode_id=episode.id, video_file_id=info["id"]

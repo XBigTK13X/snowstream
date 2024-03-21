@@ -66,7 +66,9 @@ class BaseHandler:
             if media_info == None:
                 log.info(f"Wasn't able to parse {kind} info for [{media_path}]")
                 continue
-            media_info["kind"] = self.file_kind_identifier(info=media_info)
+            media_info["kind"] = self.file_kind_identifier(
+                extension_kind=kind, info=media_info
+            )
             media_info["file_path"] = media_path
             parsed_files.append(media_info)
         log.info(

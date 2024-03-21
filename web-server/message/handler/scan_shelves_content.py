@@ -42,6 +42,8 @@ def handle(job_id, message_payload):
         log.info(
             f"Organizing [{handler.shelf.name} -> {handler.shelf.kind}] files into the library"
         )
-        handler.organize()
+        handler.organize_metadata()
+        handler.organize_images()
+        handler.organize_videos()
 
     return True
