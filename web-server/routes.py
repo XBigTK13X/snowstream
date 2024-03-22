@@ -115,16 +115,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_id: int,
     ):
-        movie = db.op.get_movie_details_by_id(movie_id=movie_id)
-        # TODO Automate this for all joined calls as a computed property
-        shelf_root = movie.shelf.directory.split("/")
-        shelf_root.pop()
-        shelf_root = "/".join(shelf_root)
-        for video_file in movie.video_files:
-            video_file.set_web_path(
-                video_file.path.replace(shelf_root, config.web_media_url)
-            )
-        return movie
+        return db.op.get_movie_details_by_id(movie_id=movie_id)
 
     @router.get("/show/list")
     def get_show_list(
@@ -152,16 +143,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         episode_id: int,
     ):
-        episode = db.op.get_season_episode_details_by_id(episode_id=episode_id)
-        # TODO Automate this for all joined calls as a computed property
-        shelf_root = episode.season.show.shelf.directory.split("/")
-        shelf_root.pop()
-        shelf_root = "/".join(shelf_root)
-        for video_file in episode.video_files:
-            video_file.set_web_path(
-                video_file.path.replace(shelf_root, config.web_media_url)
-            )
-        return episode
+        return db.op.get_season_episode_details_by_id(episode_id=episode_id)
 
     return router
 

@@ -121,7 +121,6 @@ class MoviesScanHandler(base.BaseHandler):
     def organize_images(self):
         for info in self.file_info_lookup["image"]:
             movie_slug, movie = self.get_or_create_movie(info=info)
-            log.info(f"Matched [{movie.name}] to [{info['file_path']}]")
             if not db.op.get_movie_image_file(
                 movie_id=movie.id, image_file_id=info["id"]
             ):
@@ -132,7 +131,6 @@ class MoviesScanHandler(base.BaseHandler):
     def organize_metadata(self):
         for info in self.file_info_lookup["metadata"]:
             movie_slug, movie = self.get_or_create_movie(info=info)
-            log.info(f"Matched [{movie.name}] to [{info['file_path']}]")
             if not db.op.get_movie_metadata_file(
                 movie_id=movie.id, metadata_file_id=info["id"]
             ):
@@ -143,7 +141,6 @@ class MoviesScanHandler(base.BaseHandler):
     def organize_videos(self):
         for info in self.file_info_lookup["video"]:
             movie_slug, movie = self.get_or_create_movie(info=info)
-            log.info(f"Matched [{movie.name}] to [{info['file_path']}]")
             if not db.op.get_movie_video_file(
                 movie_id=movie.id, video_file_id=info["id"]
             ):

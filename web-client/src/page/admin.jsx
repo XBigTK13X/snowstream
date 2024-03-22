@@ -53,7 +53,7 @@ class MediaLibraryAdminTab extends React.Component {
               return (
                 <div key={shelf.id}>
                   <li>
-                    {shelf.name} - {shelf.kind} - {shelf.directory}
+                    {shelf.id} - {shelf.name} - {shelf.kind} - {shelf.directory}
                   </li>
                 </div>
               );

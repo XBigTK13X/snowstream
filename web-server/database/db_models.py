@@ -85,6 +85,23 @@ class Movie(BaseModel):
         secondary="movie_shelf", back_populates="movies"
     )
 
+    def convert_local_paths_to_web_paths(self, config):
+        shelf_root = self.shelf.directory.split("/")
+        shelf_root.pop()
+        shelf_root = "/".join(shelf_root)
+        for video_file in self.video_files:
+            video_file.set_web_path(
+                video_file.path.replace(shelf_root, config.web_media_url)
+            )
+        for image_file in self.image_files:
+            image_file.set_web_path(
+                image_file.path.replace(shelf_root, config.web_media_url)
+            )
+        for metadata_file in self.image_files:
+            metadata_file.set_web_path(
+                metadata_file.path.replace(shelf_root, config.web_media_url)
+            )
+
 
 class MovieShelf(BaseModel):
     __tablename__ = "movie_shelf"
@@ -145,6 +162,19 @@ class Show(BaseModel):
         secondary="show_metadata_file", back_populates="show"
     )
 
+    def convert_local_paths_to_web_paths(self, config):
+        shelf_root = self.shelf.directory.split("/")
+        shelf_root.pop()
+        shelf_root = "/".join(shelf_root)
+        for image_file in self.image_files:
+            image_file.set_web_path(
+                image_file.path.replace(shelf_root, config.web_media_url)
+            )
+        for metadata_file in self.metadata_files:
+            metadata_file.set_web_path(
+                metadata_file.path.replace(shelf_root, config.web_media_url)
+            )
+
     # tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=show_tag_association, back_populates="shows")
 
 
@@ -177,6 +207,23 @@ class ShowEpisode(BaseModel):
         secondary="show_episode_metadata_file", back_populates="show_episode"
     )
     season: sorm.Mapped["ShowSeason"] = sorm.relationship(back_populates="episodes")
+
+    def convert_local_paths_to_web_paths(self, config):
+        shelf_root = self.season.show.shelf.directory.split("/")
+        shelf_root.pop()
+        shelf_root = "/".join(shelf_root)
+        for video_file in self.video_files:
+            video_file.set_web_path(
+                video_file.path.replace(shelf_root, config.web_media_url)
+            )
+        for image_file in self.image_files:
+            image_file.set_web_path(
+                image_file.path.replace(shelf_root, config.web_media_url)
+            )
+        for metadata_file in self.image_files:
+            metadata_file.set_web_path(
+                metadata_file.path.replace(shelf_root, config.web_media_url)
+            )
 
 
 class ShowEpisodeImageFile(BaseModel):
@@ -213,6 +260,19 @@ class ShowSeason(BaseModel):
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(
         secondary="show_season_metadata_file", back_populates="show_season"
     )
+
+    def convert_local_paths_to_web_paths(self, config):
+        shelf_root = self.show.shelf.directory.split("/")
+        shelf_root.pop()
+        shelf_root = "/".join(shelf_root)
+        for image_file in self.image_files:
+            image_file.set_web_path(
+                image_file.path.replace(shelf_root, config.web_media_url)
+            )
+        for metadata_file in self.metadata_files:
+            metadata_file.set_web_path(
+                metadata_file.path.replace(shelf_root, config.web_media_url)
+            )
 
 
 class ShowSeasonImageFile(BaseModel):

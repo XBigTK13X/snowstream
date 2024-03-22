@@ -4,6 +4,7 @@ from database.sql_alchemy import DbSession
 from log import log
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
+from settings import config
 
 
 def create_movie(name: str, release_year: int):
@@ -37,6 +38,7 @@ def get_movie_details_by_id(movie_id: int):
             .filter(dm.Movie.id == movie_id)
             .first()
         )
+        movie.convert_local_paths_to_web_paths(config=config)
         return movie
         # movie.video_files = db.scalars(sa.select(dm.MovieVideoFile).filter(dm.MovieVideoFile.movie_id == movie_id)).all();
         # return movie
