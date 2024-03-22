@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 class Config:
@@ -30,7 +31,7 @@ class Config:
         self.jwt_algorithm = "HS256"
         self.jwt_expire_value = 30
         self.jwt_expire_unit = "days"
-        self.web_media_url = "http://192.168.1.20:9064/media"
+        self.web_media_url = "<need_to_set_an_env_var-SNOWSTREAM_WEB_MEDIA_URL>"
 
         self.refresh_postgres_url()
 
@@ -47,3 +48,9 @@ for key, val in vars(config).items():
         setattr(config, key, env_var_value)
         if "POSTGRES" in env_var_key:
             config.refresh_postgres_url()
+
+if not config.web_media_url:
+    print("SNOWSTREAM_WEB_MEDIA_URL environment variable must be set.")
+    print("example: http://<host-ip>:9064/media")
+    print("Exiting")
+    sys.exit(1)

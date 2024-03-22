@@ -25,26 +25,6 @@
         android:label="Home"
         tools:layout="@layout/home_fragment" />
     <fragment
-        android:id="@+id/movie_shelf_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.MovieShelfFragment"
-        android:label="Movies"
-        tools:layout="@layout/movie_shelf_fragment" />
-    <fragment
-        android:id="@+id/show_shelf_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.ShowShelfFragment"
-        android:label="Shows"
-        tools:layout="@layout/show_shelf_fragment" />
-    <fragment
-        android:id="@+id/season_list_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.SeasonListFragment"
-        android:label="Seasons"
-        tools:layout="@layout/season_list_fragment" />
-    <fragment
-        android:id="@+id/episode_list_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.EpisodeListFragment"
-        android:label="Episodes"
-        tools:layout="@layout/episode_list_fragment" />
-    <fragment
         android:id="@+id/movie_details_fragment"
         android:name="com.simplepathstudios.snowstream.fragment.MovieDetailsFragment"
         android:label="Movie"
@@ -54,4 +34,9 @@
         android:name="com.simplepathstudios.snowstream.fragment.EpisodeDetailsFragment"
         android:label="Episode"
         tools:layout="@layout/episode_details_fragment" />
+    <fragment
+        android:id="@+id/poster_list_fragment"
+        android:name="com.simplepathstudios.snowstream.fragment.PosterListFragment"
+        android:label="Poster List"
+        tools:layout="@layout/poster_list_fragment" />
 </navigation>

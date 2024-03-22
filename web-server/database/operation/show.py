@@ -81,6 +81,7 @@ def get_show_season_list(show_id: int):
         )
         for season in seasons:
             season.convert_local_paths_to_web_paths(config=config)
+        return seasons
 
 
 def create_show_episode(show_season_id: int, episode_order_counter: int):
@@ -135,6 +136,7 @@ def get_season_episode_list(show_season_id: int):
         )
         for episode in episodes:
             episode.convert_local_paths_to_web_paths(config=config)
+        return episodes
 
 
 def create_show_episode_video_file(show_episode_id: int, video_file_id: int):

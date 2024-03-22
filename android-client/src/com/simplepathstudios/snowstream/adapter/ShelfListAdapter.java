@@ -67,15 +67,8 @@ public class ShelfListAdapter extends RecyclerView.Adapter<ShelfListAdapter.View
          Bundle bundle = new Bundle();
          bundle.putInt("ShelfId", shelf.id);
          bundle.putString("ShelfName", shelf.name);
-         if(shelf.kind.equals("Movies")){
-            navController.navigate(R.id.movie_shelf_fragment, bundle);
-         }
-         else if(shelf.kind.equals("Shows")){
-            navController.navigate(R.id.show_shelf_fragment, bundle);
-         }
-         else {
-            Util.toast("Unknown shelf kind ["+shelf.kind+"]");
-         }
+         bundle.putString("ListKind", shelf.kind);
+         navController.navigate(R.id.poster_list_fragment, bundle);
       }
    }
 }
