@@ -56,12 +56,15 @@ def get_movie(name: str, release_year: int):
 
 def get_movie_list_by_shelf(shelf_id: int):
     with DbSession() as db:
-        return (
+        movies = (
             db.query(dm.Movie)
             .join(dm.MovieShelf)
             .filter(dm.MovieShelf.shelf_id == shelf_id)
             .all()
         )
+        for movie in movies:
+            movie.convert_local_paths_to_web_paths(config=config)
+        return movies
 
 
 def create_movie_video_file(movie_id: int, video_file_id: int):

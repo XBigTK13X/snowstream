@@ -46,7 +46,7 @@ def get_show_list_by_shelf(shelf_id: int):
         )
         for show in shows:
             show.convert_local_paths_to_web_paths(config=config)
-        return show
+        return shows
 
 
 def create_show_season(show_id: int, season_order_counter: int):

@@ -8,5 +8,8 @@ public class Episode {
    public String name;
    public Integer episode_order_counter;
    public ArrayList<VideoFile> video_files;
+   public ArrayList<ImageFile> image_files;
+   public ArrayList<MetadataFile> metadata_files;
+   public ImageFile main_poster_image;
    public Season season;
 }

@@ -82,11 +82,15 @@ def identify_movie_file_kind(extension_kind: str, info: dict):
             else "movie_extra_info"
         )
     if extension_kind == "image":
-        image_kind = "poster"
+        image_kind = "unknown"
+        if "poster" in info["asset_name"] or "folder" in info["asset_name"]:
+            image_kind = "poster"
         if "banner" in info["asset_name"]:
             image_kind = "banner"
         if "backdrop" in info["asset_name"]:
             image_kind = "backdrop"
+        if "logo" in info["asset_name"]:
+            image_kind = "logo"
         movie_kind = "movie_main_feature" if not "extra_name" in info else "movie_extra"
         return f"{movie_kind}_{image_kind}"
     if extension_kind == "video":

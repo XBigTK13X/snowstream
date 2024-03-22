@@ -97,6 +97,8 @@ class Movie(BaseModel):
             image_file.set_web_path(
                 image_file.path.replace(shelf_root, config.web_media_url)
             )
+            if "poster" in image_file.kind:
+                self.main_poster_image = image_file
         for metadata_file in self.image_files:
             metadata_file.set_web_path(
                 metadata_file.path.replace(shelf_root, config.web_media_url)
@@ -170,6 +172,8 @@ class Show(BaseModel):
             image_file.set_web_path(
                 image_file.path.replace(shelf_root, config.web_media_url)
             )
+            if "poster" in image_file.kind:
+                self.main_poster_image = image_file
         for metadata_file in self.metadata_files:
             metadata_file.set_web_path(
                 metadata_file.path.replace(shelf_root, config.web_media_url)
@@ -220,6 +224,8 @@ class ShowEpisode(BaseModel):
             image_file.set_web_path(
                 image_file.path.replace(shelf_root, config.web_media_url)
             )
+            if "poster" in image_file.kind:
+                self.main_poster_image = image_file
         for metadata_file in self.image_files:
             metadata_file.set_web_path(
                 metadata_file.path.replace(shelf_root, config.web_media_url)
@@ -269,6 +275,8 @@ class ShowSeason(BaseModel):
             image_file.set_web_path(
                 image_file.path.replace(shelf_root, config.web_media_url)
             )
+            if "poster" in image_file.kind:
+                self.main_poster_image = image_file
         for metadata_file in self.metadata_files:
             metadata_file.set_web_path(
                 metadata_file.path.replace(shelf_root, config.web_media_url)

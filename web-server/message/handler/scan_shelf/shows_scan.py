@@ -106,7 +106,9 @@ def identify_show_file_kind(extension_kind: str, info: dict):
     if extension_kind == "video":
         return "show_extra" if info["season"] == 0 else "show_episode"
     if extension_kind == "image":
-        image_kind = "poster"
+        image_kind = "unknown"
+        if "poster" in info["asset_name"] or "folder" in info["asset_name"]:
+            image_kind = "poster"
         if "banner" in info["asset_name"]:
             image_kind = "banner"
         if "backdrop" in info["asset_name"]:
