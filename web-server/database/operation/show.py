@@ -77,6 +77,7 @@ def get_show_season_list(show_id: int):
             .options(sorm.joinedload(dm.ShowSeason.image_files))
             .options(sorm.joinedload(dm.ShowSeason.metadata_files))
             .filter(dm.ShowSeason.show_id == show_id)
+            .order_by(dm.ShowSeason.season_order_counter)
             .all()
         )
         for season in seasons:
@@ -132,6 +133,7 @@ def get_season_episode_list(show_season_id: int):
             .options(sorm.joinedload(dm.ShowEpisode.image_files))
             .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
             .filter(dm.ShowEpisode.show_season_id == show_season_id)
+            .order_by(dm.ShowEpisode.episode_order_counter)
             .all()
         )
         for episode in episodes:
