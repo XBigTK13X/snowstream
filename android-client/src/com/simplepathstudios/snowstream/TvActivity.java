@@ -30,7 +30,7 @@ import com.simplepathstudios.snowstream.api.ApiClient;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 
 public class TvActivity extends Activity {
-    private final String TAG = "MobileActivity";
+    private final String TAG = "TVActivity";
 
     private static TvActivity __instance;
 
@@ -39,29 +39,10 @@ public class TvActivity extends Activity {
     }
 
     private NavController navController;
-    private NavigationView navigationView;
     private LinearLayout mainLayout;
     private NavDestination currentLocation;
 
     private SettingsViewModel settingsViewModel;
-
-    private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
-    private ProgressBar loadingProgress;
-    private TextView loadingText;
-
-
-    public boolean toolbarIsVisible() {
-        return toolbar.getVisibility() == View.VISIBLE;
-    }
-
-    public void toolbarShow() {
-        toolbar.setVisibility(View.VISIBLE);
-    }
-
-    public void toolbarHide() {
-        toolbar.setVisibility(View.GONE);
-    }
 
     public void navigateUp() {
         navController.navigateUp();
@@ -86,7 +67,9 @@ public class TvActivity extends Activity {
         SettingsViewModel.Settings settings = settingsViewModel.Data.getValue();
         ApiClient.retarget(settings.ServerUrl, settings.Username, settings.AuthToken);
 
-        setContentView(R.layout.app_mobile);
+        setContentView(R.layout.app_tv);
+
+        mainLayout = findViewById(R.id.main_activity_layout);
 
         Util.enableFullscreen();
 
@@ -97,23 +80,8 @@ public class TvActivity extends Activity {
         }
         Util.log(TAG, "====== Starting new TV app instance ======");
 
-        loadingProgress = findViewById(R.id.loading_indicator);
-        LoadingIndicator.setProgressBar(loadingProgress);
-        loadingText = findViewById(R.id.loading_message);
-        LoadingIndicator.setLoadingTextView(loadingText);
-
-        drawerLayout = findViewById(R.id.main_activity_drawer);
-        mainLayout = findViewById(R.id.main_activity_layout);
-        navigationView = findViewById(R.id.nav_view);
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        // Pages that show full nav, not just the back button
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.authenticate_fragment,
-                R.id.login_fragment,
-                R.id.home_fragment,
-                R.id.options_fragment)
-                .setDrawerLayout(drawerLayout)
-                .build();
+
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
@@ -127,19 +95,8 @@ public class TvActivity extends Activity {
                 }
             }
         });
-        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                navController.navigate(menuItem.getItemId());
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-            }
-        });
 
         mainLayout.setVisibility(View.VISIBLE);
-        navigationView.setVisibility(View.VISIBLE);
     }
 
     @Override

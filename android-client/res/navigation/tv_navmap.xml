@@ -6,37 +6,22 @@
     app:startDestination="@id/login_fragment">
     <fragment
         android:id="@+id/options_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.mobile.OptionsFragment"
+        android:name="com.simplepathstudios.snowstream.fragment.tv.OptionsFragment"
         android:label="Options"
-        tools:layout="@layout/mobile_options_fragment" />
+        tools:layout="@layout/tv_options_fragment" />
     <fragment
         android:id="@+id/login_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.mobile.LoginFragment"
+        android:name="com.simplepathstudios.snowstream.fragment.tv.LoginFragment"
         android:label="Login"
-        tools:layout="@layout/mobile_login_fragment" />
+        tools:layout="@layout/tv_login_fragment" />
     <fragment
         android:id="@+id/authenticate_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.mobile.AuthenticateFragment"
+        android:name="com.simplepathstudios.snowstream.fragment.tv.AuthenticateFragment"
         android:label="Authenticate"
-        tools:layout="@layout/mobile_authenticate_fragment" />
+        tools:layout="@layout/tv_authenticate_fragment" />
     <fragment
         android:id="@+id/home_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.mobile.HomeFragment"
+        android:name="com.simplepathstudios.snowstream.fragment.tv.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/mobile_home_fragment" />
-    <fragment
-        android:id="@+id/movie_details_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.mobile.MovieDetailsFragment"
-        android:label="Movie"
-        tools:layout="@layout/mobile_movie_details_fragment" />
-    <fragment
-        android:id="@+id/episode_details_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.mobile.EpisodeDetailsFragment"
-        android:label="Episode"
-        tools:layout="@layout/mobile_episode_details_fragment" />
-    <fragment
-        android:id="@+id/poster_list_fragment"
-        android:name="com.simplepathstudios.snowstream.fragment.mobile.PosterListFragment"
-        android:label="Poster List"
-        tools:layout="@layout/mobile_poster_list_fragment" />
+        tools:layout="@layout/tv_home_fragment" />
 </navigation>
