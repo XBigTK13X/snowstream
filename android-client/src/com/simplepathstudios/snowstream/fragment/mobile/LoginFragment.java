@@ -1,6 +1,5 @@
-package com.simplepathstudios.snowstream.fragment;
+package com.simplepathstudios.snowstream.fragment.mobile;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simplepathstudios.snowstream.LoadingIndicator;
-import com.simplepathstudios.snowstream.MainActivity;
+import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
-import com.simplepathstudios.snowstream.SnowstreamSettings;
-import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.adapter.UserListAdapter;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 import com.simplepathstudios.snowstream.viewmodel.UserListViewModel;
@@ -35,7 +32,7 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.login_fragment, container, false);
+        return inflater.inflate(R.layout.mobile_login_fragment, container, false);
     }
 
     @Override
@@ -51,7 +48,7 @@ public class LoginFragment extends Fragment {
                 listElement.setAdapter(userListAdapter);
                 layoutManager = new LinearLayoutManager(getActivity());
                 listElement.setLayoutManager(layoutManager);
-                userListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(UserListViewModel.class);
+                userListViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(UserListViewModel.class);
                 userListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
                     @Override
                     public void onChanged(List<String> userList) {
@@ -61,7 +58,7 @@ public class LoginFragment extends Fragment {
                 });
                 userListViewModel.load();
             } else {
-                NavController navController = Navigation.findNavController(MainActivity.getInstance(), R.id.nav_host_fragment);
+                NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
                 navController.navigate(R.id.home_fragment);
             }
         });

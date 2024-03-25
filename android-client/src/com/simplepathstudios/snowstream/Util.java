@@ -3,43 +3,21 @@ package com.simplepathstudios.snowstream;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.simplepathstudios.snowstream.api.model.Movie;
-import com.simplepathstudios.snowstream.viewmodel.MovieListViewModel;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class Util {
     private static final String TAG = "Util";
@@ -139,7 +117,7 @@ public class Util {
     }
 
     public static void confirmMenuAction(MenuItem menuItem, String message, DialogInterface.OnClickListener confirmListener){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getInstance());
+        AlertDialog.Builder builder = new AlertDialog.Builder(MobileActivity.getInstance());
         builder.setMessage(message);
         builder.setPositiveButton("Yes", confirmListener);
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -159,7 +137,7 @@ public class Util {
     }
 
     public static void enableFullscreen(){
-        Window window = MainActivity.getInstance().getWindow();
+        Window window = MobileActivity.getInstance().getWindow();
         WindowCompat.setDecorFitsSystemWindows(window, false);
         WindowInsetsControllerCompat windowInsetsControllerCompat = new WindowInsetsControllerCompat(window, window.getDecorView());
         windowInsetsControllerCompat.hide(WindowInsetsCompat.Type.systemBars());

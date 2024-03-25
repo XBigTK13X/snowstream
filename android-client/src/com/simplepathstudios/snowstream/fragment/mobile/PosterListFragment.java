@@ -1,4 +1,4 @@
-package com.simplepathstudios.snowstream.fragment;
+package com.simplepathstudios.snowstream.fragment.mobile;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.simplepathstudios.snowstream.MainActivity;
+import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.adapter.PosterListAdapter;
 import com.simplepathstudios.snowstream.api.model.Episode;
@@ -36,7 +36,7 @@ public class PosterListFragment extends Fragment {
     private PosterListAdapter posterListAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.poster_list_fragment, container, false);
+        return inflater.inflate(R.layout.mobile_poster_list_fragment, container, false);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class PosterListFragment extends Fragment {
         posterListElement.setLayoutManager(posterListLayoutManager);
 
         if(listKind.equalsIgnoreCase("Movies")){
-            movieListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(MovieListViewModel.class);
+            movieListViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(MovieListViewModel.class);
             movieListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(List<Movie> movieList) {
@@ -67,7 +67,7 @@ public class PosterListFragment extends Fragment {
             movieListViewModel.load(shelfId);
         }
         else if(listKind.equalsIgnoreCase("Shows")){
-            showListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(ShowListViewModel.class);
+            showListViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(ShowListViewModel.class);
             showListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Show>>() {
                 @Override
                 public void onChanged(List<Show> showList) {
@@ -78,7 +78,7 @@ public class PosterListFragment extends Fragment {
             showListViewModel.load(shelfId);
         }
         else if(listKind.equalsIgnoreCase("Seasons")){
-            seasonListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(SeasonListViewModel.class);
+            seasonListViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(SeasonListViewModel.class);
             seasonListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Season>>() {
                 @Override
                 public void onChanged(List<Season> seasonList) {
@@ -89,7 +89,7 @@ public class PosterListFragment extends Fragment {
             seasonListViewModel.load(showId);
         }
         else if(listKind.equalsIgnoreCase("Episodes")){
-            episodeListViewModel = new ViewModelProvider(MainActivity.getInstance()).get(EpisodeListViewModel.class);
+            episodeListViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(EpisodeListViewModel.class);
             episodeListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Episode>>() {
                 @Override
                 public void onChanged(List<Episode> episodeList) {

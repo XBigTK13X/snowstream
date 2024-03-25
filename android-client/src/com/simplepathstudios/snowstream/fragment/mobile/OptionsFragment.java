@@ -1,4 +1,4 @@
-package com.simplepathstudios.snowstream.fragment;
+package com.simplepathstudios.snowstream.fragment.mobile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,11 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.simplepathstudios.snowstream.LoadingIndicator;
-import com.simplepathstudios.snowstream.MainActivity;
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.SnowstreamSettings;
-import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.api.ApiClient;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 
@@ -38,7 +35,7 @@ public class OptionsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.options_fragment, container, false);
+        return inflater.inflate(R.layout.mobile_options_fragment, container, false);
     }
 
     @Override

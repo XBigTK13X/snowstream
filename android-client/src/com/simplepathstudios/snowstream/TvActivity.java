@@ -1,6 +1,7 @@
 package com.simplepathstudios.snowstream;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -29,13 +29,12 @@ import com.google.android.material.navigation.NavigationView;
 import com.simplepathstudios.snowstream.api.ApiClient;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class TvActivity extends Activity {
+    private final String TAG = "MobileActivity";
 
-    private final String TAG = "MainActivity";
+    private static TvActivity __instance;
 
-    private static MainActivity __instance;
-
-    public static MainActivity getInstance() {
+    public static TvActivity getInstance() {
         return __instance;
     }
 
@@ -52,27 +51,23 @@ public class MainActivity extends AppCompatActivity {
     private TextView loadingText;
 
 
-    public void setActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    public boolean toolbarIsVisible(){
+    public boolean toolbarIsVisible() {
         return toolbar.getVisibility() == View.VISIBLE;
     }
 
-    public void toolbarShow(){
+    public void toolbarShow() {
         toolbar.setVisibility(View.VISIBLE);
     }
 
-    public void toolbarHide(){
+    public void toolbarHide() {
         toolbar.setVisibility(View.GONE);
     }
 
-    public void navigateUp(){
+    public void navigateUp() {
         navController.navigateUp();
     }
 
-    public boolean isCurrentLocation(String locationName){
+    public boolean isCurrentLocation(String locationName) {
         return currentLocation.getLabel().equals(locationName);
     }
 
@@ -86,24 +81,21 @@ public class MainActivity extends AppCompatActivity {
 
         Util.registerGlobalExceptionHandler();
 
-        this.settingsViewModel = new ViewModelProvider(MainActivity.getInstance()).get(SettingsViewModel.class);
+        this.settingsViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(SettingsViewModel.class);
         this.settingsViewModel.initialize(this.getSharedPreferences("Snowstream", Context.MODE_PRIVATE));
         SettingsViewModel.Settings settings = settingsViewModel.Data.getValue();
         ApiClient.retarget(settings.ServerUrl, settings.Username, settings.AuthToken);
 
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.app_mobile);
 
         Util.enableFullscreen();
 
-        if(SnowstreamSettings.DebugResourceLeaks) {
+        if (SnowstreamSettings.DebugResourceLeaks) {
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
                     .detectLeakedClosableObjects()
                     .build());
         }
-        Util.log(TAG, "====== Starting new app instance ======");
-
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Util.log(TAG, "====== Starting new TV app instance ======");
 
         loadingProgress = findViewById(R.id.loading_indicator);
         LoadingIndicator.setProgressBar(loadingProgress);
@@ -125,16 +117,14 @@ public class MainActivity extends AppCompatActivity {
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                getSupportActionBar().setSubtitle("");
                 CharSequence name = destination.getLabel();
                 currentLocation = destination;
                 String label = name.toString();
-                if(!label.equals("Login") && !label.equals("Authenticate")){
-                    if(settingsViewModel.Data.getValue().AuthToken == null){
+                if (!label.equals("Login") && !label.equals("Authenticate")) {
+                    if (settingsViewModel.Data.getValue().AuthToken == null) {
                         controller.navigate(R.id.login_fragment);
                     }
                 }
-                getSupportActionBar().setTitle(name);
             }
         });
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);

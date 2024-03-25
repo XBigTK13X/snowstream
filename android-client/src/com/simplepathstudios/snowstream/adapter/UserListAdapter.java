@@ -10,10 +10,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.simplepathstudios.snowstream.MainActivity;
+import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
@@ -29,7 +28,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
    @Override
    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       TextView v = (TextView) LayoutInflater.from(parent.getContext())
-              .inflate(R.layout.small_list_item, parent, false);
+              .inflate(R.layout.mobile_small_list_item, parent, false);
       return new ViewHolder(v);
    }
 
@@ -61,7 +60,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
       @Override
       public void onClick(View v) {
-         NavController navController = Navigation.findNavController(MainActivity.getInstance(), R.id.nav_host_fragment);
+         NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
          Bundle bundle = new Bundle();
          bundle.putString("Username", username);
          navController.navigate(R.id.authenticate_fragment, bundle);

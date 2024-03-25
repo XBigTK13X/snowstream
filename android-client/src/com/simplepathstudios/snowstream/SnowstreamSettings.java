@@ -9,7 +9,7 @@ public class SnowstreamSettings {
     public static boolean EnableDebugLog = true;
     public static final Uri UpdateSnowstreamUrl = Uri.parse("http://9914.us:8091/software/android/snowstream.apk");
     public static final boolean DebugResourceLeaks = false;
-    public static String DevServerUrl = "http://192.168.1.20:8000";
-    public static String ProdServerUrl = "http://192.168.1.20:8000";
+    public static String DevServerUrl = "http://192.168.1.232:8000";
+    public static String ProdServerUrl = "http://192.168.1.232:8000";
     public static final int SearchDelayMilliseconds = 300;
 }

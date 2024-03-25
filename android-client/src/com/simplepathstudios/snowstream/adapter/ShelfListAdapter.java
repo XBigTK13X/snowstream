@@ -10,12 +10,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.simplepathstudios.snowstream.MainActivity;
+import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
-import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.api.model.Shelf;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShelfListAdapter extends RecyclerView.Adapter<ShelfListAdapter.ViewHolder> {
@@ -31,7 +29,7 @@ public class ShelfListAdapter extends RecyclerView.Adapter<ShelfListAdapter.View
    @Override
    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       TextView v = (TextView) LayoutInflater.from(parent.getContext())
-              .inflate(R.layout.small_list_item, parent, false);
+              .inflate(R.layout.mobile_small_list_item, parent, false);
       return new ViewHolder(v);
    }
 
@@ -63,7 +61,7 @@ public class ShelfListAdapter extends RecyclerView.Adapter<ShelfListAdapter.View
 
       @Override
       public void onClick(View v) {
-         NavController navController = Navigation.findNavController(MainActivity.getInstance(), R.id.nav_host_fragment);
+         NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
          Bundle bundle = new Bundle();
          bundle.putInt("ShelfId", shelf.id);
          bundle.putString("ShelfName", shelf.name);

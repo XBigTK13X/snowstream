@@ -1,6 +1,5 @@
 package com.simplepathstudios.snowstream.adapter;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,16 +7,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.simplepathstudios.snowstream.MainActivity;
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.adapter.model.PosterListItem;
-import com.simplepathstudios.snowstream.api.model.Movie;
 
 import java.util.List;
 
@@ -34,7 +29,7 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.poster_list_item, parent, false);
+                .inflate(R.layout.mobile_poster_list_item, parent, false);
         return new ViewHolder(v);
     }
 

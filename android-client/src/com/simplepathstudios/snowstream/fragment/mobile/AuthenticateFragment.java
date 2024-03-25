@@ -1,4 +1,4 @@
-package com.simplepathstudios.snowstream.fragment;
+package com.simplepathstudios.snowstream.fragment.mobile;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,8 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.simplepathstudios.snowstream.LoadingIndicator;
-import com.simplepathstudios.snowstream.MainActivity;
+import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.api.ApiClient;
@@ -33,7 +32,7 @@ public class AuthenticateFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.authenticate_fragment, container, false);
+        return inflater.inflate(R.layout.mobile_authenticate_fragment, container, false);
     }
 
     @Override
@@ -61,7 +60,7 @@ public class AuthenticateFragment extends Fragment {
                             @Override
                             public void onResponse(Call<SnowstreamAuthToken> call, Response<SnowstreamAuthToken> response) {
                                 settingsViewModel.setAuthToken(username, response.body());
-                                NavController navController = Navigation.findNavController(MainActivity.getInstance(), R.id.nav_host_fragment);
+                                NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
                                 navController.navigate(R.id.home_fragment);
                             }
 
