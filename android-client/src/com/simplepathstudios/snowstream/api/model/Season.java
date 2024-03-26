@@ -46,6 +46,4 @@ public class Season implements PosterListItem {
    public String getTitle() {
       return this.name == null ? "Season "+this.season_order_counter : this.name;
    }
-
-
 }
