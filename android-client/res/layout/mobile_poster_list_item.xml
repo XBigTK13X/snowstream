@@ -2,8 +2,10 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+    <ImageView
     android:id="@+id/item_image"
     android:layout_width="175dp"
     android:layout_height="175dp"
@@ -23,7 +25,7 @@
     android:scaleType="fitCenter"
     android:contentDescription="Placeholder"
     android:visibility="gone" />
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    <TextView
     android:id="@+id/item_text"
     android:layout_width="150dp"
     android:layout_height="150dp"
@@ -34,7 +36,7 @@
     android:textColor="@color/white"
     android:singleLine="false"
     android:textSize="16dp"
-    android:text="Placeholder to see button alignment what the"
+    android:text="Placeholder to see button alignment."
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
     android:visibility="gone" />
 </LinearLayout>

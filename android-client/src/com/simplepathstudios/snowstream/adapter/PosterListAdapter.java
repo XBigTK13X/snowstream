@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +18,7 @@ import com.simplepathstudios.snowstream.adapter.model.PosterListItem;
 import java.util.List;
 
 public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.ViewHolder> {
+    public static final String TAG = "PosterListAdapter";
     private List<? extends PosterListItem> data;
     public PosterListAdapter(){
         this.data = null;
@@ -33,17 +35,32 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Vi
         return new ViewHolder(v);
     }
 
+
+
     @Override
     public void onBindViewHolder(PosterListAdapter.ViewHolder holder, int position) {
         holder.poster = this.data.get(position);
+        View view;
         if(holder.poster.getWebPath() != null){
             holder.imageView.setVisibility(View.VISIBLE);
+            view = holder.imageView;
             Glide.with(Util.getGlobalContext()).load(holder.poster.getWebPath()).into(holder.imageView);
         }
         else {
             holder.textView.setText(holder.poster.getTitle());
             holder.textView.setVisibility(View.VISIBLE);
+            view = holder.textView;
         }
+
+        view.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                Util.log(TAG,"Oh yeah, new focus!");
+                ViewCompat.animate(v).scaleX(1.12f).scaleY(1.12f).setDuration(30).translationZ(1).start();
+            } else {
+                Util.log(TAG,"No focus");
+                ViewCompat.animate(v).scaleX(1.0f).scaleY(1.0f).setDuration(10).translationZ(0).start();
+            }
+        });
     }
 
     @Override

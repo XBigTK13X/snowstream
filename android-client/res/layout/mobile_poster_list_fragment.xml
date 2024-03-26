@@ -5,11 +5,16 @@
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:id="@+id/poster_item_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scrollbars="vertical"
         android:nestedScrollingEnabled="false"
-        />
+        >
+
+        <requestFocus />
+    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>

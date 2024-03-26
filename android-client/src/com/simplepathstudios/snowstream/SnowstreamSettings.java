@@ -12,4 +12,5 @@ public class SnowstreamSettings {
     public static String DevServerUrl = "http://192.168.1.232:8000";
     public static String ProdServerUrl = "http://192.168.1.232:8000";
     public static final int SearchDelayMilliseconds = 300;
+    public static final int COLUMNS_PER_POSTER_GRID_ROW = 8;
 }
