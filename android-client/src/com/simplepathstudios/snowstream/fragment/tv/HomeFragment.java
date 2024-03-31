@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
+import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.adapter.ShelfListAdapter;
 import com.simplepathstudios.snowstream.api.model.Shelf;
 import com.simplepathstudios.snowstream.viewmodel.ShelfListViewModel;
@@ -39,7 +40,7 @@ public class HomeFragment extends Fragment {
       shelfListElement.setAdapter(shelfListAdapter);
       shelfListLayoutManager = new LinearLayoutManager(getActivity());
       shelfListElement.setLayoutManager(shelfListLayoutManager);
-      shelfListViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(ShelfListViewModel.class);
+      shelfListViewModel = Util.getViewModel(ShelfListViewModel.class);
       shelfListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Shelf>>() {
          @Override
          public void onChanged(List<Shelf> shelfList) {

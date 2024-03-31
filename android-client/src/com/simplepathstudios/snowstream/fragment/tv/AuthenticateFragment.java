@@ -60,8 +60,7 @@ public class AuthenticateFragment extends Fragment {
                             @Override
                             public void onResponse(Call<SnowstreamAuthToken> call, Response<SnowstreamAuthToken> response) {
                                 settingsViewModel.setAuthToken(username, response.body());
-                                NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
-                                navController.navigate(R.id.home_fragment);
+                                Util.navigateTo(R.id.home_fragment);
                             }
 
                             @Override

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
+import com.simplepathstudios.snowstream.Util;
 
 import java.util.List;
 
@@ -60,10 +61,9 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
       @Override
       public void onClick(View v) {
-         NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
          Bundle bundle = new Bundle();
          bundle.putString("Username", username);
-         navController.navigate(R.id.authenticate_fragment, bundle);
+         Util.navigateTo(R.id.authenticate_fragment, bundle);
       }
    }
 }

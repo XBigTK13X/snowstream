@@ -1,35 +1,26 @@
 package com.simplepathstudios.snowstream;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.material.navigation.NavigationView;
 import com.simplepathstudios.snowstream.api.ApiClient;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 
-public class TvActivity extends Activity {
+public class TvActivity extends AppCompatActivity {
     private final String TAG = "TVActivity";
 
     private static TvActivity __instance;
@@ -48,6 +39,10 @@ public class TvActivity extends Activity {
         navController.navigateUp();
     }
 
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
     public boolean isCurrentLocation(String locationName) {
         return currentLocation.getLabel().equals(locationName);
     }
@@ -57,12 +52,12 @@ public class TvActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        __instance = this;
+        Util.setMainActivity(this);
         Util.setGlobalContext(this);
 
         Util.registerGlobalExceptionHandler();
 
-        this.settingsViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(SettingsViewModel.class);
+        this.settingsViewModel = Util.getViewModel(SettingsViewModel.class);
         this.settingsViewModel.initialize(this.getSharedPreferences("Snowstream", Context.MODE_PRIVATE));
         SettingsViewModel.Settings settings = settingsViewModel.Data.getValue();
         ApiClient.retarget(settings.ServerUrl, settings.Username, settings.AuthToken);

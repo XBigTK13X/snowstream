@@ -1,8 +1,10 @@
 package com.simplepathstudios.snowstream;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -10,9 +12,17 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
+import com.simplepathstudios.snowstream.viewmodel.ShelfListViewModel;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,6 +44,14 @@ public class Util {
             Log.d(TAG,"Global context is null, it must be set before it is read");
         }
         return __context;
+    }
+
+    private static AppCompatActivity __activity;
+    public static void setMainActivity(AppCompatActivity activity){
+        __activity = activity;
+    }
+    public static AppCompatActivity getMainActivity(){
+        return __activity;
     }
 
     private static int MILLISECONDS_PER_HOUR = 1000 * 60 * 60;
@@ -117,7 +135,7 @@ public class Util {
     }
 
     public static void confirmMenuAction(MenuItem menuItem, String message, DialogInterface.OnClickListener confirmListener){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MobileActivity.getInstance());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getMainActivity());
         builder.setMessage(message);
         builder.setPositiveButton("Yes", confirmListener);
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -136,8 +154,22 @@ public class Util {
         });
     }
 
+    public static <T extends ViewModel> T getViewModel(Class<T> target){
+        return target.cast(new ViewModelProvider(Util.getMainActivity()).get(target));
+    }
+
+    public static void navigateTo(@IdRes Integer navigationResourceId){
+        NavController navController = Navigation.findNavController(Util.getMainActivity(), R.id.nav_host_fragment);
+        navController.navigate(navigationResourceId);
+    }
+
+    public static void navigateTo(@IdRes Integer navigationResourceId, Bundle bundle){
+        NavController navController = Navigation.findNavController(Util.getMainActivity(), R.id.nav_host_fragment);
+        navController.navigate(navigationResourceId,bundle);
+    }
+
     public static void enableFullscreen(){
-        Window window = MobileActivity.getInstance().getWindow();
+        Window window = Util.getMainActivity().getWindow();
         WindowCompat.setDecorFitsSystemWindows(window, false);
         WindowInsetsControllerCompat windowInsetsControllerCompat = new WindowInsetsControllerCompat(window, window.getDecorView());
         windowInsetsControllerCompat.hide(WindowInsetsCompat.Type.systemBars());

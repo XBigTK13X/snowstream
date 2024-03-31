@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
+import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.api.model.Shelf;
 
 import java.util.List;
@@ -61,12 +62,11 @@ public class ShelfListAdapter extends RecyclerView.Adapter<ShelfListAdapter.View
 
       @Override
       public void onClick(View v) {
-         NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
          Bundle bundle = new Bundle();
          bundle.putInt("ShelfId", shelf.id);
          bundle.putString("ShelfName", shelf.name);
          bundle.putString("ListKind", shelf.kind);
-         navController.navigate(R.id.poster_list_fragment, bundle);
+         Util.navigateTo(R.id.poster_list_fragment, bundle);
       }
    }
 }

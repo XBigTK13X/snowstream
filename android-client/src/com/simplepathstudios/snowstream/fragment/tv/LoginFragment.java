@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.simplepathstudios.snowstream.LoadingIndicator;
 import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
+import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.adapter.UserListAdapter;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 import com.simplepathstudios.snowstream.viewmodel.UserListViewModel;
@@ -48,7 +49,7 @@ public class LoginFragment extends Fragment {
                 listElement.setAdapter(userListAdapter);
                 layoutManager = new LinearLayoutManager(getActivity());
                 listElement.setLayoutManager(layoutManager);
-                userListViewModel = new ViewModelProvider(MobileActivity.getInstance()).get(UserListViewModel.class);
+                userListViewModel = Util.getViewModel(UserListViewModel.class);
                 userListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
                     @Override
                     public void onChanged(List<String> userList) {
@@ -58,8 +59,7 @@ public class LoginFragment extends Fragment {
                 });
                 userListViewModel.load();
             } else {
-                NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
-                navController.navigate(R.id.home_fragment);
+                Util.navigateTo(R.id.home_fragment);
             }
         });
     }

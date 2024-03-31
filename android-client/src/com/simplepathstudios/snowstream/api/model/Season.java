@@ -7,6 +7,7 @@ import androidx.navigation.Navigation;
 
 import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
+import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.adapter.model.PosterListItem;
 
 import java.util.ArrayList;
@@ -25,13 +26,12 @@ public class Season implements PosterListItem {
 
    @Override
    public void onClick() {
-      NavController navController = Navigation.findNavController(MobileActivity.getInstance(), R.id.nav_host_fragment);
       Bundle bundle = new Bundle();
       bundle.putInt("ShowId", this.show_id);
       bundle.putInt("SeasonId", this.id);
       bundle.putString("SeasonName", this.name);
       bundle.putString("ListKind", "Episodes");
-      navController.navigate(R.id.poster_list_fragment, bundle);
+      Util.navigateTo(R.id.poster_list_fragment, bundle);
    }
 
    @Override

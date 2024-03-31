@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.simplepathstudios.snowstream.MobileActivity;
 import com.simplepathstudios.snowstream.R;
+import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.VideoPlayer;
 import com.simplepathstudios.snowstream.api.model.Movie;
 import com.simplepathstudios.snowstream.viewmodel.MovieDetailsViewModel;
@@ -33,7 +34,7 @@ public class MovieDetailsFragment extends Fragment {
       int movieId = getArguments().getInt("MovieId");
       String movieName = getArguments().getString("MovieName");
 
-      viewModel = new ViewModelProvider(MobileActivity.getInstance()).get(MovieDetailsViewModel.class);
+      viewModel = Util.getViewModel(MovieDetailsViewModel.class);
       viewModel.Data.observe(getViewLifecycleOwner(), new Observer<Movie>() {
          @Override
          public void onChanged(Movie movie) {
