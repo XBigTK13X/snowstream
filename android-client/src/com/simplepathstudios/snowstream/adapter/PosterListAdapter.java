@@ -52,10 +52,8 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Vi
         ViewCompat.animate(viewHolder).scaleX(0.9f).scaleY(0.9f).setDuration(10).translationZ(0).start();
         viewHolder.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                Util.log(TAG,"Oh yeah, new focus at position [" + position + "]");
                 ViewCompat.animate(v).scaleX(1.0f).scaleY(1.0f).setDuration(30).translationZ(1).start();
             } else {
-                Util.log(TAG,"No focus");
                 ViewCompat.animate(v).scaleX(0.9f).scaleY(0.9f).setDuration(10).translationZ(0).start();
             }
         });

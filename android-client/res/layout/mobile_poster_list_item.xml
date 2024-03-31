@@ -36,8 +36,9 @@
     android:background="@color/primary_dark"
     android:textColor="@color/white"
     android:singleLine="false"
-    android:textSize="16dp"
+    android:textSize="24sp"
     android:text="Placeholder to see button alignment."
+    android:gravity="center"
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
     android:visibility="gone" />
 </LinearLayout>

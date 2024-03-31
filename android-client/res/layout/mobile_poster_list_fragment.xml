@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.recyclerview.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scroll"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:descendantFocusability="afterDescendants"
-        android:id="@+id/poster_item_list"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:scrollbars="vertical"
-        android:nestedScrollingEnabled="false"
-        >
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="afterDescendants"
+    android:id="@+id/poster_item_list"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:scrollbars="vertical"
+    android:nestedScrollingEnabled="true"
+    >
 
-        <requestFocus />
-    </androidx.recyclerview.widget.RecyclerView>
-
-</ScrollView>
+    <requestFocus />
+</androidx.recyclerview.widget.RecyclerView>
