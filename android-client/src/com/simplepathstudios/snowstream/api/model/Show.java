@@ -27,7 +27,7 @@ public class Show implements PosterListItem {
             bundle.putInt("ShowId", this.id);
             bundle.putString("ShowName", this.name);
             bundle.putString("ListKind", "Seasons");
-            Util.navigateTo(R.id.poster_list_fragment, bundle);
+            Util.getApp().navigateTo(R.id.poster_list_fragment, bundle);
       }
 
       @Override

@@ -39,7 +39,7 @@ public class AuthenticateFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        settingsViewModel = Util.getViewModel(SettingsViewModel.class);
+        settingsViewModel = Util.getApp().getViewModel(SettingsViewModel.class);
 
         usernameField = view.findViewById(R.id.username_field);
         passwordField = view.findViewById(R.id.password_field);
@@ -60,7 +60,7 @@ public class AuthenticateFragment extends Fragment {
                             @Override
                             public void onResponse(Call<SnowstreamAuthToken> call, Response<SnowstreamAuthToken> response) {
                                 settingsViewModel.setAuthToken(username, response.body());
-                                Util.navigateTo(R.id.home_fragment);
+                                Util.getApp().navigateTo(R.id.home_fragment);
                             }
 
                             @Override

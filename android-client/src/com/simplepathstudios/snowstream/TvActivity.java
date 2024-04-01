@@ -22,7 +22,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.navigation.NavigationView;
 import com.simplepathstudios.snowstream.api.ApiClient;
 import com.simplepathstudios.snowstream.fragment.tv.LoginFragment;
 import com.simplepathstudios.snowstream.fragment.tv.MainFragment;
@@ -36,13 +38,19 @@ public class TvActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Util.setMainActivity(this);
-        Util.registerGlobalExceptionHandler();
+        Util.log(TAG, "Setting it up for the first time");
 
-        SettingsViewModel settingsViewModel = Util.getViewModel(SettingsViewModel.class);
+        Util.initApp(this);
+        Util.getApp().setNavMode(Util.NavMode.FRAGMENT);
+
+        Util.log(TAG, "Prepping settings");
+
+        SettingsViewModel settingsViewModel = Util.getApp().getViewModel(SettingsViewModel.class);
         settingsViewModel.initialize(this.getSharedPreferences("Snowstream", Context.MODE_PRIVATE));
         SettingsViewModel.Settings settings = settingsViewModel.Data.getValue();
         ApiClient.retarget(settings.ServerUrl, settings.Username, settings.AuthToken);
+
+        Util.log(TAG, "Inflating view");
 
         setContentView(R.layout.app_tv);
 
@@ -50,6 +58,7 @@ public class TvActivity extends FragmentActivity {
 
         if (savedInstanceState == null) {
             Util.log(TAG, "Setting up the fragment");
+
             Fragment fragment = new LoginFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.tv_fragment_container, fragment)
                     .commit();

@@ -41,7 +41,7 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        settingsViewModel = Util.getViewModel(SettingsViewModel.class);
+        settingsViewModel = Util.getApp().getViewModel(SettingsViewModel.class);
         settingsViewModel.Data.observe(getViewLifecycleOwner(),settings -> {
             if(settings == null || settings.AuthToken == null){
                 listElement = view.findViewById(R.id.user_list);
@@ -49,7 +49,7 @@ public class LoginFragment extends Fragment {
                 listElement.setAdapter(userListAdapter);
                 layoutManager = new LinearLayoutManager(getActivity());
                 listElement.setLayoutManager(layoutManager);
-                userListViewModel = Util.getViewModel(UserListViewModel.class);
+                userListViewModel = Util.getApp().getViewModel(UserListViewModel.class);
                 userListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
                     @Override
                     public void onChanged(List<String> userList) {
@@ -61,7 +61,7 @@ public class LoginFragment extends Fragment {
                 userListViewModel.load();
             } else {
                 Util.log(TAG, "Trying to navigate home");
-                Util.navigateTo(R.id.home_fragment);
+                Util.getApp().navigateTo(R.id.home_fragment);
             }
         });
         Util.log(TAG, "Launching the login fragment");

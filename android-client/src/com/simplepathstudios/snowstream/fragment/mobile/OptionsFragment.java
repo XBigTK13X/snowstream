@@ -43,7 +43,7 @@ public class OptionsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        settingsViewModel = Util.getViewModel(SettingsViewModel.class);
+        settingsViewModel = Util.getApp().getViewModel(SettingsViewModel.class);
 
         updateSnowstreamButton = view.findViewById(R.id.download_update_button);
         updateSnowstreamButton.setOnClickListener(new View.OnClickListener() {

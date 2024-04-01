@@ -41,7 +41,7 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         LoadingIndicator.setLoading(false);
 
-        settingsViewModel = Util.getViewModel(SettingsViewModel.class);
+        settingsViewModel = Util.getApp().getViewModel(SettingsViewModel.class);
         settingsViewModel.Data.observe(getViewLifecycleOwner(),settings -> {
             if(settings == null || settings.AuthToken == null){
                 listElement = view.findViewById(R.id.user_list);
@@ -49,7 +49,7 @@ public class LoginFragment extends Fragment {
                 listElement.setAdapter(userListAdapter);
                 layoutManager = new LinearLayoutManager(getActivity());
                 listElement.setLayoutManager(layoutManager);
-                userListViewModel = Util.getViewModel(UserListViewModel.class);
+                userListViewModel = Util.getApp().getViewModel(UserListViewModel.class);
                 userListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
                     @Override
                     public void onChanged(List<String> userList) {
@@ -59,7 +59,7 @@ public class LoginFragment extends Fragment {
                 });
                 userListViewModel.load();
             } else {
-                Util.navigateTo(R.id.home_fragment);
+                Util.getApp().navigateTo(R.id.home_fragment);
             }
         });
     }

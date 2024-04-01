@@ -34,7 +34,7 @@ public class MovieDetailsFragment extends Fragment {
       int movieId = getArguments().getInt("MovieId");
       String movieName = getArguments().getString("MovieName");
 
-      viewModel = Util.getViewModel(MovieDetailsViewModel.class);
+      viewModel = Util.getApp().getViewModel(MovieDetailsViewModel.class);
       viewModel.Data.observe(getViewLifecycleOwner(), new Observer<Movie>() {
          @Override
          public void onChanged(Movie movie) {

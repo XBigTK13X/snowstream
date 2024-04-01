@@ -30,7 +30,7 @@ public class Episode implements PosterListItem {
       bundle.putInt("ShowId", this.show_season_id);
       bundle.putInt("EpisodeId", this.id);
       bundle.putString("EpisodeName", this.name);
-      Util.navigateTo(R.id.episode_details_fragment, bundle);
+      Util.getApp().navigateTo(R.id.episode_details_fragment, bundle);
    }
 
    @Override

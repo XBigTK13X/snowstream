@@ -43,7 +43,7 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Vi
         holder.poster = this.data.get(position);
         if(holder.poster.getWebPath() != null){
             holder.imageView.setVisibility(View.VISIBLE);
-            Glide.with(Util.getGlobalContext()).load(holder.poster.getWebPath()).into(holder.imageView);
+            Glide.with(Util.getApp().getGlobalContext()).load(holder.poster.getWebPath()).into(holder.imageView);
         }
         else {
             holder.textView.setText(holder.poster.getTitle());

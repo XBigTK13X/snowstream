@@ -66,7 +66,7 @@ public class PosterListFragment extends Fragment {
         posterListElement.setLayoutManager(posterListLayoutManager);
 
         if(listKind.equalsIgnoreCase("Movies")){
-            movieListViewModel = Util.getViewModel(MovieListViewModel.class);
+            movieListViewModel = Util.getApp().getViewModel(MovieListViewModel.class);
             movieListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(List<Movie> movieList) {
@@ -77,7 +77,7 @@ public class PosterListFragment extends Fragment {
             movieListViewModel.load(shelfId);
         }
         else if(listKind.equalsIgnoreCase("Shows")){
-            showListViewModel = Util.getViewModel(ShowListViewModel.class);
+            showListViewModel = Util.getApp().getViewModel(ShowListViewModel.class);
             showListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Show>>() {
                 @Override
                 public void onChanged(List<Show> showList) {
@@ -88,7 +88,7 @@ public class PosterListFragment extends Fragment {
             showListViewModel.load(shelfId);
         }
         else if(listKind.equalsIgnoreCase("Seasons")){
-            seasonListViewModel = Util.getViewModel(SeasonListViewModel.class);
+            seasonListViewModel = Util.getApp().getViewModel(SeasonListViewModel.class);
             seasonListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Season>>() {
                 @Override
                 public void onChanged(List<Season> seasonList) {
@@ -99,7 +99,7 @@ public class PosterListFragment extends Fragment {
             seasonListViewModel.load(showId);
         }
         else if(listKind.equalsIgnoreCase("Episodes")){
-            episodeListViewModel = Util.getViewModel(EpisodeListViewModel.class);
+            episodeListViewModel = Util.getApp().getViewModel(EpisodeListViewModel.class);
             episodeListViewModel.Data.observe(getViewLifecycleOwner(), new Observer<List<Episode>>() {
                 @Override
                 public void onChanged(List<Episode> episodeList) {

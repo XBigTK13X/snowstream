@@ -27,7 +27,7 @@ public class Movie implements PosterListItem {
         Bundle bundle = new Bundle();
         bundle.putInt("MovieId", this.id);
         bundle.putString("MovieName", this.name);
-        Util.navigateTo(R.id.movie_details_fragment, bundle);
+        Util.getApp().navigateTo(R.id.movie_details_fragment, bundle);
     }
 
     @Override

@@ -66,7 +66,7 @@ public class ShelfListAdapter extends RecyclerView.Adapter<ShelfListAdapter.View
          bundle.putInt("ShelfId", shelf.id);
          bundle.putString("ShelfName", shelf.name);
          bundle.putString("ListKind", shelf.kind);
-         Util.navigateTo(R.id.poster_list_fragment, bundle);
+         Util.getApp().navigateTo(R.id.poster_list_fragment, bundle);
       }
    }
 }

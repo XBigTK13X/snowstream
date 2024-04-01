@@ -34,7 +34,7 @@ public class VideoPlayer {
    }
 
    public void useSurface(Surface surface){
-      MPVLib.create(Util.getGlobalContext());
+      MPVLib.create(Util.getApp().getGlobalContext());
 
       MPVLib.setOptionString("tls-verify","no");
       MPVLib.setOptionString("profile", "fast");

@@ -62,7 +62,7 @@ public class ApiClient {
       this.httpClient = retrofit.create(ApiService.class);
       if(username != null && !username.isEmpty()){
          this.clientId = String.format("%s - %s - %s",
-                 Settings.Secure.getString(Util.getGlobalContext().getContentResolver(),Settings.Secure.ANDROID_ID),
+                 Settings.Secure.getString(Util.getApp().getGlobalContext().getContentResolver(),Settings.Secure.ANDROID_ID),
                  android.os.Build.MODEL,
                  username
          );

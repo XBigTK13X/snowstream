@@ -63,7 +63,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
       public void onClick(View v) {
          Bundle bundle = new Bundle();
          bundle.putString("Username", username);
-         Util.navigateTo(R.id.authenticate_fragment, bundle);
+         Util.getApp().navigateTo(R.id.authenticate_fragment, bundle);
       }
    }
 }

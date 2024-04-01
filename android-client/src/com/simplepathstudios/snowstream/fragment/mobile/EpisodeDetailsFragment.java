@@ -36,7 +36,7 @@ public class EpisodeDetailsFragment extends Fragment {
       int episodeId = getArguments().getInt("EpisodeId");
       String episodeName = getArguments().getString("EpisodeName");
 
-      viewModel = Util.getViewModel(EpisodeDetailsViewModel.class);
+      viewModel = Util.getApp().getViewModel(EpisodeDetailsViewModel.class);
       viewModel.Data.observe(getViewLifecycleOwner(), new Observer<Episode>() {
          @Override
          public void onChanged(Episode episode) {

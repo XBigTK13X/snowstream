@@ -31,7 +31,7 @@ public class Season implements PosterListItem {
       bundle.putInt("SeasonId", this.id);
       bundle.putString("SeasonName", this.name);
       bundle.putString("ListKind", "Episodes");
-      Util.navigateTo(R.id.poster_list_fragment, bundle);
+      Util.getApp().navigateTo(R.id.poster_list_fragment, bundle);
    }
 
    @Override
