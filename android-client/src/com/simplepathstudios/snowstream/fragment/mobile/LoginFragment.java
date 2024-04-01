@@ -25,6 +25,7 @@ import com.simplepathstudios.snowstream.viewmodel.UserListViewModel;
 import java.util.List;
 
 public class LoginFragment extends Fragment {
+    private static final String TAG = "LoginFragment";
     private UserListViewModel userListViewModel;
     private RecyclerView listElement;
     private LinearLayoutManager layoutManager;
@@ -39,9 +40,8 @@ public class LoginFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        LoadingIndicator.setLoading(false);
 
-        settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        settingsViewModel = Util.getViewModel(SettingsViewModel.class);
         settingsViewModel.Data.observe(getViewLifecycleOwner(),settings -> {
             if(settings == null || settings.AuthToken == null){
                 listElement = view.findViewById(R.id.user_list);
@@ -57,10 +57,13 @@ public class LoginFragment extends Fragment {
                         userListAdapter.notifyDataSetChanged();
                     }
                 });
+                Util.log(TAG, "Trying to load users");
                 userListViewModel.load();
             } else {
+                Util.log(TAG, "Trying to navigate home");
                 Util.navigateTo(R.id.home_fragment);
             }
         });
+        Util.log(TAG, "Launching the login fragment");
     }
 }

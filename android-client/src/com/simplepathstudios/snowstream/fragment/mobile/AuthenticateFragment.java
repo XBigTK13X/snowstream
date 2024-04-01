@@ -39,7 +39,7 @@ public class AuthenticateFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        settingsViewModel = Util.getViewModel(SettingsViewModel.class);
 
         usernameField = view.findViewById(R.id.username_field);
         passwordField = view.findViewById(R.id.password_field);

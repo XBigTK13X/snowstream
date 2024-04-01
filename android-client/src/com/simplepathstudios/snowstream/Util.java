@@ -12,13 +12,16 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -32,26 +35,35 @@ import java.util.Date;
 public class Util {
     private static final String TAG = "Util";
 
-    private static Context __context;
     private static Thread.UncaughtExceptionHandler __androidExceptionHandler;
 
-    public static void setGlobalContext(Context context){
-        __context = context;
+    private static ComponentActivity __activity;
+    public static void setMainActivity(ComponentActivity activity){
+        __activity = activity;
+    }
+    public static ComponentActivity getMainActivity(){
+        return __activity;
     }
 
     public static Context getGlobalContext(){
-        if(__context == null){
+        if(__activity == null){
             Log.d(TAG,"Global context is null, it must be set before it is read");
         }
-        return __context;
+        return __activity.getApplicationContext();
     }
 
-    private static AppCompatActivity __activity;
-    public static void setMainActivity(AppCompatActivity activity){
-        __activity = activity;
+    public static <T extends ViewModel> T getViewModel(Class<T> target){
+        return target.cast(new ViewModelProvider(Util.getMainActivity()).get(target));
     }
-    public static AppCompatActivity getMainActivity(){
-        return __activity;
+
+    public static void navigateTo(@IdRes Integer navigationResourceId){
+        NavController navController = Navigation.findNavController(Util.getMainActivity(), R.id.nav_host_fragment);
+        navController.navigate(navigationResourceId);
+    }
+
+    public static void navigateTo(@IdRes Integer navigationResourceId, Bundle bundle){
+        NavController navController = Navigation.findNavController(Util.getMainActivity(), R.id.nav_host_fragment);
+        navController.navigate(navigationResourceId,bundle);
     }
 
     private static int MILLISECONDS_PER_HOUR = 1000 * 60 * 60;
@@ -152,20 +164,6 @@ public class Util {
                 return false;
             }
         });
-    }
-
-    public static <T extends ViewModel> T getViewModel(Class<T> target){
-        return target.cast(new ViewModelProvider(Util.getMainActivity()).get(target));
-    }
-
-    public static void navigateTo(@IdRes Integer navigationResourceId){
-        NavController navController = Navigation.findNavController(Util.getMainActivity(), R.id.nav_host_fragment);
-        navController.navigate(navigationResourceId);
-    }
-
-    public static void navigateTo(@IdRes Integer navigationResourceId, Bundle bundle){
-        NavController navController = Navigation.findNavController(Util.getMainActivity(), R.id.nav_host_fragment);
-        navController.navigate(navigationResourceId,bundle);
     }
 
     public static void enableFullscreen(){

@@ -36,7 +36,6 @@ public class MobileActivity extends AppCompatActivity {
     private NavController navController;
     private NavigationView navigationView;
     private LinearLayout mainLayout;
-    private NavDestination currentLocation;
 
     private SettingsViewModel settingsViewModel;
 
@@ -46,36 +45,12 @@ public class MobileActivity extends AppCompatActivity {
     private TextView loadingText;
 
 
-    public void setActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    public boolean toolbarIsVisible(){
-        return toolbar.getVisibility() == View.VISIBLE;
-    }
-
-    public void toolbarShow(){
-        toolbar.setVisibility(View.VISIBLE);
-    }
-
-    public void toolbarHide(){
-        toolbar.setVisibility(View.GONE);
-    }
-
-    public void navigateUp(){
-        navController.navigateUp();
-    }
-
-    public boolean isCurrentLocation(String locationName){
-        return currentLocation.getLabel().equals(locationName);
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Util.setMainActivity(this);
-        Util.setGlobalContext(this);
 
         Util.registerGlobalExceptionHandler();
 
@@ -85,6 +60,8 @@ public class MobileActivity extends AppCompatActivity {
         ApiClient.retarget(settings.ServerUrl, settings.Username, settings.AuthToken);
 
         setContentView(R.layout.app_mobile);
+
+        LoadingIndicator.setLoading(false);
 
         Util.enableFullscreen();
 
@@ -120,7 +97,6 @@ public class MobileActivity extends AppCompatActivity {
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
                 getSupportActionBar().setSubtitle("");
                 CharSequence name = destination.getLabel();
-                currentLocation = destination;
                 String label = name.toString();
                 if(!label.equals("Login") && !label.equals("Authenticate")){
                     if(settingsViewModel.Data.getValue().AuthToken == null){

@@ -14,6 +14,9 @@ public class LoadingIndicator {
     private static TextView loadingText;
 
     public static void setLoading(boolean status){
+        if(progressBar == null){
+            return;
+        }
         if(loadingText != null) {
             loadingText.setText("");
         }

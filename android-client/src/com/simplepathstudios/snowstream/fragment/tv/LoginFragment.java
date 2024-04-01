@@ -41,7 +41,7 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         LoadingIndicator.setLoading(false);
 
-        settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        settingsViewModel = Util.getViewModel(SettingsViewModel.class);
         settingsViewModel.Data.observe(getViewLifecycleOwner(),settings -> {
             if(settings == null || settings.AuthToken == null){
                 listElement = view.findViewById(R.id.user_list);

@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.simplepathstudios.snowstream.R;
 import com.simplepathstudios.snowstream.SnowstreamSettings;
+import com.simplepathstudios.snowstream.Util;
 import com.simplepathstudios.snowstream.api.ApiClient;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 
@@ -42,7 +43,7 @@ public class OptionsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        settingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        settingsViewModel = Util.getViewModel(SettingsViewModel.class);
 
         updateSnowstreamButton = view.findViewById(R.id.download_update_button);
         updateSnowstreamButton.setOnClickListener(new View.OnClickListener() {

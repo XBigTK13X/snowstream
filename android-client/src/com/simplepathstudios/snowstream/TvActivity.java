@@ -1,6 +1,7 @@
 package com.simplepathstudios.snowstream;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,44 +9,27 @@ import android.os.StrictMode;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 
 import com.simplepathstudios.snowstream.api.ApiClient;
+import com.simplepathstudios.snowstream.fragment.tv.LoginFragment;
+import com.simplepathstudios.snowstream.fragment.tv.MainFragment;
 import com.simplepathstudios.snowstream.viewmodel.SettingsViewModel;
 
-public class TvActivity extends AppCompatActivity {
+public class TvActivity extends FragmentActivity {
     private final String TAG = "TVActivity";
-
-    private static TvActivity __instance;
-
-    public static TvActivity getInstance() {
-        return __instance;
-    }
-
-    private NavController navController;
-    private LinearLayout mainLayout;
-    private NavDestination currentLocation;
-
-    private SettingsViewModel settingsViewModel;
-
-    public void navigateUp() {
-        navController.navigateUp();
-    }
-
-    public void setActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    public boolean isCurrentLocation(String locationName) {
-        return currentLocation.getLabel().equals(locationName);
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -53,51 +37,23 @@ public class TvActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Util.setMainActivity(this);
-        Util.setGlobalContext(this);
-
         Util.registerGlobalExceptionHandler();
 
-        this.settingsViewModel = Util.getViewModel(SettingsViewModel.class);
-        this.settingsViewModel.initialize(this.getSharedPreferences("Snowstream", Context.MODE_PRIVATE));
+        SettingsViewModel settingsViewModel = Util.getViewModel(SettingsViewModel.class);
+        settingsViewModel.initialize(this.getSharedPreferences("Snowstream", Context.MODE_PRIVATE));
         SettingsViewModel.Settings settings = settingsViewModel.Data.getValue();
         ApiClient.retarget(settings.ServerUrl, settings.Username, settings.AuthToken);
 
         setContentView(R.layout.app_tv);
 
-        mainLayout = findViewById(R.id.main_activity_layout);
+        Util.log(TAG, "Trying to goto the login");
 
-        Util.enableFullscreen();
-
-        if (SnowstreamSettings.DebugResourceLeaks) {
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
-                    .detectLeakedClosableObjects()
-                    .build());
+        if (savedInstanceState == null) {
+            Util.log(TAG, "Setting up the fragment");
+            Fragment fragment = new LoginFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.tv_fragment_container, fragment)
+                    .commit();
         }
-        Util.log(TAG, "====== Starting new TV app instance ======");
-
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @Override
-            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                CharSequence name = destination.getLabel();
-                currentLocation = destination;
-                String label = name.toString();
-                if (!label.equals("Login") && !label.equals("Authenticate")) {
-                    if (settingsViewModel.Data.getValue().AuthToken == null) {
-                        controller.navigate(R.id.login_fragment);
-                    }
-                }
-            }
-        });
-
-        mainLayout.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        return true;
     }
 
     @Override
@@ -105,7 +61,6 @@ public class TvActivity extends AppCompatActivity {
         super.onResume();
         Intent intent = getIntent();
         Util.log(TAG, "Resuming with intent " + intent.getAction());
-        Util.enableFullscreen();
     }
 
     @Override
