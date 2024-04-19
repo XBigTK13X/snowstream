@@ -4,16 +4,14 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.1'
+        classpath 'com.android.tools.build:gradle:8.3.2'
     }
 }
-
 
 repositories {
     mavenCentral()
     google()
 }
-
 
 apply plugin: 'com.android.application'
 
@@ -28,22 +26,31 @@ android {
         applicationId "com.simplepathstudios.snowstream"
     }
 
-
     sourceSets.main {
         manifest.srcFile 'AndroidManifest.xml'
         java.srcDirs = ['src']
         res.srcDirs = ['res']
     }
+
     lint {
         abortOnError false
     }
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.11"
+    }
+
 
     namespace 'com.simplepathstudios.snowstream'
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core:1.12.0'
+    implementation 'androidx.core:core:1.13.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.navigation:navigation-fragment:2.7.7'
     implementation 'androidx.navigation:navigation-ui:2.7.7'
@@ -60,5 +67,21 @@ dependencies {
     implementation files('./libs/libmpv-0.1.4.aar')
     implementation 'androidx.leanback:leanback:1.2.0-alpha04'
     implementation 'androidx.leanback:leanback-preference:1.2.0-alpha04'
+    implementation platform("androidx.compose:compose-bom:2024.04.01")
+    implementation "androidx.activity:activity-compose:1.9.0"
+    implementation "androidx.compose.ui:ui-tooling-preview"
+    debugImplementation "androidx.compose.ui:ui-tooling"
+    implementation "androidx.tv:tv-foundation:1.0.0-alpha10"
+    implementation "androidx.tv:tv-material:1.0.0-alpha10"
+    implementation "androidx.core:core-splashscreen:1.2.0-alpha01"
+    def composeBom = platform('androidx.compose:compose-bom:2024.04.01')
+    implementation composeBom
+    androidTestImplementation composeBom
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.foundation:foundation'
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
 
 }
