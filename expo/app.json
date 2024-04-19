@@ -15,9 +15,17 @@
             "topShelfWide2x": "./assets/images/icon-4640x1440.png"
           }
         }
-      ]
+      ],
+      "expo-router"
     ],
     "name": "snowstream",
-    "slug": "snowstream"
+    "slug": "snowstream",
+    "scheme": "snowstream",
+    "android": {
+      "package": "com.simplepathstudios.snowstream"
+    }
+  },
+  "web": {
+    "bundler": "metro"
   }
 }
