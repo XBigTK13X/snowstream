@@ -23,6 +23,9 @@
     "scheme": "snowstream",
     "android": {
       "package": "com.simplepathstudios.snowstream"
+    },
+    "ios": {
+      "bundleIdentifier": "com.simplepathstudios.snowstream"
     }
   },
   "web": {

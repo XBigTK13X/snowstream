@@ -163,9 +163,7 @@ dependencies {
         }
     }
 
-    // The env variables to disable this during build don't seem to work
-    // Having it enables breaks local dev client builds
-    //implementation("com.facebook.react:flipper-integration")
+//     implementation("com.facebook.react:flipper-integration")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

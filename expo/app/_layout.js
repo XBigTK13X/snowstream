@@ -1,5 +1,5 @@
 import { Slot } from "expo-router";
-import { Text } from "react-native";
+import { Text, TVFocusGuideView } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 function Header() {
@@ -14,9 +14,11 @@ export default function HomeLayout() {
   return (
     <SafeAreaProvider>
       <SafeAreaView>
-        <Header />
-        <Slot />
-        <Footer />
+        <TVFocusGuideView autoFocus>
+          <Header />
+          <Slot />
+          <Footer />
+        </TVFocusGuideView>
       </SafeAreaView>
     </SafeAreaProvider>
   );
