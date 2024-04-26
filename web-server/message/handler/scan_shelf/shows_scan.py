@@ -102,20 +102,26 @@ def parse_show_info(file_path: str):
     return None
 
 
-def identify_show_file_kind(extension_kind: str, info: dict):
+def identify_show_file_kind(extension_kind: str, info: dict, file_path: str):
     if extension_kind == "video":
         return "show_extra" if info["season"] == 0 else "show_episode"
     if extension_kind == "image":
-        image_kind = "unknown"
-        if "poster" in info["asset_name"] or "folder" in info["asset_name"]:
-            image_kind = "poster"
-        if "banner" in info["asset_name"]:
-            image_kind = "banner"
-        if "backdrop" in info["asset_name"]:
-            image_kind = "backdrop"
+        image_kind = None
+        if 'asset_name' in info:
+            if "poster" in info["asset_name"] or "folder" in info["asset_name"]:
+                image_kind = "poster"
+            if "banner" in info["asset_name"]:
+                image_kind = "banner"
+            if "backdrop" in info["asset_name"]:
+                image_kind = "backdrop"
+            
         if "season" in info:
+            if image_kind == None:
+                image_kind = 'poster'
             return f"season_{image_kind}"
         if "episode_start" in info:
+            if image_kind == None:
+                image_kind = 'thumbnail'
             return f"episode_{image_kind}"
         return f"show_{image_kind}"
     if extension_kind == "metadata":

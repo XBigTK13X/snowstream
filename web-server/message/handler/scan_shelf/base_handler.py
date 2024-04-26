@@ -50,7 +50,7 @@ class BaseHandler:
     def get_files_in_directory(self):
         log.info(f"Scanning directory [{self.shelf.directory}]")
         file_count = 0
-        for root, dirs, files in os.walk(self.shelf.directory):
+        for root, dirs, files in os.walk(self.shelf.directory, followlinks=True):
             for shelf_file in files:
                 file_path = os.path.join(root, shelf_file)
                 file_count += 1
@@ -67,7 +67,7 @@ class BaseHandler:
                 log.info(f"Wasn't able to parse {kind} info for [{media_path}]")
                 continue
             media_info["kind"] = self.file_kind_identifier(
-                extension_kind=kind, info=media_info
+                extension_kind=kind, info=media_info, file_path=media_path
             )
             media_info["file_path"] = media_path
             parsed_files.append(media_info)

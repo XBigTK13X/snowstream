@@ -74,7 +74,7 @@ def parse_movie_info(file_path):
     return None
 
 
-def identify_movie_file_kind(extension_kind: str, info: dict):
+def identify_movie_file_kind(extension_kind: str, info: dict, file_path: str):
     if extension_kind == "metadata":
         return (
             "movie_main_feature_info"
