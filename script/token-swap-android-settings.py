@@ -19,3 +19,14 @@ with open(SETTINGS_FILE, 'r') as read_handle:
 
 with open(SETTINGS_FILE,'w') as write_handle:
     write_handle.write(write_content)
+
+write_content = ''
+SETTINGS_FILE='./expo/app/settings.js'
+with open(SETTINGS_FILE, 'r') as read_handle:
+    for line in read_handle:
+        if 'SNOWSTREAM_WEB_API_URL' in line:
+            line = f'      this.webApiUrl = "http://{ip}:8000";\n'
+        write_content += line
+
+with open(SETTINGS_FILE,'w') as write_handle:
+    write_handle.write(write_content)
