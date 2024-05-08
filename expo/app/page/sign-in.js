@@ -1,19 +1,19 @@
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { Button, ListItem } from '@rneui/themed';
-import { useSession } from '../ctx';
+import { useSession } from '../auth-context';
 
 export default function SignIn() {
-    console.log("Sign in page")
     const { signIn, apiClient } = useSession();
     return (
         <View>
             <Button
                 onPress={() => {
-                    signIn('admin', 'admin');
-                    // Navigate after signing in. You may want to tweak this to ensure sign-in is
-                    // successful before navigating.
-                    // router.replace('/page/auth/landing');
+                    // TODO Add UI for username and password
+                    // TODO Add Profile pick selectors
+                    signIn('admin', 'admin').then((token) => {
+                        router.replace('/page/auth/landing');
+                    })
                 }}>
                 Sign In
             </Button>

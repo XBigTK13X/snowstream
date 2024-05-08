@@ -35,10 +35,13 @@ export function SessionProvider(props: React.PropsWithChildren) {
         <AuthContext.Provider
             value={{
                 signIn: (username, password) => {
-                    apiClient.login({ username: username, password: password })
-                        .then(authToken => {
-                            setSession(authToken);
-                        })
+                    return new Promise(resolve => {
+                        apiClient.login({ username: username, password: password })
+                            .then(authToken => {
+                                setSession(authToken);
+                                resolve(authToken)
+                            })
+                    })
                 },
                 signOut: () => {
                     setSession(null);

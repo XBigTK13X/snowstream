@@ -2,16 +2,16 @@ import { Link } from "expo-router";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Button, ListItem } from '@rneui/themed';
 
-import { useSession } from '../../ctx';
+import { useSession } from '../../auth-context';
+import { useSettings } from '../../settings-context';
 
-export default function Index() {
-    console.log("Landing page")
+export default function LandingPage() {
     const { signOut } = useSession();
+    const { routes } = useSettings();
     return (
         <View>
             <Button
                 onPress={() => {
-                    // The `app/(app)/_layout.tsx` will redirect to the sign-in screen.
                     signOut();
                 }}
                 title="Sign Out">
@@ -21,21 +21,17 @@ export default function Index() {
             <Text>And so is this</Text>
             <>
                 <ListItem>
-                    <Link href="/" asChild>
-                        <TouchableOpacity>
-                            <Button title="Home">Home</Button>
-                        </TouchableOpacity>
+                    <Link href={routes.landing} asChild >
+                        <Button title="Home" />
                     </Link>
                 </ListItem>
                 <ListItem>
-                    <Link href="/page/options" asChild>
-                        <TouchableOpacity>
-                            <Button title="Options">Options</Button>
-                        </TouchableOpacity>
+                    <Link href={routes.options} asChild>
+                        <Button title="Options" />
                     </Link>
                 </ListItem>
             </>
-        </View>
+        </View >
 
     );
 }

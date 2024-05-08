@@ -2,6 +2,8 @@ import { Redirect, Slot } from "expo-router";
 import { Text, TVFocusGuideView } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from '@rneui/themed'
+import { SessionProvider } from './auth-context';
+import { SettingsProvider } from './settings-context';
 
 const theme = createTheme({
   lightColors: {
@@ -13,8 +15,6 @@ const theme = createTheme({
   mode: 'light'
 })
 
-import { SessionProvider } from './ctx';
-
 function Header() {
   return <Text>This is the header.</Text>;
 }
@@ -25,17 +25,18 @@ function Footer() {
 
 
 export default function HomeLayout() {
-  console.log("Root layout")
   return (
     <ThemeProvider theme={theme}>
       <SafeAreaProvider>
         <SafeAreaView>
           <TVFocusGuideView autoFocus>
-            <SessionProvider>
-              <Header />
-              <Slot />
-              <Footer />
-            </SessionProvider>
+            <SettingsProvider>
+              <SessionProvider>
+                <Header />
+                <Slot />
+                <Footer />
+              </SessionProvider>
+            </SettingsProvider>
           </TVFocusGuideView>
         </SafeAreaView>
       </SafeAreaProvider>

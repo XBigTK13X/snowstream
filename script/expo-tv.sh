@@ -3,4 +3,4 @@
 cd expo
 export EXPO_TV=1
 npx expo prebuild
-npx run android
+npx expo run:android
