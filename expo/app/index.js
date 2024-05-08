@@ -3,6 +3,7 @@ import { Link } from "expo-router";
 import { useEffect } from 'react'
 import { View, Text, TouchableOpacity } from "react-native";
 import { Button, ListItem } from '@rneui/themed';
+const routes = require('./routes')
 
 // TV Navigation and Focus
 // https://medium.com/@sofialz/understanding-focus-on-react-native-the-easy-way-d2646b0d2022
@@ -18,13 +19,12 @@ import { Button, ListItem } from '@rneui/themed';
 import { useRootNavigationState } from 'expo-router'
 import { Redirect } from 'expo-router'
 
-export default function Page() {
-  console.log("Index")
+export default function AppIndex() {
   const navigation = useRootNavigationState();
   if (navigation?.key != null) {
     return (
-      <Redirect href="/page/auth/landing" />
+      <Redirect href={routes.landing} />
     )
   }
-  return <Text>Loading the app</Text>;
+  return <Text>Loading snowstream</Text>;
 }
