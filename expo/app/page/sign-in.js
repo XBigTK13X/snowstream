@@ -14,7 +14,7 @@ export default function SignIn() {
                     // TODO Add UI for username and password
                     // TODO Add Profile pick selectors
                     signIn('admin', 'admin').then((token) => {
-                        router.replace(routes.landing);
+                        routes.replace(routes.landing);
                     })
                 }}>
                 Sign In

@@ -21,14 +21,10 @@ export default function LandingPage() {
             <Text>And so is this</Text>
             <>
                 <ListItem>
-                    <Link href={routes.landing} asChild >
-                        <Button title="Home" />
-                    </Link>
+                    <Button title="Home" onPress={routes.func(routes.landing)} />
                 </ListItem>
                 <ListItem>
-                    <Link href={routes.options} asChild>
-                        <Button title="Options" />
-                    </Link>
+                    <Button title="Options" onPress={routes.func(routes.options)} />
                 </ListItem>
             </>
         </View >
