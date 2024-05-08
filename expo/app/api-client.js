@@ -7,9 +7,13 @@ export class ApiClient {
 
         this.createClient(this.authToken);
 
-        this.get = async (url) => {
+        this.get = async (url, params) => {
+            let queryParams = null
+            if (params) {
+                queryParams = { params: params }
+            }
             return this.httpClient
-                .get(url)
+                .get(url, queryParams)
                 .then((response) => {
                     return response.data;
                 })
@@ -96,6 +100,18 @@ export class ApiClient {
 
     getShelves() {
         return this.get("/shelf/list");
+    }
+
+    getShelf(shelfId) {
+        return this.get("/shelf", { shelf_id: shelfId })
+    }
+
+    getMovieList(shelfId) {
+        return this.get("/movie/list", { shelf_id: shelfId })
+    }
+
+    getMovieDetails(movieId) {
+        return this.get("/movie", { movie_id: movieId })
     }
 
     createShelf(payload) {

@@ -29,7 +29,6 @@ class ContextualizedLoginPage extends React.Component {
     });
   }
   login() {
-    console.log({ state: this.state });
     const payload = {
       username: this.state.username,
       password: this.state.password,
@@ -37,10 +36,9 @@ class ContextualizedLoginPage extends React.Component {
     this.apiClient
       .login(payload)
       .then((success) => {
-        console.log("Redirecting");
         this.props.navigate("/");
       })
-      .catch((failure) => {});
+      .catch((failure) => { });
   }
   render() {
     return (

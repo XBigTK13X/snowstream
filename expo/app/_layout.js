@@ -4,6 +4,8 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from '@rneui/themed'
 import { SessionProvider } from './auth-context';
 import { SettingsProvider } from './settings-context';
+import { Button, ListItem } from '@rneui/themed';
+const routes = require('./routes')
 
 const theme = createTheme({
   lightColors: {
@@ -16,13 +18,25 @@ const theme = createTheme({
 })
 
 function Header() {
-  return <Text>This is the header.</Text>;
+  return (
+    <>
+      <Button title="Home" onPress={routes.func(routes.landing)} />
+      <Button title="Options" onPress={routes.func(routes.options)} />
+      <Text>{"\n"}</Text>
+    </>
+  )
 }
 
 function Footer() {
-  return <Text>This is the footer.</Text>;
+  return (
+    <>
+      <Text>{"\n"}</Text>
+      <Text>This is the footer.</Text>
+    </>
+  )
 }
 
+// TODO Do I want always visible nav bars, or some kind of drawer?
 
 export default function HomeLayout() {
   return (
