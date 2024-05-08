@@ -22,14 +22,14 @@ export default function MovieShelfPage() {
             })
         }
         if (!movie) {
-            apiClient.getMovieDetails(movieId).then((response) => {
+            apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
             })
         }
     })
     if (shelf && movie) {
         return (
-            <Button title="Play" onPress={routes.func(routes.playMedia, { videoId: movie.video_files[0].id })} />
+            <Button title="Play" onPress={routes.func(routes.playMedia, { videoFileIndex: 0, movieId: movieId, shelfId: shelfId })} />
         )
     }
     return (

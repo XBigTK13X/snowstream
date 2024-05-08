@@ -110,7 +110,7 @@ export class ApiClient {
         return this.get("/movie/list", { shelf_id: shelfId })
     }
 
-    getMovieDetails(movieId) {
+    getMovie(movieId) {
         return this.get("/movie", { movie_id: movieId })
     }
 

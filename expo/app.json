@@ -17,7 +17,18 @@
         }
       ],
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "react-native-vlc-media-player",
+        {
+          "ios": {
+            "includeVLCKit": false
+          },
+          "android": {
+            "legacyJetifier": false
+          }
+        }
+      ]
     ],
     "name": "snowstream",
     "slug": "snowstream",

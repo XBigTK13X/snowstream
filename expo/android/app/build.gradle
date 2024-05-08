@@ -163,7 +163,7 @@ dependencies {
         }
     }
 
-// //     implementation("com.facebook.react:flipper-integration")
+// // // //     implementation("com.facebook.react:flipper-integration")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
@@ -174,3 +174,27 @@ dependencies {
 
 apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
 applyNativeModulesAppBuildGradle(project)
+
+// @generated begin withVlcMediaPlayer - expo prebuild (DO NOT MODIFY) sync-e6fccf3f5a0944d688239d772a6fa107e6341f01
+tasks.whenTaskAdded((tas -> {
+        // when task is 'mergeLocalDebugNativeLibs' or 'mergeLocalReleaseNativeLibs'
+        if (tas.name.contains("merge") && tas.name.contains("NativeLibs")) {
+            tasks.named(tas.name) {it
+                doFirst {
+                    java.nio.file.Path notNeededDirectory = it.externalLibNativeLibs
+                            .getFiles()
+                            .stream()
+                            .filter(file -> file.toString().contains("jetified-react-android"))
+                            .findAny()
+                            .orElse(null)
+                            .toPath();
+                    java.nio.file.Files.walk(notNeededDirectory).forEach(file -> {
+                        if (file.toString().contains("libc++_shared.so")) {
+                            java.nio.file.Files.delete(file);
+                        }
+                    });
+                }
+            }
+        }
+    }))
+// @generated end withVlcMediaPlayer
