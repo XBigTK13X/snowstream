@@ -17,30 +17,12 @@
         }
       ],
       "expo-router",
-      "expo-secure-store",
-      [
-        "react-native-vlc-media-player",
-        {
-          "ios": {
-            "includeVLCKit": false
-          },
-          "android": {
-            "legacyJetifier": false
-          }
-        }
-      ]
+      "expo-secure-store"
     ],
     "name": "snowstream",
     "slug": "snowstream",
-    "scheme": "snowstream",
     "android": {
       "package": "com.simplepathstudios.snowstream"
-    },
-    "ios": {
-      "bundleIdentifier": "com.simplepathstudios.snowstream"
     }
-  },
-  "web": {
-    "bundler": "metro"
   }
 }

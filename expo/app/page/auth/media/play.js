@@ -1,83 +1,72 @@
 import React from 'react'
-import { Link } from "expo-router";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Button, ListItem } from '@rneui/themed';
-import { VLCPlayer, VlCPlayerView } from 'react-native-vlc-media-player';
+
 import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router';
 import { useSession } from '../../../auth-context';
 import { useSettings } from '../../../settings-context';
 
-const calcVLCPlayerHeight = (windowWidth, aspetRatio) => {
-    return windowWidth * aspetRatio;
-};
+import Video, { VideoRef } from 'react-native-video';
 
-// https://github.com/razorRun/react-native-vlc-media-player/issues/186
+var styles = StyleSheet.create({
+    backgroundVideo: {
+        width: 400,
+        height: 400,
+    },
+    videoView: {
+        width: 400,
+        height: 400
+    }
+});
+
+// https://thewidlarzgroup.github.io/react-native-video#v600-information
 
 export default function PlayMediaPage() {
+    const videoRef = React.useRef(null);
     const { signOut, apiClient } = useSession();
     const { routes } = useSettings();
     const localParams = useLocalSearchParams();
 
     const [shelf, setShelf] = React.useState(null);
     const [movie, setMovie] = React.useState(null);
+    const [videoUrl, setVideoUrl] = React.useState(null);
     const shelfId = localParams.shelfId;
     const movieId = localParams.movieId;
     const videoFileIndex = localParams.videoFileIndex;
+
     React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
             })
-        }
-        if (!movie) {
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
+                const webPath = response.video_files[videoFileIndex].web_path
+                setVideoUrl({ path: webPath })
             })
         }
     })
-    React.useEffect(() => {
-        if (!shelf) {
-            apiClient.getShelf(shelfId).then((response) => {
-                setShelf(response)
-            })
-        }
-        if (!movie) {
-            apiClient.getMovie(movieId).then((response) => {
-                setMovie(response)
-            })
-        }
-    })
-    if (shelf && movie) {
-        console.log({ web_path: movie.video_files[videoFileIndex].web_path })
-        const webPath = movie.video_files[videoFileIndex].web_path
+
+    if (videoUrl && videoUrl.path) {
+        console.log({ videoUrl, videoRef })
         return (
-            <>
-                <VLCPlayer
-                    source={{
-                        initType: 2,
-                        hwDecoderEnabled: 1,
-                        hwDecoderForced: 1,
-                        uri:
-                            webPath,
-                        initOptions: [
-                            '--no-audio',
-                            '--rtsp-tcp',
-                            '--network-caching=150',
-                            '--rtsp-caching=150',
-                            '--no-stats',
-                            '--tcp-caching=150',
-                            '--realrtsp-caching=150',
-                        ],
+            <View style={styles.videoView}>
+                <Video
+                    ref={videoRef}
+                    paused={false}
+                    source={{ uri: videoUrl.path }}
+                    style={styles.backgroundVideo}
+                    onError={(err) => {
+                        // Error Code - 22000 - IO_UNSPECIFIED, codec issue?
+                        console.log({ err })
                     }}
-                    autoplay={true}
-                    autoAspectRatio={true}
-                    resizeMode="cover"
-                    // videoAspectRatio={"4:3"}
-                    isLive={true}
-                    autoReloadLive={true}
-                    style={{ height: calcVLCPlayerHeight(Dimensions.get('window').width, 3 / 4), marginTop: 30 }}
+                    onBuffer={(buffer) => {
+                        console.log({ buffer })
+                    }}
+                    controls={true}
+                    resizeMode="contain"
                 />
-            </>
+            </View>
         )
 
     }
