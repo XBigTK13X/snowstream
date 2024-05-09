@@ -23,6 +23,9 @@
     "slug": "snowstream",
     "android": {
       "package": "com.simplepathstudios.snowstream"
+    },
+    "ios": {
+      "bundleIdentifier": "com.simplepathstudios.snowstream"
     }
   }
 }
