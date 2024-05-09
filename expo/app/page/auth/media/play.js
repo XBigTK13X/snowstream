@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet } from "react-native";
+import { Dimensions, View, Text, StyleSheet } from "react-native";
 import { Button, ListItem } from '@rneui/themed';
 
 import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router';
@@ -10,12 +10,18 @@ import Video, { VideoRef } from 'react-native-video';
 
 var styles = StyleSheet.create({
     backgroundVideo: {
-        width: 400,
-        height: 400,
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0
     },
     videoView: {
-        width: 400,
-        height: 400
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0
     }
 });
 
@@ -30,6 +36,7 @@ export default function PlayMediaPage() {
     const [shelf, setShelf] = React.useState(null);
     const [movie, setMovie] = React.useState(null);
     const [videoUrl, setVideoUrl] = React.useState(null);
+    const [isFullscreen, setFullscreen] = React.useState(false)
     const shelfId = localParams.shelfId;
     const movieId = localParams.movieId;
     const videoFileIndex = localParams.videoFileIndex;
@@ -47,8 +54,12 @@ export default function PlayMediaPage() {
         }
     })
 
+    if (videoRef && videoRef.current && !isFullscreen) {
+        videoRef.current.presentFullscreenPlayer()
+        setFullscreen(true)
+    }
+
     if (videoUrl && videoUrl.path) {
-        console.log({ videoUrl, videoRef })
         return (
             <View style={styles.videoView}>
                 <Video
