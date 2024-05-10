@@ -1,3 +1,4 @@
+build-out/
 keystore.properties
 local.properties
 credentials.json
