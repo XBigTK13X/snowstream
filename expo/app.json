@@ -26,6 +26,14 @@
     },
     "ios": {
       "bundleIdentifier": "com.simplepathstudios.snowstream"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e0fc4a42-5cc7-4ba9-b251-8383cf957527"
+      }
     }
   }
 }

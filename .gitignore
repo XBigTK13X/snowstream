@@ -1,3 +1,6 @@
+keystore.properties
+local.properties
+credentials.json
 variables.sh
 seed-data.py
 .web-media/
