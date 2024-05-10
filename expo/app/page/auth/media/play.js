@@ -14,14 +14,18 @@ var styles = StyleSheet.create({
         top: 0,
         left: 0,
         bottom: 0,
-        right: 0
+        right: 0,
+        width: 400,
+        height: 400
     },
     videoView: {
         position: "absolute",
         top: 0,
         left: 0,
         bottom: 0,
-        right: 0
+        right: 0,
+        width: 400,
+        height: 400
     }
 });
 
@@ -60,22 +64,29 @@ export default function PlayMediaPage() {
     }
 
     if (videoUrl && videoUrl.path) {
+        let devVideoUrl = null
+        const mkvUrl = "http://192.168.1.20:9064/media/movies/testing/Ocean's Eleven (2001)/Ocean's Eleven (2001) WEBDL-480p.mkv"
+        const frigateUrl = "http://192.168.1.20:8000/api/streamable/direct?streamable_id=68"
+        const hdHomeRunUrl = "http://192.168.1.20:8000/api/streamable/transcode?streamable_id=1"
+        const iptvUrl = "http://192.168.1.20:8000/api/streamable/direct?streamable_id=124"
+        devVideoUrl = hdHomeRunUrl
+        console.log({ devVideoUrl })
         return (
             <View style={styles.videoView}>
                 <Video
                     ref={videoRef}
                     paused={false}
-                    source={{ uri: videoUrl.path }}
+                    source={{ uri: !devVideoUrl ? videoUrl.path : devVideoUrl }}
                     style={styles.backgroundVideo}
                     onError={(err) => {
-                        // Error Code - 22000 - IO_UNSPECIFIED, codec issue?
+                        // ExoPlayer Error Code - 22000 - IO_UNSPECIFIED, codec unsupported?
                         console.log({ err })
                     }}
                     onBuffer={(buffer) => {
                         console.log({ buffer })
                     }}
                     controls={true}
-                    resizeMode="contain"
+                    disableDisconnectError={true}
                 />
             </View>
         )

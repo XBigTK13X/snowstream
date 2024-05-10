@@ -39,7 +39,7 @@ class Transcode:
             protocol_options = "-rtsp_transport tcp"
             live_stream_options = ""
         command = f'ffmpeg -hide_banner {live_stream_options} {protocol_options} -i "{streamable.url}" {av_options} {hls_options} -user_agent ffmpeg/snowstream "{output_file}"'
-        # DEBUG log.info(command)
+        log.info(command)
         transcode_process = util.run_cli(command, background=True)
         self.transcode_processes[streamable.id] = {
             "process": transcode_process,
@@ -61,8 +61,12 @@ class Transcode:
         transcode_process = self.transcode_processes[streamable_id]
         binary_data = None
         playlist_path = transcode_process["output_file"]
-        with open(playlist_path, "rb") as read_pointer:
-            binary_data = read_pointer.read()
+        max_wait_seconds = 10
+        while not os.path.exists(playlist_path) and max_wait_seconds > 0:
+            time.sleep(1)
+            max_wait_seconds -= 1
+        with open(playlist_path, "rb") as read_handle:
+            binary_data = read_handle.read()
         self.close_on_disconnect(streamable_id=streamable_id)
         return binary_data
 
@@ -72,8 +76,11 @@ class Transcode:
         binary_data = None
         transcode_process = self.transcode_processes[streamable_id]
         segment_path = os.path.join(transcode_process["output_dir"], segment_file)
-        with open(segment_path, "rb") as read_pointer:
-            binary_data = read_pointer.read()
+        while not os.path.exists(segment_path) and max_wait_seconds > 0:
+            time.sleep(1)
+            max_wait_seconds -= 1
+        with open(segment_path, "rb") as read_handle:
+            binary_data = read_handle.read()
         self.close_on_disconnect(streamable_id=streamable_id)
         return binary_data
 
