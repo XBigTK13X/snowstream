@@ -8,6 +8,9 @@ import { useSettings } from '../../../settings-context';
 
 import { LibmpvVideo } from 'react-native-libmpv';
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 var styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -20,8 +23,11 @@ var styles = StyleSheet.create({
         left: 0,
         bottom: 0,
         right: 0,
-        width: 400,
-        height: 800
+        width: windowWidth,
+        height: windowHeight
+    },
+    videoSurface: {
+        zIndex:10100
     }
 });
 
@@ -66,10 +72,12 @@ export default function PlayMediaPage() {
         const hdHomeRunUrl = "http://192.168.1.20:8000/api/streamable/direct?streamable_id=1"
         const hdHomeRunUrlTrans = "http://192.168.1.20:8000/api/streamable/transcode?streamable_id=1"
         const iptvUrl = "http://192.168.1.20:8000/api/streamable/direct?streamable_id=124"
-        devVideoUrl = hdHomeRunUrl
+        devVideoUrl = frigateUrl
         console.log({ devVideoUrl })
         return (
-            <LibmpvVideo style={styles.videoView} playUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
+            <View style={styles.videoView}>
+                <LibmpvVideo style={[styles.videoView, styles.videoSurface]} playUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
+            </View>
         )
 
     }
