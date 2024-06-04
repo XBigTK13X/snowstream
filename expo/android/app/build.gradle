@@ -91,7 +91,7 @@ android {
     namespace 'com.simplepathstudios.snowstream'
     defaultConfig {
         applicationId 'com.simplepathstudios.snowstream'
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion 26
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
