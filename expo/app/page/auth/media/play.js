@@ -64,6 +64,7 @@ export default function PlayMediaPage() {
             }
             try {
                 if (!mpvDestroyed) {
+                    Libmpv.detachSurface()
                     Libmpv.destroy()
                     setMpvDestroyed(true)
                 }

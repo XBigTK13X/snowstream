@@ -5792,10 +5792,10 @@ react-native-helmet-async@2.0.4:
     react-fast-compare "^3.2.2"
     shallowequal "^1.1.0"
 
-react-native-libmpv@0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/react-native-libmpv/-/react-native-libmpv-0.4.1.tgz#757e40b3696f44f685bab5e59fb28014ea8e5cb5"
-  integrity sha512-gmHZYdd8ApYtr17S9Ji+vg3cslAcWDXixk0rCEbS7O6A+mlhY5Xt4YGb3AQogb3v+usJncP+KGc4m0yciY3dgQ==
+react-native-libmpv@0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/react-native-libmpv/-/react-native-libmpv-0.4.2.tgz#e1b9cef6b844607bccdb5abc8f43c81ff3024282"
+  integrity sha512-YKiIsQEFrIEgcpi6VUmjsB7OMhpU56r2wOxE58wsS2XHLHwJFBKCRVxGxWJ/emj2Eiz5W1AzvtxRvCkcIuXU9A==
 
 react-native-ratings@^8.1.0:
   version "8.1.0"
