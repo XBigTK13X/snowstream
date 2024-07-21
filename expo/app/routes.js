@@ -13,6 +13,7 @@ let routes = {
     seasonList: "/page/auth/list/season",
     episodeList: "/page/auth/list/episode",
     playMedia: "/page/auth/media/play",
+    streamSourceDetails: "/page/auth/details/stream-source",
     replace: (target, params) => {
         if (!params) {
             return router.replace(target)

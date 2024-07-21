@@ -40,6 +40,20 @@ def auth_required(router):
             raise HTTPException(status_code=400, detail="URL already tracked")
         return db.op.create_stream_source(stream_source=stream_source)
 
+    @router.get("/stream/source")
+    def get_stream_source(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        stream_source_id: int,
+    ):
+        return db.op.get_stream_source(stream_source_id=stream_source_id)
+
+    @router.get("/streamable")
+    def get_streamable(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        streamable_id: int,
+    ):
+        return db.op.get_streamable_by_id(streamable_id=streamable_id)
+
     @router.post("/job")
     def create_job(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],

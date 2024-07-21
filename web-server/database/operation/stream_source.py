@@ -24,6 +24,12 @@ def get_stream_source_list(streamables=False):
             return db.scalars(sql).unique().all()
         return db.query(dm.StreamSource).all()
 
+def get_stream_source(stream_source_id: int):
+    with DbSession() as db:
+        sql = sa.select(dm.StreamSource).options(
+            sorm.joinedload(dm.StreamSource.streamables)
+        ).filter(dm.StreamSource.id == stream_source_id)
+        return db.scalars(sql).unique().first()
 
 def get_stream_source_by_url(url: str):
     with DbSession() as db:
