@@ -6,7 +6,7 @@ import { useLocalSearchParams, useGlobalSearchParams, useNavigation } from 'expo
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
 
-import { LibmpvVideo } from 'react-native-libmpv'
+import { LibmpvVideo, Libmpv } from 'react-native-libmpv'
 
 const windowWidth = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
@@ -44,6 +44,7 @@ export default function PlayMediaPage() {
     const [movie, setMovie] = React.useState(null)
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [isFullscreen, setFullscreen] = React.useState(false)
+    const [mpvDestroyed, setMpvDestroyed] = React.useState(false)
     const shelfId = localParams.shelfId
     const movieId = localParams.movieId
     const episodeId = localParams.episodeId
@@ -51,8 +52,25 @@ export default function PlayMediaPage() {
     const videoFileIndex = localParams.videoFileIndex
 
     React.useEffect(() => {
-        navigation.addListener('beforeRemove', () => {
-            return true
+        navigation.addListener('beforeRemove', (e) => {
+            e.preventDefault()
+            try {
+                if (videoRef && videoRef.current && isFullscreen) {
+                    videoRef.current.dismissFullscreenPlayer()
+                    setFullscreen(false)
+                }
+            } catch (e) {
+                console.log({ e })
+            }
+            try {
+                if (!mpvDestroyed) {
+                    Libmpv.destroy()
+                    setMpvDestroyed(true)
+                }
+            } catch (e) {
+                console.log({ e })
+            }
+            return
         })
         if (!shelf && movieId) {
             apiClient.getShelf(shelfId).then((response) => {
@@ -66,7 +84,6 @@ export default function PlayMediaPage() {
         }
         if (!videoUrl && streamableId) {
             apiClient.getStreamable(streamableId).then((response) => {
-                console.log({ response })
                 setVideoUrl({ path: response.url })
             })
         }
@@ -86,7 +103,7 @@ export default function PlayMediaPage() {
         const iptvUrl = 'http://192.168.1.25:8000/api/streamable/direct?streamable_id=124'
         //devVideoUrl = frigateUrl
         //console.log({ devVideoUrl })
-        console.log({ videoUrl })
+        //console.log({ videoUrl })
         return (
             <View style={styles.videoView}>
                 <LibmpvVideo style={[styles.videoView, styles.videoSurface]} playUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
