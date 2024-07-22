@@ -27,6 +27,11 @@
     "ios": {
       "bundleIdentifier": "com.simplepathstudios.snowstream"
     },
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "backgroundColor": "#ff9a3f"
+    },
+    "icon": "./assets/images/icon.png",
     "extra": {
       "router": {
         "origin": false
