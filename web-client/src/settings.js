@@ -4,8 +4,8 @@ class Config {
     try {
       // eslint-disable-next-line no-undef
       this.webApiUrl = SNOWSTREAM_WEB_API_URL;
-      this.clientVersion = "0.5.0";
-      this.clientBuildDate = "February 12, 2024";
+      this.clientVersion = "0.5.1";
+      this.clientBuildDate = "July 22, 2024";
       console.log("[DEBUG] Using the prod web api URL: " + this.webApiUrl);
     } catch {
       this.webApiUrl = "http://localhost:8000";

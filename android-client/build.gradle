@@ -22,7 +22,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 34
         versionCode 21
-        versionName "0.5.0"
+        versionName "0.5.1"
         applicationId "com.simplepathstudios.snowstream"
     }
 
