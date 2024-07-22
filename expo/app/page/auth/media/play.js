@@ -53,42 +53,34 @@ export default function PlayMediaPage() {
 
     React.useEffect(() => {
         navigation.addListener('beforeRemove', (e) => {
-            e.preventDefault()
-            try {
-                if (videoRef && videoRef.current && isFullscreen) {
-                    videoRef.current.dismissFullscreenPlayer()
-                    setFullscreen(false)
-                }
-            } catch (e) {
-                console.log({ e })
-            }
-            try {
-                if (!mpvDestroyed) {
-                    Libmpv.detachSurface()
-                    Libmpv.destroy()
-                    setMpvDestroyed(true)
-                }
-            } catch (e) {
-                console.log({ e })
-            }
+            Libmpv.cleanup()
+            setMpvDestroyed(true)
             return
         })
-        if (!shelf && movieId) {
-            apiClient.getShelf(shelfId).then((response) => {
-                setShelf(response)
-            })
-            apiClient.getMovie(movieId).then((response) => {
-                setMovie(response)
-                const webPath = response.video_files[videoFileIndex].web_path
-                setVideoUrl({ path: webPath })
-            })
-        }
-        if (!videoUrl && streamableId) {
-            apiClient.getStreamable(streamableId).then((response) => {
-                setVideoUrl({ path: response.url })
-            })
+        if (!mpvDestroyed) {
+            if (!shelf && movieId) {
+                apiClient.getShelf(shelfId).then((response) => {
+                    setShelf(response)
+                })
+                apiClient.getMovie(movieId).then((response) => {
+                    setMovie(response)
+                    const webPath = response.video_files[videoFileIndex].web_path
+                    setVideoUrl({ path: webPath })
+                })
+            }
+            if (!videoUrl && streamableId) {
+                apiClient.getStreamable(streamableId).then((response) => {
+                    setVideoUrl({ path: response.url })
+                })
+            }
         }
     })
+
+    if (mpvDestroyed) {
+        return (
+            <Text>Closing video...</Text>
+        )
+    }
 
     if (videoRef && videoRef.current && !isFullscreen) {
         videoRef.current.presentFullscreenPlayer()
