@@ -22,6 +22,7 @@ function Header() {
     <>
       <Button title="Home" onPress={routes.func(routes.landing)} />
       <Button title="Options" onPress={routes.func(routes.options)} />
+      <Button title="Sign Out" onPress={routes.func(routes.signOut)} />
       <Text>{"\n"}</Text>
     </>
   )
@@ -31,7 +32,7 @@ function Footer() {
   return (
     <>
       <Text>{"\n"}</Text>
-      <Text>This is the footer.</Text>
+      <Text></Text>
     </>
   )
 }

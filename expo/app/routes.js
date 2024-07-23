@@ -7,6 +7,7 @@ let routes = {
     options: "/page/auth/options",
     landing: "/page/auth/landing",
     signIn: "/page/sign-in",
+    signOut: "/page/auth/sign-out",
     movieList: "/page/auth/list/movie",
     movieDetails: "/page/auth/details/movie",
     showList: "/page/auth/list/show",

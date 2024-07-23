@@ -8,7 +8,7 @@ import { useSettings } from '../../settings-context'
 
 export default function LandingPage() {
     const { signOut, apiClient } = useSession()
-    const { routes } = useSettings()
+    const { routes, config } = useSettings()
     const [shelves, setShelves] = React.useState(null)
     const [streamSources, setStreamSources] = React.useState(null)
 
@@ -71,9 +71,10 @@ export default function LandingPage() {
             <>
                 {shelvesMarkup}
                 {streamSourcesMarkup}
+                <Text>Loaded content from [{config.webApiUrl}]</Text>
             </>
         )
     }
 
-    return <Text>Loading shelves and stream sources...</Text>
+    return <Text>Loading content from [{config.webApiUrl}] v{config.clientVersion}</Text>
 }
