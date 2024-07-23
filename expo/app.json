@@ -1,4 +1,5 @@
 {
+  "version": "0.5.2",
   "expo": {
     "plugins": [
       [
@@ -17,7 +18,15 @@
         }
       ],
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "name": "snowstream",
     "slug": "snowstream",
