@@ -1,6 +1,6 @@
 {
   "name": "snowstream",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "main": "expo-router/entry",
   "dependencies": {
     "@rneui/base": "^4.0.0-rc.8",

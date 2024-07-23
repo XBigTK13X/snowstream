@@ -1,14 +1,24 @@
 import React from 'react'
 import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { Dimensions, View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native'
 import { Button, ListItem } from '@rneui/themed'
 import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
 
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
 
-export default function MovieShelfPage() {
-    const { signOut, apiClient } = useSession()
+
+const windowWidth = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
+
+const styles = StyleSheet.create({
+    scrollView: {
+        height: windowHeight * .66
+    }
+});
+
+export default function StreamSourcePage() {
+    const { apiClient } = useSession()
     const { routes } = useSettings()
     const localParams = useLocalSearchParams()
     const [streamSource, setStreamSource] = React.useState(null)
@@ -21,8 +31,8 @@ export default function MovieShelfPage() {
     })
     if (streamSource && streamSource.streamables) {
         return (
-            <>
-                {streamSource.streamables.map((streamable) => {
+            <ScrollView showsVerticalScrollIndicator={true} persistentScrollbar={true} style={styles.scrollView}>
+                {streamSource.streamables.map((streamable, streamableIndex) => {
                     return (
                         <Button
                             key={streamable.id}
@@ -34,7 +44,7 @@ export default function MovieShelfPage() {
                         />
                     )
                 })}
-            </>
+            </ScrollView>
         )
     }
     return <Text>Loading stream source {localParams.streamSourceId}.</Text>

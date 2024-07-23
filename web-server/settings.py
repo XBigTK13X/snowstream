@@ -4,7 +4,7 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "0.5.4"
+        self.server_version = "0.5.5"
         self.server_build_date = "July 22, 2024"
         self.frontend_url = "http://localhost:3000"
         self.web_api_url = "http://localhost:8000"
