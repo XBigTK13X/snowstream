@@ -89,11 +89,11 @@ export default function PlayMediaPage() {
 
     if (videoUrl && videoUrl.path) {
         let devVideoUrl = null
-        const mkvUrl = "http://192.168.1.4:9064/media/movies/testing/Ocean's Eleven (2001)/Ocean's Eleven (2001) WEBDL-480p.mkv"
-        const frigateUrl = 'http://192.168.1.4:8000/api/streamable/direct?streamable_id=68'
-        const hdHomeRunUrl = 'http://192.168.1.4:8000/api/streamable/direct?streamable_id=1'
-        const hdHomeRunUrlTrans = 'http://192.168.1.4:8000/api/streamable/transcode?streamable_id=1'
-        const iptvUrl = 'http://192.168.1.4:8000/api/streamable/direct?streamable_id=124'
+        const mkvUrl = "http://192.168.1.20:8000/media/movies/testing/Ocean's Eleven (2001)/Ocean's Eleven (2001) WEBDL-480p.mkv"
+        const frigateUrl = 'http://192.168.1.20:8000/api/streamable/direct?streamable_id=68'
+        const hdHomeRunUrl = 'http://192.168.1.20:8000/api/streamable/direct?streamable_id=1'
+        const hdHomeRunUrlTrans = 'http://192.168.1.20:8000/api/streamable/transcode?streamable_id=1'
+        const iptvUrl = 'http://192.168.1.20:8000/api/streamable/direct?streamable_id=124'
         //devVideoUrl = frigateUrl
         //console.log({ devVideoUrl })
         //console.log({ videoUrl })
