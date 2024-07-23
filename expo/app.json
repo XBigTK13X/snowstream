@@ -1,6 +1,6 @@
 {
-  "version": "0.5.2",
   "expo": {
+    "version": "0.5.4",
     "plugins": [
       [
         "@react-native-tvos/config-tv",
@@ -18,15 +18,7 @@
         }
       ],
       "expo-router",
-      "expo-secure-store",
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "usesCleartextTraffic": true
-          }
-        }
-      ]
+      "expo-secure-store"
     ],
     "name": "snowstream",
     "slug": "snowstream",

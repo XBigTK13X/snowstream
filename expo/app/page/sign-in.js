@@ -10,25 +10,21 @@ export default function SignIn() {
     const { routes, config } = useSettings()
     const [errors, setErrors] = React.useState(null)
 
+    function clickSignIn() {
+        setErrors('The button has been clicked!')
+        signIn('admin', 'admin')
+            .then((token) => {
+                setErrors('Everything went fine?')
+                routes.replace(routes.landing)
+            })
+            .catch((err) => {
+                setErrors(err)
+            })
+    }
+
     return (
         <View>
-            <Button
-                onPress={() => {
-                    // TODO Add UI for username and password
-                    // TODO Add Profile pick selectors
-                    setErrors('The button has been clicked!')
-                    signIn('admin', 'admin')
-                        .then((token) => {
-                            setErrors('Everything went fine?')
-                            routes.replace(routes.landing)
-                        })
-                        .catch((err) => {
-                            setErrors(err)
-                        })
-                }}
-            >
-                Sign In
-            </Button>
+            <Button onPress={clickSignIn}>Sign In</Button>
             <Text>{errors ? JSON.stringify(errors) : '[' + config.webApiUrl + '] v' + config.clientVersion}</Text>
         </View>
     )
