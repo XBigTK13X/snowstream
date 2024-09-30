@@ -24,3 +24,32 @@ Before I list these out, let me say that I have the upmost respect for each of t
 |Plex|Streaming|Closed Source|
 |Emby|Streaming|Closed Source and fragile. It seemed like every stable release broke my library in new and exciting ways|
 |Jellyfin|Streaming|Well supported by the community, but inherited a lot of Emby's technical debt. Also introduced strange bugs in my library over each release. I made around a dozen patches to various Jellyfin projects before deciding it was too messy to bother contributing. Eats RAM for breakfast.|
+
+# Developing Locally
+
+Create a script `script/variables.sh` with something like the following.
+
+```
+#! /bin/bash 
+
+source web-server/venv/bin/activate
+
+export SNOWSTREAM_WEB_MEDIA_URL="http://<your-dev-machine-ip>:9064/media"
+export SNOWSTREAM_WEB_API_URL="http://<your-dev-machine-ip>:8000"
+
+```
+
+`source script/variables.sh` at the start of any work session.
+
+Use the `script/dev-docker-services.sh` bash script to launch a dockerized version of the app. This is used for postgres, rabbit, and any other services required to run snowstream.
+
+Note that network shares do not mount properly inside docker. If you want media files to develop against, then put them in a path on your local machine under `.web-media/shows` or `.web-media/movies` from the repo root.
+
+Run `script/dev-run-all.sh` to launch the dev/debug versions of the app.
+
+To develop the mobile app, make sure you have an Android emulator or physical debug connected via adb.
+
+Then `cd expo` and run `npx expo run:android`. This will run a local debug version of the app on the Android target. This is required due to the use of `libmpv`.
+
+During first time setup, you may need to create a virtualenv under `web-server` and run `npx yarn install` under the `expo` dir.
+

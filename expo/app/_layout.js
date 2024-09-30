@@ -41,20 +41,22 @@ function Footer() {
 
 export default function HomeLayout() {
   return (
-    <ThemeProvider theme={theme}>
-      <SafeAreaProvider>
-        <SafeAreaView>
-          <TVFocusGuideView autoFocus>
-            <SettingsProvider>
-              <SessionProvider>
-                <Header />
-                <Slot />
-                <Footer />
-              </SessionProvider>
-            </SettingsProvider>
-          </TVFocusGuideView>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </ThemeProvider>
+    <div className="app-wrapper">
+      <ThemeProvider theme={theme}>
+        <SafeAreaProvider>
+          <SafeAreaView>
+            <TVFocusGuideView autoFocus>
+              <SettingsProvider>
+                <SessionProvider>
+                  <Header />
+                  <Slot />
+                  <Footer />
+                </SessionProvider>
+              </SettingsProvider>
+            </TVFocusGuideView>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </div>
   );
 }
