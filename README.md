@@ -49,7 +49,7 @@ Run `script/dev-run-all.sh` to launch the dev/debug versions of the app.
 
 To develop the mobile app, make sure you have an Android emulator or physical debug connected via adb.
 
-Then `cd expo` and run `npx expo run:android`. This will run a local debug version of the app on the Android target. This is required due to the use of `libmpv`.
+Then `cd expo` and run `npx expo start`. This will run a local debug version of the app on the Android target. This is required due to the use of `libmpv`.
 
 During first time setup, you may need to create a virtualenv under `web-server` and run `npx yarn install` under the `expo` dir.
 
