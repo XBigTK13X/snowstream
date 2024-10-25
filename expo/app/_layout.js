@@ -18,10 +18,7 @@ const theme = createTheme({
 })
 
 var styles = StyleSheet.create({
-    appMargin: {
-        marginHorizontal: 1,
-        marginVertical: 1,
-    },
+    appMargin: {},
 })
 
 function Header() {
@@ -48,22 +45,20 @@ function Footer() {
 
 export default function HomeLayout() {
     return (
-        <View style={styles.appMargin}>
-            <ThemeProvider theme={theme}>
-                <SafeAreaProvider>
-                    <SafeAreaView>
-                        <TVFocusGuideView autoFocus>
-                            <SettingsProvider>
-                                <SessionProvider>
-                                    <Header />
-                                    <Slot />
-                                    <Footer />
-                                </SessionProvider>
-                            </SettingsProvider>
-                        </TVFocusGuideView>
-                    </SafeAreaView>
-                </SafeAreaProvider>
-            </ThemeProvider>
-        </View>
+        <ThemeProvider theme={theme}>
+            <SafeAreaProvider>
+                <SafeAreaView>
+                    <TVFocusGuideView autoFocus>
+                        <SettingsProvider>
+                            <SessionProvider>
+                                <Header />
+                                <Slot />
+                                <Footer />
+                            </SessionProvider>
+                        </SettingsProvider>
+                    </TVFocusGuideView>
+                </SafeAreaView>
+            </SafeAreaProvider>
+        </ThemeProvider>
     )
 }

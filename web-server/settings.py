@@ -4,8 +4,8 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "0.5.5"
-        self.server_build_date = "July 22, 2024"
+        self.server_version = "0.5.6"
+        self.server_build_date = "October 24, 2024"
         self.frontend_url = "http://localhost:3000"
         self.web_api_url = "http://localhost:8000"
         self.postgres_username = "snowstream"

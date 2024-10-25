@@ -16,21 +16,21 @@ Check the [progress tracker on the WIKI](https://github.com/XBigTK13X/snowstream
 
 Before I list these out, let me say that I have the upmost respect for each of the teams maintaining these projects. These pieces of software didn't fit my workflow, but are great on their own. If it isn't listed here then it was either abandonware or I just didn't know about it.
 
-|Software|Functionality|Reason|
-|--------|-------------|------|
-|Threadfin|IPTV|UI is incredibly buggy. Lots of changes get lost. Obtuse behaviors leading to channels getting disabled. Unexpected CPU spikes|
-|ErsatzTV|PseudoTV|Convulated workflow to eventually get streaming URLs. Project structure is difficult to develop on Linux. Another CPU spike source.|
-|guide2go|Schedules Direct|Mostly worked great. However, the CLI just dumps a bunch of files and you need to map them to containers. I just wanted a simple API to get the EPG data.|
-|Plex|Streaming|Closed Source|
-|Emby|Streaming|Closed Source and fragile. It seemed like every stable release broke my library in new and exciting ways|
-|Jellyfin|Streaming|Well supported by the community, but inherited a lot of Emby's technical debt. Also introduced strange bugs in my library over each release. I made around a dozen patches to various Jellyfin projects before deciding it was too messy to bother contributing. Eats RAM for breakfast.|
+| Software  | Functionality    | Reason                                                                                                                                                                                                                                                                                   |
+| --------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Threadfin | IPTV             | UI is incredibly buggy. Lots of changes get lost. Obtuse behaviors leading to channels getting disabled. Unexpected CPU spikes                                                                                                                                                           |
+| ErsatzTV  | PseudoTV         | Convulated workflow to eventually get streaming URLs. Project structure is difficult to develop on Linux. Another CPU spike source.                                                                                                                                                      |
+| guide2go  | Schedules Direct | Mostly worked great. However, the CLI just dumps a bunch of files and you need to map them to containers. I just wanted a simple API to get the EPG data.                                                                                                                                |
+| Plex      | Streaming        | Closed Source                                                                                                                                                                                                                                                                            |
+| Emby      | Streaming        | Closed Source and fragile. It seemed like every stable release broke my library in new and exciting ways                                                                                                                                                                                 |
+| Jellyfin  | Streaming        | Well supported by the community, but inherited a lot of Emby's technical debt. Also introduced strange bugs in my library over each release. I made around a dozen patches to various Jellyfin projects before deciding it was too messy to bother contributing. Eats RAM for breakfast. |
 
 # Developing Locally
 
 Create a script `script/variables.sh` with something like the following.
 
 ```
-#! /bin/bash 
+#! /bin/bash
 
 source web-server/venv/bin/activate
 
@@ -53,3 +53,6 @@ Then `cd expo` and run `npx expo start`. This will run a local debug version of 
 
 During first time setup, you may need to create a virtualenv under `web-server` and run `npx yarn install` under the `expo` dir.
 
+# Creating an Android TV APK
+
+Run `script/prod-generate-apks.sh`
