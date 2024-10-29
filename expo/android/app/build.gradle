@@ -121,6 +121,7 @@ android {
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            matchingFallbacks = ['release']
         }
     }
     packagingOptions {
@@ -154,11 +155,8 @@ repositories{
   // TODO There must be a way to include this dep in the react native module, but anything I tried threw a bunch of different errors
   // Workaround for now
   maven {
-    url "http://9914.us:9876/repository/main/"
-    credentials {
-      username "admin"
-      password "admin1"
-    }
+    name "reposiliteRepositoryRepository"
+    url "http://9914.us:9876/repository"
     allowInsecureProtocol = true
   }
 }
