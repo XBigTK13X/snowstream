@@ -41,6 +41,12 @@ export function SessionProvider(props: React.PropsWithChildren) {
                                 setSession(authToken);
                                 resolve(authToken)
                             })
+                            .catch((err) => {
+                                //TODO Better central management off critical errors
+                                console.log({ err })
+                                apiClient.debug()
+                            })
+                            
                     })
                 },
                 signOut: () => {

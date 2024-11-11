@@ -18,9 +18,11 @@ export class ApiClient {
                     return response.data
                 })
                 .catch((err) => {
-                    if (err && err.response && err.response.status === 401)
+                    //TODO Better central management off critical errors
+                    if (err && err.response && err.response.status === 401) {
                         //localStorage.removeItem("snowstream-auth-token");
                         this.authToken = null
+                    }
                 })
         }
 
@@ -31,23 +33,26 @@ export class ApiClient {
                     return response.data
                 })
                 .catch((err) => {
-                    if (err && err.response && err.response.status === 401)
+                    //TODO Better central management off critical errors
+                    if (err && err.response && err.response.status === 401) {
                         //localStorage.removeItem("snowstream-auth-token");
                         this.authToken = null
+                    }
                 })
         }
     }
 
     createClient(authToken) {
+        this.baseURL = config.webApiUrl + '/api'
         this.httpClient = axios.create({
-            baseURL: config.webApiUrl + '/api',
+            baseURL: this.baseURL,
         })
 
         this.authToken = authToken //localStorage.getItem("snowstream-auth-token");
 
         if (this.authToken) {
             this.httpClient = axios.create({
-                baseURL: config.webApiUrl + '/api',
+                baseURL: this.baseURL,
                 headers: {
                     Authorization: 'Bearer ' + this.authToken,
                 },
@@ -136,5 +141,9 @@ export class ApiClient {
 
     getStreamable(streamableId) {
         return this.get('/streamable', { streamable_id: streamableId })
+    }
+
+    debug() {
+        console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }
 }

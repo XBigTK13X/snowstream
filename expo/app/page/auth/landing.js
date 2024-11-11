@@ -32,17 +32,8 @@ export default function LandingPage() {
         shelvesMarkup = (
             <>
                 {shelves.map((shelf) => {
-                    let page =
-                        shelf.kind == 'Movies'
-                            ? routes.movieList
-                            : routes.showList
-                    return (
-                        <Button
-                            key={shelf.id}
-                            title={shelf.name}
-                            onPress={routes.func(page, { shelfId: shelf.id })}
-                        />
-                    )
+                    let page = shelf.kind == 'Movies' ? routes.movieList : routes.showList
+                    return <Button key={shelf.id} title={shelf.name} onPress={routes.func(page, { shelfId: shelf.id })} />
                 })}
             </>
         )
@@ -76,5 +67,9 @@ export default function LandingPage() {
         )
     }
 
-    return <Text>Loading content from [{config.webApiUrl}] v{config.clientVersion}</Text>
+    return (
+        <Text>
+            Loading content from [{config.webApiUrl}] v{config.clientVersion}
+        </Text>
+    )
 }

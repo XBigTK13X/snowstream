@@ -2,7 +2,10 @@
 
 class Config {
     constructor() {
-        this.webApiUrl = 'http://192.168.1.4:9064'
+        //Prod
+        //this.webApiUrl = 'http://192.168.1.4:9064'
+        //Laptop Dev
+        this.webApiUrl = 'http://192.168.1.25:8000'
         this.clientVersion = '0.5.6'
         this.clientBuildDate = 'October 24, 2024'
         console.log('[DEBUG] Using the web api URL: ' + this.webApiUrl)
