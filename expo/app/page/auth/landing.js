@@ -1,10 +1,21 @@
 import React from 'react'
 import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions } from 'react-native'
 import { Button, ListItem } from '@rneui/themed'
 
 import { useSession } from '../../auth-context'
 import { useSettings } from '../../settings-context'
+
+import { SimpleGrid } from 'react-native-super-grid'
+
+const styles = StyleSheet.create({
+    boxContainer: {},
+    image: {},
+    box: {
+        padding: 5,
+        margin: 5,
+    },
+})
 
 export default function LandingPage() {
     const { signOut, apiClient } = useSession()
@@ -25,45 +36,42 @@ export default function LandingPage() {
         }
     })
 
-    let shelvesMarkup = <></>
-    let streamSourcesMarkup = <></>
+    let destinations = []
 
     if (shelves) {
-        shelvesMarkup = (
-            <>
-                {shelves.map((shelf) => {
-                    let page = shelf.kind == 'Movies' ? routes.movieList : routes.showList
-                    return <Button key={shelf.id} title={shelf.name} onPress={routes.func(page, { shelfId: shelf.id })} />
-                })}
-            </>
-        )
+        destinations = destinations.concat(shelves)
     }
 
     if (streamSources) {
-        streamSourcesMarkup = (
-            <>
-                {streamSources.map((streamSource) => {
-                    return (
-                        <Button
-                            key={streamSource.id}
-                            title={streamSource.name}
-                            onPress={routes.func(routes.streamSourceDetails, {
-                                streamSourceId: streamSource.id,
-                            })}
-                        />
-                    )
-                })}
-            </>
-        )
+        destinations = destinations.concat(streamSources)
     }
 
     if (shelves || streamSources) {
+        const renderItem = (item) => {
+            item = item.item
+            markup = null
+            if (item.kind && item.kind === 'Movies') {
+                markup = <Button style={styles.box} title={item.name} onPress={routes.func(routes.movieList, { shelfId: item.id })} />
+            } else if (item.kind && item.kind === 'Shows') {
+                markup = <Button style={styles.box} title={item.name} onPress={routes.func(routes.showList, { shelfId: item.id })} />
+            } else {
+                markup = (
+                    <Button
+                        style={styles.box}
+                        title={item.name}
+                        onPress={routes.func(routes.streamSourceDetails, {
+                            streamSourceId: item.id,
+                        })}
+                    />
+                )
+            }
+            return markup
+        }
         return (
-            <>
-                {shelvesMarkup}
-                {streamSourcesMarkup}
+            <View>
                 <Text>Loaded content from [{config.webApiUrl}]</Text>
-            </>
+                <SimpleGrid itemDimension={130} data={destinations} renderItem={renderItem} />
+            </View>
         )
     }
 
