@@ -103,6 +103,30 @@ export class ApiClient {
         })
     }
 
+    scheduleShelvesScan() {
+        return this.post('/job', { name: 'scan_shelves_content' })
+    }
+
+    getStreamSources() {
+        return this.get('/stream/source/list')
+    }
+
+    getStreamSource(streamSourceId) {
+        return this.get('/stream/source', { stream_source_id: streamSourceId })
+    }
+
+    getStreamable(streamableId) {
+        return this.get('/streamable', { streamable_id: streamableId })
+    }
+
+    createShelf(payload) {
+        return this.post('/shelf', {
+            name: payload.name,
+            kind: payload.kind,
+            directory: payload.directory,
+        })
+    }
+
     getShelves() {
         return this.get('/shelf/list')
     }
@@ -119,28 +143,20 @@ export class ApiClient {
         return this.get('/movie', { movie_id: movieId })
     }
 
-    createShelf(payload) {
-        return this.post('/shelf', {
-            name: payload.name,
-            kind: payload.kind,
-            directory: payload.directory,
-        })
+    getShowList(shelfId) {
+        return this.get('/show/list', { shelf_id: shelfId })
     }
 
-    scheduleShelvesScan() {
-        return this.post('/job', { name: 'scan_shelves_content' })
+    getSeasonList(showId) {
+        return this.get('/show/season/list', { show_id: showId })
     }
 
-    getStreamSources() {
-        return this.get('/stream/source/list')
+    getEpisodeList(seasonId) {
+        return this.get('/show/season/episode/list', { show_season_id: seasonId })
     }
 
-    getStreamSource(streamSourceId) {
-        return this.get('/stream/source', { stream_source_id: streamSourceId })
-    }
-
-    getStreamable(streamableId) {
-        return this.get('/streamable', { streamable_id: streamableId })
+    getEpisode(episodeId) {
+        return this.get('/show/season/episode', { episode_id: episodeId })
     }
 
     debug() {

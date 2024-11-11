@@ -71,6 +71,7 @@ export default function PlayMediaPage() {
 
     const [shelf, setShelf] = React.useState(null)
     const [movie, setMovie] = React.useState(null)
+    const [episode, setEpisode] = React.useState(null)
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [mpvDestroyed, setMpvDestroyed] = React.useState(false)
 
@@ -81,6 +82,16 @@ export default function PlayMediaPage() {
             })
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
+                const webPath = response.video_files[videoFileIndex].web_path
+                setVideoUrl({ path: webPath })
+            })
+        }
+        if (!shelf && episodeId) {
+            apiClient.getShelf(shelfId).then((response) => {
+                setShelf(response)
+            })
+            apiClient.getEpisode(episodeId).then((response) => {
+                setEpisode(response)
                 const webPath = response.video_files[videoFileIndex].web_path
                 setVideoUrl({ path: webPath })
             })
@@ -122,5 +133,5 @@ export default function PlayMediaPage() {
             </View>
         )
     }
-    return <Text>Playing video...</Text>
+    return <Text>Getting video info...</Text>
 }

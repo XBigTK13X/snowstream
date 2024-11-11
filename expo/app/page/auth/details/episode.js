@@ -7,33 +7,30 @@ import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
 
-export default function ShowShelfPage() {
+export default function MovieShelfPage() {
     const { signOut, apiClient } = useSession()
     const { routes } = useSettings()
     const localParams = useLocalSearchParams()
     const [shelf, setShelf] = React.useState(null)
-    const [shows, setShows] = React.useState(null)
+    const [episode, setEpisode] = React.useState(null)
     const shelfId = localParams.shelfId
+    const showId = localParams.showId
+    const seasonId = localParams.seasonId
+    const episodeId = localParams.episodeId
     React.useEffect(() => {
         if (!shelf) {
-            apiClient.getShelf(localParams.shelfId).then((response) => {
+            apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
             })
         }
-        if (!shows) {
-            apiClient.getShowList(shelfId).then((response) => {
-                setShows(response)
+        if (!episode) {
+            apiClient.getEpisode(episodeId).then((response) => {
+                setEpisode(response)
             })
         }
     })
-    if (shelf && shows) {
-        return (
-            <>
-                {shows.map((show) => {
-                    return <Button key={show.id} title={show.name} onPress={routes.func(routes.seasonList, { shelfId: shelf.id, showId: show.id })} />
-                })}
-            </>
-        )
+    if (shelf && episode) {
+        return <Button title="Play" onPress={routes.func(routes.playMedia, { videoFileIndex: 0, episodeId: episodeId, shelfId: shelfId })} />
     }
-    return <Text>Loading shelf {localParams.shelfId}.</Text>
+    return <Text>Loading episode {episodeId}.</Text>
 }
