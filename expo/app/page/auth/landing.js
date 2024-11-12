@@ -53,7 +53,7 @@ export default function LandingPage() {
         const renderItem = (item) => {
             let destination = item.item
             markup = null
-            if (destination.kind && item.kind === 'Movies') {
+            if (destination.kind && destination.kind === 'Movies') {
                 markup = (
                     <Button
                         hasTVPreferredFocus={item.index === 0}

@@ -14,42 +14,14 @@ const windowHeight = Dimensions.get('window').height
 // TODO This is super janky. I think the entire view needs to be pulled out of the layout to work
 // Pass in the needed parts for auth
 var styles = StyleSheet.create({
-    videoBackdrop: {
-        position: 'absolute',
-        top: -2,
-        left: -2,
-        width: windowWidth,
-        height: windowHeight,
-        elevation: 900,
-        backgroundColor: '#000000',
-    },
-    videoBackdropTwo: {
-        position: 'absolute',
-        bottom: -2,
-        right: -2,
-        width: windowWidth,
-        height: windowHeight,
-        elevation: 900,
-        backgroundColor: '#000000',
-    },
     videoView: {
         position: 'absolute',
-        top: 0,
+        top: -9,
         left: 0,
         bottom: 0,
         right: 0,
         width: windowWidth,
         height: windowHeight,
-        elevation: 1000,
-    },
-    videoViewOld: {
-        position: 'absolute',
-        top: 1,
-        left: 1,
-        bottom: 1,
-        right: 1,
-        width: windowWidth - 2,
-        height: windowHeight - 2,
         elevation: 1000,
     },
 })
@@ -124,12 +96,8 @@ export default function PlayMediaPage() {
         //console.log({ devVideoUrl })
         //console.log({ videoUrl })
         return (
-            <View style={styles.videoBackdrop}>
-                <View style={styles.videoBackdropTwo}>
-                    <View style={styles.videoView}>
-                        <LibmpvVideo playUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
-                    </View>
-                </View>
+            <View style={styles.videoView}>
+                <LibmpvVideo playUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
             </View>
         )
     }

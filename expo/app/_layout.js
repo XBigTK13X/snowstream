@@ -5,31 +5,46 @@ import { ThemeProvider, createTheme } from '@rneui/themed'
 import { SessionProvider } from './auth-context'
 import { SettingsProvider } from './settings-context'
 import { Button, ListItem } from '@rneui/themed'
+import { SimpleGrid } from 'react-native-super-grid'
+
 const routes = require('./routes')
 
+// https://reactnativeelements.com/docs/customization/theme_object
 const theme = createTheme({
     lightColors: {
         primary: '#db9e2c',
+        background: '#000000',
     },
     darkColors: {
-        primary: '#634712',
+        primary: '#db9e2c',
+        background: '#000000',
     },
-    mode: 'light',
+    mode: 'dark',
 })
 
 var styles = StyleSheet.create({
-    appMargin: {},
+    default: {
+        backgroundColor: '#000000',
+    },
+    // This needs to be slightly larger than the offset in play.js for the videoview
+    // I don't know why, but without gap the surfaceview doesn't clean up.
+    // It leaves the screen blank after hitting back on a video on Android TV
+    videoSqueeze: {
+        margin: 10,
+    },
 })
 
 function Header() {
-    return (
-        <>
-            <Button title="Home" onPress={routes.func(routes.landing)} />
-            <Button title="Options" onPress={routes.func(routes.options)} />
-            <Button title="Sign Out" onPress={routes.func(routes.signOut)} />
-            <Text>{'\n'}</Text>
-        </>
-    )
+    const renderItem = (item) => {
+        const entry = item.item
+        return <Button title={entry.title} onPress={routes.func(entry.route)} />
+    }
+    const buttons = [
+        { title: 'Home', route: routes.landing },
+        { title: 'Options', route: routes.options },
+        { title: 'Sign Out', route: routes.signOut },
+    ]
+    return <SimpleGrid data={buttons} renderItem={renderItem}></SimpleGrid>
 }
 
 function Footer() {
@@ -46,14 +61,16 @@ function Footer() {
 export default function HomeLayout() {
     return (
         <ThemeProvider theme={theme}>
-            <SafeAreaProvider>
+            <SafeAreaProvider style={styles.default}>
                 <SafeAreaView>
                     <TVFocusGuideView autoFocus>
                         <SettingsProvider>
                             <SessionProvider>
-                                <Header />
-                                <Slot />
-                                <Footer />
+                                <View style={styles.videoSqueeze}>
+                                    <Header />
+                                    <Slot />
+                                    <Footer />
+                                </View>
                             </SessionProvider>
                         </SettingsProvider>
                     </TVFocusGuideView>
