@@ -101,5 +101,5 @@ export default function PlayMediaPage() {
             </View>
         )
     }
-    return <Text>Getting video info...</Text>
+    return <Text style={{ color: 'white' }}>Getting video info...</Text>
 }

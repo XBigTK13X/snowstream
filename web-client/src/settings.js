@@ -4,7 +4,7 @@ class Config {
         try {
             // eslint-disable-next-line no-undef
             this.webApiUrl = SNOWSTREAM_WEB_API_URL
-            this.clientVersion = '0.5.6'
+            this.clientVersion = '0.5.7'
             this.clientBuildDate = 'October 24, 2024'
             console.log('[DEBUG] Using the prod web api URL: ' + this.webApiUrl)
         } catch {

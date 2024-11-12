@@ -49,5 +49,5 @@ export default function MovieShelfPage() {
             </>
         )
     }
-    return <Text>Loading shelf {localParams.shelfId}.</Text>
+    return <Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</Text>
 }

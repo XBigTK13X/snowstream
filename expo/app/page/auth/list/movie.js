@@ -42,5 +42,5 @@ export default function MovieShelfPage() {
         }
         return <SimpleGrid data={movies} renderItem={renderItem} />
     }
-    return <Text>Loading shelf {localParams.shelfId}.</Text>
+    return <Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</Text>
 }

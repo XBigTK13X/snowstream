@@ -5,7 +5,7 @@ export default function OptionsPage() {
     let downloadButton = null
     return (
         <View>
-            <Text>These are the options.</Text>
+            <Text style={{ color: 'white' }}>These are the options.</Text>
             <Button
                 title="Download Latest APK"
                 onPress={() => {

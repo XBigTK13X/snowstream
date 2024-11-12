@@ -88,13 +88,13 @@ export default function LandingPage() {
         return (
             <View>
                 <SimpleGrid itemDimension={130} data={destinations} renderItem={renderItem} />
-                <Text>Loaded content from [{config.webApiUrl}]</Text>
+                <Text style={{ color: 'white' }}>Loaded content from [{config.webApiUrl}]</Text>
             </View>
         )
     }
 
     return (
-        <Text>
+        <Text style={{ color: 'white' }}>
             Loading content from [{config.webApiUrl}] v{config.clientVersion}
         </Text>
     )
