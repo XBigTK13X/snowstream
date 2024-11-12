@@ -1,6 +1,9 @@
 import React from 'react'
 import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, TVFocusGuideView } from 'react-native'
+// https://www.npmjs.com/package/react-native-tvos
+// TVFocusGuideView docs
+
 import { Button, ListItem } from '@rneui/themed'
 
 import { useSession } from '../../auth-context'
@@ -48,29 +51,44 @@ export default function LandingPage() {
 
     if (shelves || streamSources) {
         const renderItem = (item) => {
-            item = item.item
+            let destination = item.item
             markup = null
-            if (item.kind && item.kind === 'Movies') {
-                markup = <Button style={styles.box} title={item.name} onPress={routes.func(routes.movieList, { shelfId: item.id })} />
-            } else if (item.kind && item.kind === 'Shows') {
-                markup = <Button style={styles.box} title={item.name} onPress={routes.func(routes.showList, { shelfId: item.id })} />
+            if (destination.kind && item.kind === 'Movies') {
+                markup = (
+                    <Button
+                        hasTVPreferredFocus={item.index === 0}
+                        style={styles.box}
+                        title={destination.name}
+                        onPress={routes.func(routes.movieList, { shelfId: destination.id })}
+                    />
+                )
+            } else if (destination.kind && destination.kind === 'Shows') {
+                markup = (
+                    <Button
+                        hasTVPreferredFocus={item.index === 0}
+                        style={styles.box}
+                        title={destination.name}
+                        onPress={routes.func(routes.showList, { shelfId: destination.id })}
+                    />
+                )
             } else {
                 markup = (
                     <Button
+                        hasTVPreferredFocus={item.index === 0}
                         style={styles.box}
-                        title={item.name}
+                        title={destination.name}
                         onPress={routes.func(routes.streamSourceDetails, {
-                            streamSourceId: item.id,
+                            streamSourceId: destination.id,
                         })}
                     />
                 )
             }
-            return markup
+            return <TVFocusGuideView>{markup}</TVFocusGuideView>
         }
         return (
             <View>
-                <Text>Loaded content from [{config.webApiUrl}]</Text>
                 <SimpleGrid itemDimension={130} data={destinations} renderItem={renderItem} />
+                <Text>Loaded content from [{config.webApiUrl}]</Text>
             </View>
         )
     }

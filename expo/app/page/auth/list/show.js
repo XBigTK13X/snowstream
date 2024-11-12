@@ -1,10 +1,10 @@
 import React from 'react'
 import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, TVFocusGuideView } from 'react-native'
 import { Button, ListItem, Image } from '@rneui/themed'
 import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
 
-import { SimpleGrid, FlatGrid } from 'react-native-super-grid'
+import { SimpleGrid } from 'react-native-super-grid'
 
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
@@ -39,17 +39,20 @@ export default function ShowShelfPage() {
             }
             if (posterUrl) {
                 return (
-                    <Button
-                        title={show.name}
-                        icon={<Image style={{ height: 100, width: 50 }} key={show.id} source={{ uri: posterUrl }} />}
-                        onPress={routes.func(routes.seasonList, { shelfId: shelf.id, showId: show.id })}
-                    />
+                    <TVFocusGuideView>
+                        <Button
+                            hasTVPreferredFocus={item.index === 0}
+                            title={show.name}
+                            icon={<Image style={{ height: 100, width: 50 }} key={show.id} source={{ uri: posterUrl }} />}
+                            onPress={routes.func(routes.seasonList, { shelfId: shelf.id, showId: show.id })}
+                        />
+                    </TVFocusGuideView>
                 )
             }
         }
         return (
             <View>
-                <FlatGrid data={shows} renderItem={renderItem} itemDimensions={200} />
+                <SimpleGrid data={shows} renderItem={renderItem} itemDimensions={200} />
             </View>
         )
     }

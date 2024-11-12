@@ -1,8 +1,10 @@
 import React from 'react'
 import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, TVFocusGuideView } from 'react-native'
 import { Button, ListItem } from '@rneui/themed'
 import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
+
+import { SimpleGrid } from 'react-native-super-grid'
 
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
@@ -28,17 +30,22 @@ export default function MovieShelfPage() {
         }
     })
     if (shelf && seasons) {
+        const renderItem = (item) => {
+            let season = item.item
+            return (
+                <TVFocusGuideView>
+                    <Button
+                        hasTVPreferredFocus={item.index === 0}
+                        key={season.id}
+                        title={season.name || `Season ${season.season_order_counter}`}
+                        onPress={routes.func(routes.episodeList, { shelfId: shelfId, showId: showId, seasonId: season.id })}
+                    />
+                </TVFocusGuideView>
+            )
+        }
         return (
             <>
-                {seasons.map((season) => {
-                    return (
-                        <Button
-                            key={season.id}
-                            title={season.name || `Season ${season.season_order_counter}`}
-                            onPress={routes.func(routes.episodeList, { shelfId: shelfId, showId: showId, seasonId: season.id })}
-                        />
-                    )
-                })}
+                <SimpleGrid data={seasons} renderItem={renderItem} />
             </>
         )
     }
