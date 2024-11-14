@@ -2,7 +2,7 @@ import { Platform, FlatList } from 'react-native'
 
 export default function HybridGrid(props) {
     if (Platform.OS === 'web') {
-        return <FlatList />
+        return <FlatList data={props.data} renderItem={props.renderItem} />
     }
     let superGrid = require('react-native-super-grid')
     let SimpleGrid = superGrid.SimpleGrid
