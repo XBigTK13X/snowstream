@@ -1,6 +1,5 @@
 import { Redirect, Slot } from 'expo-router'
-import { Text, TVFocusGuideView, View, StyleSheet } from 'react-native'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { Text, TVFocusGuideView, View, StyleSheet, Platform } from 'react-native'
 import { ThemeProvider, createTheme } from '@rneui/themed'
 import { SessionProvider } from './auth-context'
 import { SettingsProvider } from './settings-context'
@@ -32,6 +31,12 @@ var styles = StyleSheet.create({
     videoSqueeze: {
         margin: 10,
     },
+    safeArea: {
+        padding: 10,
+        backgroundColor: "#000000",
+        height: '100%',
+        width: '100%'
+    }
 })
 
 function Header() {
@@ -58,7 +63,34 @@ function Footer() {
 
 // TODO Do I want always visible nav bars, or some kind of drawer?
 
+function SafeAreaStub(props) {
+    return <View style={styles.safeArea}>
+        {props.children}
+    </View>
+}
+
 export default function HomeLayout() {
+    console.log(Platform.OS)
+    if (Platform.OS === 'web') {
+        return (
+            <ThemeProvider theme={theme}>
+                <SafeAreaStub>
+                    <SettingsProvider>
+                        <SessionProvider>
+                            <View style={styles.videoSqueeze}>
+                                <Header />
+                                <Slot />
+                                <Footer />
+                            </View>
+                        </SessionProvider>
+                    </SettingsProvider>
+                </SafeAreaStub>
+            </ThemeProvider>
+        )
+    }
+    let safeArea = require('react-native-safe-area-context')
+    let SafeAreaProvider = safeArea.SafeAreaProvider
+    let SafeAreaView = safeArea.SafeAreaView
     return (
         <ThemeProvider theme={theme}>
             <SafeAreaProvider style={styles.default}>

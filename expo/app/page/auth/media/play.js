@@ -1,12 +1,10 @@
 import React from 'react'
-import { Dimensions, View, Text, StyleSheet } from 'react-native'
+import { Dimensions, View, Text, StyleSheet, Platform } from 'react-native'
 import { Button, ListItem } from '@rneui/themed'
 
 import { useLocalSearchParams, useFocusEffect, useNavigation } from 'expo-router'
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
-
-import { LibmpvVideo, Libmpv } from 'react-native-libmpv'
 
 const windowWidth = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
@@ -46,6 +44,13 @@ export default function PlayMediaPage() {
     const [episode, setEpisode] = React.useState(null)
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [mpvDestroyed, setMpvDestroyed] = React.useState(false)
+    let Libmpv = null
+    let LibmpvVideo = null
+    if (Platform.OS != 'web') {
+        libmpv = require('react-native-libmpv')
+        Libmpv = libmpv.Libmpv
+        LibmpvVideo = libmpv.LibmpvVideo
+    }
 
     React.useEffect(() => {
         if (!shelf && movieId) {

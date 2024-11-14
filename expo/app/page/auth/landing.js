@@ -9,7 +9,7 @@ import { Button, ListItem } from '@rneui/themed'
 import { useSession } from '../../auth-context'
 import { useSettings } from '../../settings-context'
 
-import { SimpleGrid } from 'react-native-super-grid'
+import HybridGrid from '../../comp/hybrid-grid'
 
 const styles = StyleSheet.create({
     boxContainer: {},
@@ -87,7 +87,7 @@ export default function LandingPage() {
         }
         return (
             <View>
-                <SimpleGrid itemDimension={130} data={destinations} renderItem={renderItem} />
+                <HybridGrid itemDimension={130} data={destinations} renderItem={renderItem} />
                 <Text style={{ color: 'white' }}>Loaded content from [{config.webApiUrl}]</Text>
             </View>
         )
