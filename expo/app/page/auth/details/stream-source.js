@@ -4,20 +4,12 @@ import { Dimensions, View, Text, TouchableOpacity, ScrollView, StyleSheet, TVFoc
 import { Button, ListItem } from '@rneui/themed'
 import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
 
-import { SimpleGrid } from 'react-native-super-grid'
+import { SnowGrid } from '../../../comp/snow-grid'
 
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
 
-const windowWidth = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
-
-const styles = StyleSheet.create({
-    scrollView: {
-        height: windowHeight * 0.66,
-    },
-})
-
+//TODO This should be a streamable list page, not stream source details
 export default function StreamSourcePage() {
     const { apiClient } = useSession()
     const { routes } = useSettings()
@@ -32,26 +24,21 @@ export default function StreamSourcePage() {
     })
 
     if (streamSource && streamSource.streamables) {
-        const renderItem = (item) => {
-            let streamable = item.item
+        const renderItem = (streamable, itemIndex) => {
             return (
-                <TVFocusGuideView>
-                    <Button
-                        hasTVPreferredFocus={item.index === 0}
-                        key={streamable.id}
-                        title={streamable.name}
-                        onPress={routes.func(routes.playMedia, {
-                            streamSourceId: streamSource.id,
-                            streamableId: streamable.id,
-                        })}
-                    />
-                </TVFocusGuideView>
+                <Button
+                    hasTVPreferredFocus={itemIndex === 0}
+                    key={streamable.id}
+                    title={streamable.name}
+                    onPress={routes.func(routes.playMedia, {
+                        streamSourceId: streamSource.id,
+                        streamableId: streamable.id,
+                    })}
+                />
             )
         }
         return (
-            <ScrollView showsVerticalScrollIndicator={true} persistentScrollbar={true} style={styles.scrollView}>
-                <SimpleGrid data={streamSource.streamables} renderItem={renderItem} />
-            </ScrollView>
+            <SnowGrid data={streamSource.streamables} renderItem={renderItem} />
         )
     }
     return <Text>Loading stream source {localParams.streamSourceId}.</Text>

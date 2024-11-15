@@ -9,6 +9,8 @@ import { useSettings } from '../../../settings-context'
 const windowWidth = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
+import { SnowText } from '../../../comp/snow-text'
+
 // TODO This is super janky. I think the entire view needs to be pulled out of the layout to work
 // Pass in the needed parts for auth
 var styles = StyleSheet.create({
@@ -50,6 +52,9 @@ export default function PlayMediaPage() {
         libmpv = require('react-native-libmpv')
         Libmpv = libmpv.Libmpv
         LibmpvVideo = libmpv.LibmpvVideo
+    }
+    else {
+        return <SnowText>Video player not yet supported in web.</SnowText>
     }
 
     React.useEffect(() => {

@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import { Button, ListItem } from '@rneui/themed'
 import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
 
-import { SimpleGrid } from 'react-native-super-grid'
+import { SnowGrid } from '../../../comp/snow-grid'
 
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
@@ -29,18 +29,17 @@ export default function MovieShelfPage() {
         }
     })
     if (shelf && movies) {
-        const renderItem = (item) => {
-            let movie = item.item
+        const renderItem = (movie, itemIndex) => {
             return (
                 <Button
-                    hasTVPreferredFocus={item.index === 0}
+                    hasTVPreferredFocus={itemIndex === 0}
                     key={movie.id}
                     title={movie.name}
                     onPress={routes.func(routes.movieDetails, { shelfId: shelf.id, movieId: movie.id })}
                 />
             )
         }
-        return <SimpleGrid data={movies} renderItem={renderItem} />
+        return <SnowGrid data={movies} renderItem={renderItem} />
     }
     return <Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</Text>
 }

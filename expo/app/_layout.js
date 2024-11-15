@@ -70,7 +70,6 @@ function SafeAreaStub(props) {
 }
 
 export default function HomeLayout() {
-    console.log(Platform.OS)
     if (Platform.OS === 'web') {
         return (
             <ThemeProvider theme={theme}>

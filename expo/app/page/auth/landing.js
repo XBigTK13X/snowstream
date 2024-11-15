@@ -9,7 +9,8 @@ import { Button, ListItem } from '@rneui/themed'
 import { useSession } from '../../auth-context'
 import { useSettings } from '../../settings-context'
 
-import HybridGrid from '../../comp/hybrid-grid'
+import SnowGrid from '../../comp/snow-grid'
+import SnowText from '../../comp/snow-text'
 
 const styles = StyleSheet.create({
     boxContainer: {},
@@ -17,6 +18,8 @@ const styles = StyleSheet.create({
     box: {
         padding: 5,
         margin: 5,
+        width: '100%',
+        height: '100%'
     },
 })
 
@@ -50,31 +53,31 @@ export default function LandingPage() {
     }
 
     if (shelves || streamSources) {
-        const renderItem = (item) => {
-            let destination = item.item
+        const renderItem = (item, itemIndex) => {
+            let destination = item
             markup = null
             if (destination.kind && destination.kind === 'Movies') {
-                markup = (
+                return (
                     <Button
-                        hasTVPreferredFocus={item.index === 0}
+                        hasTVPreferredFocus={itemIndex === 0}
                         style={styles.box}
                         title={destination.name}
                         onPress={routes.func(routes.movieList, { shelfId: destination.id })}
                     />
                 )
             } else if (destination.kind && destination.kind === 'Shows') {
-                markup = (
+                return (
                     <Button
-                        hasTVPreferredFocus={item.index === 0}
+                        hasTVPreferredFocus={itemIndex === 0}
                         style={styles.box}
                         title={destination.name}
                         onPress={routes.func(routes.showList, { shelfId: destination.id })}
                     />
                 )
             } else {
-                markup = (
+                return (
                     <Button
-                        hasTVPreferredFocus={item.index === 0}
+                        hasTVPreferredFocus={itemIndex === 0}
                         style={styles.box}
                         title={destination.name}
                         onPress={routes.func(routes.streamSourceDetails, {
@@ -83,19 +86,18 @@ export default function LandingPage() {
                     />
                 )
             }
-            return <TVFocusGuideView>{markup}</TVFocusGuideView>
         }
         return (
-            <View>
-                <HybridGrid itemDimension={130} data={destinations} renderItem={renderItem} />
-                <Text style={{ color: 'white' }}>Loaded content from [{config.webApiUrl}]</Text>
+            <View >
+                <SnowGrid data={destinations} renderItem={renderItem} />
+                <SnowText>Loaded content from [{config.webApiUrl}]</SnowText>
             </View>
         )
     }
 
     return (
-        <Text style={{ color: 'white' }}>
+        <SnowText>
             Loading content from [{config.webApiUrl}] v{config.clientVersion}
-        </Text>
+        </SnowText>
     )
 }

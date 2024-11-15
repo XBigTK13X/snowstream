@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet, TVFocusGuideView } from 'reac
 import { Button, ListItem, Image } from '@rneui/themed'
 import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
 
-import { SimpleGrid } from 'react-native-super-grid'
+import { SnowGrid } from '../../../comp/snow-grid'
 
 import { useSession } from '../../../auth-context'
 import { useSettings } from '../../../settings-context'
@@ -29,8 +29,7 @@ export default function ShowShelfPage() {
         }
     })
     if (shelf && shows) {
-        const renderItem = (item) => {
-            let show = item.item
+        const renderItem = (show, itemIndex) => {
             let posterUrl = null
             for (let image of show.image_files) {
                 if (image.kind === 'show_poster') {
@@ -39,20 +38,18 @@ export default function ShowShelfPage() {
             }
             if (posterUrl) {
                 return (
-                    <TVFocusGuideView>
-                        <Button
-                            hasTVPreferredFocus={item.index === 0}
-                            title={show.name}
-                            icon={<Image style={{ height: 100, width: 50 }} key={show.id} source={{ uri: posterUrl }} />}
-                            onPress={routes.func(routes.seasonList, { shelfId: shelf.id, showId: show.id })}
-                        />
-                    </TVFocusGuideView>
+                    <Button
+                        hasTVPreferredFocus={itemIndex === 0}
+                        title={show.name}
+                        icon={<Image style={{ height: 100, width: 50 }} key={show.id} source={{ uri: posterUrl }} />}
+                        onPress={routes.func(routes.seasonList, { shelfId: shelf.id, showId: show.id })}
+                    />
                 )
             }
         }
         return (
             <View>
-                <SimpleGrid data={shows} renderItem={renderItem} itemDimensions={200} />
+                <SnowGrid data={shows} renderItem={renderItem} itemDimensions={200} />
             </View>
         )
     }
