@@ -168,6 +168,10 @@ export class ApiClient {
         return this.get('/show/season/episode', { episode_id: episodeId })
     }
 
+    getUsers() {
+        return this.get('/user/list')
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

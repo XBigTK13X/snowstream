@@ -54,9 +54,8 @@ function Header() {
         { title: 'Options', route: routes.options },
         { title: 'Sign Out', route: routes.signOut },
     ]
-    console.log({ isAdmin })
     if (isAdmin) {
-        buttons.push({ title: 'Admin', route: routes.admin })
+        buttons.push({ title: 'Admin', route: routes.admin.dashboard })
     }
     return <SimpleGrid data={buttons} renderItem={renderItem}></SimpleGrid>
 }

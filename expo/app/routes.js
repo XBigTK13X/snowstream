@@ -3,8 +3,16 @@ import { router } from 'expo-router'
 // DOCS router method https://docs.expo.dev/router/navigating-pages/#imperative-navigation
 
 let routes = {
+    admin: {
+        dashboard: '/page/auth/admin/dashboard',
+        shelves: '/page/auth/admin/shelves',
+        streamSources: '/page/auth/admin/stream-sources',
+        users: '/page/auth/admin/users',
+        userEdit: '/page/auth/admin/user-edit',
+        shelfEdit: '/page/auth/admin/shelf-edit',
+        streamSourceEdit: '/page/auth/admin/stream-source-edit'
+    },
     root: '/',
-    admin: '/page/auth/admin/dashboard',
     options: '/page/auth/options',
     landing: '/page/auth/landing',
     signIn: '/page/sign-in',
