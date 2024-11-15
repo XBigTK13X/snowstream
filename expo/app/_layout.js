@@ -6,6 +6,9 @@ import { SettingsProvider } from './settings-context'
 import { Button, ListItem } from '@rneui/themed'
 import { SimpleGrid } from 'react-native-super-grid'
 
+import { useSession } from './auth-context';
+import { useSettings } from './settings-context';
+
 const routes = require('./routes')
 
 // https://reactnativeelements.com/docs/customization/theme_object
@@ -40,6 +43,8 @@ var styles = StyleSheet.create({
 })
 
 function Header() {
+    const { isAdmin } = useSession();
+    const { routes } = useSettings();
     const renderItem = (item) => {
         const entry = item.item
         return <Button title={entry.title} onPress={routes.func(entry.route)} />
@@ -49,6 +54,10 @@ function Header() {
         { title: 'Options', route: routes.options },
         { title: 'Sign Out', route: routes.signOut },
     ]
+    console.log({ isAdmin })
+    if (isAdmin) {
+        buttons.push({ title: 'Admin', route: routes.admin })
+    }
     return <SimpleGrid data={buttons} renderItem={renderItem}></SimpleGrid>
 }
 

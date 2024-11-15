@@ -4,6 +4,7 @@ import { router } from 'expo-router'
 
 let routes = {
     root: '/',
+    admin: '/page/auth/admin/dashboard',
     options: '/page/auth/options',
     landing: '/page/auth/landing',
     signIn: '/page/sign-in',

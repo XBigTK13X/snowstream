@@ -38,7 +38,10 @@ def upgrade() -> None:
     # username: 'admin'
     # password: 'admin'
     op.execute(
-        "INSERT INTO snowstream_user (id, created_at, updated_at, username, display_name, hashed_password, enabled) VALUES (1,NOW(),NOW(),'admin','admin','$2b$12$Mm.mD4U2Ws7tyBeBwUXD7ehxZhH8RcClHkY.mi34VMGeQKAv98ek6','true');"
+        '''INSERT INTO snowstream_user
+             (id, created_at, updated_at, username, display_name,                                               hashed_password, enabled, permissions)
+           VALUES
+             (1,  NOW()     ,      NOW(),  'admin',      'admin', '$2b$12$Mm.mD4U2Ws7tyBeBwUXD7ehxZhH8RcClHkY.mi34VMGeQKAv98ek6', 'true', 'admin');'''
     )
 
 

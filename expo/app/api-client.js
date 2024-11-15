@@ -2,8 +2,9 @@ import axios from 'axios'
 import config from './settings'
 
 export class ApiClient {
-    constructor(authToken) {
+    constructor(authToken, isAdmin) {
         this.authToken = authToken
+        this.hasAdmin = isAdmin === 'true'
 
         this.createClient(this.authToken)
 
@@ -64,19 +65,27 @@ export class ApiClient {
         return this.authToken !== null
     }
 
+    isAdmin() {
+        return this.hasAdmin
+    }
+
     login(payload) {
-        return this.httpClient
+        let self = this
+        return self.httpClient
             .postForm('/login', {
                 username: payload.username,
                 password: payload.password,
             })
             .then((data) => {
                 if (data && data.data && data.data.access_token) {
-                    this.authToken = data.data.access_token
+                    self.authToken = data.data.access_token
+                    self.permissions = data.data.permissions
+                    console.log({ perms: self.permissions })
+                    self.hasAdmin = self.permissions.includes('admin')
                     //localStorage.setItem("snowstream-auth-token", this.authToken);
-                    this.createClient(this.authToken)
+                    self.createClient(self.authToken)
                 }
-                return this.authToken
+                return { authToken: self.authToken, isAdmin: self.hasAdmin }
             })
     }
 
