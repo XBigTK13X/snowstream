@@ -11,10 +11,10 @@ export default function OptionsPage() {
                 onPress={() => {
                     if (Platform.isTV) {
                         console.log('Download the TV app')
-                        Linking.openURL('http://9914.us:18081/snowstream-tv.apk')
+                        Linking.openURL('https://android.9914.us/snowstream-tv.apk')
                     } else {
                         console.log('Download the movile app')
-                        Linking.openURL('http://9914.us:18081/snowstream-mobile.apk')
+                        Linking.openURL('https://android.9914.us/snowstream-mobile.apk')
                     }
                 }}
             />

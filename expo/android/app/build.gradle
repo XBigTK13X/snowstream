@@ -156,7 +156,7 @@ repositories{
   // Workaround for now
   maven {
     name "reposiliteRepositoryRepository"
-    url "http://9914.us:9876/repository"
+    url "http://reposlite.9914.us:9876/repository"
     allowInsecureProtocol = true
   }
 }
