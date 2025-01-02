@@ -26,6 +26,8 @@ docker run -d \
     -e RABBITMQ_LOGS=- \
     -e SNOWSTREAM_LOG_FILE_PATH=/app/logs/snowstream.log \
     --name snowstream \
+    --device /dev/dri:/dev/dri \
+    --privileged \
     -p 9060:5432 \
     -p 9061:15672 \
     -p 9062:5672 \
@@ -38,8 +40,8 @@ docker run -d \
     -v $(pwd)/.docker-volume/postgresql:/var/lib/postgresql/data \
     -v $(pwd)/.docker-volume/rabbitmq:/var/lib/rabbitmq \
     -v $(pwd)/.docker-volume/transcode:/app/cache-transcode \
-    -v $(pwd)/.web-media/movies:/web-media/movies \
-    -v $(pwd)/.web-media/shows:/web-media/shows \
+    -v /mnt/j-media/tv:/mnt/j-media/tv \
+    -v /mnt/m-media/movie:/mnt/m-media/movie \
     xbigtk13x/snowstream
 
 sleep 8
