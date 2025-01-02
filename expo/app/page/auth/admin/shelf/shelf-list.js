@@ -44,7 +44,7 @@ export default function LandingPage() {
         }
         return (
             <C.View >
-                <C.Button title="Create New Shelf" onPress={routes.func(routes.admin.createShelf)} />
+                <C.Button title="Create New Shelf" onPress={routes.func(routes.admin.shelfCreate)} />
                 {
                     destinations.length > 0 ?
                         <>
