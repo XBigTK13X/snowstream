@@ -1,23 +1,15 @@
-import React from 'react'
-import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity, TVFocusGuideView } from 'react-native'
-import { Button, ListItem } from '@rneui/themed'
-import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
-import { SimpleGrid } from 'react-native-super-grid'
-
-import { useSession } from '../../../auth-context'
-import { useSettings } from '../../../settings-context'
+import C from '../../../common'
 
 export default function MovieShelfPage() {
-    const { signOut, apiClient } = useSession()
-    const { routes } = useSettings()
-    const localParams = useLocalSearchParams()
-    const [shelf, setShelf] = React.useState(null)
-    const [episodes, setEpisodes] = React.useState(null)
+    const { signOut, apiClient } = C.useSession()
+    const { routes } = C.useSettings()
+    const localParams = C.useLocalSearchParams()
+    const [shelf, setShelf] = C.React.useState(null)
+    const [episodes, setEpisodes] = C.React.useState(null)
     const shelfId = localParams.shelfId
     const showId = localParams.showId
     const seasonId = localParams.seasonId
-    React.useEffect(() => {
+    C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
@@ -37,21 +29,21 @@ export default function MovieShelfPage() {
                 name = `S${episode.season.season_order_counter.toString().padStart(2, '0')}E${episode.episode_order_counter.toString().padStart(3, '0')}`
             }
             return (
-                <TVFocusGuideView>
-                    <Button
+                <C.TVFocusGuideView>
+                    <C.Button
                         hasTVPreferredFocus={item.index === 0}
                         key={episode.id}
                         title={name}
                         onPress={routes.func(routes.episodeDetails, { shelfId: shelf.id, showId: showId, seasonId: seasonId, episodeId: episode.id })}
                     />
-                </TVFocusGuideView>
+                </C.TVFocusGuideView>
             )
         }
         return (
             <>
-                <SimpleGrid data={episodes} renderItem={renderItem} />
+                <C.SnowGrid data={episodes} renderItem={renderItem} />
             </>
         )
     }
-    return <Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</Text>
+    return <C.Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</C.Text>
 }

@@ -1,22 +1,13 @@
-import React from 'react'
-import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity, StyleSheet, TVFocusGuideView } from 'react-native'
-import { Button, ListItem, Image } from '@rneui/themed'
-import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
-
-import { SnowGrid } from '../../../comp/snow-grid'
-
-import { useSession } from '../../../auth-context'
-import { useSettings } from '../../../settings-context'
+import C from '../../../common'
 
 export default function ShowShelfPage() {
-    const { signOut, apiClient } = useSession()
-    const { routes } = useSettings()
-    const localParams = useLocalSearchParams()
-    const [shelf, setShelf] = React.useState(null)
-    const [shows, setShows] = React.useState(null)
+    const { signOut, apiClient } = C.useSession()
+    const { routes } = C.useSettings()
+    const localParams = C.useLocalSearchParams()
+    const [shelf, setShelf] = C.React.useState(null)
+    const [shows, setShows] = C.React.useState(null)
     const shelfId = localParams.shelfId
-    React.useEffect(() => {
+    C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(localParams.shelfId).then((response) => {
                 setShelf(response)
@@ -38,7 +29,7 @@ export default function ShowShelfPage() {
             }
             if (posterUrl) {
                 return (
-                    <Button
+                    <C.Button
                         hasTVPreferredFocus={itemIndex === 0}
                         title={show.name}
                         icon={<Image style={{ height: 100, width: 50 }} key={show.id} source={{ uri: posterUrl }} />}
@@ -48,10 +39,10 @@ export default function ShowShelfPage() {
             }
         }
         return (
-            <View>
-                <SnowGrid data={shows} renderItem={renderItem} itemDimensions={200} />
-            </View>
+            <C.View>
+                <C.SnowGrid data={shows} renderItem={renderItem} itemDimensions={200} />
+            </C.View>
         )
     }
-    return <Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</Text>
+    return <C.Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</C.Text>
 }

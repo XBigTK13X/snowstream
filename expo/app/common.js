@@ -1,39 +1,59 @@
 import React from 'react'
 
-import { Link } from 'expo-router'
-export { Link }
+import {
+    Link,
+    Redirect,
+    Slot,
+    useLocalSearchParams,
+    useNavigation
+} from 'expo-router'
 
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, TVFocusGuideView } from 'react-native'
-export { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, TVFocusGuideView }
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    FlatList,
+    Dimensions,
+    TVFocusGuideView,
+    Linking,
+    Platform
+} from 'react-native'
 
-import { Button, ListItem } from '@rneui/themed'
+// https://www.npmjs.com/package/react-native-tvos
+// TVFocusGuideView docs
 
-export { Button, ListItem }
+import {
+    Button,
+    ListItem
+} from '@rneui/themed'
 
 import { useSession } from './auth-context'
-export { useSession }
 
 import { useSettings } from './settings-context'
-export { useSettings }
 
 import SnowGrid from './comp/snow-grid'
-export { SnowGrid }
 import SnowText from './comp/snow-text'
-export { SnowText }
 
 export default {
     Button,
     Dimensions,
     FlatList,
     Link,
+    Linking,
     ListItem,
+    Platform,
+    React,
+    Redirect,
     SnowGrid,
     SnowText,
     StyleSheet,
-    React,
+    Slot,
     Text,
     TouchableOpacity,
     TVFocusGuideView,
+    useLocalSearchParams,
+    useNavigation,
     useSession,
     useSettings,
     View,

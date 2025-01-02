@@ -1,19 +1,11 @@
-import React from 'react'
-import { Dimensions, View, Text, StyleSheet, Platform } from 'react-native'
-import { Button, ListItem } from '@rneui/themed'
+import C from '../../../common'
 
-import { useLocalSearchParams, useFocusEffect, useNavigation } from 'expo-router'
-import { useSession } from '../../../auth-context'
-import { useSettings } from '../../../settings-context'
-
-const windowWidth = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
-
-import { SnowText } from '../../../comp/snow-text'
+const windowWidth = C.Dimensions.get('window').width
+const windowHeight = C.Dimensions.get('window').height
 
 // TODO This is super janky. I think the entire view needs to be pulled out of the layout to work
 // Pass in the needed parts for auth
-var styles = StyleSheet.create({
+var styles = C.StyleSheet.create({
     videoView: {
         position: 'absolute',
         top: -9,
@@ -29,11 +21,11 @@ var styles = StyleSheet.create({
 // https://thewidlarzgroup.github.io/react-native-video#v600-information
 
 export default function PlayMediaPage() {
-    const videoRef = React.useRef(null)
-    const { signOut, apiClient } = useSession()
-    const { routes } = useSettings()
-    const localParams = useLocalSearchParams()
-    const navigation = useNavigation()
+    const videoRef = C.React.useRef(null)
+    const { signOut, apiClient } = C.useSession()
+    const { routes } = C.useSettings()
+    const localParams = C.useLocalSearchParams()
+    const navigation = C.useNavigation()
 
     const shelfId = localParams.shelfId
     const movieId = localParams.movieId
@@ -41,23 +33,15 @@ export default function PlayMediaPage() {
     const streamableId = localParams.streamableId
     const videoFileIndex = localParams.videoFileIndex
 
-    const [shelf, setShelf] = React.useState(null)
-    const [movie, setMovie] = React.useState(null)
-    const [episode, setEpisode] = React.useState(null)
-    const [videoUrl, setVideoUrl] = React.useState(null)
-    const [mpvDestroyed, setMpvDestroyed] = React.useState(false)
+    const [shelf, setShelf] = C.React.useState(null)
+    const [movie, setMovie] = C.React.useState(null)
+    const [episode, setEpisode] = C.React.useState(null)
+    const [videoUrl, setVideoUrl] = C.React.useState(null)
+    const [mpvDestroyed, setMpvDestroyed] = C.React.useState(false)
     let Libmpv = null
     let LibmpvVideo = null
-    if (Platform.OS != 'web') {
-        libmpv = require('react-native-libmpv')
-        Libmpv = libmpv.Libmpv
-        LibmpvVideo = libmpv.LibmpvVideo
-    }
-    else {
-        return <SnowText>Video player not yet supported in web.</SnowText>
-    }
 
-    React.useEffect(() => {
+    C.React.useEffect(() => {
         if (!shelf && movieId) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
@@ -85,7 +69,21 @@ export default function PlayMediaPage() {
         }
     })
 
-    React.useEffect(() => {
+    if (C.Platform.OS != 'web') {
+        libmpv = require('react-native-libmpv')
+        Libmpv = libmpv.Libmpv
+        LibmpvVideo = libmpv.LibmpvVideo
+    }
+    else {
+        if (videoUrl && videoUrl.path) {
+            return <C.SnowText>Video player not yet supported in web. The URL to reach the video file is {videoUrl.path}</C.SnowText>
+        }
+        else {
+            return <C.SnowText>Video player not yet supported in web.</C.SnowText>
+        }
+    }
+
+    C.React.useEffect(() => {
         const cleanup = navigation.addListener('beforeRemove', (e) => {
             if (Libmpv && Libmpv.cleanup) {
                 Libmpv.cleanup()
@@ -106,9 +104,9 @@ export default function PlayMediaPage() {
         //console.log({ devVideoUrl })
         //console.log({ videoUrl })
         return (
-            <View style={styles.videoView}>
+            <C.View style={styles.videoView}>
                 <LibmpvVideo playUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
-            </View>
+            </C.View>
         )
     }
     return <Text style={{ color: 'white' }}>Getting video info...</Text>

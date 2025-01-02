@@ -1,19 +1,16 @@
-import { Redirect, Slot } from 'expo-router';
-import { Text } from 'react-native'
-import { useSession } from '../../auth-context';
-import { useSettings } from '../../settings-context';
+import C from '../../common'
 
 export default function AuthPageLayout() {
-    const { session, isLoading } = useSession();
-    const { routes } = useSettings();
+    const { session, isLoading } = C.useSession();
+    const { routes } = C.useSettings();
 
     if (isLoading) {
-        return <Text>Loading...</Text>;
+        return <C.Text>Loading...</C.Text>;
     }
 
     if (!session) {
-        return <Redirect href={routes.signIn} />;
+        return <C.Redirect href={routes.signIn} />;
     }
 
-    return <Slot />;
+    return <C.Slot />;
 }

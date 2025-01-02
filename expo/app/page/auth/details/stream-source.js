@@ -1,21 +1,12 @@
-import React from 'react'
-import { Link } from 'expo-router'
-import { Dimensions, View, Text, TouchableOpacity, ScrollView, StyleSheet, TVFocusGuideView } from 'react-native'
-import { Button, ListItem } from '@rneui/themed'
-import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
-
-import { SnowGrid } from '../../../comp/snow-grid'
-
-import { useSession } from '../../../auth-context'
-import { useSettings } from '../../../settings-context'
+import C from '../../../common'
 
 //TODO This should be a streamable list page, not stream source details
 export default function StreamSourcePage() {
-    const { apiClient } = useSession()
-    const { routes } = useSettings()
-    const localParams = useLocalSearchParams()
-    const [streamSource, setStreamSource] = React.useState(null)
-    React.useEffect(() => {
+    const { apiClient } = C.useSession()
+    const { routes } = C.useSettings()
+    const localParams = C.useLocalSearchParams()
+    const [streamSource, setStreamSource] = C.React.useState(null)
+    C.React.useEffect(() => {
         if (!streamSource) {
             apiClient.getStreamSource(localParams.streamSourceId).then((response) => {
                 setStreamSource(response)
@@ -26,7 +17,7 @@ export default function StreamSourcePage() {
     if (streamSource && streamSource.streamables) {
         const renderItem = (streamable, itemIndex) => {
             return (
-                <Button
+                <C.Button
                     hasTVPreferredFocus={itemIndex === 0}
                     key={streamable.id}
                     title={streamable.name}
@@ -38,8 +29,8 @@ export default function StreamSourcePage() {
             )
         }
         return (
-            <SnowGrid data={streamSource.streamables} renderItem={renderItem} />
+            <C.SnowGrid data={streamSource.streamables} renderItem={renderItem} />
         )
     }
-    return <Text>Loading stream source {localParams.streamSourceId}.</Text>
+    return <C.Text>Loading stream source {localParams.streamSourceId}.</C.Text>
 }

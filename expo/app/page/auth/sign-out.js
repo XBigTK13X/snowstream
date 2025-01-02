@@ -1,16 +1,11 @@
-import React from 'react'
-import { router } from 'expo-router';
-import { Text, View } from 'react-native';
-import { Button, ListItem } from '@rneui/themed';
-import { useSession } from '../../auth-context';
-import { useSettings } from '../../settings-context';
+import C from '../../common'
 
 export default function SignOutPage() {
-    const { signOut } = useSession();
-    const { routes } = useSettings();
-    const [signedOut, setSignedOut] = React.useState(null)
+    const { signOut } = C.useSession();
+    const { routes } = C.useSettings();
+    const [signedOut, setSignedOut] = C.React.useState(null)
 
-    React.useEffect(() => {
+    C.React.useEffect(() => {
         if (!signedOut) {
             signOut()
             setSignedOut(true)
@@ -19,8 +14,8 @@ export default function SignOutPage() {
     })
 
     return (
-        <View>
-            <Text>Signing out...</Text>
-        </View>
+        <C.View>
+            <C.Text>Signing out...</C.Text>
+        </C.View>
     );
 }

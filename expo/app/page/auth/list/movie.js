@@ -1,22 +1,13 @@
-import React from 'react'
-import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity } from 'react-native'
-import { Button, ListItem } from '@rneui/themed'
-import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router'
-
-import { SnowGrid } from '../../../comp/snow-grid'
-
-import { useSession } from '../../../auth-context'
-import { useSettings } from '../../../settings-context'
+import C from '../../../common'
 
 export default function MovieShelfPage() {
-    const { signOut, apiClient } = useSession()
-    const { routes } = useSettings()
-    const localParams = useLocalSearchParams()
-    const [shelf, setShelf] = React.useState(null)
-    const [movies, setMovies] = React.useState(null)
+    const { signOut, apiClient } = C.useSession()
+    const { routes } = C.useSettings()
+    const localParams = C.useLocalSearchParams()
+    const [shelf, setShelf] = C.React.useState(null)
+    const [movies, setMovies] = C.React.useState(null)
     const shelfId = localParams.shelfId
-    React.useEffect(() => {
+    C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
@@ -31,7 +22,7 @@ export default function MovieShelfPage() {
     if (shelf && movies) {
         const renderItem = (movie, itemIndex) => {
             return (
-                <Button
+                <C.Button
                     hasTVPreferredFocus={itemIndex === 0}
                     key={movie.id}
                     title={movie.name}
@@ -39,7 +30,7 @@ export default function MovieShelfPage() {
                 />
             )
         }
-        return <SnowGrid data={movies} renderItem={renderItem} />
+        return <C.SnowGrid data={movies} renderItem={renderItem} />
     }
-    return <Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</Text>
+    return <C.Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</C.Text>
 }
