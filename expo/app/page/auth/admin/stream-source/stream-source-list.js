@@ -1,18 +1,6 @@
-import React from 'react'
-import { Link } from 'expo-router'
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, TVFocusGuideView } from 'react-native'
-// https://www.npmjs.com/package/react-native-tvos
-// TVFocusGuideView docs
+import C from '../../../../common'
 
-import { Button, ListItem } from '@rneui/themed'
-
-import { useSession } from '../../../auth-context'
-import { useSettings } from '../../../settings-context'
-
-import SnowGrid from '../../../comp/snow-grid'
-import SnowText from '../../../comp/snow-text'
-
-const styles = StyleSheet.create({
+const styles = C.StyleSheet.create({
     boxContainer: {},
     image: {},
     box: {
@@ -24,12 +12,12 @@ const styles = StyleSheet.create({
 })
 
 export default function LandingPage() {
-    const { signOut, apiClient } = useSession()
-    const { routes, config } = useSettings()
-    const [shelves, setShelves] = React.useState(null)
-    const [streamSources, setStreamSources] = React.useState(null)
+    const { signOut, apiClient } = C.useSession()
+    const { routes, config } = C.useSettings()
+    const [shelves, setShelves] = C.React.useState(null)
+    const [streamSources, setStreamSources] = C.React.useState(null)
 
-    React.useEffect(() => {
+    C.React.useEffect(() => {
         if (!shelves) {
             apiClient.getShelves().then((response) => {
                 setShelves(response)
@@ -46,7 +34,7 @@ export default function LandingPage() {
     if (streamSources) {
         const renderItem = (streamSource, itemIndex) => {
             return (
-                <Button
+                <C.Button
                     hasTVPreferredFocus={itemIndex === 0}
                     style={styles.box}
                     title={streamSource.name}
@@ -57,15 +45,15 @@ export default function LandingPage() {
             )
         }
         return (
-            <View >
-                <SnowGrid data={streamSources} renderItem={renderItem} />
-            </View>
+            <C.View >
+                <C.SnowGrid data={streamSources} renderItem={renderItem} />
+            </C.View>
         )
     }
 
     return (
-        <SnowText>
+        <C.SnowText>
             Loading content from [{config.webApiUrl}] v{config.clientVersion}
-        </SnowText>
+        </C.SnowText>
     )
 }

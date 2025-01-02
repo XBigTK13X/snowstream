@@ -5,12 +5,13 @@ import { router } from 'expo-router'
 let routes = {
     admin: {
         dashboard: '/page/auth/admin/dashboard',
-        shelves: '/page/auth/admin/shelves',
-        streamSources: '/page/auth/admin/stream-sources',
-        users: '/page/auth/admin/users',
-        userEdit: '/page/auth/admin/user-edit',
-        shelfEdit: '/page/auth/admin/shelf-edit',
-        streamSourceEdit: '/page/auth/admin/stream-source-edit'
+        users: '/page/auth/admin/user/user-list',
+        userEdit: '/page/auth/admin/user/user-edit',
+        shelves: '/page/auth/admin/shelf/shelf-list',
+        shelfEdit: '/page/auth/admin/shelf/shelf-edit',
+        shelfCreate: '/page/auth/admin/shelf/shelf-create',
+        streamSources: '/page/auth/admin/stream-source/stream-source-list',
+        streamSourceEdit: '/page/auth/admin/stream-source/stream-source-edit'
     },
     root: '/',
     options: '/page/auth/options',
