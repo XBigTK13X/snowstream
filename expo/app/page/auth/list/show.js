@@ -32,7 +32,7 @@ export default function ShowShelfPage() {
                     <C.Button
                         hasTVPreferredFocus={itemIndex === 0}
                         title={show.name}
-                        icon={<Image style={{ height: 100, width: 50 }} key={show.id} source={{ uri: posterUrl }} />}
+                        icon={<C.Image style={{ height: 100, width: 50 }} key={show.id} source={{ uri: posterUrl }} />}
                         onPress={routes.func(routes.seasonList, { shelfId: shelf.id, showId: show.id })}
                     />
                 )

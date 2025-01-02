@@ -51,6 +51,6 @@ for key, val in vars(config).items():
 
 if not config.web_media_url:
     print("SNOWSTREAM_WEB_MEDIA_URL environment variable must be set.")
-    print("example: http://<host-ip>:9064/media")
+    print("example: http://<host-ip>:9064/mnt")
     print("Exiting")
     sys.exit(1)

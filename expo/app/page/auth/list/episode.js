@@ -23,20 +23,19 @@ export default function MovieShelfPage() {
     })
     if (shelf && episodes) {
         const renderItem = (item) => {
-            let episode = item.item
+            console.log({ item })
+            let episode = item
             let name = episode.name
             if (!name) {
                 name = `S${episode.season.season_order_counter.toString().padStart(2, '0')}E${episode.episode_order_counter.toString().padStart(3, '0')}`
             }
             return (
-                <C.TVFocusGuideView>
-                    <C.Button
-                        hasTVPreferredFocus={item.index === 0}
-                        key={episode.id}
-                        title={name}
-                        onPress={routes.func(routes.episodeDetails, { shelfId: shelf.id, showId: showId, seasonId: seasonId, episodeId: episode.id })}
-                    />
-                </C.TVFocusGuideView>
+                <C.Button
+                    hasTVPreferredFocus={item.index === 0}
+                    key={episode.id}
+                    title={name}
+                    onPress={routes.func(routes.episodeDetails, { shelfId: shelf.id, showId: showId, seasonId: seasonId, episodeId: episode.id })}
+                />
             )
         }
         return (

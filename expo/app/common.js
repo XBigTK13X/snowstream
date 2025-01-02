@@ -25,7 +25,8 @@ import {
 
 import {
     Button,
-    ListItem
+    ListItem,
+    Image
 } from '@rneui/themed'
 
 import { useSession } from './auth-context'
@@ -39,6 +40,7 @@ export default {
     Button,
     Dimensions,
     FlatList,
+    Image,
     Link,
     Linking,
     ListItem,

@@ -91,17 +91,17 @@ class Movie(BaseModel):
         shelf_root = "/".join(shelf_root)
         for video_file in self.video_files:
             video_file.set_web_path(
-                video_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + video_file.path
             )
         for image_file in self.image_files:
             image_file.set_web_path(
-                image_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + image_file.path
             )
             if "poster" in image_file.kind:
                 self.main_poster_image = image_file
         for metadata_file in self.image_files:
             metadata_file.set_web_path(
-                metadata_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + metadata_file.path
             )
 
 
@@ -170,13 +170,13 @@ class Show(BaseModel):
         shelf_root = "/".join(shelf_root)
         for image_file in self.image_files:
             image_file.set_web_path(
-                image_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + image_file.path
             )
             if "poster" in image_file.kind:
                 self.main_poster_image = image_file
         for metadata_file in self.metadata_files:
             metadata_file.set_web_path(
-                metadata_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + metadata_file.path
             )
 
     # tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=show_tag_association, back_populates="shows")
@@ -218,17 +218,17 @@ class ShowEpisode(BaseModel):
         shelf_root = "/".join(shelf_root)
         for video_file in self.video_files:
             video_file.set_web_path(
-                video_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + video_file.path
             )
         for image_file in self.image_files:
             image_file.set_web_path(
-                image_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + image_file.path
             )
             if "poster" in image_file.kind:
                 self.main_poster_image = image_file
         for metadata_file in self.image_files:
             metadata_file.set_web_path(
-                metadata_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + metadata_file.path
             )
 
 
@@ -267,19 +267,20 @@ class ShowSeason(BaseModel):
         secondary="show_season_metadata_file", back_populates="show_season"
     )
 
+    #TODO This was useful during development, but really only needs to be done once on ingest
     def convert_local_paths_to_web_paths(self, config):
         shelf_root = self.show.shelf.directory.split("/")
         shelf_root.pop()
         shelf_root = "/".join(shelf_root)
         for image_file in self.image_files:
             image_file.set_web_path(
-                image_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + image_file.path
             )
             if "poster" in image_file.kind:
                 self.main_poster_image = image_file
         for metadata_file in self.metadata_files:
             metadata_file.set_web_path(
-                metadata_file.path.replace(shelf_root, config.web_media_url)
+                config.web_media_url + metadata_file.path
             )
 
 
