@@ -41,6 +41,21 @@ export class ApiClient {
                     }
                 })
         }
+
+        this.delete = async (url) => {
+            return this.httpClient
+                .delete(url)
+                .then((response) => {
+                    return response.data
+                })
+                .catch((err) => {
+                    //TODO Better central management off critical errors
+                    if (err && err.response && err.response.status === 401) {
+                        //localStorage.removeItem("snowstream-auth-token");
+                        this.authToken = null
+                    }
+                })
+        }
     }
 
     createClient(authToken) {
@@ -129,13 +144,16 @@ export class ApiClient {
     }
 
     saveShelf(payload) {
-        console.log({ payload })
         return this.post('/shelf', {
             name: payload.name,
             kind: payload.kind,
             directory: payload.directory,
             id: payload.id
         })
+    }
+
+    deleteShelf(shelfId) {
+        return this.delete(`/shelf/${shelfId}`)
     }
 
     getShelves() {

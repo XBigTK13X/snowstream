@@ -6,9 +6,9 @@ export default function DashboardPage() {
         return <C.Button title={item.title} onPress={routes.func(item.route)} />
     }
     const buttons = [
-        { title: 'Shelves', route: routes.admin.shelves },
-        { title: 'Stream Sources', route: routes.admin.streamSources },
-        { title: 'Users', route: routes.admin.users },
+        { title: 'Shelves', route: routes.admin.shelfList },
+        { title: 'Stream Sources', route: routes.admin.streamSourceList },
+        { title: 'Users', route: routes.admin.userList },
     ]
     return <C.SnowGrid data={buttons} renderItem={renderItem}></C.SnowGrid>
 }

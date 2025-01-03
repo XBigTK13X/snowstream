@@ -96,6 +96,13 @@ def auth_required(router):
     ):
         return db.op.upsert_shelf(shelf=shelf)
 
+    @router.delete("/shelf/{shelf_id}")
+    def delete_shelf(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        shelf_id: int,
+    ):
+        return db.op.delete_shelf_by_id(shelf_id=shelf_id)
+
     @router.post("/shelf/scan")
     def scan_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],

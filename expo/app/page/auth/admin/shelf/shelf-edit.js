@@ -9,6 +9,8 @@ export default function LandingPage() {
     const [shelfKind, setShelfKind] = C.React.useState('Movies')
     const [shelfKindIndex, setShelfKindIndex] = C.React.useState(0)
     const [shelfId, setShelfId] = C.React.useState(null)
+    const [shelfDeleteCount, setShelfDeleteCount] = C.React.useState(3)
+    const [shelfDeleted, setShelfDeleted] = C.React.useState(false)
     const localParams = C.useLocalSearchParams()
     C.React.useEffect(() => {
         if (!shelfId && localParams.shelfId) {
@@ -41,6 +43,25 @@ export default function LandingPage() {
         }
         apiClient.saveShelf(shelf)
     }
+
+    const deleteShelf = () => {
+        if (shelfDeleteCount > 1) {
+            setShelfDeleteCount(shelfDeleteCount - 1)
+        }
+        else {
+            apiClient.deleteShelf(shelfId).then((() => {
+                setShelfDeleted(true)
+            }))
+        }
+    }
+
+    let deleteButton = null
+    if (shelfId) {
+        deleteButton = <C.SnowButton title={`Delete Shelf (${shelfDeleteCount})`} onPress={deleteShelf} />
+    }
+    if (shelfDeleted) {
+        return <C.Redirect href={routes.admin.shelfList} />
+    }
     return (
         <C.View >
             <C.SnowLabel>Name</C.SnowLabel>
@@ -55,7 +76,8 @@ export default function LandingPage() {
             <C.SnowLabel>Shelf Network Share Path</C.SnowLabel>
             <C.SnowInput onChangeText={setNetworkPath} value={networkPath} />
 
-            <C.Button title="Save Shelf" onPress={saveShelf} />
+            <C.SnowButton title="Save Shelf" onPress={saveShelf} />
+            {deleteButton}
         </C.View >
     )
 }

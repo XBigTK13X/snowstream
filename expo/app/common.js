@@ -38,6 +38,7 @@ import SnowText from './comp/snow-text'
 import SnowInput from './comp/snow-input'
 import SnowDropdown from './comp/snow-dropdown'
 import SnowLabel from './comp/snow-label'
+import SnowButton from './comp/snow-button'
 
 const Styles = StyleSheet.create({
     box: {
@@ -60,6 +61,7 @@ export default {
     React,
     Redirect,
     Slot,
+    SnowButton,
     SnowDropdown,
     SnowGrid,
     SnowInput,

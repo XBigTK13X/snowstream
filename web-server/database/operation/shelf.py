@@ -30,3 +30,9 @@ def get_shelf_list():
 def get_shelf_by_id(shelf_id: str):
     with DbSession() as db:
         return db.query(dm.Shelf).filter(dm.Shelf.id == shelf_id).first()
+
+def delete_shelf_by_id(shelf_id: str):
+    with DbSession() as db:
+        deleted = db.query(dm.Shelf).filter(dm.Shelf.id == shelf_id).delete()
+        db.commit()
+        return deleted
