@@ -1,13 +1,8 @@
-import { Redirect, Slot } from 'expo-router'
-import { Text, TVFocusGuideView, View, StyleSheet, Platform } from 'react-native'
+import C from './common'
+
 import { ThemeProvider, createTheme } from '@rneui/themed'
 import { SessionProvider } from './auth-context'
 import { SettingsProvider } from './settings-context'
-import { Button, ListItem } from '@rneui/themed'
-import { SimpleGrid } from 'react-native-super-grid'
-
-import { useSession } from './auth-context';
-import { useSettings } from './settings-context';
 
 const routes = require('./routes')
 
@@ -24,7 +19,7 @@ const theme = createTheme({
     mode: 'dark',
 })
 
-var styles = StyleSheet.create({
+var styles = C.StyleSheet.create({
     default: {
         backgroundColor: '#000000',
     },
@@ -43,11 +38,11 @@ var styles = StyleSheet.create({
 })
 
 function Header() {
-    const { isAdmin } = useSession();
-    const { routes } = useSettings();
+    const { isAdmin } = C.useSession();
+    const { routes } = C.useSettings();
     const renderItem = (item) => {
-        const entry = item.item
-        return <Button title={entry.title} onPress={routes.func(entry.route)} />
+        const entry = item
+        return <C.Button title={entry.title} onPress={routes.func(entry.route)} />
     }
     const buttons = [
         { title: 'Home', route: routes.landing },
@@ -57,14 +52,14 @@ function Header() {
     if (isAdmin) {
         buttons.push({ title: 'Admin', route: routes.admin.dashboard })
     }
-    return <SimpleGrid data={buttons} renderItem={renderItem}></SimpleGrid>
+    return <C.SnowGrid short={true} data={buttons} renderItem={renderItem}></C.SnowGrid>
 }
 
 function Footer() {
     return (
         <>
-            <Text>{'\n'}</Text>
-            <Text></Text>
+            <C.Text>{'\n'}</C.Text>
+            <C.Text></C.Text>
         </>
     )
 }
@@ -72,23 +67,23 @@ function Footer() {
 // TODO Do I want always visible nav bars, or some kind of drawer?
 
 function SafeAreaStub(props) {
-    return <View style={styles.safeArea}>
+    return <C.View style={styles.safeArea}>
         {props.children}
-    </View>
+    </C.View>
 }
 
 export default function RootLayout() {
-    if (Platform.OS === 'web') {
+    if (C.Platform.OS === 'web') {
         return (
             <ThemeProvider theme={theme}>
                 <SafeAreaStub>
                     <SettingsProvider>
                         <SessionProvider>
-                            <View style={styles.videoSqueeze}>
+                            <C.View style={styles.videoSqueeze}>
                                 <Header />
-                                <Slot />
+                                <C.Slot />
                                 <Footer />
-                            </View>
+                            </C.View>
                         </SessionProvider>
                     </SettingsProvider>
                 </SafeAreaStub>
@@ -102,7 +97,7 @@ export default function RootLayout() {
         <ThemeProvider theme={theme}>
             <SafeAreaProvider style={styles.default}>
                 <SafeAreaView>
-                    <TVFocusGuideView autoFocus>
+                    <C.TVFocusGuideView autoFocus>
                         <SettingsProvider>
                             <SessionProvider>
                                 <View style={styles.videoSqueeze}>
@@ -112,7 +107,7 @@ export default function RootLayout() {
                                 </View>
                             </SessionProvider>
                         </SettingsProvider>
-                    </TVFocusGuideView>
+                    </C.TVFocusGuideView>
                 </SafeAreaView>
             </SafeAreaProvider>
         </ThemeProvider>

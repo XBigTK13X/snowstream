@@ -37,7 +37,6 @@ export default function LandingPage() {
                 return (
                     <C.Button
                         hasTVPreferredFocus={itemIndex === 0}
-                        style={C.Styles.box}
                         title={destination.name}
                         onPress={routes.func(routes.movieList, { shelfId: destination.id })}
                     />
@@ -46,7 +45,6 @@ export default function LandingPage() {
                 return (
                     <C.Button
                         hasTVPreferredFocus={itemIndex === 0}
-                        style={C.Styles.box}
                         title={destination.name}
                         onPress={routes.func(routes.showList, { shelfId: destination.id })}
                     />
@@ -55,7 +53,6 @@ export default function LandingPage() {
                 return (
                     <C.Button
                         hasTVPreferredFocus={itemIndex === 0}
-                        style={C.Styles.box}
                         title={destination.name}
                         onPress={routes.func(routes.streamSourceDetails, {
                             streamSourceId: destination.id,

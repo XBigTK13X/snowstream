@@ -20,27 +20,13 @@ export default function ShowListPage() {
         }
     })
     if (shelf && shows) {
-        const renderItem = (show, itemIndex) => {
-            let posterUrl = null
-            for (let image of show.image_files) {
-                if (image.kind === 'show_poster') {
-                    posterUrl = image.web_path
-                }
-            }
-            if (posterUrl) {
-                return (
-                    <C.Button
-                        hasTVPreferredFocus={itemIndex === 0}
-                        title={show.name}
-                        icon={<C.Image style={{ height: 100, width: 50 }} key={show.id} source={{ uri: posterUrl }} />}
-                        onPress={routes.func(routes.seasonList, { shelfId: shelf.id, showId: show.id })}
-                    />
-                )
-            }
+        const gotoShow = (show) => {
+            console.log({ show })
+            routes.goto(routes.seasonList, { shelfId: shelf.id, showId: show.id })
         }
         return (
             <C.View>
-                <C.SnowGrid data={shows} renderItem={renderItem} itemDimensions={200} />
+                <C.SnowPosterGrid onPress={gotoShow} data={shows} />
             </C.View>
         )
     }
