@@ -1,6 +1,6 @@
 import C from '../../../common'
 
-export default function DashboardPage() {
+export default function AdminDashboardPage() {
     const { routes } = C.useSettings();
     const renderItem = (item) => {
         return <C.Button title={item.title} onPress={routes.func(item.route)} />

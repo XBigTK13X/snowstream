@@ -5,7 +5,7 @@ import { Button, ListItem } from '@rneui/themed'
 import { useSession } from '../auth-context'
 import { useSettings } from '../settings-context'
 
-export default function SignIn() {
+export default function SignInPage() {
     const { signIn, apiClient } = useSession()
     const { routes, config } = useSettings()
     const [errors, setErrors] = React.useState(null)

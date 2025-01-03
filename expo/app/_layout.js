@@ -77,7 +77,7 @@ function SafeAreaStub(props) {
     </View>
 }
 
-export default function HomeLayout() {
+export default function RootLayout() {
     if (Platform.OS === 'web') {
         return (
             <ThemeProvider theme={theme}>

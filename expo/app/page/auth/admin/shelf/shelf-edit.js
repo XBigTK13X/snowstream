@@ -1,6 +1,6 @@
 import C from '../../../../common'
 
-export default function LandingPage() {
+export default function ShelfEditPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
     const [shelfName, setShelfName] = C.React.useState('')

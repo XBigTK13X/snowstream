@@ -109,10 +109,6 @@ export class ApiClient {
         this.authToken = null
     }
 
-    getStreamSources() {
-        return this.get('/stream/source/list')
-    }
-
     scheduleStreamSourcesRefresh() {
         return this.post('/job', { name: 'stream_sources_refresh' })
     }
@@ -137,6 +133,21 @@ export class ApiClient {
 
     getStreamSource(streamSourceId) {
         return this.get('/stream/source', { stream_source_id: streamSourceId })
+    }
+
+    saveStreamSource(payload) {
+        return this.post('/stream/source', {
+            id: payload.id,
+            name: payload.name,
+            kind: payload.kind,
+            url: payload.url,
+            username: payload.username,
+            password: payload.password
+        })
+    }
+
+    deleteStreamSource(stream_source_id) {
+        return this.delete(`/stream/source/${stream_source_id}`)
     }
 
     getStreamable(streamableId) {

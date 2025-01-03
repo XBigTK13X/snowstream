@@ -31,14 +31,19 @@ def auth_required(router):
         return db.op.get_stream_source_list()
 
     @router.post("/stream/source")
-    def create_stream_source(
+    def save_stream_source(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source: am.StreamSource,
     ):
-        db_source = db.op.get_stream_source_by_url(url=stream_source.url)
-        if db_source:
-            raise HTTPException(status_code=400, detail="URL already tracked")
-        return db.op.create_stream_source(stream_source=stream_source)
+        return db.op.upsert_stream_source(stream_source=stream_source)
+
+    @router.delete("/stream/source/{stream_source_id}")
+    def delete_stream_source(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        stream_source_id: int,
+    ):
+        return db.op.delete_stream_source_by_id(stream_source_id=stream_source_id)
+
 
     @router.get("/stream/source")
     def get_stream_source(

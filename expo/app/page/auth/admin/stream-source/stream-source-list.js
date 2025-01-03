@@ -1,6 +1,6 @@
 import C from '../../../../common'
 
-export default function LandingPage() {
+export default function StreamSourceListPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
     const [shelves, setShelves] = C.React.useState(null)
@@ -35,6 +35,8 @@ export default function LandingPage() {
         }
         return (
             <C.View >
+                <C.Button title="Create New Stream Source" onPress={routes.func(routes.admin.streamSourceEdit)} />
+                <C.SnowText>{streamSources.length} stream sources found</C.SnowText>
                 <C.SnowGrid data={streamSources} renderItem={renderItem} />
             </C.View>
         )

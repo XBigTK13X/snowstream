@@ -1,6 +1,6 @@
 import C from '../../../common'
 
-export default function MovieShelfPage() {
+export default function MovieListPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes } = C.useSettings()
     const localParams = C.useLocalSearchParams()

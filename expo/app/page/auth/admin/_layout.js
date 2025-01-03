@@ -1,6 +1,6 @@
 import C from '../../../common'
 
-export default function AuthPageLayout() {
+export default function AdminPageLayout() {
     const { isAdmin, isLoading } = C.useSession();
     const { routes } = C.useSettings();
 

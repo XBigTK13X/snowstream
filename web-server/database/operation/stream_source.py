@@ -34,3 +34,21 @@ def get_stream_source(stream_source_id: int):
 def get_stream_source_by_url(url: str):
     with DbSession() as db:
         return db.query(dm.StreamSource).filter(dm.StreamSource.url == url).first()
+
+def upsert_stream_source(stream_source: am.StreamSource):
+    existing_stream_source = None
+    if stream_source.id:
+        existing_stream_source = get_stream_source_by_url(url=stream_source.url)
+    if not existing_stream_source:
+        return create_stream_source(stream_source)    
+    with DbSession() as db:
+        existing_stream_source = db.query(dm.StreamSource).filter(dm.StreamSource.id == stream_source.id).update(stream_source.model_dump())
+        db.commit()        
+        return existing_stream_source
+
+
+def delete_stream_source_by_id(stream_source_id: str):
+    with DbSession() as db:
+        deleted = db.query(dm.StreamSource).filter(dm.StreamSource.id == stream_source_id).delete()
+        db.commit()
+        return deleted

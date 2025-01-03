@@ -1,6 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Button, ButtonGroup } from "@rneui/themed"
+import { Button, ButtonGroup, Text } from "@rneui/themed"
+import SnowText from './snow-text'
 
 export function SnowDropdown(props) {
     if (!props.options) {
@@ -18,7 +19,7 @@ export function SnowDropdown(props) {
 
     return <ButtonGroup
         buttons={props.options.map((option) => {
-            return <Button title={option} />
+            return <Text>{option}</Text>
         })}
         selectedIndex={selectedIndex}
         onPress={choose}
