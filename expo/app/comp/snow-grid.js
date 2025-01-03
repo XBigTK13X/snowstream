@@ -10,7 +10,6 @@ export function SnowGrid(props) {
             <ScrollView showsVerticalScrollIndicator={true} persistentScrollbar={true} style={{ height: windowHeight * 0.66 }}>
                 <View style={{ width: '100%', height: '100%', flex: 1, padding: 20, flexDirection: 'row', flexWrap: 'wrap' }}>
                     {props.data.map((item, itemIndex) => {
-                        console.log({ itemIndex })
                         return (
                             <View key={itemIndex} style={{ width: 300, height: 30, margin: 10, padding: 10 }}>
                                 {props.renderItem(item, itemIndex)}

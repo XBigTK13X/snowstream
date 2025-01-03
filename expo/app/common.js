@@ -35,6 +35,9 @@ import { useSettings } from './settings-context'
 
 import SnowGrid from './comp/snow-grid'
 import SnowText from './comp/snow-text'
+import SnowInput from './comp/snow-input'
+import SnowDropdown from './comp/snow-dropdown'
+import SnowLabel from './comp/snow-label'
 
 export default {
     Button,
@@ -47,7 +50,10 @@ export default {
     Platform,
     React,
     Redirect,
+    SnowDropdown,
     SnowGrid,
+    SnowInput,
+    SnowLabel,
     SnowText,
     StyleSheet,
     Slot,

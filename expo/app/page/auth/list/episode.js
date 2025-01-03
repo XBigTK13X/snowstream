@@ -23,7 +23,6 @@ export default function MovieShelfPage() {
     })
     if (shelf && episodes) {
         const renderItem = (item) => {
-            console.log({ item })
             let episode = item
             let name = episode.name
             if (!name) {

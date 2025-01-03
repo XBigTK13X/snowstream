@@ -15,7 +15,6 @@ export default function LandingPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
     const [shelves, setShelves] = C.React.useState(null)
-
     C.React.useEffect(() => {
         if (!shelves) {
             apiClient.getShelves().then((response) => {
