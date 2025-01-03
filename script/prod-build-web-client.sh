@@ -1,6 +1,5 @@
 #! /bin/bash
 
-cd /frontend-build
-npm run build
-cd /
-cp -r /frontend-build/build/ /app/prod-frontend/
+cd expo
+npx expo export --platform web
+cd ..

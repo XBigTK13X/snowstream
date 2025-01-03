@@ -45,13 +45,7 @@ COPY ./docker /app/docker
 
 COPY ./script /app/script
 
-COPY web-client/ /frontend-build
-
-WORKDIR /frontend-build
-
-RUN chmod +x /app/script/prod-build-web-client.sh
-
-RUN bash -c "/app/script/prod-build-web-client.sh"
+COPY ./expo/dist /app/prod-frontend
 
 COPY docker/alembic.ini /app/alembic.ini
 
