@@ -25,15 +25,18 @@ export default function MovieShelfPage() {
         const renderItem = (item) => {
             let episode = item
             let name = episode.name
+            let seasonPad = episode.season.season_order_counter.toString().padStart(2, '0')
+            let episodePad = episode.episode_order_counter.toString().padStart(3, '0')
             if (!name) {
-                name = `S${episode.season.season_order_counter.toString().padStart(2, '0')}E${episode.episode_order_counter.toString().padStart(3, '0')}`
+                name = `S${seasonPad}E${episodePad}`
             }
+            let destination = { shelfId: shelf.id, showId: showId, seasonId: seasonId, episodeId: episode.id }
             return (
                 <C.Button
                     hasTVPreferredFocus={item.index === 0}
                     key={episode.id}
                     title={name}
-                    onPress={routes.func(routes.episodeDetails, { shelfId: shelf.id, showId: showId, seasonId: seasonId, episodeId: episode.id })}
+                    onPress={routes.func(routes.episodeDetails, destination)}
                 />
             )
         }

@@ -10,6 +10,7 @@ export function SnowInput(props) {
             padding: 10
         }}
         onChangeText={props.onChangeText}
+        value={props.value}
     />
 }
 

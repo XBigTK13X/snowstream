@@ -128,11 +128,13 @@ export class ApiClient {
         return this.get('/streamable', { streamable_id: streamableId })
     }
 
-    createShelf(payload) {
+    saveShelf(payload) {
+        console.log({ payload })
         return this.post('/shelf', {
             name: payload.name,
             kind: payload.kind,
             directory: payload.directory,
+            id: payload.id
         })
     }
 

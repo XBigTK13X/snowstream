@@ -1,16 +1,5 @@
 import C from '../../../../common'
 
-const styles = C.StyleSheet.create({
-    boxContainer: {},
-    image: {},
-    box: {
-        padding: 5,
-        margin: 5,
-        width: '100%',
-        height: '100%'
-    },
-})
-
 export default function LandingPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
@@ -29,7 +18,7 @@ export default function LandingPage() {
             return (
                 <C.Button
                     hasTVPreferredFocus={itemIndex === 0}
-                    style={styles.box}
+                    style={C.Styles.box}
                     title={user.username}
                     onPress={routes.func(routes.admin.userEdit, { userId: user.id })}
                 />

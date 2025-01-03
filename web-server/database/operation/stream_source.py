@@ -8,7 +8,7 @@ import sqlalchemy.orm as sorm
 
 def create_stream_source(stream_source: am.StreamSource):
     with DbSession() as db:
-        db_source = dm.StreamSource(**stream_source.dict())
+        db_source = dm.StreamSource(**stream_source.model_dump())
         db.add(db_source)
         db.commit()
         db.refresh(db_source)

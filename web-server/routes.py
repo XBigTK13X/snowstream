@@ -90,11 +90,11 @@ def auth_required(router):
         return db.op.get_shelf_by_id(shelf_id=shelf_id)
 
     @router.post("/shelf")
-    def create_shelf(
+    def save_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf: am.Shelf,
     ):
-        return db.op.create_shelf(shelf=shelf)
+        return db.op.upsert_shelf(shelf=shelf)
 
     @router.post("/shelf/scan")
     def scan_shelf(

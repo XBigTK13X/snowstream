@@ -39,6 +39,15 @@ import SnowInput from './comp/snow-input'
 import SnowDropdown from './comp/snow-dropdown'
 import SnowLabel from './comp/snow-label'
 
+const Styles = StyleSheet.create({
+    box: {
+        padding: 5,
+        margin: 5,
+        width: '100%',
+        height: '100%'
+    },
+})
+
 export default {
     Button,
     Dimensions,
@@ -50,13 +59,14 @@ export default {
     Platform,
     React,
     Redirect,
+    Slot,
     SnowDropdown,
     SnowGrid,
     SnowInput,
     SnowLabel,
     SnowText,
     StyleSheet,
-    Slot,
+    Styles,
     Text,
     TouchableOpacity,
     TVFocusGuideView,

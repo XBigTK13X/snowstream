@@ -9,7 +9,6 @@ let routes = {
         userEdit: '/page/auth/admin/user/user-edit',
         shelves: '/page/auth/admin/shelf/shelf-list',
         shelfEdit: '/page/auth/admin/shelf/shelf-edit',
-        shelfCreate: '/page/auth/admin/shelf/shelf-create',
         streamSources: '/page/auth/admin/stream-source/stream-source-list',
         streamSourceEdit: '/page/auth/admin/stream-source/stream-source-edit'
     },
