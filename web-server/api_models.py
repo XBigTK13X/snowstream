@@ -78,7 +78,8 @@ class User(BaseModel):
     id: int | None = None
     username: str
     display_name: str | None = None
-    hashed_password: str
+    hashed_password: str | None = None
+    raw_password: str | None = ''
     enabled: bool | None = True
     permissions: str
 

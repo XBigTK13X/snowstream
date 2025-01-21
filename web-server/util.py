@@ -57,7 +57,10 @@ def debounce(wait_seconds):
 
     return decorator
 
-
+#https://github.com/pyca/bcrypt/issues/684
+import bcrypt
+if not hasattr(bcrypt, '__about__'):
+    bcrypt.__about__ = type('about', (object,), {'__version__': bcrypt.__version__})
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 

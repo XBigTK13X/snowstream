@@ -34,6 +34,9 @@ var styles = C.StyleSheet.create({
         backgroundColor: "#000000",
         height: '100%',
         width: '100%'
+    },
+    header: {
+        marginBottom: 10
     }
 })
 
@@ -52,7 +55,11 @@ function Header() {
     if (isAdmin) {
         buttons.push({ title: 'Admin', route: routes.admin.dashboard })
     }
-    return <C.SnowGrid short={true} data={buttons} renderItem={renderItem}></C.SnowGrid>
+    return (
+        <C.View style={styles.header}>
+            <C.SnowGrid short={true} data={buttons} renderItem={renderItem}></C.SnowGrid>
+        </C.View>
+    )
 }
 
 function Footer() {

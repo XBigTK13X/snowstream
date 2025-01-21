@@ -203,6 +203,24 @@ export class ApiClient {
         return this.get('/user/list')
     }
 
+    getUser(userId) {
+        return this.get('/user', { user_id: userId })
+    }
+
+    saveUser(payload) {
+        return this.post('/user', {
+            id: payload.id,
+            username: payload.username,
+            display_name: payload.displayName,
+            enabled: payload.enabled,
+            permissions: payload.permissions
+        })
+    }
+
+    deleteUser(userId) {
+        return this.delete(`/user/${userId}`)
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

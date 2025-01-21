@@ -116,11 +116,25 @@ def auth_required(router):
         pass
 
     @router.post("/user")
-    def create_user(
+    def save_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user: am.User,
     ):
-        return db.op.create_user(user=user)
+        return db.op.upsert_user(user=user)
+
+    @router.get('/user')
+    def get_user(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        user_id: int
+    ):
+        return db.op.get_user_by_id(user_id=user_id)
+
+    @router.delete("/user/{user_id}")
+    def delete_user(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        user_id: int,
+    ):
+        return db.op.delete_user_by_id(user_id=user_id)
 
     @router.get("/auth/check")
     def auth_check(
@@ -234,6 +248,6 @@ def no_auth_required(router):
         users = db.op.get_user_list()
         for user in users:
             user.hashed_password = None
-        return users
+        return users    
 
     return router
