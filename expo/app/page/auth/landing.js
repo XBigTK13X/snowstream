@@ -8,12 +8,12 @@ export default function LandingPage() {
 
     C.React.useEffect(() => {
         if (!shelves) {
-            apiClient.getShelves().then((response) => {
+            apiClient.getShelfList().then((response) => {
                 setShelves(response)
             })
         }
         if (!streamSources) {
-            apiClient.getStreamSources().then((response) => {
+            apiClient.getStreamSourceList().then((response) => {
                 setStreamSources(response)
             })
         }

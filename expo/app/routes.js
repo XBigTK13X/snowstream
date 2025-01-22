@@ -7,6 +7,7 @@ let routes = {
         dashboard: '/page/auth/admin/dashboard',
         userList: '/page/auth/admin/user/user-list',
         userEdit: '/page/auth/admin/user/user-edit',
+        userAccess: '/page/auth/admin/user/user-access',
         shelfList: '/page/auth/admin/shelf/shelf-list',
         shelfEdit: '/page/auth/admin/shelf/shelf-edit',
         streamSourceList: '/page/auth/admin/stream-source/stream-source-list',

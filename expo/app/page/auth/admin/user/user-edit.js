@@ -55,8 +55,19 @@ export default function UserEditPage() {
         return <C.Redirect href={routes.admin.userList} />
     }
 
+    let existingUserControls = null
+    if (userId) {
+        existingUserControls = (
+            <C.View>
+                <C.SnowButton title="User Details" onPress={routes.func(routes.admin.userEdit, { userId: userId })} />
+                <C.SnowButton title="User Access" onPress={routes.func(routes.admin.userAccess, { userId: userId })} />
+            </C.View>
+        )
+    }
+
     return (
         <C.View >
+            {existingUserControls}
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onChangeText={setUserUsername} value={userUsername} />
 

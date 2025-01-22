@@ -127,7 +127,7 @@ export class ApiClient {
         return this.post('/job', { name: 'scan_shelves_content' })
     }
 
-    getStreamSources() {
+    getStreamSourceList() {
         return this.get('/stream/source/list')
     }
 
@@ -167,7 +167,7 @@ export class ApiClient {
         return this.delete(`/shelf/${shelfId}`)
     }
 
-    getShelves() {
+    getShelfList() {
         return this.get('/shelf/list')
     }
 
@@ -199,7 +199,7 @@ export class ApiClient {
         return this.get('/show/season/episode', { episode_id: episodeId })
     }
 
-    getUsers() {
+    getUserList() {
         return this.get('/user/list')
     }
 
@@ -219,6 +219,14 @@ export class ApiClient {
 
     deleteUser(userId) {
         return this.delete(`/user/${userId}`)
+    }
+
+    getUserAccess(userId) {
+        return this.get('/user/access', { user_id: userId })
+    }
+
+    saveUserAccess(userId, access) {
+        return this.post('/user/access', { user_id: userId, access: access })
     }
 
     debug() {

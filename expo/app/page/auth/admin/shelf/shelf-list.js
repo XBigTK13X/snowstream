@@ -6,7 +6,7 @@ export default function ShelfListPage() {
     const [shelves, setShelves] = C.React.useState(null)
     C.React.useEffect(() => {
         if (!shelves) {
-            apiClient.getShelves().then((response) => {
+            apiClient.getShelfList().then((response) => {
                 setShelves(response)
             })
         }

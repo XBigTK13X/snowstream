@@ -136,6 +136,20 @@ def auth_required(router):
     ):
         return db.op.delete_user_by_id(user_id=user_id)
 
+    @router.get('/user/access')
+    def get_user_access(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        user_id: int
+    ):
+        return db.op.get_user_access_by_id(user_id=user_id)
+
+    @router.post('/user/access')
+    def get_user_access(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        user_access: am.UserAccess
+    ):
+        return db.op.upsert_user_access(user_access=user_access)
+
     @router.get("/auth/check")
     def auth_check(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],

@@ -7,7 +7,7 @@ export default function UserListPage() {
 
     C.React.useEffect(() => {
         if (!users) {
-            apiClient.getUsers().then((response) => {
+            apiClient.getUserList().then((response) => {
                 setUsers(response)
             })
         }

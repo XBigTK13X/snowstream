@@ -54,3 +54,7 @@ def delete_user_by_id(user_id:int):
         deleted = db.query(dm.User).filter(dm.User.id == user_id).delete()
         db.commit()
         return deleted    
+
+def get_user_access_by_id(user_id:int):
+    with DbSession() as db:
+        return

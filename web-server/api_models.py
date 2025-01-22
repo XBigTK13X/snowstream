@@ -92,3 +92,10 @@ class AuthToken(BaseModel):
 class AuthTokenContent(BaseModel):
     username: str | None = None
     scopes: list[str] = []
+
+
+class UserAccess(BaseModel):
+    user_id: int
+    tag_ids: list[int]
+    shelf_ids: list[int]
+    stream_source_ids: list[int]
