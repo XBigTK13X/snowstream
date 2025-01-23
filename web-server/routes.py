@@ -113,6 +113,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
+        print("Unimplemented -> web-server/api/shelf/scan")
         pass
 
     @router.post("/user")
@@ -144,11 +145,31 @@ def auth_required(router):
         return db.op.get_user_access_by_id(user_id=user_id)
 
     @router.post('/user/access')
-    def get_user_access(
+    def save_user_access(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user_access: am.UserAccess
     ):
         return db.op.upsert_user_access(user_access=user_access)
+
+    @router.get('/tag/list')
+    def get_tag_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        return db.op.get_tag_list()
+
+    @router.post('/tag')
+    def save_tag(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        tag: am.Tag
+    ):
+        return db.op.upsert_tag(tag)
+
+    @router.delete('/tag/{tag_id}')
+    def delete_tag(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        tag_id:int
+    ):
+        return db.delete_tag_by_id(tag_id=tag_id)
 
     @router.get("/auth/check")
     def auth_check(

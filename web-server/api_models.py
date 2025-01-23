@@ -99,3 +99,7 @@ class UserAccess(BaseModel):
     tag_ids: list[int]
     shelf_ids: list[int]
     stream_source_ids: list[int]
+
+class Tag(BaseModel):
+    id: int | None = None
+    name: str

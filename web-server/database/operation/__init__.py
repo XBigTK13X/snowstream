@@ -11,3 +11,4 @@ from database.operation.streamable_channel import *
 from database.operation.streamable_schedule import *
 from database.operation.user import *
 from database.operation.video_file import *
+from database.operation.tag import *

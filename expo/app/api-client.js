@@ -229,6 +229,21 @@ export class ApiClient {
         return this.post('/user/access', { user_id: userId, access: access })
     }
 
+    getTags() {
+        return this.get('/tag/list')
+    }
+
+    saveTag(payload) {
+        return this.post('/tag', {
+            id: payload.id,
+            name: payload.name
+        })
+    }
+
+    deleteTag(tagId) {
+        return this.delete(`/tag/${tagId}`)
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }
