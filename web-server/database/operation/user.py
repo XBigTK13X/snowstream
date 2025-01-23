@@ -22,6 +22,8 @@ def upsert_user(user: am.User):
     existing_user = None
     if user.id:
         existing_user = get_user_by_id(user.id)
+    elif user.username:
+        existing_user = get_user_by_name(user.username)
     if not existing_user:
         return create_user(user)
     with DbSession() as db:
@@ -32,7 +34,7 @@ def upsert_user(user: am.User):
         else:        
             model_dump['hashed_password'] = old_hash
         del model_dump['raw_password']
-        existing_user = db.query(dm.User).filter(dm.User.id == user.id).update(model_dump)
+        existing_user = db.query(dm.User).filter(dm.User.id == existing_user.id).update(model_dump)
         db.commit()        
         return existing_user
 

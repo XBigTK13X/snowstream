@@ -31,7 +31,7 @@ def upsert_tag(tag: am.Tag):
     if not existing:
         return create_tag(tag)
     with DbSession() as db:
-        existing = db.query(dm.Tag).filter(dm.Tag.id == tag.id).update(tag.model_dump())
+        existing = db.query(dm.Tag).filter(dm.Tag.id == existing.id).update(tag.model_dump())
         db.commit()        
         return existing
 
