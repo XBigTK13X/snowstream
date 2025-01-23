@@ -229,7 +229,11 @@ export class ApiClient {
         return this.post('/user/access', { user_id: userId, access: access })
     }
 
-    getTags() {
+    getTag(tagId) {
+        return this.get('/tag', { tag_id: tagId })
+    }
+
+    getTagList() {
         return this.get('/tag/list')
     }
 

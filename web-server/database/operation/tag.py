@@ -8,7 +8,7 @@ import util
 
 def create_tag(tag: am.Tag):
     with DbSession() as db:
-        dbm = dm.User(**tag.model_dump())
+        dbm = dm.Tag(**tag.model_dump())
         db.add(dbm)
         db.commit()
         db.refresh(dbm)
@@ -18,10 +18,16 @@ def get_tag_by_id(tag_id:int):
     with DbSession() as db:
         return db.query(dm.Tag).filter(dm.Tag.id == tag_id).first()
 
+def get_tag_by_name(tag_name:str):
+    with DbSession() as db:
+        return db.query(dm.Tag).filter(dm.Tag.name == tag_name).first()
+
 def upsert_tag(tag: am.Tag):
     existing = None
     if tag.id:
         existing = get_tag_by_id(tag.id)
+    elif tag.name:
+        existing = get_tag_by_name(tag.name)
     if not existing:
         return create_tag(tag)
     with DbSession() as db:

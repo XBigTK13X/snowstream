@@ -151,6 +151,13 @@ def auth_required(router):
     ):
         return db.op.upsert_user_access(user_access=user_access)
 
+    @router.get('/tag')
+    def get_user(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        tag_id: int
+    ):
+        return db.op.get_tag_by_id(tag_id=tag_id)
+
     @router.get('/tag/list')
     def get_tag_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]

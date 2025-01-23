@@ -53,6 +53,8 @@ def upgrade() -> None:
         sa.Column("name", sa.Text, nullable=False),
     )
 
+    op.create_unique_constraint("unique_tag_name", "tag", ["name"])
+
     op.create_table(
         "movie",
         sa.Column("id", sa.Integer, primary_key=True),

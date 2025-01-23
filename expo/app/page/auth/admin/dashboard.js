@@ -9,6 +9,7 @@ export default function AdminDashboardPage() {
         { title: 'Shelves', route: routes.admin.shelfList },
         { title: 'Stream Sources', route: routes.admin.streamSourceList },
         { title: 'Users', route: routes.admin.userList },
+        { title: 'Tags', route: routes.admin.tagList },
     ]
     return <C.SnowGrid data={buttons} renderItem={renderItem}></C.SnowGrid>
 }

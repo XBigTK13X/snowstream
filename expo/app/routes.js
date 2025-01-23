@@ -11,7 +11,9 @@ let routes = {
         shelfList: '/page/auth/admin/shelf/shelf-list',
         shelfEdit: '/page/auth/admin/shelf/shelf-edit',
         streamSourceList: '/page/auth/admin/stream-source/stream-source-list',
-        streamSourceEdit: '/page/auth/admin/stream-source/stream-source-edit'
+        streamSourceEdit: '/page/auth/admin/stream-source/stream-source-edit',
+        tagList: '/page/auth/admin/tag/tag-list',
+        tagEdit: '/page/auth/admin/tag/tag-edit',
     },
     root: '/',
     options: '/page/auth/options',
