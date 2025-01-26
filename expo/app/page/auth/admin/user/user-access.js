@@ -18,6 +18,7 @@ export default function UserEditPage() {
     C.React.useEffect(() => {
         if (!userId && localParams.userId) {
             apiClient.getUser(localParams.userId, true).then((response) => {
+                setUserId(localParams.userId)
                 if (response.tags) {
                     setUserTags(response.tags)
                 }
@@ -48,10 +49,10 @@ export default function UserEditPage() {
     })
     const saveUserAccess = () => {
         let payload = {
-            id: userId,
-            tags: userTags,
-            shelves: userShelves,
-            streamSources: userStreamSources
+            userId: userId,
+            tagIds: userTags,
+            shelfIds: userShelves,
+            streamSourceIds: userStreamSources
         }
         apiClient.saveUserAccess(payload)
     }
@@ -76,7 +77,6 @@ export default function UserEditPage() {
     }
 
     const setStreamSourceAccess = (streamSourceId, accessible) => {
-        console.log({ streamSourceId, accessible })
         if (!accessible) {
             const streamSourceIndex = userStreamSources.indexOf(streamSourceId)
             if (streamSourceIndex !== -1) {
@@ -114,12 +114,6 @@ export default function UserEditPage() {
         }
     }
 
-    console.log({
-        userShelves,
-        userTags,
-        userStreamSources
-    })
-
     let shelfPicker = null
     if (shelves && shelves.length) {
         const renderShelf = (shelf) => {
@@ -143,7 +137,6 @@ export default function UserEditPage() {
 
     let streamSourcePicker = null
     if (streamSources && streamSources.length) {
-        console.log({ userStreamSources })
         const renderStreamSource = (streamSource) => {
             if (userStreamSources && userStreamSources.indexOf(streamSource.id) !== -1) {
                 return (

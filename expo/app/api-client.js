@@ -225,8 +225,13 @@ export class ApiClient {
         return this.get('/user/access', { user_id: userId })
     }
 
-    saveUserAccess(userId, access) {
-        return this.post('/user/access', { user_id: userId, access: access })
+    saveUserAccess(payload) {
+        return this.post('/user/access', {
+            user_id: payload.userId,
+            tag_ids: payload.tagIds,
+            shelf_ids: payload.shelfIds,
+            stream_source_ids: payload.streamSourceIds
+        })
     }
 
     getTag(tagId) {
