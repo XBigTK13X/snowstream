@@ -149,7 +149,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user_access: am.UserAccess
     ):
-        return db.op.upsert_user_access(user_access=user_access)
+        return db.op.save_user_access(user_access=user_access)
 
     @router.get('/tag')
     def get_user(

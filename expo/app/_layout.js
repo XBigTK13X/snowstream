@@ -31,18 +31,18 @@ var styles = C.StyleSheet.create({
     },
     safeArea: {
         padding: 10,
-        backgroundColor: "#000000",
+        backgroundColor: '#000000',
         height: '100%',
-        width: '100%'
+        width: '100%',
     },
     header: {
-        marginBottom: 10
-    }
+        marginBottom: 10,
+    },
 })
 
 function Header() {
-    const { isAdmin } = C.useSession();
-    const { routes } = C.useSettings();
+    const { isAdmin } = C.useSession()
+    const { routes } = C.useSettings()
     const renderItem = (item) => {
         const entry = item
         return <C.Button title={entry.title} onPress={routes.func(entry.route)} />
@@ -74,9 +74,7 @@ function Footer() {
 // TODO Do I want always visible nav bars, or some kind of drawer?
 
 function SafeAreaStub(props) {
-    return <C.View style={styles.safeArea}>
-        {props.children}
-    </C.View>
+    return <C.View style={styles.safeArea}>{props.children}</C.View>
 }
 
 export default function RootLayout() {
@@ -88,7 +86,9 @@ export default function RootLayout() {
                         <SessionProvider>
                             <C.View style={styles.videoSqueeze}>
                                 <Header />
-                                <C.Slot />
+                                <C.ScrollView>
+                                    <C.Slot />
+                                </C.ScrollView>
                                 <Footer />
                             </C.View>
                         </SessionProvider>
@@ -109,7 +109,9 @@ export default function RootLayout() {
                             <SessionProvider>
                                 <View style={styles.videoSqueeze}>
                                     <Header />
-                                    <Slot />
+                                    <C.ScrollView>
+                                        <C.Slot />
+                                    </C.ScrollView>
                                     <Footer />
                                 </View>
                             </SessionProvider>

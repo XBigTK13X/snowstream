@@ -374,6 +374,32 @@ class User(BaseModel):
     enabled = sa.Column(sa.Boolean)
     permissions = sa.Column(sa.Text)
 
+class UserTag(BaseModel):
+    __tablename__ = "user_tag"
+    user_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("snowstream_user.id")
+    )
+    tag_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("tag.id")
+    )
+
+class UserShelf(BaseModel):
+    __tablename__ = "user_shelf"
+    user_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("snowstream_user.id")
+    )
+    shelf_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("shelf.id")
+    )
+
+class UserStreamSource(BaseModel):
+    __tablename__ = "user_stream_source"
+    user_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("snowstream_user.id")
+    )
+    stream_source_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("stream_source.id")
+    )
 
 class VideoFile(BaseModel):
     __tablename__ = "video_file"

@@ -1,12 +1,6 @@
 import React from 'react'
 
-import {
-    Link,
-    Redirect,
-    Slot,
-    useLocalSearchParams,
-    useNavigation
-} from 'expo-router'
+import { Link, Redirect, Slot, useLocalSearchParams, useNavigation } from 'expo-router'
 
 import {
     View,
@@ -17,17 +11,14 @@ import {
     Dimensions,
     TVFocusGuideView,
     Linking,
-    Platform
+    Platform,
+    ScrollView,
 } from 'react-native'
 
 // https://www.npmjs.com/package/react-native-tvos
 // TVFocusGuideView docs
 
-import {
-    Button,
-    ListItem,
-    Image
-} from '@rneui/themed'
+import { Button, ListItem, Image } from '@rneui/themed'
 
 import { useSession } from './auth-context'
 
@@ -46,7 +37,7 @@ const Styles = StyleSheet.create({
         padding: 5,
         margin: 5,
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
 })
 
@@ -61,6 +52,7 @@ export default {
     Platform,
     React,
     Redirect,
+    ScrollView,
     Slot,
     SnowButton,
     SnowDropdown,

@@ -58,5 +58,40 @@ def delete_user_by_id(user_id:int):
         return deleted    
 
 def get_user_access_by_id(user_id:int):
+    result = {    }
     with DbSession() as db:
-        return
+        result['tags'] = db.query(dm.UserTag).filter(dm.UserTag.user_id == user_id).all()
+        result['shelves'] = db.query(dm.UserShelf).filter(dm.UserShelf.user_id == user_id).all()
+        result['stream_sources'] = db.query(dm.UserStreamSource).filter(dm.UserStreamSource.user_id == user_id).all()
+        db.commit()
+        return result
+
+def save_user_access(user_access:am.UserAccess):
+    user_tags = []
+    for tag_id in user_access.tag_ids:
+        user_tag = dm.UserTag()
+        user_tag.user_id = user_access.user_id
+        user_tag.tag_id = tag_id
+        user_tags.append({'user_id':user_access.user_id,'tag_id':tag_id})
+    user_shelves = []
+    for shelf_id in user_access.shelf_ids:
+        user_shelf = dm.UserShelf()
+        user_shelf.user_id = user_access.user_id
+        user_shelf.shelf_id = shelf_id
+        user_shelves.append({'user_id':user_access.user_id,'shelf_id':shelf_id})
+    user_stream_sources = []
+    for stream_source_id in user_access.stream_source_ids:
+        user_stream_source = dm.UserStreamSource()
+        user_stream_source.user_id = user_access.user_id
+        user_stream_source.stream_source_id = stream_source_id
+        user_stream_sources.append({'user_id':user_access.user_id,'stream_source_id':stream_source_id})
+    with DbSession() as db:
+        db.query(dm.UserTag).filter(dm.UserTag.user_id == user_access.user_id).delete()
+        db.query(dm.UserShelf).filter(dm.UserShelf.user_id == user_access.user_id).delete()
+        db.query(dm.UserStreamSource).filter(dm.UserStreamSource.user_id == user_access.user_id).delete()
+        db.commit()
+        db.bulk_insert_mappings(dm.UserTag, user_tags)
+        db.bulk_insert_mappings(dm.UserShelf, user_shelves)
+        db.bulk_insert_mappings(dm.UserStreamSource, user_stream_sources)
+        db.commit()
+    return True
