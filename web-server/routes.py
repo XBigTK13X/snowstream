@@ -24,20 +24,20 @@ def register(router):
 
 
 def auth_required(router):
-    @router.get("/stream/source/list")
+    @router.get("/stream/source/list",tags=['Stream Source'])
     def get_stream_source_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         return db.op.get_stream_source_list()
 
-    @router.post("/stream/source")
+    @router.post("/stream/source",tags=['Stream Source'])
     def save_stream_source(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source: am.StreamSource,
     ):
         return db.op.upsert_stream_source(stream_source=stream_source)
 
-    @router.delete("/stream/source/{stream_source_id}")
+    @router.delete("/stream/source/{stream_source_id}",tags=['Stream Source'])
     def delete_stream_source(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source_id: int,
@@ -45,21 +45,21 @@ def auth_required(router):
         return db.op.delete_stream_source_by_id(stream_source_id=stream_source_id)
 
 
-    @router.get("/stream/source")
+    @router.get("/stream/source",tags=['Stream Source'])
     def get_stream_source(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source_id: int,
     ):
         return db.op.get_stream_source(stream_source_id=stream_source_id)
 
-    @router.get("/streamable")
+    @router.get("/streamable",tags=['Stream Source'])
     def get_streamable(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         streamable_id: int,
     ):
         return db.op.get_streamable_by_id(streamable_id=streamable_id)
 
-    @router.post("/job")
+    @router.post("/job",tags=['Job'])
     def create_job(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         kind: am.JobKind,
@@ -68,47 +68,47 @@ def auth_required(router):
         message.write.send(job_id=job.id, kind=kind.name)
         return job
 
-    @router.get("/job")
+    @router.get("/job",tags=['Job'])
     def get_job(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         job_id: int,
     ):
         return db.op.get_job_by_id(job_id=job_id)
 
-    @router.get("/job/list")
+    @router.get("/job/list",tags=['Job'])
     def get_job_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         return db.op.get_job_list()
 
-    @router.get("/shelf/list")
+    @router.get("/shelf/list",tags=['Shelf'])
     def get_shelf_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         return db.op.get_shelf_list()
 
-    @router.get("/shelf")
+    @router.get("/shelf",tags=['Shelf'])
     def get_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
         return db.op.get_shelf_by_id(shelf_id=shelf_id)
 
-    @router.post("/shelf")
+    @router.post("/shelf",tags=['Shelf'])
     def save_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf: am.Shelf,
     ):
         return db.op.upsert_shelf(shelf=shelf)
 
-    @router.delete("/shelf/{shelf_id}")
+    @router.delete("/shelf/{shelf_id}",tags=['Shelf'])
     def delete_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
         return db.op.delete_shelf_by_id(shelf_id=shelf_id)
 
-    @router.post("/shelf/scan")
+    @router.post("/shelf/scan",tags=['Shelf'])
     def scan_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
@@ -116,104 +116,104 @@ def auth_required(router):
         print("Unimplemented -> web-server/api/shelf/scan")
         pass
 
-    @router.post("/user")
+    @router.post("/user",tags=['User'])
     def save_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user: am.User,
     ):
         return db.op.upsert_user(user=user)
 
-    @router.get('/user')
+    @router.get('/user',tags=['User'])
     def get_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user_id: int, include_access: bool = False
     ):
         return db.op.get_user_by_id(user_id=user_id, include_access=include_access)
 
-    @router.delete("/user/{user_id}")
+    @router.delete("/user/{user_id}",tags=['User'])
     def delete_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user_id: int,
     ):
         return db.op.delete_user_by_id(user_id=user_id)
 
-    @router.post('/user/access')
+    @router.post('/user/access',tags=['User'])
     def save_user_access(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user_access: am.UserAccess
     ):
         return db.op.save_user_access(user_access=user_access)
 
-    @router.get('/tag')
+    @router.get('/tag',tags=['Tag'])
     def get_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         tag_id: int
     ):
         return db.op.get_tag_by_id(tag_id=tag_id)
 
-    @router.get('/tag/list')
+    @router.get('/tag/list',tags=['Tag'])
     def get_tag_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         return db.op.get_tag_list()
 
-    @router.post('/tag')
+    @router.post('/tag',tags=['Tag'])
     def save_tag(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         tag: am.Tag
     ):
         return db.op.upsert_tag(tag)
 
-    @router.delete('/tag/{tag_id}')
+    @router.delete('/tag/{tag_id}',tags=['Tag'])
     def delete_tag(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         tag_id:int
     ):
         return db.delete_tag_by_id(tag_id=tag_id)
 
-    @router.get("/auth/check")
+    @router.get("/auth/check",tags=['Auth'])
     def auth_check(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user: am.User,
     ):
         return True
 
-    @router.get("/movie/list")
+    @router.get("/movie/list",tags=['Movie'])
     def get_movie_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
         return db.op.get_movie_list_by_shelf(shelf_id=shelf_id)
 
-    @router.get("/movie")
+    @router.get("/movie",tags=['Movie'])
     def get_movie_details(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_id: int,
     ):
         return db.op.get_movie_details_by_id(movie_id=movie_id)
 
-    @router.get("/show/list")
+    @router.get("/show/list",tags=['Show'])
     def get_show_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
         return db.op.get_show_list_by_shelf(shelf_id=shelf_id)
 
-    @router.get("/show/season/list")
+    @router.get("/show/season/list",tags=['Show'])
     def get_show_season_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_id: int,
     ):
         return db.op.get_show_season_list(show_id=show_id)
 
-    @router.get("/show/season/episode/list")
+    @router.get("/show/season/episode/list",tags=['Show'])
     def get_show_season_episode_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_season_id: int,
     ):
         return db.op.get_season_episode_list(show_season_id=show_season_id)
 
-    @router.get("/show/season/episode")
+    @router.get("/show/season/episode",tags=['Show'])
     def get_season_episode_details(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         episode_id: int,
@@ -224,32 +224,32 @@ def auth_required(router):
 
 
 def no_auth_required(router):
-    @router.get("/heartbeat")
+    @router.get("/heartbeat",tags=['Unauthed'])
     def heartbeat():
         return {"alive": True}
 
-    @router.get("/info")
+    @router.get("/info",tags=['Unauthed'])
     def info():
         return {
             "serverVersion": config.server_version,
             "serverBuildDate": config.server_build_date,
         }
 
-    @router.get("/password/hash")
+    @router.get("/password/hash",tags=['Unauthed'])
     def password_hash(password: str):
         return auth.get_password_hash(password)
 
-    @router.get("/streamable.m3u", response_class=PlainTextResponse)
+    @router.get("/streamable.m3u", response_class=PlainTextResponse,tags=['Unauthed'])
     def get_streamable_m3u():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_M3U)
 
-    @router.get("/streamable.xml", response_class=PlainTextResponse)
+    @router.get("/streamable.xml", response_class=PlainTextResponse,tags=['Unauthed'])
     def get_streamable_epg():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_EPG)
 
     # TODO It would be neat if I had a little placeholder video here to let the video player show that the stream is getting ready
-    @router.get("/streamable/transcode")
-    @router.head("/streamable/transcode")
+    @router.get("/streamable/transcode",tags=['Unauthed'])
+    @router.head("/streamable/transcode",tags=['Unauthed'])
     def get_streamable_transcode(streamable_id: int):
         if not transcode.is_open(streamable_id=streamable_id):
             streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
@@ -258,27 +258,27 @@ def no_auth_required(router):
         playlist = transcode.get_playlist(streamable_id=streamable_id)
         return Response(playlist, status_code=200, media_type="video/mp4")
 
-    @router.get("/streamable/transcode/segment")
-    @router.head("/streamable/transcode/segment")
+    @router.get("/streamable/transcode/segment",tags=['Unauthed'])
+    @router.head("/streamable/transcode/segment",tags=['Unauthed'])
     def get_streamable_transcode_segment(streamable_id: int, segment_file: str):
         segment = transcode.get_segment(
             streamable_id=streamable_id, segment_file=segment_file
         )
         return Response(segment, status_code=200, media_type="video/mp4")
 
-    @router.get("/streamable/direct", response_class=RedirectResponse)
-    @router.head("/streamable/direct", response_class=RedirectResponse)
+    @router.get("/streamable/direct", response_class=RedirectResponse,tags=['Unauthed'])
+    @router.head("/streamable/direct", response_class=RedirectResponse,tags=['Unauthed'])
     def get_streamable_direct(streamable_id: int):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
         # DEBUG log.info(streamable.url)
         return streamable.url
 
-    @router.delete("/streamable/transcode")
-    def delete_streamable_transcode(streamable_id):
+    @router.delete("/streamable/transcode",tags=['Unauthed'])
+    def delete_streamable_transcode(streamable_id,tags=['Unauthed']):
         transcode.close(streamable_id=streamable_id)
         return True
 
-    @router.get("/user/list")
+    @router.get("/user/list",tags=['Unauthed'])
     def get_user_list():
         users = db.op.get_user_list()
         for user in users:

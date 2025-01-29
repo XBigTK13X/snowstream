@@ -88,7 +88,7 @@ async def get_current_user(
 
 
 def register(router):
-    @router.post("/login")
+    @router.post("/login",tags=['Unauthed'])
     async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
         user = authenticate_user(form_data.username, form_data.password)
         if not user:
