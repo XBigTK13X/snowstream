@@ -28,3 +28,7 @@ def get_metadata_file_by_path(file_path: str):
 def get_metadata_files_by_shelf(shelf_id: int):
     with DbSession() as db:
         return db.query(dm.MetadataFile).filter(dm.MetadataFile.shelf_id == shelf_id)
+
+def get_metadata_file_list():
+    with DbSession() as db:
+        return db.query(dm.MetadataFile).all()

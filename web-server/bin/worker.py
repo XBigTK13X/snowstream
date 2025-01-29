@@ -17,10 +17,12 @@ def start():
     import message.read
     import message.handler.stream_sources_refresh
     import message.handler.scan_shelves_content
+    import message.handler.read_media_files
 
     handlers = {
         "stream_sources_refresh": message.handler.stream_sources_refresh,
         "scan_shelves_content": message.handler.scan_shelves_content,
+        'read_media_files': message.handler.read_media_files
     }
 
     def callback(channel, method, properties, body):

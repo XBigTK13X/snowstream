@@ -34,6 +34,7 @@ def get_movie_details_by_id(movie_id: int):
         movie = (
             db.query(dm.Movie)
             .options(sorm.joinedload(dm.Movie.video_files))
+            .options(sorm.joinedload(dm.Movie.image_files))
             .options(sorm.joinedload(dm.Movie.shelf))
             .filter(dm.Movie.id == movie_id)
             .first()

@@ -26,3 +26,7 @@ def get_video_file_by_path(file_path: str):
 def get_video_files_by_shelf(shelf_id: int):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.shelf_id == shelf_id)
+
+def get_video_files_list():
+    with DbSession() as db:
+        return db.query(dm.VideoFile).all()

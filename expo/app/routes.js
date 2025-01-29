@@ -14,6 +14,8 @@ let routes = {
         streamSourceEdit: '/page/auth/admin/stream-source/stream-source-edit',
         tagList: '/page/auth/admin/tag/tag-list',
         tagEdit: '/page/auth/admin/tag/tag-edit',
+        jobList: '/page/auth/admin/job/job-list',
+        jobRunner: '/page/auth/admin/job/job-runner'
     },
     root: '/',
     options: '/page/auth/options',

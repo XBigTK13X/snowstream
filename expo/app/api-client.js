@@ -108,8 +108,16 @@ export class ApiClient {
         this.authToken = null
     }
 
-    scheduleStreamSourcesRefresh() {
+    createJobStreamSourcesRefresh() {
         return this.post('/job', { name: 'stream_sources_refresh' })
+    }
+
+    createJobShelvesScan() {
+        return this.post('/job', { name: 'scan_shelves_content' })
+    }
+
+    createJobReadMediaFiles() {
+        return this.post('/job', { name: 'read_media_files' })
     }
 
     createStreamSource(payload) {
@@ -120,10 +128,6 @@ export class ApiClient {
             kind: payload.kind,
             name: payload.name,
         })
-    }
-
-    scheduleShelvesScan() {
-        return this.post('/job', { name: 'scan_shelves_content' })
     }
 
     getStreamSourceList() {
