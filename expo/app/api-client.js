@@ -203,8 +203,8 @@ export class ApiClient {
         return this.get('/user/list')
     }
 
-    getUser(userId) {
-        return this.get('/user', { user_id: userId })
+    getUser(userId, includeAccess) {
+        return this.get('/user', { user_id: userId, include_access: !!includeAccess })
     }
 
     saveUser(payload) {
@@ -219,10 +219,6 @@ export class ApiClient {
 
     deleteUser(userId) {
         return this.delete(`/user/${userId}`)
-    }
-
-    getUserAccess(userId) {
-        return this.get('/user/access', { user_id: userId })
     }
 
     saveUserAccess(payload) {

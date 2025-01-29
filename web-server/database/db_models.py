@@ -373,6 +373,15 @@ class User(BaseModel):
     hashed_password = sa.Column(sa.Text, nullable=False)
     enabled = sa.Column(sa.Boolean)
     permissions = sa.Column(sa.Text)
+    access_tags: sorm.Mapped[List["Tag"]] = sorm.relationship(
+        secondary="user_tag"
+    )
+    access_shelves: sorm.Mapped[List["Shelf"]] = sorm.relationship(
+        secondary="user_shelf"
+    )
+    access_stream_sources: sorm.Mapped[List["StreamSource"]] = sorm.relationship(
+        secondary="user_stream_source"
+    )
 
 class UserTag(BaseModel):
     __tablename__ = "user_tag"

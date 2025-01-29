@@ -126,9 +126,9 @@ def auth_required(router):
     @router.get('/user')
     def get_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        user_id: int
+        user_id: int, include_access: bool = False
     ):
-        return db.op.get_user_by_id(user_id=user_id)
+        return db.op.get_user_by_id(user_id=user_id, include_access=include_access)
 
     @router.delete("/user/{user_id}")
     def delete_user(
@@ -136,13 +136,6 @@ def auth_required(router):
         user_id: int,
     ):
         return db.op.delete_user_by_id(user_id=user_id)
-
-    @router.get('/user/access')
-    def get_user_access(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        user_id: int
-    ):
-        return db.op.get_user_access_by_id(user_id=user_id)
 
     @router.post('/user/access')
     def save_user_access(

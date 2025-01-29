@@ -38,8 +38,17 @@ def upsert_user(user: am.User):
         db.commit()        
         return existing_user
 
-def get_user_by_id(user_id:int):
+def get_user_by_id(user_id:int,include_access=False):    
     with DbSession() as db:
+        if include_access:
+            sql = sa.select(dm.User).options(
+                sorm.joinedload(dm.User.access_tags)
+            ).options(
+                sorm.joinedload(dm.User.access_shelves)
+            ).options(
+                sorm.joinedload(dm.User.access_stream_sources)
+            ).filter(dm.UserStreamSource.user_id == user_id)
+            return db.scalars(sql).unique().first()
         return db.query(dm.User).filter(dm.User.id == user_id).first()
 
 def get_user_by_name(username: str):
@@ -56,15 +65,6 @@ def delete_user_by_id(user_id:int):
         deleted = db.query(dm.User).filter(dm.User.id == user_id).delete()
         db.commit()
         return deleted    
-
-def get_user_access_by_id(user_id:int):
-    result = {    }
-    with DbSession() as db:
-        result['tags'] = db.query(dm.UserTag).filter(dm.UserTag.user_id == user_id).all()
-        result['shelves'] = db.query(dm.UserShelf).filter(dm.UserShelf.user_id == user_id).all()
-        result['stream_sources'] = db.query(dm.UserStreamSource).filter(dm.UserStreamSource.user_id == user_id).all()
-        db.commit()
-        return result
 
 def save_user_access(user_access:am.UserAccess):
     user_tags = []

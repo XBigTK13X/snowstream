@@ -17,16 +17,12 @@ export default function UserEditPage() {
 
     C.React.useEffect(() => {
         if (!userId && localParams.userId) {
-            apiClient.getUserAccess(localParams.userId).then((response) => {
+            apiClient.getUser(localParams.userId, true).then((response) => {
                 setUserId(localParams.userId)
-                if (response.tags) {
-                    setUserTags(response.tags)
-                }
-                if (response.shelves) {
-                    setUserShelves(response.shelves)
-                }
-                if (response.streamSources) {
-                    setUserStreamSources(response.streamSources)
+                if (response.access_tags) {
+                    setUserTags(response.access_tags.map(item => item.id))
+                    setUserShelves(response.access_shelves.map(item => item.id))
+                    setUserStreamSources(response.access_stream_sources.map(item => item.id))
                 }
             })
         }
