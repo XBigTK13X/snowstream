@@ -35,9 +35,12 @@ def upsert_tag(tag: am.Tag):
         db.commit()        
         return existing
 
-def get_tag_list():
+def get_tag_list(restrictions:list[int]=None):
     with DbSession() as db:
-        return db.query(dm.Tag).all()
+        query = db.query(dm.Tag)
+        if restrictions != None:
+            query = query.filter(dm.Tag.id.in_(restrictions))
+        return query.all()
 
 def delete_tag_by_id(tag_id:int):
     with DbSession() as db:

@@ -149,6 +149,8 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user_id: int,
     ):
+        if not auth_user.is_admin():
+            return None
         return db.op.delete_user_by_id(user_id=user_id)
 
     @router.post('/user/access',tags=['User'])
@@ -156,6 +158,8 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         user_access: am.UserAccess
     ):
+        if not auth_user.is_admin():
+            return None
         return db.op.save_user_access(user_access=user_access)
 
     @router.get('/tag',tags=['Tag'])
@@ -163,19 +167,24 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         tag_id: int
     ):
+        restrictions = auth_user.get_tag_restrictions()
+        if restrictions != None and not tag_id in restrictions:
+            return None
         return db.op.get_tag_by_id(tag_id=tag_id)
 
     @router.get('/tag/list',tags=['Tag'])
     def get_tag_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        return db.op.get_tag_list()
+        return db.op.get_tag_list(auth_user.get_tag_restrictions())
 
     @router.post('/tag',tags=['Tag'])
     def save_tag(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         tag: am.Tag
     ):
+        if not auth_user.is_admin():
+            return None
         return db.op.upsert_tag(tag)
 
     @router.delete('/tag/{tag_id}',tags=['Tag'])
@@ -183,6 +192,8 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         tag_id:int
     ):
+        if not auth_user.is_admin():
+            return None
         return db.delete_tag_by_id(tag_id=tag_id)
 
     @router.get("/auth/check",tags=['Auth'])
