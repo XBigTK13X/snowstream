@@ -77,7 +77,7 @@ function Footer() {
     return (
         <>
             <C.Text>{'\n'}</C.Text>
-            <C.SnowText>Using server at [{config.webApiUrl}] - {authedInfo}</C.SnowText>
+            <C.SnowText>Client v{config.clientVersion} talking to server at [{config.webApiUrl}] - {authedInfo}</C.SnowText>
         </>
     )
 }

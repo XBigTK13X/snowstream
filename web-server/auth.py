@@ -90,6 +90,9 @@ async def get_current_user(
 def register(router):
     @router.post("/login",tags=['Unauthed'])
     async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+        # FIXME Workaround Pydantic validation failures on empty passwords
+        if form_data.password == '_-_-_EMPTY_-_-_':
+            form_data.password = ''
         user = authenticate_user(form_data.username, form_data.password)
         if not user:
             raise HTTPException(

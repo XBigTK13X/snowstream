@@ -1,20 +1,21 @@
-import React from 'react'
-import { router } from 'expo-router'
-import { Text, View } from 'react-native'
-import { Button, ListItem } from '@rneui/themed'
-import { useSession } from '../auth-context'
-import { useSettings } from '../settings-context'
-
+import C from '../common'
 export default function SignInPage() {
-    const { signIn, apiClient } = useSession()
-    const { routes, config } = useSettings()
-    const [errors, setErrors] = React.useState(null)
+    const { signIn, apiClient } = C.useSession()
+    const { routes, config } = C.useSettings()
+    const [errors, setErrors] = C.React.useState(null)
+    const [users, setUsers] = C.React.useState(null)
 
-    function clickSignIn() {
-        setErrors('The button has been clicked!')
-        signIn('admin', 'admin')
-            .then((token) => {
-                setErrors('Everything went fine?')
+    C.React.useEffect(() => {
+        if (!users) {
+            apiClient.getUserList().then((response) => {
+                setUsers(response)
+            })
+        }
+    })
+
+    function clickSignIn(username, password) {
+        signIn(username, password)
+            .then(() => {
                 routes.replace(routes.landing)
             })
             .catch((err) => {
@@ -22,10 +23,25 @@ export default function SignInPage() {
             })
     }
 
+    let userList = null
+    if (users) {
+        // TODO Don't hardcord the admin login
+        // TODO Allow text entry for both fields
+        let renderItem = (item) => {
+            return <C.Button
+                title={item.username}
+                onPress={() => { clickSignIn(item.username, item.username == 'admin' ? 'admin' : '_-_-_EMPTY_-_-_') }}
+            />
+        }
+        userList = (
+            <C.SnowGrid data={users} renderItem={renderItem} />
+        )
+    }
+
     return (
-        <View>
-            <Button onPress={clickSignIn}>Sign In</Button>
-            <Text>{errors ? JSON.stringify(errors) : '[' + config.webApiUrl + '] v' + config.clientVersion}</Text>
-        </View>
+        <C.View>
+            {userList}
+            <C.Text>{errors ? JSON.stringify(errors) : "Waiting on login"}</C.Text>
+        </C.View>
     )
 }
