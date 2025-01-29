@@ -28,13 +28,15 @@ def auth_required(router):
     def get_stream_source_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        return db.op.get_stream_source_list()
+        return db.op.get_stream_source_list(restrictions=auth_user.get_stream_source_restrictions())
 
     @router.post("/stream/source",tags=['Stream Source'])
     def save_stream_source(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source: am.StreamSource,
     ):
+        if not auth_user.is_admin():
+            return None
         return db.op.upsert_stream_source(stream_source=stream_source)
 
     @router.delete("/stream/source/{stream_source_id}",tags=['Stream Source'])
@@ -42,6 +44,8 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source_id: int,
     ):
+        if not auth_user.is_admin():
+            return None
         return db.op.delete_stream_source_by_id(stream_source_id=stream_source_id)
 
 
@@ -50,6 +54,9 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source_id: int,
     ):
+        restrictions = auth_user.get_stream_source_restrictions()
+        if restrictions != None and not stream_source_id in restrictions:
+            return None
         return db.op.get_stream_source(stream_source_id=stream_source_id)
 
     @router.get("/streamable",tags=['Stream Source'])
@@ -85,8 +92,6 @@ def auth_required(router):
     def get_shelf_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        import pprint
-        pprint.pprint(auth_user.get_shelf_restrictions())
         return db.op.get_shelf_list(auth_user.get_shelf_restrictions())
 
     @router.get("/shelf",tags=['Shelf'])

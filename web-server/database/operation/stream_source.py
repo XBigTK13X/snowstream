@@ -15,21 +15,24 @@ def create_stream_source(stream_source: am.StreamSource):
         return db_source
 
 
-def get_stream_source_list(streamables=False):
+def get_stream_source_list(streamables:bool=False,restrictions:list[int]=None):
     with DbSession() as db:
+        query = db.query(dm.StreamSource)
+        if restrictions != None:
+            query = query.filter(dm.StreamSource.id.in_(restrictions))
         if streamables:
-            sql = sa.select(dm.StreamSource).options(
+            query = query.options(
                 sorm.joinedload(dm.StreamSource.streamables)
-            )
-            return db.scalars(sql).unique().all()
-        return db.query(dm.StreamSource).all()
+                .filter(dm.Streamable.stream_source_id==dm.StreamSource.id)
+            )        
+        return query.all()
 
 def get_stream_source(stream_source_id: int):
     with DbSession() as db:
-        sql = sa.select(dm.StreamSource).options(
+        return db.query(dm.StreamSource).options(
             sorm.joinedload(dm.StreamSource.streamables)
-        ).filter(dm.StreamSource.id == stream_source_id)
-        return db.scalars(sql).unique().first()
+            .filter(dm.Streamable.stream_source_id==dm.StreamSource.id)
+        ).filter(dm.StreamSource.id == stream_source_id).first()
 
 def get_stream_source_by_url(url: str):
     with DbSession() as db:
