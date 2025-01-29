@@ -106,4 +106,5 @@ def register(router):
             data={"sub": user.username, "scopes": user_scopes},
             expires_delta=access_token_expires,
         )
-        return {"access_token": access_token, "token_type": "bearer", "permissions": user_scopes}
+        display_name = user.display_name if user.display_name else user.username
+        return {"access_token": access_token, "token_type": "bearer", "permissions": user_scopes, "username": user.username, "display_name": display_name}

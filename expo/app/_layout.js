@@ -63,10 +63,16 @@ function Header() {
 }
 
 function Footer() {
+    const { routes, config } = C.useSettings()
+    const { displayName } = C.useSession()
+    let authedInfo = 'Not logged in.'
+    if (displayName) {
+        authedInfo = `Logged in as [${displayName}]`
+    }
     return (
         <>
             <C.Text>{'\n'}</C.Text>
-            <C.Text></C.Text>
+            <C.SnowText>Using server at [{config.webApiUrl}] - {authedInfo}</C.SnowText>
         </>
     )
 }

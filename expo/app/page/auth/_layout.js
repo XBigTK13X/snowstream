@@ -1,7 +1,7 @@
 import C from '../../common'
 
 export default function AuthPageLayout() {
-    const { session, isLoading } = C.useSession();
+    const { session, isLoading, displayName } = C.useSession();
     const { routes } = C.useSettings();
 
     if (isLoading) {
@@ -12,5 +12,9 @@ export default function AuthPageLayout() {
         return <C.Redirect href={routes.signIn} />;
     }
 
-    return <C.Slot />;
+    return (
+        <C.View>
+            <C.Slot />
+        </C.View>
+    )
 }

@@ -64,7 +64,6 @@ export default function LandingPage() {
         return (
             <C.View >
                 <C.SnowGrid data={destinations} renderItem={renderItem} />
-                <C.SnowText>Loaded content from [{config.webApiUrl}]</C.SnowText>
             </C.View>
         )
     }

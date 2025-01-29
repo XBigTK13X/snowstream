@@ -2,20 +2,23 @@ import React from 'react';
 import { useStorageState } from './use-storage-state';
 import { ApiClient } from './api-client'
 
+
 const AuthContext = React.createContext<{
     signIn: (username, password) => void;
     signOut: () => void;
     session?: string | null;
     isLoading: boolean;
     apiClient: ApiClient;
-    isAdmin: boolean
+    isAdmin: boolean;
+    displayName: string | null;
 }>({
     signIn: () => null,
     signOut: () => null,
     session: null,
     isLoading: false,
     apiClient: null,
-    isAdmin: false
+    isAdmin: false,
+    displayName: null
 });
 
 // This hook can be used to access the user info.
@@ -33,6 +36,7 @@ export function useSession() {
 export function SessionProvider(props: React.PropsWithChildren) {
     const [[isLoading, session], setSession] = useStorageState('session');
     const [[loadAdmin, isAdmin], setIsAdmin] = useStorageState('is-admin')
+    const [[loadDisplayName, displayName], setDisplayName] = useStorageState('displayName')
     const apiClient = new ApiClient(session, isAdmin)
     return (
         <AuthContext.Provider
@@ -41,6 +45,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
                     return new Promise(resolve => {
                         apiClient.login({ username: username, password: password })
                             .then(loginResponse => {
+                                setDisplayName(loginResponse.displayName)
                                 setSession(loginResponse.authToken);
                                 setIsAdmin(loginResponse.isAdmin ? 'true' : 'false')
                                 resolve(loginResponse.authToken)
@@ -55,13 +60,15 @@ export function SessionProvider(props: React.PropsWithChildren) {
                 },
                 signOut: () => {
                     setSession(null);
-                    setIsAdmin(null)
+                    setIsAdmin(null);
+                    setDisplayName(null);
                     return true;
                 },
                 session,
                 isLoading,
                 apiClient,
-                isAdmin: isAdmin === 'true'
+                isAdmin: isAdmin === 'true',
+                displayName
             }}>
             {props.children}
         </AuthContext.Provider>

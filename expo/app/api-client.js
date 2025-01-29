@@ -95,12 +95,11 @@ export class ApiClient {
                 if (data && data.data && data.data.access_token) {
                     self.authToken = data.data.access_token
                     self.permissions = data.data.permissions
-                    console.log({ perms: self.permissions })
                     self.hasAdmin = self.permissions.includes('admin')
-                    //localStorage.setItem("snowstream-auth-token", this.authToken);
                     self.createClient(self.authToken)
+                    self.displayName = data.data.display_name
                 }
-                return { authToken: self.authToken, isAdmin: self.hasAdmin }
+                return { authToken: self.authToken, isAdmin: self.hasAdmin, displayName: self.displayName }
             })
     }
 
