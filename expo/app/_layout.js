@@ -41,8 +41,13 @@ var styles = C.StyleSheet.create({
 })
 
 function Header() {
-    const { isAdmin } = C.useSession()
+    const { isAdmin, displayName } = C.useSession()
     const { routes } = C.useSettings()
+
+    if (!displayName) {
+        return ''
+    }
+
     const renderItem = (item) => {
         const entry = item
         return <C.Button title={entry.title} onPress={routes.func(entry.route)} />
