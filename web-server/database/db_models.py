@@ -383,6 +383,36 @@ class User(BaseModel):
         secondary="user_stream_source"
     )
 
+    def has_access_restrictions(self):
+        return self.has_shelf_restrictions() or self.has_tag_restrictions() or self.has_stream_source_restrictions()
+    
+    def has_shelf_restrictions(self):
+        return len(self.access_shelves) > 0
+
+    def get_shelf_restrictions(self):
+        if not self.has_shelf_restrictions():
+            return None
+        return [xx.id for xx in self.access_shelves]    
+    
+    def has_tag_restrictions(self):
+        return len(self.access_tags) > 0
+
+    def get_tag_restrictions(self):
+        if not self.has_tag_restrictions():
+            return None
+        return [xx.id for xx in self.access_tags]    
+    
+    def has_stream_source_restrictions(self):
+        return len(self.access_stream_sources) > 0
+    
+    def get_stream_source_restrictions(self):
+        if not self.has_stream_source_restrictions():
+            return None
+        return [xx.id for xx in self.access_stream_sources]    
+
+    def is_admin(self):
+        return 'admin' in self.permissions
+
 class UserTag(BaseModel):
     __tablename__ = "user_tag"
     user_id: sorm.Mapped[int] = sorm.mapped_column(

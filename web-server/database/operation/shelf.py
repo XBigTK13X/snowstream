@@ -22,9 +22,14 @@ def upsert_shelf(shelf: am.Shelf):
         db.commit()        
         return existing_shelf
 
-def get_shelf_list():
-    with DbSession() as db:
-        return db.query(dm.Shelf).all()
+def get_shelf_list(restrictions:list[int] = None):
+    with DbSession() as db:        
+        query = db.query(dm.Shelf)
+        if restrictions != None:
+            import pprint
+            pprint.pprint(restrictions)
+            query = query.filter(dm.Shelf.id.in_(restrictions))
+        return query.all()
 
 
 def get_shelf_by_id(shelf_id: str):

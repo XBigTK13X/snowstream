@@ -29,7 +29,7 @@ auth_scheme = OAuth2PasswordBearer(
 
 
 def authenticate_user(username: str, password: str):
-    user = db.op.get_user_by_name(username=username)
+    user = db.op.get_user_by_name(username=username,include_access=True)
     if not user:
         return False
     if not util.verify_password(password, user.hashed_password):
@@ -71,7 +71,7 @@ async def get_current_user(
         token_data = am.AuthTokenContent(username=username, scopes=token_scopes)
     except JWTError:
         raise credentials_exception
-    user = db.op.get_user_by_name(username=token_data.username)
+    user = db.op.get_user_by_name(username=token_data.username,include_access=True)
     if user is None:
         raise credentials_exception
     # Don't bother checking permissions for the admin user
@@ -106,8 +106,17 @@ def register(router):
         if user.permissions:
             user_scopes = user.permissions.split("|")
         access_token = create_access_token(
-            data={"sub": user.username, "scopes": user_scopes},
+            data={
+                "sub": user.username,
+                "scopes": user_scopes
+            },
             expires_delta=access_token_expires,
         )
         display_name = user.display_name if user.display_name else user.username
-        return {"access_token": access_token, "token_type": "bearer", "permissions": user_scopes, "username": user.username, "display_name": display_name}
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "permissions": user_scopes,
+            "username": user.username,
+            "display_name": display_name
+        }

@@ -47,12 +47,21 @@ def get_user_by_id(user_id:int,include_access=False):
                 sorm.joinedload(dm.User.access_shelves)
             ).options(
                 sorm.joinedload(dm.User.access_stream_sources)
-            ).filter(dm.UserStreamSource.user_id == user_id)
+            ).filter(dm.User.id == user_id)
             return db.scalars(sql).unique().first()
         return db.query(dm.User).filter(dm.User.id == user_id).first()
 
-def get_user_by_name(username: str):
+def get_user_by_name(username: str,include_access=False):
     with DbSession() as db:
+        if include_access:
+            sql = sa.select(dm.User).options(
+                sorm.joinedload(dm.User.access_tags)
+            ).options(
+                sorm.joinedload(dm.User.access_shelves)
+            ).options(
+                sorm.joinedload(dm.User.access_stream_sources)
+            ).filter(dm.User.username == username)
+            return db.scalars(sql).unique().first()
         return db.query(dm.User).filter(dm.User.username == username).first()
 
 

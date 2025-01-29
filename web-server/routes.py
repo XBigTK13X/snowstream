@@ -85,13 +85,18 @@ def auth_required(router):
     def get_shelf_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        return db.op.get_shelf_list()
+        import pprint
+        pprint.pprint(auth_user.get_shelf_restrictions())
+        return db.op.get_shelf_list(auth_user.get_shelf_restrictions())
 
     @router.get("/shelf",tags=['Shelf'])
     def get_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
+        restrictions = auth_user.get_shelf_restrictions()
+        if restrictions != None and not shelf_id in restrictions:
+            return None
         return db.op.get_shelf_by_id(shelf_id=shelf_id)
 
     @router.post("/shelf",tags=['Shelf'])
@@ -99,6 +104,8 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf: am.Shelf,
     ):
+        if not auth_user.is_admin():
+            return None
         return db.op.upsert_shelf(shelf=shelf)
 
     @router.delete("/shelf/{shelf_id}",tags=['Shelf'])
@@ -106,6 +113,8 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
+        if not auth_user.is_admin():
+            return None
         return db.op.delete_shelf_by_id(shelf_id=shelf_id)
 
     @router.post("/shelf/scan",tags=['Shelf'])
@@ -113,7 +122,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
-        print("Unimplemented -> web-server/api/shelf/scan")
+        print("Unimplemented -> web-server/api/shelf/scan (currently run as a job)")
         pass
 
     @router.post("/user",tags=['User'])
