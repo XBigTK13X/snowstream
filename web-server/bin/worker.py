@@ -1,3 +1,4 @@
+import importlib
 from settings import config
 
 from log import log
@@ -42,6 +43,11 @@ def start():
             try:
                 kind = payload["kind"]
                 if kind in handlers:
+                    # Reload the latest handler code before processing a message
+                    # Dont' want cold kill and restart like the API because it could ruin a job run
+                    if config.hot_reload_message_handlers == 'yes':
+                        importlib.reload(handlers[kind])
+
                     if handlers[kind].handle(job_id, payload):
                         db.op.update_job(job_id=job_id, status="complete")
                     else:
