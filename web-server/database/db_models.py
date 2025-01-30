@@ -71,7 +71,7 @@ class Movie(BaseModel):
     __tablename__ = "movie"
     name = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
-    # tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=movie_tag_association, back_populates="movies")
+    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="move_tag")
     video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(
         secondary="movie_video_file", back_populates="movie"
     )
@@ -179,7 +179,7 @@ class Show(BaseModel):
                 config.web_media_url + metadata_file.path
             )
 
-    # tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary=show_tag_association, back_populates="shows")
+    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_tag")
 
 
 class ShowImageFile(BaseModel):
@@ -315,9 +315,6 @@ class Streamable(BaseModel):
     stream_source_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("stream_source.id")
     )
-    stream_source: sorm.Mapped["StreamSource"] = sorm.relationship(
-        back_populates="streamables"
-    )
 
 
 class StreamableChannel(BaseModel):
@@ -329,7 +326,7 @@ class StreamableChannel(BaseModel):
     edited_name = sa.Column(sa.Text)
     edited_number = sa.Column(sa.Float)
     schedules: sorm.Mapped[List["StreamableSchedule"]] = sorm.relationship(
-        back_populates="channel", cascade="delete", passive_deletes=True
+        cascade="delete", passive_deletes=True
     )
 
 
@@ -342,9 +339,7 @@ class StreamableSchedule(BaseModel):
     channel_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("streamable_channel.id")
     )
-    channel: sorm.Mapped["StreamableChannel"] = sorm.relationship(
-        back_populates="schedules"
-    )
+    channel: sorm.Mapped["StreamableChannel"] = sorm.relationship()
 
 
 class StreamSource(BaseModel):
@@ -355,15 +350,15 @@ class StreamSource(BaseModel):
     username = sa.Column(sa.Text)
     password = sa.Column(sa.Text)
     streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(
-        back_populates="stream_source", cascade="delete", passive_deletes=True
+        cascade="delete",passive_deletes=True
     )
 
 
 class Tag(BaseModel):
     __tablename__ = "tag"
     name = sa.Column(sa.Text)
-    # movies: sorm.Mapped[List["Movie"]] = sorm.relationship(secondary=movie_tag_association, back_populates="tags")
-    # shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary=show_tag_association, back_populates="tags")
+    movies: sorm.Mapped[List["Movie"]] = sorm.relationship(secondary="movie_tag")
+    shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary="show_tag")
 
 
 class User(BaseModel):

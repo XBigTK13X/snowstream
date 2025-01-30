@@ -26,9 +26,13 @@ def register(router):
 def auth_required(router):
     @router.get("/stream/source/list",tags=['Stream Source'])
     def get_stream_source_list(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        include_streamables:bool=False
     ):
-        return db.op.get_stream_source_list(restrictions=auth_user.get_stream_source_restrictions())
+        return db.op.get_stream_source_list(
+            streamables=include_streamables,
+            restrictions=auth_user.get_stream_source_restrictions()
+        )
 
     @router.post("/stream/source",tags=['Stream Source'])
     def save_stream_source(

@@ -22,16 +22,14 @@ def get_stream_source_list(streamables:bool=False,restrictions:list[int]=None):
             query = query.filter(dm.StreamSource.id.in_(restrictions))
         if streamables:
             query = query.options(
-                sorm.joinedload(dm.StreamSource.streamables)
-                .filter(dm.Streamable.stream_source_id==dm.StreamSource.id)
-            )        
+                sorm.joinedload(dm.StreamSource.streamables)                
+            )
         return query.all()
 
 def get_stream_source(stream_source_id: int):
     with DbSession() as db:
         return db.query(dm.StreamSource).options(
             sorm.joinedload(dm.StreamSource.streamables)
-            .filter(dm.Streamable.stream_source_id==dm.StreamSource.id)
         ).filter(dm.StreamSource.id == stream_source_id).first()
 
 def get_stream_source_by_url(url: str):

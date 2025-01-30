@@ -31,7 +31,12 @@ if os.environ.get("SNOWSTREAM_WEB_API_URL"):
 app = FastAPI(
     title="snowstream",
     version="1.0.3",
-    swagger_ui_parameters={"syntaxHighlight": False, "operationsSorter": "alpha", "apisSorter": 'alpha'},
+    swagger_ui_parameters={
+        "syntaxHighlight": False,
+        "operationsSorter": "alpha",
+        "apisSorter": 'alpha',
+        "tryItOutEnabled": True
+    },
     openapi_url="/api/docs/openapi.json",
     docs_url="/api/docs/swagger",
     redoc_url="/api/docs/redoc",
