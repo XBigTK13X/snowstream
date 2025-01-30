@@ -64,7 +64,6 @@ export default function PlayMediaPage() {
         }
         if (!videoUrl && streamableId) {
             apiClient.getStreamable(streamableId).then((response) => {
-                console.log({ response })
                 setVideoUrl({ path: response.url })
             })
         }

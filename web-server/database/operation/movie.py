@@ -129,3 +129,16 @@ def get_movie_metadata_file(movie_id: int, metadata_file_id: int):
             .filter(dm.MovieMetadataFile.metadata_file_id == metadata_file_id)
             .first()
         )
+
+def upsert_movie_tag(movie_id: int, tag_id: int):    
+    with DbSession() as db:
+        existing = db.query(dm.MovieTag).filter(dm.MovieTag.movie_id == movie_id and dm.MovieTag.tag_id == tag_id).first()
+        if existing:
+            return existing
+        dbm = dm.MovieTag()
+        dbm.movie_id = movie_id
+        dbm.tag_id = tag_id
+        db.add(dbm)
+        db.commit()
+        db.refresh(dbm)
+        return dbm

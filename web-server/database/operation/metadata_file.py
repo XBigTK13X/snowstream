@@ -31,4 +31,12 @@ def get_metadata_files_by_shelf(shelf_id: int):
 
 def get_metadata_file_list():
     with DbSession() as db:
-        return db.query(dm.MetadataFile).all()
+        return db.query(dm.MetadataFile).options(
+            sorm.joinedload(dm.MetadataFile.movie)
+        ).options(
+            sorm.joinedload(dm.MetadataFile.show)
+        ).options(
+            sorm.joinedload(dm.MetadataFile.show_season)
+        ).options(
+            sorm.joinedload(dm.MetadataFile.show_episode)
+        ).all()

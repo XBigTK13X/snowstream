@@ -38,9 +38,10 @@ def get_show_list_by_shelf(shelf_id: int):
     with DbSession() as db:
         shows = (
             db.query(dm.Show)
-            .join(dm.ShowShelf)
+            .options(sorm.joinedload(dm.Show.shelf))
             .options(sorm.joinedload(dm.Show.image_files))
             .options(sorm.joinedload(dm.Show.metadata_files))
+            .options(sorm.joinedload(dm.Show.tags))
             .filter(dm.ShowShelf.shelf_id == shelf_id)
             .all()
         )
@@ -64,6 +65,7 @@ def get_show_season(show_id: int, season_order_counter: int):
     with DbSession() as db:
         return (
             db.query(dm.ShowSeason)
+            .options(sorm.joinedload(dm.Show.tags))
             .filter(dm.ShowSeason.show_id == show_id)
             .filter(dm.ShowSeason.season_order_counter == season_order_counter)
             .first()
@@ -76,6 +78,7 @@ def get_show_season_list(show_id: int):
             db.query(dm.ShowSeason)
             .options(sorm.joinedload(dm.ShowSeason.image_files))
             .options(sorm.joinedload(dm.ShowSeason.metadata_files))
+            .options(sorm.joinedload(dm.ShowSeason.tags))
             .filter(dm.ShowSeason.show_id == show_id)
             .order_by(dm.ShowSeason.season_order_counter)
             .all()
@@ -120,6 +123,7 @@ def get_season_episode(show_season_id: int, episode_order_counter: int):
     with DbSession() as db:
         return (
             db.query(dm.ShowEpisode)
+            .options(sorm.joinedload(dm.ShowEpisode.tags))
             .filter(dm.ShowEpisode.show_season_id == show_season_id)
             .filter(dm.ShowEpisode.episode_order_counter == episode_order_counter)
             .first()
@@ -132,6 +136,7 @@ def get_season_episode_list(show_season_id: int):
             db.query(dm.ShowEpisode)
             .options(sorm.joinedload(dm.ShowEpisode.image_files))
             .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
+            .options(sorm.joinedload(dm.ShowEpisode.tags))
             .filter(dm.ShowEpisode.show_season_id == show_season_id)
             .order_by(dm.ShowEpisode.episode_order_counter)
             .all()
@@ -286,3 +291,46 @@ def get_show_metadata_file(show_id: int, metadata_file_id: int):
             .filter(dm.ShowMetadataFile.metadata_file_id == metadata_file_id)
             .first()
         )
+
+def upsert_show_tag(show_id: int, tag_id: int):    
+    with DbSession() as db:
+        existing = db.query(dm.ShowTag).filter(dm.ShowTag.show_id == show_id and dm.ShowTag.tag_id == tag_id).first()
+        if existing:
+            return existing
+        dbm = dm.ShowTag()
+        dbm.show_id = show_id
+        dbm.tag_id = tag_id
+        db.add(dbm)
+        db.commit()
+        db.refresh(dbm)
+        return dbm
+
+def upsert_show_season_tag(show_season_id: int, tag_id: int):    
+    with DbSession() as db:
+        existing = db.query(dm.ShowSeasonTag).filter(
+            dm.ShowSeasonTag.show_season_id == show_season_id and dm.ShowSeasonTag.tag_id == tag_id
+        ).first()
+        if existing:
+            return existing
+        dbm = dm.ShowSeasonTag()
+        dbm.show_season_id = show_season_id
+        dbm.tag_id = tag_id
+        db.add(dbm)
+        db.commit()
+        db.refresh(dbm)
+        return dbm
+
+def upsert_show_episode_tag(show_episode_id: int, tag_id: int):    
+    with DbSession() as db:
+        existing = db.query(dm.ShowEpisodeTag).filter(
+            dm.ShowEpisodeTag.show_episode_id == show_episode_id and dm.ShowEpisodeTag.tag_id == tag_id
+        ).first()
+        if existing:
+            return existing
+        dbm = dm.ShowEpisodeTag()
+        dbm.show_episode_id = show_episode_id
+        dbm.tag_id = tag_id
+        db.add(dbm)
+        db.commit()
+        db.refresh(dbm)
+        return dbm

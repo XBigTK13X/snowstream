@@ -129,6 +129,7 @@ class Show(BaseModel):
     seasons: sorm.Mapped[List["ShowSeason"]] = sorm.relationship()
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_image_file")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_metadata_file")
+    tags: sorm.Mapped[List['Tag']] = sorm.relationship(secondary="show_tag")
 
     def convert_local_paths_to_web_paths(self, config):
         shelf_root = self.shelf.directory.split("/")
@@ -146,6 +147,11 @@ class Show(BaseModel):
             )
 
     tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_tag")
+
+class ShowTag(BaseModel):
+    __tablename__ = "show_tag"
+    show_id = sa.Column(sa.Integer, sa.ForeignKey("show.id"))
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
 
 
 class ShowImageFile(BaseModel):
@@ -169,6 +175,7 @@ class ShowEpisode(BaseModel):
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_episode_image_file")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_episode_metadata_file")
     season: sorm.Mapped["ShowSeason"] = sorm.relationship()
+    tags: sorm.Mapped["Tag"] = sorm.relationship(secondary="show_episode_tag")
 
     def convert_local_paths_to_web_paths(self, config):
         shelf_root = self.season.show.shelf.directory.split("/")
@@ -189,6 +196,10 @@ class ShowEpisode(BaseModel):
                 config.web_media_url + metadata_file.path
             )
 
+class ShowEpisodeTag(BaseModel):
+    __tablename__ = "show_episode_tag"
+    show_episode_id = sa.Column(sa.Integer, sa.ForeignKey("show_episode.id"))
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
 
 class ShowEpisodeImageFile(BaseModel):
     __tablename__ = "show_episode_image_file"
@@ -218,6 +229,7 @@ class ShowSeason(BaseModel):
     episodes: sorm.Mapped[List["ShowEpisode"]] = sorm.relationship()
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_season_image_file")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_season_metadata_file")
+    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_season_tag")
 
     #TODO This was useful during development, but really only needs to be done once on ingest
     def convert_local_paths_to_web_paths(self, config):
@@ -234,6 +246,11 @@ class ShowSeason(BaseModel):
             metadata_file.set_web_path(
                 config.web_media_url + metadata_file.path
             )
+
+class ShowSeasonTag(BaseModel):
+    __tablename__ = "show_season_tag"
+    show_season_id = sa.Column(sa.Integer, sa.ForeignKey("show_season.id"))
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
 
 
 class ShowSeasonImageFile(BaseModel):
@@ -254,10 +271,6 @@ class ShowShelf(BaseModel):
     shelf_id = sa.Column(sa.Integer, sa.ForeignKey("shelf.id"))
 
 
-class ShowTag(BaseModel):
-    __tablename__ = "show_tag"
-    show_id = sa.Column(sa.Integer, sa.ForeignKey("show.id"))
-    tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
 
 
 class Streamable(BaseModel):

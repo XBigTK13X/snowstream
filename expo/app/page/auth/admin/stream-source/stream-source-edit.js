@@ -34,7 +34,6 @@ export default function StreamSourceEditPage() {
         'SchedulesDirect',
     ]
     const chooseStreamSourceKind = (chosenKindIndex) => {
-        console.log({ chosenKindIndex })
         setStreamSourceKind(streamSourceKinds[chosenKindIndex])
         setStreamSourceKindIndex(chosenKindIndex)
     }
