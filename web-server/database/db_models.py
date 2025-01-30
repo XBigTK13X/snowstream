@@ -13,15 +13,9 @@ class User(BaseModel):
     hashed_password = sa.Column(sa.Text, nullable=False)
     enabled = sa.Column(sa.Boolean)
     permissions = sa.Column(sa.Text)
-    access_tags: sorm.Mapped[List["Tag"]] = sorm.relationship(
-        secondary="user_tag"
-    )
-    access_shelves: sorm.Mapped[List["Shelf"]] = sorm.relationship(
-        secondary="user_shelf"
-    )
-    access_stream_sources: sorm.Mapped[List["StreamSource"]] = sorm.relationship(
-        secondary="user_stream_source"
-    )
+    access_tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="user_tag")
+    access_shelves: sorm.Mapped[List["Shelf"]] = sorm.relationship(secondary="user_shelf")
+    access_stream_sources: sorm.Mapped[List["StreamSource"]] = sorm.relationship(secondary="user_stream_source")
 
     def has_access_restrictions(self):
         return self.has_shelf_restrictions() or self.has_tag_restrictions() or self.has_stream_source_restrictions()
@@ -55,30 +49,60 @@ class User(BaseModel):
 
 class UserTag(BaseModel):
     __tablename__ = "user_tag"
-    user_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("snowstream_user.id")
-    )
-    tag_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("tag.id")
-    )
+    user_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("snowstream_user.id"))
+    tag_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("tag.id"))
 
 class UserShelf(BaseModel):
     __tablename__ = "user_shelf"
-    user_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("snowstream_user.id")
-    )
-    shelf_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("shelf.id")
-    )
+    user_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("snowstream_user.id"))
+    shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
 
 class UserStreamSource(BaseModel):
     __tablename__ = "user_stream_source"
+    user_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("snowstream_user.id"))
+    stream_source_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("stream_source.id"))
+
+class ClientDevice(BaseModel):
+    __tablename__ = "client_device"
+    reported_name = sa.Column(sa.Text)
+    display_name = sa.Column(sa.Text)
+    device_kind = sa.Column(sa.Text)
+    last_connection = sa.Column(sa.DateTime)
+    connected = sa.Column(sa.Boolean)
+
+# Kinds - login, logout, idle, complete, watch, favorite
+# General idea - User is performing Activity on a ClientDevice
+# A user can optionally specificy their device for the activity
+# If they do, then the activity will not show up on other devices
+# For example, have the parent's account on a kid's device not change watched status on other devices
+class UserActivity(BaseModel):
+    __tablename__ = "user_activity"
+    only_affect_listed_device = sa.Column(sa.Boolean)
+    user_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("snowstream_user.id"),nullable=False)
+    client_device_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("client_device.id"),nullable=True)
+    movie_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("movie.id"))
+    show_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show.id"))
+    show_season_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_season.id"))
+    show_episode_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_episode.id"))    
+    movie: sorm.Mapped["Movie"] = sorm.relationship()
+    show: sorm.Mapped["Show"] = sorm.relationship()
+    show_season: sorm.Mapped["ShowSeason"] = sorm.relationship()
+    show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship()
+
+# Use the play count for things like generating episode order in dynamic playlists
+# Use activity to determine things like what episode in the season is next
+class UserWatchedCount(BaseModel):
+    __tablename__ = 'user_watched_count'
     user_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("snowstream_user.id")
+        sa.ForeignKey("snowstream_user.id"),nullable=False
     )
-    stream_source_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("stream_source.id")
+    show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("show_episode.id"),nullable=False
     )
+    movie_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("movie.id"),nullable=False
+    )
+    watched_count = sa.Column(sa.Integer)    
 
 class CachedText(BaseModel):
     __tablename__ = "cached_text"
