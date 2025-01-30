@@ -33,6 +33,7 @@ class Config:
         self.jwt_expire_unit = "days"
         self.web_media_url = "<need_to_set_an_env_var-SNOWSTREAM_WEB_MEDIA_URL>"
         self.hot_reload_message_handlers = "yes"
+        self.thetvdb_api_key = None
 
         self.refresh_postgres_url()
 
