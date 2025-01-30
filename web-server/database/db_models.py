@@ -267,6 +267,7 @@ class Streamable(BaseModel):
     stream_source_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("stream_source.id")
     )
+    stream_source: sorm.Mapped["StreamSource"] = sorm.relationship()
 
 
 class StreamableChannel(BaseModel):
