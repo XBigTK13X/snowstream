@@ -1,31 +1,9 @@
 import C from '../../../common'
 
-const windowWidth = C.Dimensions.get('window').width
-const windowHeight = C.Dimensions.get('window').height
-
-// TODO This is super janky. I think the entire view needs to be pulled out of the layout to work
-// Pass in the needed parts for auth
-var styles = C.StyleSheet.create({
-    videoView: {
-        position: 'absolute',
-        top: -9,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        width: windowWidth,
-        height: windowHeight,
-        elevation: 1000,
-    },
-})
-
-// https://thewidlarzgroup.github.io/react-native-video#v600-information
-
 export default function PlayMediaPage() {
-    const videoRef = C.React.useRef(null)
-    const { signOut, apiClient } = C.useSession()
-    const { routes } = C.useSettings()
+    console.log({ C })
+    const { apiClient } = C.useSession()
     const localParams = C.useLocalSearchParams()
-    const navigation = C.useNavigation()
 
     const shelfId = localParams.shelfId
     const movieId = localParams.movieId
@@ -37,9 +15,6 @@ export default function PlayMediaPage() {
     const [movie, setMovie] = C.React.useState(null)
     const [episode, setEpisode] = C.React.useState(null)
     const [videoUrl, setVideoUrl] = C.React.useState(null)
-    const [mpvDestroyed, setMpvDestroyed] = C.React.useState(false)
-    let Libmpv = null
-    let LibmpvVideo = null
 
     C.React.useEffect(() => {
         if (!shelf && movieId) {
@@ -69,29 +44,15 @@ export default function PlayMediaPage() {
         }
     })
 
-    if (C.Platform.OS != 'web') {
-        libmpv = require('react-native-libmpv')
-        Libmpv = libmpv.Libmpv
-        LibmpvVideo = libmpv.LibmpvVideo
+    let VideoPlayer = null
+    if (C.Platform.OS !== 'web') {
+        VideoPlayer = require('../../../comp/player-mpv').default
+        console.log({ VideoPlayer })
     }
     else {
-        if (videoUrl && videoUrl.path) {
-            return <C.SnowText>Video player not yet supported in web. The URL to reach the video file is {videoUrl.path}</C.SnowText>
-        }
-        else {
-            return <C.SnowText>Video player not yet supported in web.</C.SnowText>
-        }
+        VideoPlayer = require('../../../comp/player-ev').default
+        console.log({ VideoPlayer })
     }
-
-    C.React.useEffect(() => {
-        const cleanup = navigation.addListener('beforeRemove', (e) => {
-            if (Libmpv && Libmpv.cleanup) {
-                Libmpv.cleanup()
-            }
-            return
-        })
-        return cleanup
-    }, [navigation])
 
     if (videoUrl && videoUrl.path) {
         let devVideoUrl = null
@@ -104,10 +65,8 @@ export default function PlayMediaPage() {
         //console.log({ devVideoUrl })
         //console.log({ videoUrl })
         return (
-            <C.View style={styles.videoView}>
-                <LibmpvVideo playUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
-            </C.View>
+            <VideoPlayer videoUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
         )
     }
-    return <Text style={{ color: 'white' }}>Getting video info...</Text>
+    return <C.SnowText>Loading video info...</C.SnowText>
 }

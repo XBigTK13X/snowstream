@@ -1,45 +1,46 @@
 {
-    "expo": {
-        "version": "0.5.7",
-        "plugins": [
-            [
-                "@react-native-tvos/config-tv",
-                {
-                    "androidTVBanner": "./assets/images/icon-400x240.png",
-                    "appleTVImages": {
-                        "icon": "./assets/images/icon-1280x768.png",
-                        "iconSmall": "./assets/images/icon-400x240.png",
-                        "iconSmall2x": "./assets/images/icon-800x480.png",
-                        "topShelf": "./assets/images/icon-1920x720.png",
-                        "topShelf2x": "./assets/images/icon-3840x1440.png",
-                        "topShelfWide": "./assets/images/icon-2320x720.png",
-                        "topShelfWide2x": "./assets/images/icon-4640x1440.png"
-                    }
-                }
-            ],
-            "expo-router",
-            "expo-secure-store"
-        ],
-        "name": "snowstream",
-        "slug": "snowstream",
-        "android": {
-            "package": "com.simplepathstudios.snowstream"
-        },
-        "ios": {
-            "bundleIdentifier": "com.simplepathstudios.snowstream"
-        },
-        "splash": {
-            "image": "./assets/images/splash.png",
-            "backgroundColor": "#ff9a3f"
-        },
-        "icon": "./assets/images/icon.png",
-        "extra": {
-            "router": {
-                "origin": false
-            },
-            "eas": {
-                "projectId": "e0fc4a42-5cc7-4ba9-b251-8383cf957527"
-            }
+  "expo": {
+    "version": "0.5.7",
+    "plugins": [
+      [
+        "@react-native-tvos/config-tv",
+        {
+          "androidTVBanner": "./assets/images/icon-400x240.png",
+          "appleTVImages": {
+            "icon": "./assets/images/icon-1280x768.png",
+            "iconSmall": "./assets/images/icon-400x240.png",
+            "iconSmall2x": "./assets/images/icon-800x480.png",
+            "topShelf": "./assets/images/icon-1920x720.png",
+            "topShelf2x": "./assets/images/icon-3840x1440.png",
+            "topShelfWide": "./assets/images/icon-2320x720.png",
+            "topShelfWide2x": "./assets/images/icon-4640x1440.png"
+          }
         }
+      ],
+      "expo-router",
+      "expo-secure-store",
+      "expo-video"
+    ],
+    "name": "snowstream",
+    "slug": "snowstream",
+    "android": {
+      "package": "com.simplepathstudios.snowstream"
+    },
+    "ios": {
+      "bundleIdentifier": "com.simplepathstudios.snowstream"
+    },
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "backgroundColor": "#ff9a3f"
+    },
+    "icon": "./assets/images/icon.png",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e0fc4a42-5cc7-4ba9-b251-8383cf957527"
+      }
     }
+  }
 }

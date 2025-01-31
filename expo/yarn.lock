@@ -3949,6 +3949,11 @@ expo-status-bar@1.12.1:
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-1.12.1.tgz#52ce594aab5064a0511d14375364d718ab78aa66"
   integrity sha512-/t3xdbS8KB0prj5KG5w7z+wZPFlPtkgs95BsmrP/E7Q0xHXTcDcQ6Cu2FkFuRM+PKTb17cJDnLkawyS5vDLxMA==
 
+expo-video@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/expo-video/-/expo-video-2.0.5.tgz#5c5311b0a20dcb7897d06cd4f9d7fb0ce13711d9"
+  integrity sha512-K5Q4bFKtYq0wEC38mckWUYeaTXsmhl6duidhSdbA63VBy6cwxDOk8uPsFPTQD3FXKJg6wFB0z8ZUASSPuUaY5A==
+
 expo@~51.0.38:
   version "51.0.38"
   resolved "https://registry.yarnpkg.com/expo/-/expo-51.0.38.tgz#e4127b230454a34a507cfb9f1a2e4b3855cb0579"
