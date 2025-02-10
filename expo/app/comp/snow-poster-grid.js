@@ -20,10 +20,9 @@ export function SnowPosterGrid(props) {
             return (
                 <Button
                     hasTVPreferredFocus={itemIndex === 0}
-                    title={item.name}
-                    style={{ height: 300, width: 300, margin: 10, padding: 10 }}
+                    style={{ height: 350, width: 200, margin: 10, padding: 10 }}
                     icon={<Image
-                        style={{ height: 150, width: 100 }}
+                        style={{ height: 200, width: 150 }}
                         key={item.id}
                         source={{ uri: posterUrl }} />}
                     onPress={() => { props.onPress(item) }}
