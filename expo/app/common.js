@@ -31,6 +31,7 @@ import SnowDropdown from './comp/snow-dropdown'
 import SnowLabel from './comp/snow-label'
 import SnowButton from './comp/snow-button'
 import SnowPosterGrid from './comp/snow-poster-grid'
+import SnowThumbGrid from './comp/snow-thumb-grid'
 
 const Styles = StyleSheet.create({
     box: {
@@ -59,6 +60,7 @@ export default {
     SnowGrid,
     SnowInput,
     SnowLabel,
+    SnowThumbGrid,
     SnowPosterGrid,
     SnowText,
     StyleSheet,

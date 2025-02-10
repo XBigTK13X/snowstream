@@ -21,21 +21,10 @@ export default function SeasonListPage() {
         }
     })
     if (shelf && seasons) {
-        const renderItem = (season, itemIndex) => {
-            return (
-                <C.Button
-                    hasTVPreferredFocus={itemIndex === 0}
-                    key={season.id}
-                    title={season.name || `Season ${season.season_order_counter}`}
-                    onPress={routes.func(routes.episodeList, { shelfId: shelfId, showId: showId, seasonId: season.id })}
-                />
-            )
+        const gotoSeason = (season) => {
+            routes.goto(routes.episodeList, { shelfId: shelfId, showId: showId, seasonId: season.id })
         }
-        return (
-            <>
-                <C.SnowGrid data={seasons} renderItem={renderItem} />
-            </>
-        )
+        return <C.SnowPosterGrid onPress={gotoSeason} data={seasons} />
     }
     return <C.Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</C.Text>
 }
