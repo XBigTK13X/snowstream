@@ -89,47 +89,46 @@ function SafeAreaStub(props) {
 }
 
 export default function RootLayout() {
+    let PlatformWrapper = null
     if (C.Platform.OS === 'web') {
-        return (
-            <ThemeProvider theme={theme}>
+        PlatformWrapper = (props) => {
+            return (
                 <SafeAreaStub>
-                    <SettingsProvider>
-                        <SessionProvider>
-                            <C.View style={styles.videoSqueeze}>
-                                <Header />
-                                <C.ScrollView>
-                                    <C.Slot />
-                                </C.ScrollView>
-                                <Footer />
-                            </C.View>
-                        </SessionProvider>
-                    </SettingsProvider>
+                    <C.View>{props.children}</C.View>
                 </SafeAreaStub>
-            </ThemeProvider>
-        )
+            )
+
+        }
+    } else {
+        PlatformWrapper = (props) => {
+            let safeArea = require('react-native-safe-area-context')
+            let SafeAreaProvider = safeArea.SafeAreaProvider
+            let SafeAreaView = safeArea.SafeAreaView
+            return (
+                <SafeAreaProvider style={styles.default}>
+                    <SafeAreaView><C.TVFocusGuideView>
+                        {props.children}
+                    </C.TVFocusGuideView>
+                    </SafeAreaView>
+                </SafeAreaProvider>
+            )
+        }
     }
-    let safeArea = require('react-native-safe-area-context')
-    let SafeAreaProvider = safeArea.SafeAreaProvider
-    let SafeAreaView = safeArea.SafeAreaView
     return (
         <ThemeProvider theme={theme}>
-            <SafeAreaProvider style={styles.default}>
-                <SafeAreaView>
-                    <C.TVFocusGuideView autoFocus>
-                        <SettingsProvider>
-                            <SessionProvider>
-                                <View style={styles.videoSqueeze}>
-                                    <Header />
-                                    <C.ScrollView>
-                                        <C.Slot />
-                                    </C.ScrollView>
-                                    <Footer />
-                                </View>
-                            </SessionProvider>
-                        </SettingsProvider>
-                    </C.TVFocusGuideView>
-                </SafeAreaView>
-            </SafeAreaProvider>
+            <PlatformWrapper>
+                <SettingsProvider>
+                    <SessionProvider>
+                        <C.View style={styles.videoSqueeze}>
+                            <Header />
+                            <C.ScrollView>
+                                <C.Slot />
+                            </C.ScrollView>
+                            <Footer />
+                        </C.View>
+                    </SessionProvider>
+                </SettingsProvider>
+            </PlatformWrapper>
         </ThemeProvider>
     )
 }

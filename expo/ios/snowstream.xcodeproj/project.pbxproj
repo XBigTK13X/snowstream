@@ -14,7 +14,7 @@
 		96905EF65AED1B983A6B3ABC /* libPods-snowstream.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-snowstream.a */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		9DA84305C06B4351BEBD151F /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619AF851A33F4E6CAF5EE229 /* noop-file.swift */; };
+		80240BD2DE69432D80DAC74B /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B9685C7374422EAC591993 /* noop-file.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,8 +31,8 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-snowstream/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		619AF851A33F4E6CAF5EE229 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "snowstream/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		DE16537A352740878ADBD7BE /* snowstream-Bridging-Header.h */ = {isa = PBXFileReference; name = "snowstream-Bridging-Header.h"; path = "snowstream/snowstream-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		10B9685C7374422EAC591993 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "snowstream/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		35AEB1A56F2C400BA565655E /* snowstream-Bridging-Header.h */ = {isa = PBXFileReference; name = "snowstream-Bridging-Header.h"; path = "snowstream/snowstream-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,8 +57,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				619AF851A33F4E6CAF5EE229 /* noop-file.swift */,
-				DE16537A352740878ADBD7BE /* snowstream-Bridging-Header.h */,
+				10B9685C7374422EAC591993 /* noop-file.swift */,
+				35AEB1A56F2C400BA565655E /* snowstream-Bridging-Header.h */,
 			);
 			name = snowstream;
 			sourceTree = "<group>";
@@ -198,7 +198,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				70967D0FB9E249E6A68D6A99 /* snowstream-Bridging-Header.h in Resources */,
+				94CD70C3B9DF4D04A5B80AFA /* snowstream-Bridging-Header.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,7 +274,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				9DA84305C06B4351BEBD151F /* noop-file.swift in Sources */,
+				80240BD2DE69432D80DAC74B /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,7 +285,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-snowstream.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = TVAppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
@@ -307,10 +307,8 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-				TARGETED_DEVICE_FAMILY = 3;
+				TARGETED_DEVICE_FAMILY = "1";
 				SWIFT_OBJC_BRIDGING_HEADER = snowstream/snowstream-Bridging-Header.h;
-				SDKROOT = appletvos;
-				TVOS_DEPLOYMENT_TARGET = 13.4;
 				CODE_SIGN_ENTITLEMENTS = snowstream/snowstream.entitlements;
 			};
 			name = Debug;
@@ -319,7 +317,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-snowstream.release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = TVAppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = snowstream/Info.plist;
@@ -335,10 +333,8 @@
 				PRODUCT_NAME = "snowstream";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-				TARGETED_DEVICE_FAMILY = 3;
+				TARGETED_DEVICE_FAMILY = "1";
 				SWIFT_OBJC_BRIDGING_HEADER = snowstream/snowstream-Bridging-Header.h;
-				SDKROOT = appletvos;
-				TVOS_DEPLOYMENT_TARGET = 13.4;
 				CODE_SIGN_ENTITLEMENTS = snowstream/snowstream.entitlements;
 			};
 			name = Release;
@@ -395,7 +391,7 @@
 				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = appletvos;
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -443,7 +439,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				SDKROOT = appletvos;
+				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

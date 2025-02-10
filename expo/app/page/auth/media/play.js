@@ -50,7 +50,7 @@ export default function PlayMediaPage() {
         console.log({ VideoPlayer })
     }
     else {
-        VideoPlayer = require('../../../comp/player-ev').default
+        VideoPlayer = require('../../../comp/player-web').default
         console.log({ VideoPlayer })
     }
 

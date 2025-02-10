@@ -7,4 +7,5 @@ cd ../..
 npm install
 cd expo
 npx expo prebuild --clean
+cp ~/Android/keystore.properties android/keystore.properties
 npx expo run:android

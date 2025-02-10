@@ -19,7 +19,7 @@
       ],
       "expo-router",
       "expo-secure-store",
-      "expo-video"
+      "react-native-video"
     ],
     "name": "snowstream",
     "slug": "snowstream",
