@@ -65,7 +65,7 @@ def get_show_season(show_id: int, season_order_counter: int):
     with DbSession() as db:
         return (
             db.query(dm.ShowSeason)
-            .options(sorm.joinedload(dm.Show.tags))
+            .options(sorm.joinedload(dm.ShowSeason.tags))
             .filter(dm.ShowSeason.show_id == show_id)
             .filter(dm.ShowSeason.season_order_counter == season_order_counter)
             .first()
