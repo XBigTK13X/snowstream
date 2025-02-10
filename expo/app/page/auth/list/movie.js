@@ -20,17 +20,10 @@ export default function MovieListPage() {
         }
     })
     if (shelf && movies) {
-        const renderItem = (movie, itemIndex) => {
-            return (
-                <C.Button
-                    hasTVPreferredFocus={itemIndex === 0}
-                    key={movie.id}
-                    title={movie.name}
-                    onPress={routes.func(routes.movieDetails, { shelfId: shelf.id, movieId: movie.id })}
-                />
-            )
+        const gotoMovie = (movie) => {
+            routes.goto(routes.movieDetails, { shelfId: shelf.id, movieId: movie.id })
         }
-        return <C.SnowGrid data={movies} renderItem={renderItem} />
+        return <C.SnowPosterGrid onPress={gotoMovie} data={movies} />
     }
     return <C.Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</C.Text>
 }

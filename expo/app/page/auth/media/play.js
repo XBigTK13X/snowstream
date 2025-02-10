@@ -1,7 +1,6 @@
 import C from '../../../common'
 
 export default function PlayMediaPage() {
-    console.log({ C })
     const { apiClient } = C.useSession()
     const localParams = C.useLocalSearchParams()
 
@@ -15,6 +14,8 @@ export default function PlayMediaPage() {
     const [movie, setMovie] = C.React.useState(null)
     const [episode, setEpisode] = C.React.useState(null)
     const [videoUrl, setVideoUrl] = C.React.useState(null)
+    const [videoFileId, setVideoFileId] = C.React.useState(null)
+    const [forceTranscode, setForceTranscode] = C.React.useState(false)
 
     C.React.useEffect(() => {
         if (!shelf && movieId) {
@@ -24,6 +25,8 @@ export default function PlayMediaPage() {
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
                 const webPath = response.video_files[videoFileIndex].web_path
+                setVideoFileId(response.video_files[videoFileIndex].id)
+                setForceTranscode(true)
                 setVideoUrl({ path: webPath })
             })
         }
@@ -34,12 +37,15 @@ export default function PlayMediaPage() {
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
                 const webPath = response.video_files[videoFileIndex].web_path
+                setVideoFileId(response.video_files[videoFileIndex].id)
                 setVideoUrl({ path: webPath })
+                setForceTranscode(true)
             })
         }
         if (!videoUrl && streamableId) {
             apiClient.getStreamable(streamableId).then((response) => {
                 setVideoUrl({ path: response.url })
+                setForceTranscode(false)
             })
         }
     })
@@ -47,11 +53,9 @@ export default function PlayMediaPage() {
     let VideoPlayer = null
     if (C.Platform.OS !== 'web') {
         VideoPlayer = require('../../../comp/player-mpv').default
-        console.log({ VideoPlayer })
     }
     else {
         VideoPlayer = require('../../../comp/player-web').default
-        console.log({ VideoPlayer })
     }
 
     if (videoUrl && videoUrl.path) {
@@ -65,7 +69,11 @@ export default function PlayMediaPage() {
         //console.log({ devVideoUrl })
         //console.log({ videoUrl })
         return (
-            <VideoPlayer videoUrl={devVideoUrl ? devVideoUrl : videoUrl.path} />
+            <VideoPlayer
+                videoUrl={devVideoUrl ? devVideoUrl : videoUrl.path}
+                videoFileId={videoFileId}
+                forceTranscode={forceTranscode}
+            />
         )
     }
     return <C.SnowText>Loading video info...</C.SnowText>

@@ -22,6 +22,10 @@ def get_video_file_by_path(file_path: str):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.path == file_path).first()
 
+def get_video_file_by_id(video_file_id: int):
+    with DbSession() as db:
+        return db.query(dm.VideoFile).filter(dm.VideoFile.id == video_file_id).first()
+
 
 def get_video_files_by_shelf(shelf_id: int):
     with DbSession() as db:

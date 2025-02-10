@@ -9,10 +9,8 @@ export default function OptionsPage() {
                 title="Download Latest APK"
                 onPress={() => {
                     if (C.Platform.isTV) {
-                        console.log('Download the TV app')
                         C.Linking.openURL('https://android.9914.us/snowstream-tv.apk')
                     } else {
-                        console.log('Download the movile app')
                         C.Linking.openURL('https://android.9914.us/snowstream-mobile.apk')
                     }
                 }}

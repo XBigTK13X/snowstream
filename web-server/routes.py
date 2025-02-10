@@ -268,6 +268,14 @@ def no_auth_required(router):
     def password_hash(password: str):
         return auth.get_password_hash(password)
 
+
+    @router.get("/user/list",tags=['Unauthed'])
+    def get_user_list():
+        users = db.op.get_user_list()
+        for user in users:
+            user.hashed_password = None
+        return users    
+
     @router.get("/streamable.m3u", response_class=PlainTextResponse,tags=['Unauthed'])
     def get_streamable_m3u():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_M3U)
@@ -282,7 +290,7 @@ def no_auth_required(router):
     def get_streamable_transcode(streamable_id: int):
         if not transcode.is_open(streamable_id=streamable_id):
             streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
-            transcode_url = transcode.open(streamable)
+            transcode_url = transcode.open_streamable(streamable=streamable)
             # DEBUG log.info(transcode_url)
         playlist = transcode.get_playlist(streamable_id=streamable_id)
         return Response(playlist, status_code=200, media_type="video/mp4")
@@ -307,11 +315,27 @@ def no_auth_required(router):
         transcode.close(streamable_id=streamable_id)
         return True
 
-    @router.get("/user/list",tags=['Unauthed'])
-    def get_user_list():
-        users = db.op.get_user_list()
-        for user in users:
-            user.hashed_password = None
-        return users    
+    @router.get("/video/transcode",tags=['Unauthed'])
+    @router.head("/video/transcode",tags=['Unauthed'])
+    def get_video_file_transcode(video_file_id: int):
+        if not transcode.is_open(video_file_id=video_file_id):
+            video_file = db.op.get_video_file_by_id(video_file_id=video_file_id)
+            transcode_url = transcode.open_video_file(video_file=video_file)
+            # DEBUG log.info(transcode_url)
+        playlist = transcode.get_playlist(video_file_id=video_file_id)
+        return Response(playlist, status_code=200, media_type="video/mp4")
+
+    @router.get("/video/transcode/segment",tags=['Unauthed'])
+    @router.head("/video/transcode/segment",tags=['Unauthed'])
+    def get_video_file_transcode_segment(video_file_id: int, segment_file: str):
+        segment = transcode.get_segment(
+            video_file_id=video_file_id, segment_file=segment_file
+        )
+        return Response(segment, status_code=200, media_type="video/mp4")
+
+    @router.delete("/video/transcode",tags=['Unauthed'])
+    def delete_video_file_transcode(video_file_id:int,tags=['Unauthed']):
+        transcode.close(video_file_id=video_file_id)
+        return True
 
     return router

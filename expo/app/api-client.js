@@ -5,6 +5,7 @@ export class ApiClient {
     constructor(authToken, isAdmin) {
         this.authToken = authToken
         this.hasAdmin = isAdmin === 'true'
+        this.baseURL = config.webApiUrl + '/api'
 
         this.createClient(this.authToken)
 
@@ -250,6 +251,10 @@ export class ApiClient {
 
     deleteTag(tagId) {
         return this.delete(`/tag/${tagId}`)
+    }
+
+    getVideoFileTranscodeUrl(video_file_id) {
+        return `${this.baseURL}/video/transcode?video_file_id=${video_file_id}`
     }
 
     debug() {

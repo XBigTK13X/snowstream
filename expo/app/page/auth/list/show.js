@@ -21,7 +21,6 @@ export default function ShowListPage() {
     })
     if (shelf && shows) {
         const gotoShow = (show) => {
-            console.log({ show })
             routes.goto(routes.seasonList, { shelfId: shelf.id, showId: show.id })
         }
         return (

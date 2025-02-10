@@ -5,11 +5,17 @@ import SnowGrid from './snow-grid'
 export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {
         let posterUrl = null
-        for (let image of item.image_files) {
-            if (image.kind === 'show_poster') {
-                posterUrl = image.web_path
+        if (item.main_poster_image) {
+            posterUrl = item.main_poster_image.web_path
+        }
+        else {
+            for (let image of item.image_files) {
+                if (image.kind === 'show_poster') {
+                    posterUrl = image.web_path
+                }
             }
         }
+
         if (posterUrl) {
             return (
                 <Button

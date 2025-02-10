@@ -1,31 +1,37 @@
-import { StyleSheet, View } from 'react-native'
+import C from '../common'
 
-import Video, { VideoRef } from 'react-native-video';
+import Video from 'react-native-video';
 
-var styles = StyleSheet.create({
+var styles = C.StyleSheet.create({
     backgroundVideo: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
+        width: 800,
+        height: 800
     },
 });
 
 export default function WebPlayer(props) {
-    const videoRef = useRef < VideoRef > (null);
+    const videoRef = C.React.useRef(null);
+    const { apiClient } = C.useSession();
+    const transcodeUrl = apiClient.getVideoFileTranscodeUrl(props.videoFileId)
+    const [isPaused, setIsPaused] = C.React.useState(true)
+
+    const playVideo = () => {
+        setIsPaused(false)
+    }
 
     return (
-        <Video
-            // Can be a URL or a local file.
-            source={props.videoUrl}
-            // Store reference  
-            ref={videoRef}
-            // Callback when remote video is buffering                                      
-            //onBuffer={onBuffer}
-            // Callback when video cannot be loaded              
-            //onError={onError}
-            style={styles.backgroundVideo}
-        />
+        <C.View style={styles.backgroundVideo}>
+            <Video
+                source={{ uri: props.forceTranscode ? transcodeUrl : props.videoUrl }}
+                ref={videoRef}
+                paused={isPaused}
+                muted={isPaused}
+                onError={(err) => {
+                    console.log({ err })
+                }}
+                style={styles.backgroundVideo}
+            />
+            <C.SnowButton title="Play Video" onPress={playVideo} />
+        </C.View>
     )
 }
