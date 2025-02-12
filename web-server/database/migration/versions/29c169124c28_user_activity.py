@@ -28,28 +28,47 @@ def upgrade() -> None:
         sa.Column("display_name", sa.Text),
         sa.Column("device_kind", sa.Text),
         sa.Column("last_connection", sa.DateTime, nullable=False),
-        sa.Column("connected", sa.Boolean),
     )
 
     op.create_unique_constraint("unique_client_device_reported_name", "client_device", ["reported_name"])
+    op.create_unique_constraint("unique_client_device_display_name", "client_device", ["display_name"])
 
     op.create_table(
-        "user_activity",
+        "client_device_user",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("created_at", sa.DateTime, nullable=False),
+        sa.Column("updated_at", sa.DateTime, nullable=False),
+        sa.Column(
+            "client_device_id",
+            sa.Integer,
+            sa.ForeignKey("client_device.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "user_id",
+            sa.Integer,
+            sa.ForeignKey("snowstream_user.id"),
+            nullable=True,
+        ),
+        sa.Column("isolation_mode", sa.Text)
+    )
+
+    op.create_unique_constraint(
+        "unique_client_device_user",
+        "client_device_user",
+        ["client_device_id","user_id"]
+    )
+
+    op.create_table(
+        "watch_progress",
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("created_at", sa.DateTime, nullable=False),
         sa.Column("updated_at", sa.DateTime, nullable=False),
         
         sa.Column(
-            "user_id",
+            "client_device_user_id",
             sa.Integer,
-            sa.ForeignKey("snowstream_user.id"),
-            nullable=False,
-        ),
-
-        sa.Column(
-            "client_device_id",
-            sa.Integer,
-            sa.ForeignKey("client_device.id"),
+            sa.ForeignKey("client_device_user.id"),
             nullable=False,
         ),
 
@@ -57,20 +76,6 @@ def upgrade() -> None:
             "movie_id",
             sa.Integer,
             sa.ForeignKey("movie.id"),
-            nullable=True,
-        ),
-
-        sa.Column(
-            "show_id",
-            sa.Integer,
-            sa.ForeignKey("show.id"),
-            nullable=True,
-        ),
-
-        sa.Column(
-            "show_season_id",
-            sa.Integer,
-            sa.ForeignKey("show_season.id"),
             nullable=True,
         ),
 
@@ -81,17 +86,22 @@ def upgrade() -> None:
             nullable=True,
         ),
 
-        sa.Column("kind", sa.Text, nullable=False),
-        sa.Column("progress_seconds", sa.Integer),
-        sa.Column("only_affect_listed_device", sa.Boolean)
+        sa.Column(
+            "streamable_id",
+            sa.Integer,
+            sa.ForeignKey("streamable.id"),
+            nullable=True,
+        ),
+        sa.Column("played_seconds", sa.Integer),
+        sa.Column("duration_seconds", sa.Integer)
     )
 
     op.create_table(
-        'user_watched_count',
+        'watch_count',
         sa.Column(
-            "user_id",
+            "client_device_user_id",
             sa.Integer,
-            sa.ForeignKey("snowstream_user.id"),
+            sa.ForeignKey("client_device_user.id"),
             nullable=False,
         ),
 
@@ -108,7 +118,55 @@ def upgrade() -> None:
             sa.ForeignKey("show.id"),
             nullable=True,
         ),
-        sa.Column('watched_count', sa.Integer)        
+        sa.Column(
+            "streamable_id",
+            sa.Integer,
+            sa.ForeignKey("streamable.id"),
+            nullable=True,
+        ),
+        sa.Column('amount', sa.Integer)        
+    )
+
+    op.create_table(
+        'watched',
+        sa.Column(
+            "client_device_user_id",
+            sa.Integer,
+            sa.ForeignKey("client_device_user.id"),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "movie_id",
+            sa.Integer,
+            sa.ForeignKey("movie.id"),
+            nullable=True,
+        ),
+
+        sa.Column(
+            "show_id",
+            sa.Integer,
+            sa.ForeignKey("show.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "show_season_id",
+            sa.Integer,
+            sa.ForeignKey("show_season.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "show_episode_id",
+            sa.Integer,
+            sa.ForeignKey("show_episode.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "streamable_id",
+            sa.Integer,
+            sa.ForeignKey("streamable.id"),
+            nullable=True,
+        )
     )
 
 def downgrade() -> None:

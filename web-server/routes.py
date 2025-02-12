@@ -276,17 +276,17 @@ def no_auth_required(router):
             user.hashed_password = None
         return users    
 
-    @router.get("/streamable.m3u", response_class=PlainTextResponse,tags=['Unauthed'])
+    @router.get("/streamable.m3u", response_class=PlainTextResponse,tags=['Unauthed Video'])
     def get_streamable_m3u():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_M3U)
 
-    @router.get("/streamable.xml", response_class=PlainTextResponse,tags=['Unauthed'])
+    @router.get("/streamable.xml", response_class=PlainTextResponse,tags=['Unauthed Video'])
     def get_streamable_epg():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_EPG)
 
     # TODO It would be neat if I had a little placeholder video here to let the video player show that the stream is getting ready
-    @router.get("/streamable/transcode",tags=['Unauthed'])
-    @router.head("/streamable/transcode",tags=['Unauthed'])
+    @router.get("/streamable/transcode",tags=['Unauthed Video'])
+    @router.head("/streamable/transcode",tags=['Unauthed Video'])
     def get_streamable_transcode(streamable_id: int):
         if not transcode.is_open(streamable_id=streamable_id):
             streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
@@ -295,28 +295,28 @@ def no_auth_required(router):
         playlist = transcode.get_playlist(streamable_id=streamable_id)
         return Response(playlist, status_code=200, media_type="video/mp4")
 
-    @router.get("/streamable/transcode/segment",tags=['Unauthed'])
-    @router.head("/streamable/transcode/segment",tags=['Unauthed'])
+    @router.get("/streamable/transcode/segment",tags=['Unauthed Video'])
+    @router.head("/streamable/transcode/segment",tags=['Unauthed Video'])
     def get_streamable_transcode_segment(streamable_id: int, segment_file: str):
         segment = transcode.get_segment(
             streamable_id=streamable_id, segment_file=segment_file
         )
         return Response(segment, status_code=200, media_type="video/mp4")
 
-    @router.get("/streamable/direct", response_class=RedirectResponse,tags=['Unauthed'])
-    @router.head("/streamable/direct", response_class=RedirectResponse,tags=['Unauthed'])
+    @router.get("/streamable/direct", response_class=RedirectResponse,tags=['Unauthed Video'])
+    @router.head("/streamable/direct", response_class=RedirectResponse,tags=['Unauthed Video'])
     def get_streamable_direct(streamable_id: int):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
         # DEBUG log.info(streamable.url)
         return streamable.url
 
-    @router.delete("/streamable/transcode",tags=['Unauthed'])
-    def delete_streamable_transcode(streamable_id,tags=['Unauthed']):
+    @router.delete("/streamable/transcode",tags=['Unauthed Video'])
+    def delete_streamable_transcode(streamable_id,tags=['Unauthed Video']):
         transcode.close(streamable_id=streamable_id)
         return True
 
-    @router.get("/video/transcode",tags=['Unauthed'])
-    @router.head("/video/transcode",tags=['Unauthed'])
+    @router.get("/video/transcode",tags=['Unauthed Video'])
+    @router.head("/video/transcode",tags=['Unauthed Video'])
     def get_video_file_transcode(video_file_id: int):
         if not transcode.is_open(video_file_id=video_file_id):
             video_file = db.op.get_video_file_by_id(video_file_id=video_file_id)
@@ -325,15 +325,15 @@ def no_auth_required(router):
         playlist = transcode.get_playlist(video_file_id=video_file_id)
         return Response(playlist, status_code=200, media_type="video/mp4")
 
-    @router.get("/video/transcode/segment",tags=['Unauthed'])
-    @router.head("/video/transcode/segment",tags=['Unauthed'])
+    @router.get("/video/transcode/segment",tags=['Unauthed Video'])
+    @router.head("/video/transcode/segment",tags=['Unauthed Video'])
     def get_video_file_transcode_segment(video_file_id: int, segment_file: str):
         segment = transcode.get_segment(
             video_file_id=video_file_id, segment_file=segment_file
         )
         return Response(segment, status_code=200, media_type="video/mp4")
 
-    @router.delete("/video/transcode",tags=['Unauthed'])
+    @router.delete("/video/transcode",tags=['Unauthed Video'])
     def delete_video_file_transcode(video_file_id:int,tags=['Unauthed']):
         transcode.close(video_file_id=video_file_id)
         return True

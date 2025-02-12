@@ -68,33 +68,17 @@ class ClientDevice(BaseModel):
     display_name = sa.Column(sa.Text)
     device_kind = sa.Column(sa.Text)
     last_connection = sa.Column(sa.DateTime)
-    connected = sa.Column(sa.Boolean)
 
-# Kinds - login, logout, idle, complete, watch, favorite
-# General idea - User is performing Activity on a ClientDevice
-# A user can optionally specificy their device for the activity
-# If they do, then the activity will not show up on other devices
-# For example, have the parent's account on a kid's device not change watched status on other devices
-class UserActivity(BaseModel):
-    __tablename__ = "user_activity"
-    only_affect_listed_device = sa.Column(sa.Boolean)
+class ClientDeviceUser(BaseModel):
+    __tablename__ = "client_device_user"
     user_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("snowstream_user.id"),nullable=False)
     client_device_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("client_device.id"),nullable=True)
-    movie_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("movie.id"))
-    show_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show.id"))
-    show_season_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_season.id"))
-    show_episode_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_episode.id"))    
-    movie: sorm.Mapped["Movie"] = sorm.relationship()
-    show: sorm.Mapped["Show"] = sorm.relationship()
-    show_season: sorm.Mapped["ShowSeason"] = sorm.relationship()
-    show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship()
+    isolation_mode = sa.Column(sa.Text)
 
-# Use the play count for things like generating episode order in dynamic playlists
-# Use activity to determine things like what episode in the season is next
-class UserWatchedCount(BaseModel):
-    __tablename__ = 'user_watched_count'
-    user_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("snowstream_user.id"),nullable=False
+class WatchProgress(BaseModel):
+    __tablename__ = 'watch_progress'
+    client_device_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("client_device_user.id"),nullable=False
     )
     show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("show_episode.id"),nullable=False
@@ -102,7 +86,42 @@ class UserWatchedCount(BaseModel):
     movie_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("movie.id"),nullable=False
     )
-    watched_count = sa.Column(sa.Integer)    
+    streamable_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("streamable.id"),nullable=False
+    )
+    played_seconds = sa.Column(sa.Integer)
+    duration_seconds = sa.Column(sa.Integer)
+
+class WatchCount(BaseModel):
+    __tablename__ = 'watch_count'
+    client_device_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("client_device_user.id"),nullable=False
+    )
+    show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("show_episode.id"),nullable=False
+    )
+    movie_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("movie.id"),nullable=False
+    )
+    streamable_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("streamable.id"),nullable=False
+    )
+    amount = sa.Column(sa.Integer)    
+
+class Watched(BaseModel):
+    __tablename__ = 'watched'
+    client_device_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("client_device_user.id"),nullable=False
+    )
+    show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("show_episode.id"),nullable=False
+    )
+    movie_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("movie.id"),nullable=False
+    )
+    streamable_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("streamable.id"),nullable=False
+    )
 
 class CachedText(BaseModel):
     __tablename__ = "cached_text"
