@@ -149,7 +149,7 @@ def upgrade() -> None:
             sa.ForeignKey("show.id"),
             nullable=True,
         ),
-        sa.Column(
+        sa.Column( 
             "show_season_id",
             sa.Integer,
             sa.ForeignKey("show_season.id"),
@@ -166,6 +166,41 @@ def upgrade() -> None:
             sa.Integer,
             sa.ForeignKey("streamable.id"),
             nullable=True,
+        )
+    )
+
+    op.create_table(
+        "transcode_session",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("created_at", sa.DateTime, nullable=False),
+        sa.Column("updated_at", sa.DateTime, nullable=False),
+        sa.Column(
+            "client_device_id",
+            sa.Integer,
+            sa.ForeignKey("client_device.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "video_file_id",
+            sa.Integer,
+            sa.ForeignKey("show_episode.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "streamable_id",
+            sa.Integer,
+            sa.ForeignKey("streamable.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "transcode_directory",
+            sa.Text,
+            nullable=False
+        ),
+        sa.Column(
+            "transcode_file",
+            sa.Text,
+            nullable=False
         )
     )
 

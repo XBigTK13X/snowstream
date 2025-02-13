@@ -72,7 +72,7 @@ class ClientDevice(BaseModel):
 class ClientDeviceUser(BaseModel):
     __tablename__ = "client_device_user"
     user_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("snowstream_user.id"),nullable=False)
-    client_device_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("client_device.id"),nullable=True)
+    client_device_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("client_device.id"),nullable=False)
     isolation_mode = sa.Column(sa.Text)
 
 class WatchProgress(BaseModel):
@@ -81,13 +81,13 @@ class WatchProgress(BaseModel):
         sa.ForeignKey("client_device_user.id"),nullable=False
     )
     show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("show_episode.id"),nullable=False
+        sa.ForeignKey("show_episode.id"),nullable=True
     )
     movie_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("movie.id"),nullable=False
+        sa.ForeignKey("movie.id"),nullable=True
     )
     streamable_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("streamable.id"),nullable=False
+        sa.ForeignKey("streamable.id"),nullable=True
     )
     played_seconds = sa.Column(sa.Integer)
     duration_seconds = sa.Column(sa.Integer)
@@ -98,13 +98,13 @@ class WatchCount(BaseModel):
         sa.ForeignKey("client_device_user.id"),nullable=False
     )
     show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("show_episode.id"),nullable=False
+        sa.ForeignKey("show_episode.id"),nullable=True
     )
     movie_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("movie.id"),nullable=False
+        sa.ForeignKey("movie.id"),nullable=True
     )
     streamable_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("streamable.id"),nullable=False
+        sa.ForeignKey("streamable.id"),nullable=True
     )
     amount = sa.Column(sa.Integer)    
 
@@ -114,14 +114,28 @@ class Watched(BaseModel):
         sa.ForeignKey("client_device_user.id"),nullable=False
     )
     show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("show_episode.id"),nullable=False
+        sa.ForeignKey("show_episode.id"),nullable=True
     )
     movie_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("movie.id"),nullable=False
+        sa.ForeignKey("movie.id"),nullable=True
     )
     streamable_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("streamable.id"),nullable=False
+        sa.ForeignKey("streamable.id"),nullable=True
     )
+
+class TranscodeSession(BaseModel):
+    __tablename__ = 'transcode_session'
+    client_device_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("client_device_user.id"),nullable=False
+    )
+    video_file_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("video_file.id"),nullable=True
+    )
+    streamable_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("streamable.id"),nullable=True
+    )
+    transcode_directory = sa.Column(sa.Text)
+    transcode_file = sa.Column(sa.Text)
 
 class CachedText(BaseModel):
     __tablename__ = "cached_text"

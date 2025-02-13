@@ -13,10 +13,9 @@ from settings import config
 
 class Transcode:
     def __init__(self):
+        # TODO Rewrite using db.model.TranscodeSession
         self.transcode_processes = {}
         self.cleanup_registered = False
-
-
 
     def open_video_file(self, video_file: db.model.VideoFile):
         if not self.cleanup_registered:
