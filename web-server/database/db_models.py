@@ -134,6 +134,7 @@ class TranscodeSession(BaseModel):
     streamable_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("streamable.id"),nullable=True
     )
+    process_id = sa.Column(sa.Integer)
     transcode_directory = sa.Column(sa.Text)
     transcode_file = sa.Column(sa.Text)
 

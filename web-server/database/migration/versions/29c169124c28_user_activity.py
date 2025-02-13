@@ -193,6 +193,11 @@ def upgrade() -> None:
             nullable=True,
         ),
         sa.Column(
+            "process_id",
+            sa.Integer,
+            nullable=False
+        ),
+        sa.Column(
             "transcode_directory",
             sa.Text,
             nullable=False
