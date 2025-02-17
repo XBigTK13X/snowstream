@@ -14,11 +14,11 @@ export default function ShelfListPage() {
 
     let destinations = []
 
-    if (shelves) {
+    if (!!shelves) {
         destinations = destinations.concat(shelves)
     }
 
-    if (shelves) {
+    if (!!shelves) {
         const renderItem = (item, itemIndex) => {
             let destination = item
             return (

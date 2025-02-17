@@ -12,7 +12,7 @@ export default function TagListPage() {
         }
     })
 
-    if (tags && tags.length) {
+    if (!!tags) {
         const renderItem = (item, itemIndex) => {
             return (
                 <C.Button

@@ -13,7 +13,7 @@ export default function UserListPage() {
         }
     })
 
-    if (users) {
+    if (!!users) {
         const renderItem = (user, itemIndex) => {
             return (
                 <C.SnowButton

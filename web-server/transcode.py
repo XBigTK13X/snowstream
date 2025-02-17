@@ -41,8 +41,6 @@ class Transcode:
             "video_file_id": video_file.id,
             "output_file": output_file,
         }
-        import pprint
-        pprint.pprint(self.transcode_processes)
         max_wait_seconds = 10
         while not os.path.exists(output_file):
             if max_wait_seconds <= 0:

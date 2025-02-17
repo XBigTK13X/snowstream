@@ -3,15 +3,9 @@ import C from '../../../../common'
 export default function StreamSourceListPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
-    const [shelves, setShelves] = C.React.useState(null)
     const [streamSources, setStreamSources] = C.React.useState(null)
 
     C.React.useEffect(() => {
-        if (!shelves) {
-            apiClient.getShelfList().then((response) => {
-                setShelves(response)
-            })
-        }
         if (!streamSources) {
             apiClient.getStreamSourceList().then((response) => {
                 setStreamSources(response)
@@ -20,7 +14,7 @@ export default function StreamSourceListPage() {
     })
 
 
-    if (streamSources) {
+    if (!!streamSources) {
         const renderItem = (streamSource, itemIndex) => {
             return (
                 <C.Button

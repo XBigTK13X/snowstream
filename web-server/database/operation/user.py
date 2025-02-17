@@ -19,24 +19,24 @@ def create_user(user: am.User):
         return dbm
 
 def upsert_user(user: am.User):
-    existing_user = None
+    existing = None
     if user.id:
-        existing_user = get_user_by_id(user.id)
+        existing = get_user_by_id(user.id)
     elif user.username:
-        existing_user = get_user_by_name(user.username)
-    if not existing_user:
+        existing = get_user_by_name(user.username)
+    if not existing:
         return create_user(user)
     with DbSession() as db:
-        old_hash = existing_user.hashed_password
+        old_hash = existing.hashed_password
         model_dump = user.model_dump()
         if user.raw_password != '':
             model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
         else:        
             model_dump['hashed_password'] = old_hash
         del model_dump['raw_password']
-        existing_user = db.query(dm.User).filter(dm.User.id == existing_user.id).update(model_dump)
+        existing = db.query(dm.User).filter(dm.User.id == existing.id).update(model_dump)
         db.commit()        
-        return existing_user
+        return existing
 
 def get_user_by_id(user_id:int,include_access=False):    
     with DbSession() as db:
