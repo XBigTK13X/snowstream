@@ -1,5 +1,8 @@
 import axios from 'axios'
 import config from './settings'
+import DeviceInfo from 'react-native-device-info';
+import { Platform } from 'react-native'
+
 
 export class ApiClient {
     constructor(authToken, isAdmin) {
@@ -87,21 +90,37 @@ export class ApiClient {
 
     login(payload) {
         let self = this
-        return self.httpClient
-            .postForm('/login', {
-                username: payload.username,
-                password: payload.password,
+        return new Promise(resolve => {
+            let getDeviceId = () => {
+                return DeviceInfo.getUniqueId().then((uniqueId) => {
+                    const deviceBrand = DeviceInfo.getBrand()
+                    return DeviceInfo.getHost().then(deviceName => {
+                        return `${deviceBrand} - ${deviceName} - ${uniqueId}`
+                    })
+                })
+            }
+            if (Platform.OS === 'web') {
+                getDeviceId = DeviceInfo.getUserAgent
+            }
+            getDeviceId().then((deviceId) => {
+                return self.httpClient
+                    .postForm('/login', {
+                        username: payload.username,
+                        password: payload.password,
+                        device_info: deviceId
+                    })
+                    .then((data) => {
+                        if (data && data.data && data.data.access_token) {
+                            self.authToken = data.data.access_token
+                            self.permissions = data.data.permissions
+                            self.hasAdmin = self.permissions.includes('admin')
+                            self.createClient(self.authToken)
+                            self.displayName = data.data.display_name
+                        }
+                        return resolve({ authToken: self.authToken, isAdmin: self.hasAdmin, displayName: self.displayName })
+                    })
             })
-            .then((data) => {
-                if (data && data.data && data.data.access_token) {
-                    self.authToken = data.data.access_token
-                    self.permissions = data.data.permissions
-                    self.hasAdmin = self.permissions.includes('admin')
-                    self.createClient(self.authToken)
-                    self.displayName = data.data.display_name
-                }
-                return { authToken: self.authToken, isAdmin: self.hasAdmin, displayName: self.displayName }
-            })
+        })
     }
 
     logout() {

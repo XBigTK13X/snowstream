@@ -4,9 +4,8 @@ from fastapi.security import (
     OAuth2PasswordRequestForm,
     SecurityScopes,
 )
-from fastapi import Depends, status, HTTPException, Security
+from fastapi import Depends, status, HTTPException, Form
 from typing import Annotated
-from log import log
 from jose import JWTError, jwt
 import util
 
@@ -19,12 +18,9 @@ from db import db
 # https://casbin.org/docs/how-it-works/
 # https://github.com/pycasbin/sqlalchemy-adapter
 # https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/
+# TODO Remove hard coded scopes
 auth_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/login",
-    scopes={
-        "transcode": "Convert media streams server-side.",
-        "media-delete": "Remove media from the library and the file system.",
-    },
+    tokenUrl="/api/login"
 )
 
 
@@ -68,12 +64,14 @@ async def get_current_user(
         if username is None:
             raise credentials_exception
         token_scopes = payload.get("scopes", [])
-        token_data = am.AuthTokenContent(username=username, scopes=token_scopes)
+        token_cduid = payload.get("client_device_user_id")
+        token_data = am.AuthTokenContent(username=username, scopes=token_scopes,client_device_user_id=token_cduid)
     except JWTError:
         raise credentials_exception
     user = db.op.get_user_by_name(username=token_data.username,include_access=True)
     if user is None:
         raise credentials_exception
+    user.client_device_user_id = token_data.client_device_user_id
     # Don't bother checking permissions for the admin user
     if user.username == "admin":
         return user
@@ -89,17 +87,26 @@ async def get_current_user(
 
 def register(router):
     @router.post("/login",tags=['Unauthed'])
-    async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    async def login(
+        login_form: Annotated[OAuth2PasswordRequestForm, Depends()],
+        device_info: Annotated[str, Form()] = "swagger-ui"
+    ):        
         # FIXME Workaround Pydantic validation failures on empty passwords
-        if form_data.password == '_-_-_EMPTY_-_-_':
-            form_data.password = ''
-        user = authenticate_user(form_data.username, form_data.password)
+        if login_form.password == '_-_-_EMPTY_-_-_':
+            login_form.password = ''
+        user = authenticate_user(login_form.username, login_form.password)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        client_device = db.op.get_client_device_by_reported_name(device_name=device_info)
+        if not client_device:
+            client_device = db.op.create_client_device(device_name=device_info)
+        client_device_user = db.op.get_client_device_user(client_device_id=client_device.id,user_id=user.id)
+        if not client_device_user:
+            client_device_user = db.op.create_client_device_user(client_device_id=client_device.id,user_id=user.id)        
         expiry = {config.jwt_expire_unit: config.jwt_expire_value}
         access_token_expires = timedelta(**expiry)
         user_scopes = []
@@ -108,7 +115,8 @@ def register(router):
         access_token = create_access_token(
             data={
                 "sub": user.username,
-                "scopes": user_scopes
+                "scopes": user_scopes,
+                "client_device_user_id": client_device_user.id
             },
             expires_delta=access_token_expires,
         )

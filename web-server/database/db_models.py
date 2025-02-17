@@ -66,14 +66,14 @@ class ClientDevice(BaseModel):
     __tablename__ = "client_device"
     reported_name = sa.Column(sa.Text)
     display_name = sa.Column(sa.Text)
-    device_kind = sa.Column(sa.Text)
-    last_connection = sa.Column(sa.DateTime)
+    device_kind = sa.Column(sa.Text)    
 
 class ClientDeviceUser(BaseModel):
     __tablename__ = "client_device_user"
     user_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("snowstream_user.id"),nullable=False)
     client_device_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("client_device.id"),nullable=False)
     isolation_mode = sa.Column(sa.Text)
+    last_connection = sa.Column(sa.DateTime)
 
 class WatchProgress(BaseModel):
     __tablename__ = 'watch_progress'

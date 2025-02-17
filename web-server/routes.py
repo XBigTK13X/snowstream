@@ -126,14 +126,6 @@ def auth_required(router):
             return None
         return db.op.delete_shelf_by_id(shelf_id=shelf_id)
 
-    @router.post("/shelf/scan",tags=['Shelf'])
-    def scan_shelf(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        shelf_id: int,
-    ):
-        print("Unimplemented -> web-server/api/shelf/scan (currently run as a job)")
-        pass
-
     @router.post("/user",tags=['User'])
     def save_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -200,10 +192,9 @@ def auth_required(router):
             return None
         return db.delete_tag_by_id(tag_id=tag_id)
 
-    @router.get("/auth/check",tags=['Auth'])
+    @router.get("/auth/check",tags=['User'])
     def auth_check(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        user: am.User,
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         return True
 
@@ -248,6 +239,13 @@ def auth_required(router):
         episode_id: int,
     ):
         return db.op.get_season_episode_details_by_id(episode_id=episode_id)
+
+    @router.post("/watch/status")
+    def set_watch_status(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        status: am.WatchStatus
+    ):
+        return db.op.set_watch_status(status=status)
 
     return router
 

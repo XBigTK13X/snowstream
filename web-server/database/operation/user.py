@@ -12,6 +12,7 @@ def create_user(user: am.User):
         model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
         del model_dump['raw_password']
         del model_dump['id']
+        del model_dump['client_device_user_id']
         dbm = dm.User(**model_dump)
         db.add(dbm)
         db.commit()
@@ -29,6 +30,7 @@ def upsert_user(user: am.User):
     with DbSession() as db:
         old_hash = existing.hashed_password
         model_dump = user.model_dump()
+        del model_dump['client_device_user_id']
         if user.raw_password != '':
             model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
         else:        

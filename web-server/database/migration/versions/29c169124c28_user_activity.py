@@ -27,7 +27,6 @@ def upgrade() -> None:
         sa.Column("reported_name", sa.Text, nullable=False),
         sa.Column("display_name", sa.Text),
         sa.Column("device_kind", sa.Text),
-        sa.Column("last_connection", sa.DateTime, nullable=False),
     )
 
     op.create_unique_constraint("unique_client_device_reported_name", "client_device", ["reported_name"])
@@ -50,7 +49,8 @@ def upgrade() -> None:
             sa.ForeignKey("snowstream_user.id"),
             nullable=True,
         ),
-        sa.Column("isolation_mode", sa.Text)
+        sa.Column("isolation_mode", sa.Text),
+        sa.Column("last_connection", sa.DateTime, nullable=False)
     )
 
     op.create_unique_constraint(
@@ -71,14 +71,12 @@ def upgrade() -> None:
             sa.ForeignKey("client_device_user.id"),
             nullable=False,
         ),
-
         sa.Column(
             "movie_id",
             sa.Integer,
             sa.ForeignKey("movie.id"),
             nullable=True,
         ),
-
         sa.Column(
             "show_episode_id",
             sa.Integer,
@@ -104,18 +102,16 @@ def upgrade() -> None:
             sa.ForeignKey("client_device_user.id"),
             nullable=False,
         ),
-
         sa.Column(
             "movie_id",
             sa.Integer,
             sa.ForeignKey("movie.id"),
             nullable=True,
         ),
-
         sa.Column(
-            "show_id",
+            "show_episode_id",
             sa.Integer,
-            sa.ForeignKey("show.id"),
+            sa.ForeignKey("show_episode.id"),
             nullable=True,
         ),
         sa.Column(
@@ -135,24 +131,10 @@ def upgrade() -> None:
             sa.ForeignKey("client_device_user.id"),
             nullable=False,
         ),
-
         sa.Column(
             "movie_id",
             sa.Integer,
             sa.ForeignKey("movie.id"),
-            nullable=True,
-        ),
-
-        sa.Column(
-            "show_id",
-            sa.Integer,
-            sa.ForeignKey("show.id"),
-            nullable=True,
-        ),
-        sa.Column( 
-            "show_season_id",
-            sa.Integer,
-            sa.ForeignKey("show_season.id"),
             nullable=True,
         ),
         sa.Column(
