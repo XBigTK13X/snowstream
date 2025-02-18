@@ -5,24 +5,49 @@ from log import log
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 
+def watched_to_bool(watched:dm.Watched):
+    return False if watched == None else True
 
 def set_watch_status(
-    client_device_id:int,
-    process_id:int,
-    transcode_directory:str,
-    transcode_file:str,
-    video_file_id:int=None,
-    streamable_id:int=None
+    status:am.WatchStatus,
+    cduid:int
 ):
     with DbSession() as db:
-        dbm = dm.TranscodeSession()
-        dbm.client_device_id = client_device_id
-        dbm.video_file_id = video_file_id
-        dbm.streamable_id = streamable_id
-        dbm.process_id = process_id
-        dbm.transcode_directory = transcode_directory
-        dbm.transcode_file = transcode_file
-        db.add(dbm)
-        db.commit()
-        db.refresh(dbm)
-        return dbm
+        if status.status == True:    
+            dbm = dm.Watched()
+            dbm.client_device_user_id = cduid
+            dbm.movie_id = status.movie_id
+            dbm.show_episode_id = status.show_episode_id
+            dbm.streamable_id = status.streamable_id
+            db.add(dbm)
+            db.commit()
+            db.refresh(dbm)
+            return dbm
+        if status.status == False:
+            if status.movie_id:
+                deleted = db.query(dm.Watched).filter(dm.Watched.movie_id == status.movie_id).delete()
+                db.commit()
+                return deleted
+            if status.show_episode_id:
+                deleted = db.query(dm.Watched).filter(dm.Watched.show_episode_id == status.show_episode_id).delete()
+                db.commit()
+                return deleted    
+            if status.streamable_id:
+                deleted = db.query(dm.Watched).filter(dm.Watched.streamable_id == status.streamable_id).delete()
+                db.commit()
+                return deleted
+
+def get_movie_watch_status(
+    cduid:int,
+    movie_id:int
+):
+    with DbSession() as db:
+        watched = (
+            db.query(dm.Watched)
+            .filter(
+                dm.Watched.client_device_user_id == cduid,
+                dm.Watched.movie_id == movie_id
+            )
+            .first()
+        )
+        return watched_to_bool(watched)

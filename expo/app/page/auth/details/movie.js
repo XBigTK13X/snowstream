@@ -20,9 +20,21 @@ export default function MovieDetailsPage() {
             })
         }
     })
+    const setWatchStatus = (status) => {
+        apiClient.setMovieWatchStatus(movieId, !movie.watched)
+            .then(() => {
+                apiClient.getMovie(movieId).then((response) => {
+                    setMovie(response)
+                })
+            })
+    }
     if (shelf && movie) {
+        const watchTitle = movie.watched ? "Set Status to Unplayed" : "Set Status to Watched"
         return (
-            <C.Button title="Play" onPress={routes.func(routes.playMedia, { videoFileIndex: 0, movieId: movieId, shelfId: shelfId })} />
+            <C.View>
+                <C.Button title="Play" onPress={routes.func(routes.playMedia, { videoFileIndex: 0, movieId: movieId, shelfId: shelfId })} />
+                <C.Button title={watchTitle} onPress={setWatchStatus} />
+            </C.View>
         )
     }
     return (

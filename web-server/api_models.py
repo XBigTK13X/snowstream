@@ -110,5 +110,5 @@ class Tag(BaseModel):
 class WatchStatus(BaseModel):
     status: bool
     movie_id: int | None = None
-    episode_id: int | None = None
+    show_episode_id: int | None = None
     streamable_id: int | None = None

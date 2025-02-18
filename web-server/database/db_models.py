@@ -77,42 +77,50 @@ class ClientDeviceUser(BaseModel):
 
 class WatchProgress(BaseModel):
     __tablename__ = 'watch_progress'
-    client_device_id: sorm.Mapped[int] = sorm.mapped_column(
+    client_device_user_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("client_device_user.id"),nullable=False
     )
+    client_device_user: sorm.Mapped["ClientDeviceUser"] = sorm.relationship()
     show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("show_episode.id"),nullable=True
     )
+    show_episode: sorm.Mapped['ShowEpisode'] = sorm.relationship()
     movie_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("movie.id"),nullable=True
     )
+    movie: sorm.Mapped['Movie'] = sorm.relationship()
     streamable_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("streamable.id"),nullable=True
     )
+    streamable: sorm.Mapped['Streamable'] = sorm.relationship()
     played_seconds = sa.Column(sa.Integer)
     duration_seconds = sa.Column(sa.Integer)
 
 class WatchCount(BaseModel):
     __tablename__ = 'watch_count'
-    client_device_id: sorm.Mapped[int] = sorm.mapped_column(
+    client_device_user_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("client_device_user.id"),nullable=False
     )
+    client_device_user: sorm.Mapped["ClientDeviceUser"] = sorm.relationship()
     show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("show_episode.id"),nullable=True
     )
+    show_episode: sorm.Mapped['ShowEpisode'] = sorm.relationship()
     movie_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("movie.id"),nullable=True
     )
+    movie: sorm.Mapped['Movie'] = sorm.relationship()
     streamable_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("streamable.id"),nullable=True
     )
-    amount = sa.Column(sa.Integer)    
+    streamable: sorm.Mapped['Streamable'] = sorm.relationship() 
 
 class Watched(BaseModel):
     __tablename__ = 'watched'
-    client_device_id: sorm.Mapped[int] = sorm.mapped_column(
+    client_device_user_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("client_device_user.id"),nullable=False
     )
+    client_device_user: sorm.Mapped["ClientDeviceUser"] = sorm.relationship()
     show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("show_episode.id"),nullable=True
     )
@@ -209,6 +217,7 @@ class Shelf(BaseModel):
     direct_stream_url = sa.Column(sa.Text)
     movies: sorm.Mapped[List["Movie"]] = sorm.relationship(secondary="movie_shelf",back_populates="shelf")
     shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary="show_shelf",back_populates="shelf")
+
 
 class Movie(BaseModel):
     __tablename__ = "movie"

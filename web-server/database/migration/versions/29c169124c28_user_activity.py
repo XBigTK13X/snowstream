@@ -96,6 +96,9 @@ def upgrade() -> None:
 
     op.create_table(
         'watch_count',
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("created_at", sa.DateTime, nullable=False),
+        sa.Column("updated_at", sa.DateTime, nullable=False),
         sa.Column(
             "client_device_user_id",
             sa.Integer,
@@ -125,6 +128,9 @@ def upgrade() -> None:
 
     op.create_table(
         'watched',
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("created_at", sa.DateTime, nullable=False),
+        sa.Column("updated_at", sa.DateTime, nullable=False),
         sa.Column(
             "client_device_user_id",
             sa.Integer,

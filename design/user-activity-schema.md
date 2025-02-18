@@ -29,6 +29,8 @@
   - Can only watch an episode/movie/streamable
   - To "watch" a season, mark all episodes in season watched. Same for a Show
 
+6. client_device_user_id is becoming useful around the app, shorten to cduid ti ease differentiation
+
 ## Proposed Tables
 
 Models

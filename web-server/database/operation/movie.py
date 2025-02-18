@@ -36,13 +36,11 @@ def get_movie_details_by_id(movie_id: int):
             .options(sorm.joinedload(dm.Movie.video_files))
             .options(sorm.joinedload(dm.Movie.image_files))
             .options(sorm.joinedload(dm.Movie.shelf))
-            .filter(dm.Movie.id == movie_id)
+            .filter(dm.Movie.id == movie_id)            
             .first()
         )
         movie.convert_local_paths_to_web_paths(config=config)
         return movie
-        # movie.video_files = db.scalars(sa.select(dm.MovieVideoFile).filter(dm.MovieVideoFile.movie_id == movie_id)).all();
-        # return movie
 
 
 def get_movie(name: str, release_year: int):

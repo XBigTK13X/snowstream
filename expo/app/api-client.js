@@ -276,6 +276,10 @@ export class ApiClient {
         return `${this.baseURL}/video/transcode?video_file_id=${video_file_id}`
     }
 
+    setMovieWatchStatus(movieId, watched) {
+        return this.post('/watch/status', { movie_id: movieId, status: watched })
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

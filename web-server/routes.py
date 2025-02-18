@@ -210,7 +210,9 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_id: int,
     ):
-        return db.op.get_movie_details_by_id(movie_id=movie_id)
+        movie = db.op.get_movie_details_by_id(movie_id=movie_id)
+        movie.watched = db.op.get_movie_watch_status(cduid=auth_user.client_device_user_id,movie_id=movie_id)
+        return movie
 
     @router.get("/show/list",tags=['Show'])
     def get_show_list(
@@ -245,7 +247,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         status: am.WatchStatus
     ):
-        return db.op.set_watch_status(status=status)
+        return db.op.set_watch_status(status=status,cduid=auth_user.client_device_user_id)
 
     return router
 
