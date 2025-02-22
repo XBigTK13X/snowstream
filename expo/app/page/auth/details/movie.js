@@ -32,8 +32,9 @@ export default function MovieDetailsPage() {
         const watchTitle = movie.watched ? "Set Status to Unplayed" : "Set Status to Watched"
         return (
             <C.View>
-                <C.Button title="Play" onPress={routes.func(routes.playMedia, { videoFileIndex: 0, movieId: movieId, shelfId: shelfId })} />
-                <C.Button title={watchTitle} onPress={setWatchStatus} />
+                <C.SnowText>Title: {movie.name}</C.SnowText>
+                <C.SnowButton title="Play" onPress={routes.func(routes.playMedia, { videoFileIndex: 0, movieId: movieId, shelfId: shelfId })} />
+                <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
             </C.View>
         )
     }
