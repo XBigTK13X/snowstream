@@ -35,6 +35,63 @@ Second Pass Thoughts
   1. Keeping all the show watched info broken into episodes makes for clean data, but muddy and slow queries.
     - Add show/shelf/season watched tracking. It makes writing slower, reading much faster
 
+  2. Marking things watched workflow
+    - Is it a movie shelf?
+      - Delete all movies from shelf listed in Watched table
+      - Insert shelf entry in Watched table
+    
+    - Is it a movie?
+      - If shelf not in Watched
+        - Insert movie into Watched
+        - If all movies in shelf are marked as watched
+          - Delete all movies from Watched and insert shelf
+
+    - Is it a show shelf?
+      - Delete all shows,seasons,episodes from Watched
+      - Insert shelf in Watched
+
+    - Is it a show?
+      - If shelf not in Watched
+        - Insert show into Watched
+        - If all shows in shelf are marked as watched
+          - Delete all shows from Watched and insert shelf
+
+  3. Marking things unwatched workflow
+    - Is it a movie shelf?
+      - Delete all movies from Watched table
+      - Delete shelf from Watched table
+
+    - Is it a movie?
+      - If shelf in Watched
+        - Delete shelf
+        - Insert every movie other than this one to Watched table
+      - Otherwise
+        - Delete movie from Watched table
+
+    - Is it a show shelf?
+      - If shelf in Watched
+        - Delete shelf
+        - Insert every show other than this one to Watched table
+      - Otherwise
+        - Delete show from Watched table
+
+    - Is it a show?
+      - If 
+
+  3. Checking if things watched workflow
+    - Is it a movie shelf?
+      - Is the it in the Watched Table?
+        - Watched
+
+    - Is it a movie?
+      - Is the shelf in the table?
+        - Watched
+      - Is the movie in the Watched table?
+        - Watched
+
+
+
+
 ## Proposed Tables
 
 Models

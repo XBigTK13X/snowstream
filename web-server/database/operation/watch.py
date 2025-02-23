@@ -5,6 +5,7 @@ from log import log
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 from sqlalchemy.sql import func
+from database.operation.show import *
 
 def watched_to_bool(watched:dm.Watched):
     return False if watched == None else True
@@ -17,9 +18,12 @@ def set_watch_status(
         if status.status == True:    
             dbm = dm.Watched()
             dbm.client_device_user_id = cduid
+            dbm.shelf_id = status.shelf_id
             dbm.movie_id = status.movie_id
+            dbm.show_id = status.show_id
+            dbm.show_season_id = status.show_season_id
             dbm.show_episode_id = status.show_episode_id
-            dbm.streamable_id = status.streamable_id
+            dbm.streamable_id = status.streamable_id            
             db.add(dbm)
             db.commit()
             db.refresh(dbm)
@@ -29,6 +33,38 @@ def set_watch_status(
                 deleted = db.query(dm.Watched).filter(dm.Watched.movie_id == status.movie_id).delete()
                 db.commit()
                 return deleted
+            if status.show_id:
+                show_episodes = get_show_episode_list(show_id=status.show_id)
+                episode_ids = [xx.id for xx in show_episodes]
+                deleted_episodes = (
+                    db.query(dm.Watched)
+                    .filter(dm.Watched.show_episode_id._in(episode_ids))
+                    .delete()
+                )
+                show_seasons = get_show_season_list(show_id=status.show_id)
+                season_ids = [xx.id for xx in show_seasons]                
+                deleted_seasons = (
+                    db.query(dm.Watched)
+                    .filter(dm.Watched.show_season_id._in(season_ids))
+                    .delete()
+                )
+                deleted_show = db.query(dm.Watched).filter(dm.Watched.show_id == status.show_id).delete()
+                return {
+                    'deleted_show': deleted_show,
+                    'deleted_seasons': deleted_seasons,
+                    'deleted_episodes': deleted_episodes
+                }
+            if status.show_season_id:
+                season_episodes = get_show_season_episode_list(show_season_id=status.show_season_id)
+                season_episode_ids = [xx.id for xx in season_episodes]
+                deleted_episodes = (
+                    db.query(dm.Watched)
+                    .filter(dm.Watched.show_episode_id._in(season_episode_ids))
+                    .delete()
+                )
+                deleted_season = db.query(dm.Watched).filter(dm.Watched.show_episode_id == status.show_episode_id).delete()
+                db.commit()
+                return {'deleted_episodes':deleted_episodes,'deleted_season':deleted_season}
             if status.show_episode_id:
                 deleted = db.query(dm.Watched).filter(dm.Watched.show_episode_id == status.show_episode_id).delete()
                 db.commit()

@@ -231,7 +231,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_id: int,
     ):
-        seasons = db.op.get_show_season_list(show_id=show_id)
+        seasons = db.op.get_show_season_list(show_id=show_id,include_files=True)
         watch_status = db.op.get_show_watch_status(cduid=auth_user.client_device_user_id,show_id=show_id)
         return {
             'seasons':seasons,
@@ -243,7 +243,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_season_id: int,
     ):
-        episodes = db.op.get_show_episode_list(show_season_id=show_season_id)
+        episodes = db.op.get_show_season_episode_list(show_season_id=show_season_id,include_files=True)
         watch_status = db.op.get_show_season_watch_status(cduid=auth_user.client_device_user_id,season_id=show_season_id)
         return {
             'episodes':episodes,

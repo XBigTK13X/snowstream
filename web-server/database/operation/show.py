@@ -72,19 +72,25 @@ def get_show_season(show_id: int, season_order_counter: int):
         )
 
 
-def get_show_season_list(show_id: int):
+def get_show_season_list(show_id: int,include_files:bool=False):
     with DbSession() as db:
-        seasons = (
+        query = (
             db.query(dm.ShowSeason)
-            .options(sorm.joinedload(dm.ShowSeason.image_files))
-            .options(sorm.joinedload(dm.ShowSeason.metadata_files))
-            .options(sorm.joinedload(dm.ShowSeason.tags))
-            .filter(dm.ShowSeason.show_id == show_id)
-            .order_by(dm.ShowSeason.season_order_counter)
-            .all()
         )
-        for season in seasons:
-            season.convert_local_paths_to_web_paths(config=config)
+        if include_files:
+            query = (
+                query.options(sorm.joinedload(dm.ShowSeason.image_files))
+                .options(sorm.joinedload(dm.ShowSeason.metadata_files))
+                .options(sorm.joinedload(dm.ShowSeason.tags))                
+            )
+        seasons = (
+            query.filter(dm.ShowSeason.show_id == show_id)
+                .order_by(dm.ShowSeason.season_order_counter)
+                .all()
+        )
+        if include_files:
+            for season in seasons:
+                season.convert_local_paths_to_web_paths(config=config)
         return seasons
 
 
@@ -99,9 +105,17 @@ def create_show_episode(show_season_id: int, episode_order_counter: int):
         return dbm
 
 
+def get_show_episode_list(show_id:int):
+    seasons = get_show_season_list(show_id=show_id)
+    season_ids = [xx.id for xx in seasons]
+    with DbSession() as db:
+        return (
+            db.query(dm.ShowEpisode)
+            .filter(dm.ShowEpisode.show_season_id._in(season_ids))
+            .all()
+        )
+
 # https://docs.sqlalchemy.org/en/20/orm/queryguide/inheritance.html
-
-
 def get_show_episode_details_by_id(episode_id: int):
     with DbSession() as db:
         episode = (
@@ -130,19 +144,23 @@ def get_show_episode(show_season_id: int, episode_order_counter: int):
         )
 
 
-def get_show_episode_list(show_season_id: int):
+def get_show_season_episode_list(show_season_id: int,include_files:bool=False):
     with DbSession() as db:
+        query = db.query(dm.ShowEpisode)
+        if include_files:
+            query = (
+                query.options(sorm.joinedload(dm.ShowEpisode.image_files))
+                .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
+                .options(sorm.joinedload(dm.ShowEpisode.tags))
+            )
         episodes = (
-            db.query(dm.ShowEpisode)
-            .options(sorm.joinedload(dm.ShowEpisode.image_files))
-            .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
-            .options(sorm.joinedload(dm.ShowEpisode.tags))
-            .filter(dm.ShowEpisode.show_season_id == show_season_id)
+            query.filter(dm.ShowEpisode.show_season_id == show_season_id)
             .order_by(dm.ShowEpisode.episode_order_counter)
             .all()
         )
-        for episode in episodes:
-            episode.convert_local_paths_to_web_paths(config=config)
+        if include_files:
+            for episode in episodes:
+                episode.convert_local_paths_to_web_paths(config=config)
         return episodes
 
 
