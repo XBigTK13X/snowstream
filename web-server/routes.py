@@ -220,7 +220,7 @@ def auth_required(router):
         shelf_id: int,
     ):
         shows = db.op.get_show_list_by_shelf(shelf_id=shelf_id)
-        watch_status = db.op.get_show_shelf_watch_status(cduid=auth_user.client_device_user_id,shelf_id=shelf_id)
+        watch_status = db.op.get_show_list_watch_status(cduid=auth_user.client_device_user_id,shelf_id=shelf_id)
         return {
             'shows': shows,
             'watch_status': watch_status

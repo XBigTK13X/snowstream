@@ -121,11 +121,20 @@ class Watched(BaseModel):
         sa.ForeignKey("client_device_user.id"),nullable=False
     )
     client_device_user: sorm.Mapped["ClientDeviceUser"] = sorm.relationship()
-    show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("show_episode.id"),nullable=True
+    shelf_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("shelf.id"),nullable=True
     )
     movie_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("movie.id"),nullable=True
+    )
+    show_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("show.id"),nullable=True
+    )    
+    show_season_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("show_season.id"),nullable=True
+    )
+    show_episode_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("show_episode.id"),nullable=True
     )
     streamable_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("streamable.id"),nullable=True

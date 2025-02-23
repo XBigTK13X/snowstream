@@ -38,6 +38,21 @@ def set_watch_status(
                 db.commit()
                 return deleted
 
+def get_shelf_watch_status(
+    cduid:int,
+    shelf_id:int
+):
+    with DbSession() as db:
+        watched = (
+            db.query(dm.Watched)
+            .filter(
+                dm.Watched.client_device_user_id == cduid,
+                dm.Watched.shelf_id == shelf_id
+            )
+            .first()
+        )
+        return watched_to_bool(watched)
+
 def get_movie_watch_status(
     cduid:int,
     movie_id:int
@@ -73,6 +88,20 @@ def get_show_season_watch_status(
     season_id:int
 ):
     with DbSession() as db:
+        season_watched = (
+            db.query(dm.Watched)
+            .filter(
+                dm.Watched.client_device_user_id == cduid,
+                dm.Watched.show_season_id == season_id
+            ).first()
+        )
+        if season_watched != None:
+            return {
+                'season_watched': True,
+                'watched_count': None,
+                'episode_count': None,
+                'watched_episode_ids': None
+            }
         season_episodes = (
             db.query(dm.ShowEpisode)
             .filter(dm.ShowEpisode.show_season_id == season_id)
@@ -99,6 +128,20 @@ def get_show_watch_status(
     show_id:int
 ):
     with DbSession() as db:
+        show_watched = (
+            db.query(dm.Watched)
+            .filter(
+                dm.Watched.client_device_user_id == cduid,
+                dm.Watched.show_id == show_id)
+        ).first()
+        if show_watched != None:
+            return {
+                'show_watched': True,
+                'watched_count': None,
+                'episode_count': None,
+                'watched_episode_ids': None,
+                'watched_season_counts': None
+            }
         seasons = (
             db.query(dm.ShowSeason)
             .filter(dm.ShowSeason.show_id == show_id)
@@ -138,3 +181,11 @@ def get_show_watch_status(
             'watched_episode_ids': [xx.show_episode_id for xx in watched],
             'watched_season_counts': season_counts
         }
+
+def get_shelf_show_list_watch_status(cduid:int,shelf_id:int):
+    shelf_watched = get_shelf_watch_status(cduid=cduid,shelf_id=shelf_id)
+    if shelf_watched:
+        return {
+
+        }
+    

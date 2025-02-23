@@ -138,9 +138,27 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column(
+            "shelf_id",
+            sa.Integer,
+            sa.ForeignKey('shelf.id'),
+            nullable=True
+        ),
+        sa.Column(
             "movie_id",
             sa.Integer,
             sa.ForeignKey("movie.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "show_id",
+            sa.Integer,
+            sa.ForeignKey("show.id"),
+            nullable=True,
+        ),
+        sa.Column(
+            "show_season_id",
+            sa.Integer,
+            sa.ForeignKey("show_season.id"),
             nullable=True,
         ),
         sa.Column(
