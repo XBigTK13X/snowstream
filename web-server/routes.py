@@ -219,28 +219,45 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
-        return db.op.get_show_list_by_shelf(shelf_id=shelf_id)
+        shows = db.op.get_show_list_by_shelf(shelf_id=shelf_id)
+        watch_status = db.op.get_show_shelf_watch_status(cduid=auth_user.client_device_user_id,shelf_id=shelf_id)
+        return {
+            'shows': shows,
+            'watch_status': watch_status
+        }
 
     @router.get("/show/season/list",tags=['Show'])
     def get_show_season_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_id: int,
     ):
-        return db.op.get_show_season_list(show_id=show_id)
+        seasons = db.op.get_show_season_list(show_id=show_id)
+        watch_status = db.op.get_show_watch_status(cduid=auth_user.client_device_user_id,show_id=show_id)
+        return {
+            'seasons':seasons,
+            'watch_status':watch_status
+        }
 
     @router.get("/show/season/episode/list",tags=['Show'])
     def get_show_season_episode_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_season_id: int,
     ):
-        return db.op.get_season_episode_list(show_season_id=show_season_id)
+        episodes = db.op.get_show_episode_list(show_season_id=show_season_id)
+        watch_status = db.op.get_show_season_watch_status(cduid=auth_user.client_device_user_id,season_id=show_season_id)
+        return {
+            'episodes':episodes,
+            'watch_status': watch_status
+        }
 
     @router.get("/show/season/episode",tags=['Show'])
-    def get_season_episode_details(
+    def get_show_episode_details(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         episode_id: int,
     ):
-        return db.op.get_season_episode_details_by_id(episode_id=episode_id)
+        episode = db.op.get_show_episode_details_by_id(episode_id=episode_id)
+        episode.watched = db.op.get_show_episode_watch_status(cduid=auth_user.client_device_user_id,episode_id=episode_id)
+        return episode
 
     @router.post("/watch/status")
     def set_watch_status(

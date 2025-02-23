@@ -276,11 +276,37 @@ export class ApiClient {
         return `${this.baseURL}/video/transcode?video_file_id=${video_file_id}`
     }
 
+    setShelfWatchStatus(shelfId, watched) {
+        return this.post('/watch/status', { shelf_id: shelfId, status: watched })
+    }
+
     setMovieWatchStatus(movieId, watched) {
         return this.post('/watch/status', { movie_id: movieId, status: watched })
     }
 
+    setShowWatchStatus(showId, watched) {
+        return this.post('/watch/status', { show_id: showId, status: watched })
+    }
+
+    setSeasonWatchStatus(seasonId, watched) {
+        return this.post('/watch/status', { show_season_id: seasonId, status: watched })
+    }
+
+    setEpisodeWatchStatus(episodeId, watched) {
+        return this.post('/watch/status', { show_episode_id: episodeId, status: watched })
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
+    }
+
+    formatEpisodeTitle(episode) {
+        let seasonPad = episode.season.season_order_counter.toString().padStart(2, '0')
+        let episodePad = episode.episode_order_counter.toString().padStart(3, '0')
+        let slug = `S${seasonPad}E${episodePad}`
+        if (!episode.name) {
+            return slug
+        }
+        return `${slug} - ${episode.name}`
     }
 }

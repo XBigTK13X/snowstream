@@ -102,7 +102,7 @@ def create_show_episode(show_season_id: int, episode_order_counter: int):
 # https://docs.sqlalchemy.org/en/20/orm/queryguide/inheritance.html
 
 
-def get_season_episode_details_by_id(episode_id: int):
+def get_show_episode_details_by_id(episode_id: int):
     with DbSession() as db:
         episode = (
             db.query(dm.ShowEpisode)
@@ -119,7 +119,7 @@ def get_season_episode_details_by_id(episode_id: int):
         return episode
 
 
-def get_season_episode(show_season_id: int, episode_order_counter: int):
+def get_show_episode(show_season_id: int, episode_order_counter: int):
     with DbSession() as db:
         return (
             db.query(dm.ShowEpisode)
@@ -130,7 +130,7 @@ def get_season_episode(show_season_id: int, episode_order_counter: int):
         )
 
 
-def get_season_episode_list(show_season_id: int):
+def get_show_episode_list(show_season_id: int):
     with DbSession() as db:
         episodes = (
             db.query(dm.ShowEpisode)

@@ -109,6 +109,9 @@ class Tag(BaseModel):
 
 class WatchStatus(BaseModel):
     status: bool
+    shelf_id: int | None = None
     movie_id: int | None = None
+    show_id: int | None = None
+    show_season_id: int | None = None
     show_episode_id: int | None = None
     streamable_id: int | None = None

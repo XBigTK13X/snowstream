@@ -22,8 +22,24 @@ export default function EpisodeDetailsPage() {
             })
         }
     })
+    const setWatchStatus = (status) => {
+        apiClient.setEpisodeWatchStatus(episodeId, !episode.watched)
+            .then(() => {
+                apiClient.getEpisode(episodeId).then((response) => {
+                    setEpisode(response)
+                })
+            })
+    }
     if (shelf && episode) {
-        return <C.Button title="Play" onPress={routes.func(routes.playMedia, { videoFileIndex: 0, episodeId: episodeId, shelfId: shelfId })} />
+        const watchTitle = episode.watched ? "Set Status to Unplayed" : "Set Status to Watched"
+        return (<C.View>
+            <C.SnowText>Episode Title: {apiClient.formatEpisodeTitle(episode)}</C.SnowText>
+            <C.SnowButton
+                title="Play"
+                onPress={routes.func(routes.playMedia, { videoFileIndex: 0, episodeId: episodeId, shelfId: shelfId })}
+            />
+            <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
+        </C.View>)
     }
     return <C.Text>Loading episode {episodeId}.</C.Text>
 }
