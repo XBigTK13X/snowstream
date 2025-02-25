@@ -56,6 +56,21 @@ Second Pass Thoughts
         - If all shows in shelf are marked as watched
           - Delete all shows from Watched and insert shelf
 
+    - Is it a season?
+      - If shelf not in Watched
+        - If show not in watched
+          - Insert season into Watched
+          - If all seasons in show are marked as watched
+            - Delete all seasons from Watched and insert show
+
+    - Is it an episode?
+      - If shelf not in Watched
+        - If show not in Watched
+          - If season not in Watched
+            - Insert episode into Watched
+            - If all episode in season are marked as watched
+              - Delete all episodes from Watched and insert season
+
   3. Marking things unwatched workflow
     - Is it a movie shelf?
       - Delete all movies from Watched table
@@ -76,11 +91,32 @@ Second Pass Thoughts
         - Delete show from Watched table
 
     - Is it a show?
-      - If 
+      - If shelf in Watched
+        - Delete shelf
+        - Insert every show other than this one into watched
+      - Otherwise
+        - Delete show from Watched table
+    
+    - Is it a season?
+      - If shelf in Watched
+        - Delete shelf
+        - Insert every show other than this one into Watched
+        - Insert every season other than this one into Watched
+      - Otherwise
+        - Delete show from Watched table
+
+    - Is it an episode?
+      - If shelf in Watched
+        - Delete shelf
+        - Insert every show other than this one into Watched
+        - Insert every season other than this one into Watched
+        - Insert every episode other than this one into Watched
+      - Otherwise
+        - Delete episode from Watched table
 
   3. Checking if things watched workflow
     - Is it a movie shelf?
-      - Is the it in the Watched Table?
+      - Is the shelf in the Watched Table?
         - Watched
 
     - Is it a movie?
@@ -89,8 +125,53 @@ Second Pass Thoughts
       - Is the movie in the Watched table?
         - Watched
 
+    - Is it a show shelf?
+      - Is the shelf in the Watched table?
+        - watched
 
+    - Is it a show?
+      - Is the shelf in the table?
+        - Watched
+      - Is the show in the table?
+        - Watched
+      
+    - Is it a show season?
+      - Is the shelf in the table?
+        - Watched
+      - Is the show in the table?
+        - Watched
+      - Is the season in the table?
+        - Watched
 
+    - Is it a show episode?
+      - Is the shelf in the table?
+        - Watched
+      - Is the show in the table?
+        - Watched
+      - Is the season in the table?
+        - watched
+      - Is the episode in the table?
+        - Watched
+
+  4. Determining In-Progress items
+    - Episode/movie has an entry in the Progress table?
+      - It is in progress
+
+  5. Determining Next Up items
+    - Is it in-progress?
+      - It is next up
+    - Is it a movie?
+      - It is unwatched?
+        - It is next up
+    - Is it an episode?
+      - Is it unwatched and the nearest neighbor to a watched episode?
+        - It is next up
+
+  6. Bubbling client device
+    - Need all of the above to join on client device table based on cduid isolation settings
+      - Change queries from cduid=id to cduid._in(group)
+    - Need all of the above to filter if user has access restrictions
+      - Add a join and filter to all queries on tags at respective content levels
 
 ## Proposed Tables
 
