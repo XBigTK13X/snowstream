@@ -198,8 +198,8 @@ export class ApiClient {
         return this.get('/shelf', { shelf_id: shelfId })
     }
 
-    getMovieList(shelfId) {
-        return this.get('/movie/list', { shelf_id: shelfId })
+    getMovieList(shelfId, watchedStatus) {
+        return this.get('/movie/list', { shelf_id: shelfId, watched_status: watchedStatus })
     }
 
     getMovie(movieId) {
@@ -281,7 +281,7 @@ export class ApiClient {
     }
 
     setMovieWatchStatus(movieId, watched) {
-        return this.post('/watch/status', { movie_id: movieId, status: watched })
+        return this.post('/movie/watched', { movie_id: movieId, is_watched: watched })
     }
 
     setShowWatchStatus(showId, watched) {

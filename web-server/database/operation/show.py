@@ -34,20 +34,42 @@ def add_show_to_shelf(show_id: int, shelf_id: int):
         return dbm
 
 
-def get_show_list_by_shelf(shelf_id: int):
+def get_show_list_by_shelf(shelf_id: int,include_files:bool=True):
     with DbSession() as db:
+        query = db.query(dm.Show)
+        if include_files:
+            query = (
+                query.options(sorm.joinedload(dm.Show.shelf))
+                .options(sorm.joinedload(dm.Show.image_files))
+                .options(sorm.joinedload(dm.Show.metadata_files))
+                .options(sorm.joinedload(dm.Show.tags))
+            )
         shows = (
-            db.query(dm.Show)
-            .options(sorm.joinedload(dm.Show.shelf))
-            .options(sorm.joinedload(dm.Show.image_files))
-            .options(sorm.joinedload(dm.Show.metadata_files))
-            .options(sorm.joinedload(dm.Show.tags))
+            query
             .filter(dm.ShowShelf.shelf_id == shelf_id)
             .all()
         )
         for show in shows:
             show.convert_local_paths_to_web_paths(config=config)
         return shows
+
+def get_show_season_list_by_shelf(shelf_id:int):
+    with DbSession() as db:
+        return (
+            db.query(dm.ShowSeason)
+            .options(sorm.joinedload(dm.ShowSeason.show))
+            .filter(dm.ShowSeason.show.shelf_id == shelf_id)
+            .all()
+        )
+
+def get_episode_list_by_shelf(shelf_id:int):
+    with DbSession() as db:
+        return (
+            db.query(dm.ShowEpisode)
+            .options(sorm.joinedload(dm.ShowEpisode.season))
+            .options(sorm.joinedload(dm.ShowEpisode.season.show))
+            .filter(dm.ShowEpisode.season.show.shelf_id == shelf_id).all()
+        )
 
 
 def create_show_season(show_id: int, season_order_counter: int):
@@ -111,7 +133,7 @@ def get_show_episode_list(show_id:int):
     with DbSession() as db:
         return (
             db.query(dm.ShowEpisode)
-            .filter(dm.ShowEpisode.show_season_id._in(season_ids))
+            .filter(dm.ShowEpisode.show_season_id.in_(season_ids))
             .all()
         )
 
@@ -162,7 +184,6 @@ def get_show_season_episode_list(show_season_id: int,include_files:bool=False):
             for episode in episodes:
                 episode.convert_local_paths_to_web_paths(config=config)
         return episodes
-
 
 def create_show_episode_video_file(show_episode_id: int, video_file_id: int):
     with DbSession() as db:

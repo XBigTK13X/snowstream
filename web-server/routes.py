@@ -202,8 +202,15 @@ def auth_required(router):
     def get_movie_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
+        watched_status:str=None
     ):
-        return db.op.get_movie_list_by_shelf(shelf_id=shelf_id)
+        if watched_status == 'All' or watched_status == None:
+            return db.op.get_movie_list_by_shelf(shelf_id=shelf_id)
+        return db.op.get_partial_shelf_movie_list(
+            cduid=auth_user.client_device_user_id,
+            shelf_id=shelf_id,
+            only_watched=True if watched_status == 'Watched' else False
+        )
 
     @router.get("/movie",tags=['Movie'])
     def get_movie_details(
@@ -211,8 +218,19 @@ def auth_required(router):
         movie_id: int,
     ):
         movie = db.op.get_movie_details_by_id(movie_id=movie_id)
-        movie.watched = db.op.get_movie_watch_status(cduid=auth_user.client_device_user_id,movie_id=movie_id)
+        movie.watched = db.op.get_movie_watched(cduid=auth_user.client_device_user_id,movie_id=movie_id)
         return movie
+
+    @router.post("/movie/watched")
+    def set_movie_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        status:am.WatchedStatus
+    ):
+        return db.op.set_movie_watched(
+            cduid=auth_user.client_device_user_id,
+            movie_id=status.movie_id,
+            is_watched=status.is_watched
+        )
 
     @router.get("/show/list",tags=['Show'])
     def get_show_list(
@@ -258,13 +276,6 @@ def auth_required(router):
         episode = db.op.get_show_episode_details_by_id(episode_id=episode_id)
         episode.watched = db.op.get_show_episode_watch_status(cduid=auth_user.client_device_user_id,episode_id=episode_id)
         return episode
-
-    @router.post("/watch/status")
-    def set_watch_status(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        status: am.WatchStatus
-    ):
-        return db.op.set_watch_status(status=status,cduid=auth_user.client_device_user_id)
 
     return router
 

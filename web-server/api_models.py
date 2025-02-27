@@ -107,8 +107,8 @@ class Tag(BaseModel):
     id: int | None = None
     name: str
 
-class WatchStatus(BaseModel):
-    status: bool
+class WatchedStatus(BaseModel):
+    is_watched: bool
     shelf_id: int | None = None
     movie_id: int | None = None
     show_id: int | None = None

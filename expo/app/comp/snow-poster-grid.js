@@ -1,6 +1,7 @@
 import { View } from 'react-native'
 import { Button, Image } from '@rneui/themed'
 import SnowGrid from './snow-grid'
+import SnowText from './snow-text'
 
 export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {
@@ -32,6 +33,7 @@ export function SnowPosterGrid(props) {
     }
     return (
         <View>
+            <SnowText>Showing {props.data.length} items.</SnowText>
             <SnowGrid data={props.data} renderItem={renderItem} itemWidth={250} itemHeight={250} />
         </View>
     )

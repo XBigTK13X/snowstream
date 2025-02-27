@@ -7,6 +7,8 @@ export default function MovieListPage() {
     const [shelf, setShelf] = C.React.useState(null)
     const [movies, setMovies] = C.React.useState(null)
     const shelfId = localParams.shelfId
+    let currentStatus = localParams.watchStatus || 'Unwatched'
+    let nextStatus = 'Watched'
     C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(shelfId).then((response) => {
@@ -14,16 +16,33 @@ export default function MovieListPage() {
             })
         }
         if (!movies) {
-            apiClient.getMovieList(shelfId).then((response) => {
+            apiClient.getMovieList(shelfId, currentStatus).then((response) => {
                 setMovies(response)
             })
         }
     })
     if (shelf && movies) {
+        const nextWatchedStatus = () => {
+            if (currentStatus == 'Unwatched') {
+                nextStatus = 'Watched'
+            }
+            if (currentStatus == 'Watched') {
+                nextStatus = 'All'
+            }
+            if (currentStatus == 'All') {
+                nextStatus = 'Unwatched'
+            }
+            routes.goto(routes.movieList, { shelfId: shelf.id, watchStatus: nextStatus })
+        }
         const gotoMovie = (movie) => {
             routes.goto(routes.movieDetails, { shelfId: shelf.id, movieId: movie.id })
         }
-        return <C.SnowPosterGrid onPress={gotoMovie} data={movies} />
+        return (
+            <C.View>
+                <C.Button title={"Showing: " + currentStatus} onPress={nextWatchedStatus} />
+                <C.SnowPosterGrid onPress={gotoMovie} data={movies} />
+            </C.View>
+        )
     }
     return <C.Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</C.Text>
 }
