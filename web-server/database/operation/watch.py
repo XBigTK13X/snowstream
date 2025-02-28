@@ -60,6 +60,11 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
         shelf_id = movie.shelf.id
         shelf_watched = get_movie_shelf_watched(cduid=cduid,shelf_id=shelf_id)
         movies = get_movie_list_by_shelf(shelf_id=shelf_id)  
+        import pprint
+        pprint.pprint({
+            'is_watched':is_watched,
+            'shelf_watched':shelf_watched            
+        })
         if is_watched and not shelf_watched:
             watched_movies = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id == cduid,
@@ -93,6 +98,7 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
                 dm.Watched.client_device_user_id == cduid,
                 dm.Watched.movie_id == movie_id
             ).delete()          
+            db.commit()
             return False
     return is_watched
 
