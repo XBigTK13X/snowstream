@@ -376,9 +376,10 @@ def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
 
 def set_show_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
     with DbSession() as db:
+        shelf_show_ids = [xx.id for xx in get_show_list_by_shelf(shelf_id=shelf_id,include_files=False)]
         deleted_shows = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
-            dm.Watched.show_id != None
+            dm.Watched.show_id.in_(shelf_show_ids)
         ).delete()
         deleted_seasons = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
@@ -388,6 +389,7 @@ def set_show_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
             dm.Watched.client_device_user_id == cduid,
             dm.Watched.show_episode_id != None
         ).delete()
+        db.commit()
         if is_watched:            
             dbm = dm.Watched()
             dbm.client_device_user_id = cduid

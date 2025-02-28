@@ -143,10 +143,9 @@ def upsert_movie_tag(movie_id: int, tag_id: int):
 
 def set_movie_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
     with DbSession() as db:
-        movie_ids = [xx.id for xx in get_movie_list_by_shelf(shelf_id=shelf_id)]
         db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
-            dm.Watched.movie_id.in_(movie_ids)
+            dm.Watched.shelf_id == shelf_id
         ).delete()
         db.commit()
         if is_watched:            
@@ -168,7 +167,8 @@ def get_movie_shelf_watched(cduid:int,shelf_id:int):
     with DbSession() as db:
         watched = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
-            dm.Watched.shelf_id == shelf_id
+            dm.Watched.shelf_id == shelf_id,
+            dm.Watched.movie_id == None
         ).first()
         return False if watched == None else True
 
@@ -182,7 +182,8 @@ def get_partial_shelf_movie_list(cduid:int,shelf_id:int,only_watched:bool=True):
             return movies if only_watched else []
         watched_movies = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
-            dm.Watched.movie_id.in_([xx.id for xx in movies])
+            dm.Watched.shelf_id == shelf_id,
+            dm.Watched.movie_id != None
         ).all()
         watched_ids = [xx.movie_id for xx in watched_movies]
         if only_watched:
@@ -199,7 +200,8 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
         if is_watched and not shelf_watched:
             watched_movies = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id == cduid,
-                dm.Watched.shelf_id == shelf_id
+                dm.Watched.shelf_id == shelf_id,
+                dm.Watched.movie_id != None
             ).all()
             if len(watched_movies) == len(movies) - 1:
                 set_movie_shelf_watched(cduid,shelf_id=shelf_id,is_watched=True)
@@ -207,6 +209,7 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
             else:
                 dbm = dm.Watched()
                 dbm.client_device_user_id = cduid
+                dbm.shelf_id = shelf_id
                 dbm.movie_id = movie_id
                 db.add(dbm)
                 db.commit()
@@ -214,11 +217,13 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
                 return True
         if not is_watched and shelf_watched:
             set_movie_shelf_watched(cduid=cduid,shelf_id=shelf_id,is_watched=False)
-            all_other_movies = [xx for xx in movies if xx.id != movie_id]
             movies_watched = []
-            for other_movie in all_other_movies:
+            for other_movie in movies:
+                if other_movie.id == movie_id:
+                    continue
                 movies_watched.append({
-                    'movie_id':other_movie.id,
+                    'movie_id': other_movie.id,
+                    'shelf_id': shelf_id,
                     'client_device_user_id': cduid
                 })
             db.bulk_insert_mappings(dm.Watched,movies_watched)
@@ -227,6 +232,7 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
         if not is_watched and not shelf_watched:
             db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id == cduid,
+                dm.Watched.shelf_id == shelf_id,
                 dm.Watched.movie_id == movie_id
             ).delete()          
             db.commit()
@@ -242,6 +248,7 @@ def get_movie_watched(cduid:int,movie_id:int):
     with DbSession() as db:
         watched = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
+            dm.Watched.shelf_id == shelf_id,
             dm.Watched.movie_id == movie_id
         ).first()
         return False if watched == None else True
