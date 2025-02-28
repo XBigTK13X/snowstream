@@ -144,10 +144,11 @@ def upsert_movie_tag(movie_id: int, tag_id: int):
 def set_movie_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
     with DbSession() as db:
         movie_ids = [xx.id for xx in get_movie_list_by_shelf(shelf_id=shelf_id)]
-        deleted_movies = db.query(dm.Watched).filter(
+        db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
             dm.Watched.movie_id.in_(movie_ids)
         ).delete()
+        db.commit()
         if is_watched:            
             dbm = dm.Watched()
             dbm.client_device_user_id = cduid
@@ -161,6 +162,7 @@ def set_movie_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
                 dm.Watched.client_device_user_id == cduid,
                 dm.Watched.shelf_id == shelf_id
             ).delete()            
+            db.commit()
 
 def get_movie_shelf_watched(cduid:int,shelf_id:int):
     with DbSession() as db:
@@ -173,6 +175,11 @@ def get_movie_shelf_watched(cduid:int,shelf_id:int):
 def get_partial_shelf_movie_list(cduid:int,shelf_id:int,only_watched:bool=True):
     with DbSession() as db:
         movies = get_movie_list_by_shelf(shelf_id=shelf_id)
+        shelf_watched = get_movie_shelf_watched(cduid=cduid,shelf_id=shelf_id)
+        print(shelf_watched)
+        print(only_watched)
+        if shelf_watched:
+            return movies if only_watched else []
         watched_movies = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
             dm.Watched.movie_id.in_([xx.id for xx in movies])
@@ -189,11 +196,6 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
         shelf_id = movie.shelf.id
         shelf_watched = get_movie_shelf_watched(cduid=cduid,shelf_id=shelf_id)
         movies = get_movie_list_by_shelf(shelf_id=shelf_id)  
-        import pprint
-        pprint.pprint({
-            'is_watched':is_watched,
-            'shelf_watched':shelf_watched            
-        })
         if is_watched and not shelf_watched:
             watched_movies = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id == cduid,
