@@ -373,3 +373,39 @@ def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
         db.commit()
         db.refresh(dbm)
         return dbm
+
+def set_show_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
+    with DbSession() as db:
+        deleted_shows = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.show_id != None
+        ).delete()
+        deleted_seasons = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.show_season_id != None
+        ).delete()
+        deleted_episodes = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.show_episode_id != None
+        ).delete()
+        if is_watched:            
+            dbm = dm.Watched()
+            dbm.client_device_user_id = cduid
+            dbm.shelf_id = shelf_id            
+            db.add(dbm)
+            db.commit()
+            db.refresh(dbm)
+            return dbm
+        else:
+            db.query(dm.Watched).filter(
+                dm.Watched.client_device_user_id == cduid,
+                dm.Watched.shelf_id == shelf_id
+            ).delete()            
+
+def get_show_shelf_watched(cduid:int,shelf_id:int):
+    with DbSession() as db:
+        watched = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.shelf_id == shelf_id
+        ).first()
+        return False if watched == None else True

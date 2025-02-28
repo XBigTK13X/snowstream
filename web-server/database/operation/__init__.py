@@ -14,4 +14,3 @@ from database.operation.tag import *
 from database.operation.transcode import *
 from database.operation.user import *
 from database.operation.video_file import *
-from database.operation.watch import *

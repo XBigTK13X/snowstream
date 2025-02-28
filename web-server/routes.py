@@ -117,6 +117,27 @@ def auth_required(router):
             return None
         return db.op.upsert_shelf(shelf=shelf)
 
+    @router.post("/shelf/watched/toggle")
+    def toggle_shelf_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        movie_shelf_id: int=None,
+        show_shelf_id: int=None
+    ):
+        if movie_shelf_id:
+            is_watched = db.op.get_movie_shelf_watched(
+                cduid=auth_user.client_device_user_id,
+                shelf_id=movie_shelf_id
+            )
+            db.op.set_movie_shelf_watched(
+                cduid=auth_user.client_device_user_id,
+                shelf_id=movie_shelf_id,
+                is_watched=not is_watched
+            )
+            return not is_watched
+        if show_shelf_id:
+            # TODO Implement
+            pass
+
     @router.delete("/shelf/{shelf_id}",tags=['Shelf'])
     def delete_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -231,6 +252,22 @@ def auth_required(router):
             movie_id=status.movie_id,
             is_watched=status.is_watched
         )
+
+    @router.post("/movie/watched/toggle")
+    def toggle_movie_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        movie_id:int
+    ):
+        is_watched = db.op.get_movie_watched(
+            cduid=auth_user.client_device_user_id,
+            movie_id=movie_id
+        )
+        db.op.set_movie_watched(
+            cduid=auth_user.client_device_user_id,
+            movie_id=movie_id,
+            is_watched=not is_watched
+        )
+        return not is_watched
 
     @router.get("/show/list",tags=['Show'])
     def get_show_list(

@@ -39,6 +39,13 @@ export default function LandingPage() {
                         hasTVPreferredFocus={itemIndex === 0}
                         title={destination.name}
                         onPress={routes.func(routes.movieList, { shelfId: destination.id })}
+                        onLongPress={() => {
+                            apiClient.toggleMovieShelfWatchStatus(destination.id).then(() => {
+                                apiClient.getShelfList().then((response) => {
+                                    setShelves(response)
+                                })
+                            })
+                        }}
                     />
                 )
             } else if (destination.kind && destination.kind === 'Shows') {
@@ -47,6 +54,13 @@ export default function LandingPage() {
                         hasTVPreferredFocus={itemIndex === 0}
                         title={destination.name}
                         onPress={routes.func(routes.showList, { shelfId: destination.id })}
+                        onLongPress={() => {
+                            apiClient.toggleShowShelfWatchStatus(destination.id).then(() => {
+                                apiClient.getShelfList().then((response) => {
+                                    setShelves(response)
+                                })
+                            })
+                        }}
                     />
                 )
             } else {

@@ -27,6 +27,7 @@ export function SnowPosterGrid(props) {
                         key={item.id}
                         source={{ uri: posterUrl }} />}
                     onPress={() => { props.onPress(item) }}
+                    onLongPress={() => { props.onLongPress(item) }}
                 />
             )
         }

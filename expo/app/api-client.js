@@ -280,8 +280,20 @@ export class ApiClient {
         return this.post('/watch/status', { shelf_id: shelfId, status: watched })
     }
 
+    toggleMovieShelfWatchStatus(shelfId) {
+        return this.post(`/shelf/watched/toggle?movie_shelf_id=${shelfId}`)
+    }
+
+    toggleShowShelfWatchStatus(shelfId) {
+        return this.post(`/shelf/watched/toggle?show_shelf_id=${shelfId}`)
+    }
+
     setMovieWatchStatus(movieId, watched) {
         return this.post('/movie/watched', { movie_id: movieId, is_watched: watched })
+    }
+
+    toggleMovieWatchStatus(movieId) {
+        return this.post(`/movie/watched/toggle?movie_id=${movieId}`)
     }
 
     setShowWatchStatus(showId, watched) {

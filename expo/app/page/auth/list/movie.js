@@ -37,10 +37,19 @@ export default function MovieListPage() {
         const gotoMovie = (movie) => {
             routes.goto(routes.movieDetails, { shelfId: shelf.id, movieId: movie.id })
         }
+
+        const toggleWatchedMovie = (movie) => {
+            apiClient.toggleMovieWatchStatus(movie.id).then(() => {
+                apiClient.getMovieList(shelfId, currentStatus).then((response) => {
+                    setMovies(response)
+                })
+            })
+        }
+
         return (
             <C.View>
                 <C.Button title={"Showing: " + currentStatus} onPress={nextWatchedStatus} />
-                <C.SnowPosterGrid onPress={gotoMovie} data={movies} />
+                <C.SnowPosterGrid onPress={gotoMovie} onLongPress={toggleWatchedMovie} data={movies} />
             </C.View>
         )
     }
