@@ -176,8 +176,6 @@ def get_partial_shelf_movie_list(cduid:int,shelf_id:int,only_watched:bool=True):
     with DbSession() as db:
         movies = get_movie_list_by_shelf(shelf_id=shelf_id)
         shelf_watched = get_movie_shelf_watched(cduid=cduid,shelf_id=shelf_id)
-        print(shelf_watched)
-        print(only_watched)
         if shelf_watched:
             return movies if only_watched else []
         watched_movies = db.query(dm.Watched).filter(

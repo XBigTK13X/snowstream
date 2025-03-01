@@ -7,6 +7,8 @@ export default function ShowListPage() {
     const [shelf, setShelf] = C.React.useState(null)
     const [shows, setShows] = C.React.useState(null)
     const shelfId = localParams.shelfId
+    let currentStatus = localParams.watchStatus || 'Unwatched'
+    let nextStatus = 'Watched'
     C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(localParams.shelfId).then((response) => {
@@ -14,18 +16,39 @@ export default function ShowListPage() {
             })
         }
         if (!shows) {
-            apiClient.getShowList(shelfId).then((response) => {
+            apiClient.getShowList(shelfId, currentStatus).then((response) => {
                 setShows(response)
             })
         }
     })
     if (shelf && shows) {
+        const nextWatchedStatus = () => {
+            if (currentStatus == 'Unwatched') {
+                nextStatus = 'Watched'
+            }
+            if (currentStatus == 'Watched') {
+                nextStatus = 'All'
+            }
+            if (currentStatus == 'All') {
+                nextStatus = 'Unwatched'
+            }
+            routes.goto(routes.movieList, { shelfId: shelf.id, watchStatus: nextStatus })
+        }
         const gotoShow = (show) => {
             routes.goto(routes.seasonList, { shelfId: shelf.id, showId: show.id })
         }
+        const toggleWatchedShow = (show) => {
+            apiClient.toggleShowWatchStatus(show.id).then(() => {
+                apiClient.getShowList(shelfId, currentStatus).then((response) => {
+                    setShows(response)
+                })
+            })
+        }
+
         return (
             <C.View>
-                <C.SnowPosterGrid onPress={gotoShow} data={shows} />
+                <C.Button title={"Showing: " + currentStatus} onPress={nextWatchedStatus} />
+                <C.SnowPosterGrid onPress={gotoShow} onLongPress={toggleWatchedShow} data={shows} />
             </C.View>
         )
     }

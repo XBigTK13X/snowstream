@@ -376,18 +376,9 @@ def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
 
 def set_show_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
     with DbSession() as db:
-        shelf_show_ids = [xx.id for xx in get_show_list_by_shelf(shelf_id=shelf_id,include_files=False)]
-        deleted_shows = db.query(dm.Watched).filter(
+        db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
-            dm.Watched.show_id.in_(shelf_show_ids)
-        ).delete()
-        deleted_seasons = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id == cduid,
-            dm.Watched.show_season_id != None
-        ).delete()
-        deleted_episodes = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id == cduid,
-            dm.Watched.show_episode_id != None
+            dm.Watched.shelf_id == shelf_id
         ).delete()
         db.commit()
         if is_watched:            
@@ -403,6 +394,7 @@ def set_show_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
                 dm.Watched.client_device_user_id == cduid,
                 dm.Watched.shelf_id == shelf_id
             ).delete()            
+            db.commit()
 
 def get_show_shelf_watched(cduid:int,shelf_id:int):
     with DbSession() as db:
@@ -411,3 +403,21 @@ def get_show_shelf_watched(cduid:int,shelf_id:int):
             dm.Watched.shelf_id == shelf_id
         ).first()
         return False if watched == None else True
+
+def get_partial_shelf_show_list(cduid:int,shelf_id:int,only_watched:bool=True):
+    with DbSession() as db:
+        shows = get_show_list_by_shelf(shelf_id=shelf_id,include_files=False)
+        shelf_watched = get_show_shelf_watched(cduid=cduid,shelf_id=shelf_id)
+        if shelf_watched:
+            return shows if only_watched else []
+        watched_shows = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.shelf_id == shelf_id,
+            dm.Watched.show_id != None,
+            dm.Watched.show_season_id == None,
+            dm.Watched.show_episode_id == None
+        ).all()
+        watched_ids = [xx.movie_id for xx in watched_shows]
+        if only_watched:
+            return [xx for xx in shows if xx.id in watched_ids]
+        return [xx for xx in shows if not xx.id in watched_ids]
