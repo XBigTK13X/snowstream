@@ -32,7 +32,7 @@ export default function ShowListPage() {
             if (currentStatus == 'All') {
                 nextStatus = 'Unwatched'
             }
-            routes.goto(routes.movieList, { shelfId: shelf.id, watchStatus: nextStatus })
+            routes.goto(routes.showList, { shelfId: shelf.id, watchStatus: nextStatus })
         }
         const gotoShow = (show) => {
             routes.goto(routes.seasonList, { shelfId: shelf.id, showId: show.id })
