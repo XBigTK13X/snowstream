@@ -47,6 +47,7 @@ def get_show_list_by_shelf(shelf_id: int,include_files:bool=True):
         shows = (
             query
             .filter(dm.ShowShelf.shelf_id == shelf_id)
+            .order_by(dm.Show.name)
             .all()
         )
         for show in shows:

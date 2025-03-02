@@ -59,6 +59,7 @@ def get_movie_list_by_shelf(shelf_id: int):
             db.query(dm.Movie)
             .join(dm.MovieShelf)
             .filter(dm.MovieShelf.shelf_id == shelf_id)
+            .order_by(dm.Movie.name)
             .all()
         )
         for movie in movies:
