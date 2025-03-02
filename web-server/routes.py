@@ -280,7 +280,7 @@ def auth_required(router):
         return db.op.get_partial_shelf_show_list(
             cduid=auth_user.client_device_user_id,
             shelf_id=shelf_id,
-            only_watched=watched_status
+            only_watched=True if watched_status == 'Watched' else False
         )        
 
     @router.post("/movie/watched/toggle")
