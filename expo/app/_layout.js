@@ -3,6 +3,7 @@ import C from './common'
 import { ThemeProvider, createTheme } from '@rneui/themed'
 import { SessionProvider } from './auth-context'
 import { SettingsProvider } from './settings-context'
+import { MessageDisplayProvider } from './message-context'
 
 const routes = require('./routes')
 
@@ -82,8 +83,14 @@ function Footer() {
     )
 }
 
-// TODO Do I want always visible nav bars, or some kind of drawer?
+function MessageDisplay() {
+    const { message } = C.useMessageDisplay()
+    return (
+        <C.SnowText>Message: {message}</C.SnowText>
+    )
+}
 
+// TODO Do I want always visible nav bars, or some kind of drawer?
 function SafeAreaStub(props) {
     return <C.View style={styles.safeArea}>{props.children}</C.View>
 }
@@ -114,18 +121,22 @@ export default function RootLayout() {
             )
         }
     }
+
     return (
         <ThemeProvider theme={theme}>
             <PlatformWrapper>
                 <SettingsProvider>
                     <SessionProvider>
-                        <C.View style={styles.videoSqueeze}>
-                            <Header />
-                            <C.ScrollView>
-                                <C.Slot />
-                            </C.ScrollView>
-                            <Footer />
-                        </C.View>
+                        <MessageDisplayProvider>
+                            <C.View style={styles.videoSqueeze}>
+                                <Header />
+                                <MessageDisplay />
+                                <C.ScrollView>
+                                    <C.Slot />
+                                </C.ScrollView>
+                                <Footer />
+                            </C.View>
+                        </MessageDisplayProvider>
                     </SessionProvider>
                 </SettingsProvider>
             </PlatformWrapper>

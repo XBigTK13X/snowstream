@@ -21,8 +21,8 @@ import {
 import { Button, ListItem, Image } from '@rneui/themed'
 
 import { useSession } from './auth-context'
-
 import { useSettings } from './settings-context'
+import { useMessageDisplay } from './message-context'
 
 import SnowGrid from './comp/snow-grid'
 import SnowText from './comp/snow-text'
@@ -69,6 +69,7 @@ export default {
     TouchableOpacity,
     TVFocusGuideView,
     useLocalSearchParams,
+    useMessageDisplay,
     useNavigation,
     useSession,
     useSettings,

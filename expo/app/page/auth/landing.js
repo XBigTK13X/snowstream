@@ -1,10 +1,11 @@
 import C from '../../common'
 
-export default function LandingPage() {
+export default function LandingPage(props) {
     const { signOut, apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
     const [shelves, setShelves] = C.React.useState(null)
     const [streamSources, setStreamSources] = C.React.useState(null)
+    const { setMessageDisplay } = C.useMessageDisplay()
 
     C.React.useEffect(() => {
         if (!shelves) {
@@ -40,9 +41,10 @@ export default function LandingPage() {
                         title={destination.name}
                         onPress={routes.func(routes.movieList, { shelfId: destination.id })}
                         onLongPress={() => {
-                            apiClient.toggleMovieShelfWatchStatus(destination.id).then(() => {
+                            apiClient.toggleMovieShelfWatchStatus(destination.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
                                     setShelves(response)
+                                    setMessageDisplay(`Set shelf ${destination.name} to ${watched ? 'watched' : 'unplayed'}.`)
                                 })
                             })
                         }}
@@ -55,9 +57,10 @@ export default function LandingPage() {
                         title={destination.name}
                         onPress={routes.func(routes.showList, { shelfId: destination.id })}
                         onLongPress={() => {
-                            apiClient.toggleShowShelfWatchStatus(destination.id).then(() => {
+                            apiClient.toggleShowShelfWatchStatus(destination.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
                                     setShelves(response)
+                                    setMessageDisplay(`Set shelf ${destination.name} to ${watched ? 'watched' : 'unplayed'}`)
                                 })
                             })
                         }}

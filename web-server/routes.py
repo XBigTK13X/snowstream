@@ -135,8 +135,16 @@ def auth_required(router):
             )
             return not is_watched
         if show_shelf_id:
-            # TODO Implement
-            pass
+            is_watched = db.op.get_show_shelf_watched(
+                cduid=auth_user.client_device_user_id,
+                shelf_id=show_shelf_id
+            )
+            db.op.set_show_shelf_watched(
+                cduid=auth_user.client_device_user_id,
+                shelf_id=show_shelf_id,
+                is_watched = not is_watched
+            )
+            return not is_watched
 
     @router.delete("/shelf/{shelf_id}",tags=['Shelf'])
     def delete_shelf(
