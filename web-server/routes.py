@@ -313,10 +313,8 @@ def auth_required(router):
         show_id: int,
     ):
         seasons = db.op.get_show_season_list(show_id=show_id,include_files=True)
-        watch_status = db.op.get_show_watch_status(cduid=auth_user.client_device_user_id,show_id=show_id)
         return {
-            'seasons':seasons,
-            'watch_status':watch_status
+            'seasons':seasons
         }
 
     @router.get("/show/season/episode/list",tags=['Show'])
