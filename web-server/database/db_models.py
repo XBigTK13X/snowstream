@@ -292,7 +292,7 @@ class Show(BaseModel):
     __tablename__ = "show"
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
-    shelf: sorm.Mapped["Shelf"] = sorm.relationship(secondary="show_shelf")
+    shelf: sorm.Mapped["Shelf"] = sorm.relationship(secondary="show_shelf",back_populates="shows")
     seasons: sorm.Mapped[List["ShowSeason"]] = sorm.relationship(back_populates='show')
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_image_file",back_populates="show")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_metadata_file",back_populates="show")

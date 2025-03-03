@@ -44,7 +44,7 @@ export default function LandingPage(props) {
                             apiClient.toggleMovieShelfWatchStatus(destination.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
                                     setShelves(response)
-                                    setMessageDisplay(`Set shelf ${destination.name} to ${watched ? 'watched' : 'unplayed'}.`)
+                                    setMessageDisplay(`Set shelf ${destination.name} to ${watched ? 'watched' : 'unwatched'}.`)
                                 })
                             })
                         }}
@@ -60,7 +60,7 @@ export default function LandingPage(props) {
                             apiClient.toggleShowShelfWatchStatus(destination.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
                                     setShelves(response)
-                                    setMessageDisplay(`Set shelf ${destination.name} to ${watched ? 'watched' : 'unplayed'}`)
+                                    setMessageDisplay(`Set shelf ${destination.name} to ${watched ? 'watched' : 'unwatched'}`)
                                 })
                             })
                         }}

@@ -29,7 +29,7 @@ export default function MovieDetailsPage() {
             })
     }
     if (shelf && movie) {
-        const watchTitle = movie.watched ? "Set Status to Unplayed" : "Set Status to Watched"
+        const watchTitle = movie.watched ? "Set Status to Unwatched" : "Set Status to Watched"
         return (
             <C.View>
                 <C.SnowText>Title: {movie.name}</C.SnowText>

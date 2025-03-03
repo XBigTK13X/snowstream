@@ -291,18 +291,18 @@ def auth_required(router):
             only_watched=True if watched_status == 'Watched' else False
         )        
 
-    @router.post("/movie/watched/toggle")
-    def toggle_movie_watched(
+    @router.post("/show/watched/toggle")
+    def toggle_show_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        movie_id:int
+        show_id:int
     ):
-        is_watched = db.op.get_movie_watched(
+        is_watched = db.op.get_show_watched(
             cduid=auth_user.client_device_user_id,
-            movie_id=movie_id
+            show_id=show_id
         )
-        db.op.set_movie_watched(
+        db.op.set_show_watched(
             cduid=auth_user.client_device_user_id,
-            movie_id=movie_id,
+            show_id=show_id,
             is_watched=not is_watched
         )
         return not is_watched

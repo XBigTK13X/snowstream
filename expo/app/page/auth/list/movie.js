@@ -3,6 +3,7 @@ import C from '../../../common'
 export default function MovieListPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes } = C.useSettings()
+    const { setMessageDisplay } = C.useMessageDisplay()
     const localParams = C.useLocalSearchParams()
     const [shelf, setShelf] = C.React.useState(null)
     const [movies, setMovies] = C.React.useState(null)
@@ -39,9 +40,10 @@ export default function MovieListPage() {
         }
 
         const toggleWatchedMovie = (movie) => {
-            apiClient.toggleMovieWatchStatus(movie.id).then(() => {
+            apiClient.toggleMovieWatchStatus(movie.id).then((watched) => {
                 apiClient.getMovieList(shelfId, currentStatus).then((response) => {
                     setMovies(response)
+                    setMessageDisplay(`Mark ${movie.name} as ${watched ? 'watched' : 'unwatched'}.`)
                 })
             })
         }

@@ -31,7 +31,7 @@ export default function EpisodeDetailsPage() {
             })
     }
     if (shelf && episode) {
-        const watchTitle = episode.watched ? "Set Status to Unplayed" : "Set Status to Watched"
+        const watchTitle = episode.watched ? "Set Status to Unwatched" : "Set Status to Watched"
         return (<C.View>
             <C.SnowText>Episode Title: {apiClient.formatEpisodeTitle(episode)}</C.SnowText>
             <C.SnowButton

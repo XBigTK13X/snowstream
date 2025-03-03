@@ -3,6 +3,7 @@ import C from '../../../common'
 export default function ShowListPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes } = C.useSettings()
+    const { setMessageDisplay } = C.useMessageDisplay()
     const localParams = C.useLocalSearchParams()
     const [shelf, setShelf] = C.React.useState(null)
     const [shows, setShows] = C.React.useState(null)
@@ -38,9 +39,10 @@ export default function ShowListPage() {
             routes.goto(routes.seasonList, { shelfId: shelf.id, showId: show.id })
         }
         const toggleWatchedShow = (show) => {
-            apiClient.toggleShowWatchStatus(show.id).then(() => {
+            apiClient.toggleShowWatchStatus(show.id).then((watched) => {
                 apiClient.getShowList(shelfId, currentStatus).then((response) => {
                     setShows(response)
+                    setMessageDisplay(`Mark ${show.name} as ${watched ? 'watched' : 'unwatched'}`)
                 })
             })
         }
