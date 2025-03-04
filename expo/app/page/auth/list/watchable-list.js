@@ -49,10 +49,15 @@ export function WatchableListPage(props) {
             })
         }
 
+        let Grid = C.SnowPosterGrid
+        if (props.gridKind == "thumb") {
+            Grid = C.SnowThumbGrid
+        }
+
         return (
             <C.View>
                 <C.Button title={"Showing: " + currentStatus} onPress={nextWatchedStatus} />
-                <C.SnowPosterGrid onPress={gotoItem} onLongPress={toggleWatchedItem} data={items} />
+                <Grid onPress={gotoItem} onLongPress={toggleWatchedItem} data={items} />
             </C.View>
         )
     }

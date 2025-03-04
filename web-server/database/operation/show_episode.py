@@ -6,6 +6,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 from settings import config
 import database.operation.show as db_show
+import database.operation.show_season as db_season
 
 def get_episode_list_by_shelf(shelf_id:int):
     with DbSession() as db:
@@ -159,3 +160,103 @@ def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
         db.commit()
         db.refresh(dbm)
         return dbm
+
+def get_partial_show_episode_list(cduid:int,season_id:int,only_watched:bool=True):
+    with DbSession() as db:
+        episodes = get_show_season_episode_list(show_season_id=season_id,include_files=True)
+        season = db_season.get_show_season_by_id(season_id=season_id)
+        show = db_show.get_show_by_id(show_id=season.show.id)
+        shelf_watched = db_show.get_show_shelf_watched(cduid=cduid,shelf_id=show.shelf.id)        
+        if shelf_watched:
+            return episodes if only_watched else []
+        show_watched = db_show.get_show_watched(cduid=cduid,show_id=show.id)
+        if show_watched:
+            return episodes if only_watched else []        
+        season_watched = db_season.get_show_season_watched(cduid=cduid,season_id=season_id)
+        if season_watched:
+            return episodes if only_watched else []        
+        watched_episodes = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.shelf_id == show.shelf.id,
+            dm.Watched.show_id == show.id,
+            dm.Watched.show_season_id == season_id,
+            dm.Watched.show_episode_id == None
+        ).all()
+        watched_ids = [xx.show_episode_id for xx in watched_episodes]
+        print(watched_ids)
+        if only_watched:
+            return [xx for xx in episodes if xx.id in watched_ids]
+        return [xx for xx in episodes if not xx.id in watched_ids]
+
+def set_show_episode_watched(cduid:int,season_id:int,is_watched:bool=True):
+    with DbSession() as db:
+        season = db_season.get_show_season_by_id(season_id=season_id)
+        show = db_show.get_show_by_id(show_id=season.show_id)
+        shelf_id = show.shelf.id
+        shelf_watched = db_show.get_show_shelf_watched(cduid=cduid,shelf_id=shelf_id)
+        show_watched = db_show.get_show_watched(cduid=cduid,show_id=show.id)
+        seasons = db_season.get_show_season_list_by_show_id(show_id=show.id,include_files=False)
+        db.query(dm.Watched).filter(
+            dm.Watched.show_season_id == season_id
+        ).delete()
+        db.commit()
+        import pprint
+        pprint.pprint({
+            'is_watched':is_watched,
+            'show_watched': show_watched,
+            'shelf_watched': shelf_watched
+        })
+        if is_watched and not shelf_watched and not show_watched:
+            watched_seasons = (
+                db.query(dm.Watched).filter(
+                    dm.Watched.show_id == show.id,
+                    dm.Watched.show_season_id != None,
+                    dm.Watched.show_episode_id == None
+                ).all()
+            )
+            if len(watched_seasons) == len(seasons) - 1:
+                db_show.set_show_watched(cduid=cduid,show_id=show.id,is_watched=True)
+                return True
+            else:
+                dbm = dm.Watched()
+                dbm.client_device_user_id = cduid
+                dbm.shelf_id = shelf_id
+                dbm.show_id = show.id
+                dbm.show_season_id = season_id
+                db.add(dbm)
+                db.commit()
+                db.refresh(dbm)                                    
+                return True
+        if not is_watched:
+            if shelf_watched:
+                db_show.set_show_shelf_watched(cduid=cduid,shelf_id=shelf_id,is_watched=False)
+            if show_watched:
+                db_show.set_show_watched(cduid=cduid,show_id=show.id,is_watched=False)
+                seasons_watched = []
+                for other_season in seasons:
+                    if other_season.id == season_id:
+                        continue
+                    seasons_watched.append({
+                        'show_season_id': other_season.id,
+                        'show_id': show.id,
+                        'shelf_id': shelf_id,
+                        'client_device_user_id': cduid
+                    })
+                db.bulk_insert_mappings(dm.Watched,seasons_watched)
+                db.commit()
+                return False
+    return is_watched
+
+def get_show_episode_watched(cduid:int,season_id:int):
+    season = db_season.get_show_season_by_id(season_id=season_id)
+    show_watched = db_show.get_show_watched(cduid=cduid,show_id=season.show.id)
+    if show_watched:
+        return True    
+    with DbSession() as db:
+        watched = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.shelf_id == season.show.shelf.id,
+            dm.Watched.show_id == season.show.id,
+            dm.Watched.show_season_id == season_id
+        ).first()
+        return False if watched == None else True

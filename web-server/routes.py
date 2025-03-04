@@ -341,13 +341,15 @@ def auth_required(router):
     def get_show_season_episode_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_season_id: int,
+        watched_status: str
     ):
-        episodes = db.op.get_show_season_episode_list(show_season_id=show_season_id,include_files=True)
-        watch_status = db.op.get_show_season_watch_status(cduid=auth_user.client_device_user_id,season_id=show_season_id)
-        return {
-            'episodes':episodes,
-            'watch_status': watch_status
-        }
+        if watched_status == 'All' or watched_status == None:
+            return db.op.get_show_season_episode_list(show_season_id=show_season_id,include_files=True)
+        return db.op.get_partial_show_episode_list(
+            cduid=auth_user.client_device_user_id,
+            season_id=show_season_id,
+            only_watched=True if watched_status == 'Watched' else False
+        )       
 
     @router.get("/show/season/episode",tags=['Show'])
     def get_show_episode_details(

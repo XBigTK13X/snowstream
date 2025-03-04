@@ -129,11 +129,9 @@ def get_partial_show_season_list(cduid:int,show_id:int,only_watched:bool=True):
         show = db_show.get_show_by_id(show_id=show_id)
         shelf_watched = db_show.get_show_shelf_watched(cduid=cduid,shelf_id=show.shelf.id)        
         if shelf_watched:
-            print('shelf_watched')
             return seasons if only_watched else []
         show_watched = db_show.get_show_watched(cduid=cduid,show_id=show.id)
         if show_watched:
-            print('show_watched')
             return seasons if only_watched else []        
         watched_seasons = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,

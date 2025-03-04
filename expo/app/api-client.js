@@ -214,8 +214,8 @@ export class ApiClient {
         return this.get('/show/season/list', { show_id: showId, watched_status: watchedStatus })
     }
 
-    getEpisodeList(seasonId) {
-        return this.get('/show/season/episode/list', { show_season_id: seasonId })
+    getEpisodeList(seasonId, watchedStatus) {
+        return this.get('/show/season/episode/list', { show_season_id: seasonId, watched_status: watchedStatus })
     }
 
     getEpisode(episodeId) {
