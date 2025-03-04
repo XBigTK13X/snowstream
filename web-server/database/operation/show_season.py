@@ -23,6 +23,7 @@ def get_show_season_by_id(season_id:int):
         return (
             db.query(dm.ShowSeason)
             .options(sorm.joinedload(dm.ShowSeason.tags))
+            .options(sorm.joinedload(dm.ShowSeason.show).joinedload(dm.Show.shelf))
             .filter(dm.ShowSeason.id == season_id)
             .first()
         )
@@ -128,10 +129,12 @@ def get_partial_show_season_list(cduid:int,show_id:int,only_watched:bool=True):
         show = db_show.get_show_by_id(show_id=show_id)
         shelf_watched = db_show.get_show_shelf_watched(cduid=cduid,shelf_id=show.shelf.id)        
         if shelf_watched:
+            print('shelf_watched')
             return seasons if only_watched else []
         show_watched = db_show.get_show_watched(cduid=cduid,show_id=show.id)
         if show_watched:
-            return seasons if only_watched else []
+            print('show_watched')
+            return seasons if only_watched else []        
         watched_seasons = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
             dm.Watched.shelf_id == show.shelf.id,
@@ -139,7 +142,7 @@ def get_partial_show_season_list(cduid:int,show_id:int,only_watched:bool=True):
             dm.Watched.show_season_id != None,
             dm.Watched.show_episode_id == None
         ).all()
-        watched_ids = [xx.season_id for xx in watched_seasons]
+        watched_ids = [xx.show_season_id for xx in watched_seasons]
         if only_watched:
             return [xx for xx in seasons if xx.id in watched_ids]
         return [xx for xx in seasons if not xx.id in watched_ids]
@@ -156,13 +159,19 @@ def set_show_season_watched(cduid:int,season_id:int,is_watched:bool=True):
             dm.Watched.show_season_id == season_id
         ).delete()
         db.commit()
+        import pprint
+        pprint.pprint({
+            'is_watched':is_watched,
+            'show_watched': show_watched,
+            'shelf_watched': shelf_watched
+        })
         if is_watched and not shelf_watched and not show_watched:
             watched_seasons = (
                 db.query(dm.Watched).filter(
                     dm.Watched.show_id == show.id,
                     dm.Watched.show_season_id != None,
                     dm.Watched.show_episode_id == None
-                )
+                ).all()
             )
             if len(watched_seasons) == len(seasons) - 1:
                 db_show.set_show_watched(cduid=cduid,show_id=show.id,is_watched=True)

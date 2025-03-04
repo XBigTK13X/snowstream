@@ -231,6 +231,8 @@ def get_show_watched(cduid:int,show_id:int):
         watched = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
             dm.Watched.shelf_id == shelf_id,
-            dm.Watched.show_id == show_id
+            dm.Watched.show_id == show_id,
+            dm.Watched.show_season_id == None,
+            dm.Watched.show_episode_id == None
         ).first()
         return False if watched == None else True

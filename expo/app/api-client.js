@@ -297,7 +297,7 @@ export class ApiClient {
     }
 
     toggleSeasonWatchStatus(seasonId) {
-        return this.post(`/show/season/watched/toggle?show_id=${seasonId}`)
+        return this.post(`/show/season/watched/toggle?season_id=${seasonId}`)
     }
 
     toggleEpisodeWatchStatus(episodeId) {
