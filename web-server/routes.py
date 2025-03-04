@@ -311,11 +311,31 @@ def auth_required(router):
     def get_show_season_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_id: int,
+        watched_status:str=None
     ):
-        seasons = db.op.get_show_season_list(show_id=show_id,include_files=True)
-        return {
-            'seasons':seasons
-        }
+        if watched_status == 'All' or watched_status == None:
+            return db.op.get_show_season_list_by_show_id(show_id=show_id,include_files=True)
+        return db.op.get_partial_show_season_list(
+            cduid=auth_user.client_device_user_id,
+            show_id=show_id,
+            only_watched=True if watched_status == 'Watched' else False
+        )        
+
+    @router.post("/show/season/watched/toggle")
+    def toggle_show_season_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        season_id:int
+    ):
+        is_watched = db.op.get_show_season_watched(
+            cduid=auth_user.client_device_user_id,
+            season_id=season_id
+        )
+        db.op.set_show_season_watched(
+            cduid=auth_user.client_device_user_id,
+            season_id=season_id,
+            is_watched=not is_watched
+        )
+        return not is_watched
 
     @router.get("/show/season/episode/list",tags=['Show'])
     def get_show_season_episode_list(

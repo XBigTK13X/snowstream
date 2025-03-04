@@ -21,7 +21,7 @@ export default function MovieDetailsPage() {
         }
     })
     const setWatchStatus = (status) => {
-        apiClient.setMovieWatchStatus(movieId, !movie.watched)
+        apiClient.toggleMovieShelfWatchStatus(movieId)
             .then(() => {
                 apiClient.getMovie(movieId).then((response) => {
                     setMovie(response)

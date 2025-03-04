@@ -1,4 +1,3 @@
-import C from '../../../common'
 import { WatchableListPage } from './watchable-list'
 
 export default function ShowListPage() {

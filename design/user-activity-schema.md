@@ -1,5 +1,9 @@
 # User Activity Schema
 
+## Links
+
+https://docs.sqlalchemy.org/en/20/orm/queryguide/inheritance.html
+
 ## Workflows
 First Pass Thoughts
   1. Tracking Next Up episodes

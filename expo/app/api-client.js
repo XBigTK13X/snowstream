@@ -210,8 +210,8 @@ export class ApiClient {
         return this.get('/show/list', { shelf_id: shelfId, watched_status: watchedStatus })
     }
 
-    getSeasonList(showId) {
-        return this.get('/show/season/list', { show_id: showId })
+    getSeasonList(showId, watchedStatus) {
+        return this.get('/show/season/list', { show_id: showId, watched_status: watchedStatus })
     }
 
     getEpisodeList(seasonId) {
@@ -288,28 +288,20 @@ export class ApiClient {
         return this.post(`/shelf/watched/toggle?show_shelf_id=${shelfId}`)
     }
 
-    setMovieWatchStatus(movieId, watched) {
-        return this.post('/movie/watched', { movie_id: movieId, is_watched: watched })
-    }
-
     toggleMovieWatchStatus(movieId) {
         return this.post(`/movie/watched/toggle?movie_id=${movieId}`)
-    }
-
-    setShowWatchStatus(showId, watched) {
-        return this.post('/watch/status', { show_id: showId, status: watched })
     }
 
     toggleShowWatchStatus(showId) {
         return this.post(`/show/watched/toggle?show_id=${showId}`)
     }
 
-    setSeasonWatchStatus(seasonId, watched) {
-        return this.post('/watch/status', { show_season_id: seasonId, status: watched })
+    toggleSeasonWatchStatus(seasonId) {
+        return this.post(`/show/season/watched/toggle?show_id=${seasonId}`)
     }
 
-    setEpisodeWatchStatus(episodeId, watched) {
-        return this.post('/watch/status', { show_episode_id: episodeId, status: watched })
+    toggleEpisodeWatchStatus(episodeId) {
+        return this.post(`/show/season/episode/watched/toggle?episode_id=${episodeId}`)
     }
 
     debug() {
