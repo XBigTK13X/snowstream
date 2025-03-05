@@ -9,7 +9,8 @@ class User(BaseModel):
     raw_password: str | None = ''
     enabled: bool | None = True
     permissions: str
-    client_device_user_id: int | None = None
+    cduid: int | None = None
+    ticket: list[int] | None = None
 
 
 class AuthToken(BaseModel):

@@ -30,8 +30,8 @@ def auth_required(router):
         include_streamables:bool=False
     ):
         return db.op.get_stream_source_list(
-            streamables=include_streamables,
-            restrictions=auth_user.get_stream_source_restrictions()
+            ticket=auth_user.ticket,
+            streamables=include_streamables
         )
 
     @router.post("/stream/source",tags=['Stream Source'])
@@ -58,8 +58,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source_id: int,
     ):
-        restrictions = auth_user.get_stream_source_restrictions()
-        if restrictions != None and not stream_source_id in restrictions:
+        if not auth_user.ticket.can_access(stream_source_id=stream_source_id):            
             return None
         return db.op.get_stream_source(stream_source_id=stream_source_id)
 
@@ -96,15 +95,14 @@ def auth_required(router):
     def get_shelf_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        return db.op.get_shelf_list(auth_user.get_shelf_restrictions())
+        return db.op.get_shelf_list(ticket=auth_user.ticket)
 
     @router.get("/shelf",tags=['Shelf'])
     def get_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
-        restrictions = auth_user.get_shelf_restrictions()
-        if restrictions != None and not shelf_id in restrictions:
+        if not auth_user.ticket.can_access(shelf_id=shelf_id):
             return None
         return db.op.get_shelf_by_id(shelf_id=shelf_id)
 
@@ -125,22 +123,22 @@ def auth_required(router):
     ):
         if movie_shelf_id:
             is_watched = db.op.get_movie_shelf_watched(
-                cduid=auth_user.client_device_user_id,
+                ticket=auth_user.ticket,
                 shelf_id=movie_shelf_id
             )
             db.op.set_movie_shelf_watched(
-                cduid=auth_user.client_device_user_id,
+                ticket=auth_user.ticket,
                 shelf_id=movie_shelf_id,
                 is_watched=not is_watched
             )
             return not is_watched
         if show_shelf_id:
             is_watched = db.op.get_show_shelf_watched(
-                cduid=auth_user.client_device_user_id,
+                ticket=auth_user.ticket,
                 shelf_id=show_shelf_id
             )
             db.op.set_show_shelf_watched(
-                cduid=auth_user.client_device_user_id,
+                ticket=auth_user.ticket,
                 shelf_id=show_shelf_id,
                 is_watched = not is_watched
             )
@@ -165,9 +163,9 @@ def auth_required(router):
     @router.get('/user',tags=['User'])
     def get_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        user_id: int, include_access: bool = False
+        user_id: int
     ):
-        return db.op.get_user_by_id(user_id=user_id, include_access=include_access)
+        return db.op.get_user_by_id(user_id=user_id)
 
     @router.delete("/user/{user_id}",tags=['User'])
     def delete_user(
@@ -192,8 +190,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         tag_id: int
     ):
-        restrictions = auth_user.get_tag_restrictions()
-        if restrictions != None and not tag_id in restrictions:
+        if not auth_user.ticket.can_access(tag_id=tag_id):
             return None
         return db.op.get_tag_by_id(tag_id=tag_id)
 
@@ -201,7 +198,7 @@ def auth_required(router):
     def get_tag_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        return db.op.get_tag_list(auth_user.get_tag_restrictions())
+        return db.op.get_tag_list(ticket=auth_user.ticket)
 
     @router.post('/tag',tags=['Tag'])
     def save_tag(
@@ -236,7 +233,7 @@ def auth_required(router):
         if watched_status == 'All' or watched_status == None:
             return db.op.get_movie_list_by_shelf(shelf_id=shelf_id)
         return db.op.get_partial_shelf_movie_list(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             shelf_id=shelf_id,
             only_watched=True if watched_status == 'Watched' else False
         )
@@ -247,7 +244,7 @@ def auth_required(router):
         movie_id: int,
     ):
         movie = db.op.get_movie_details_by_id(movie_id=movie_id)
-        movie.watched = db.op.get_movie_watched(cduid=auth_user.client_device_user_id,movie_id=movie_id)
+        movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
         return movie
 
     @router.post("/movie/watched")
@@ -256,7 +253,7 @@ def auth_required(router):
         status:am.WatchedStatus
     ):
         return db.op.set_movie_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             movie_id=status.movie_id,
             is_watched=status.is_watched
         )
@@ -267,11 +264,11 @@ def auth_required(router):
         movie_id:int
     ):
         is_watched = db.op.get_movie_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             movie_id=movie_id
         )
         db.op.set_movie_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             movie_id=movie_id,
             is_watched=not is_watched
         )
@@ -286,7 +283,7 @@ def auth_required(router):
         if watched_status == 'All' or watched_status == None:
             return db.op.get_show_list_by_shelf(shelf_id=shelf_id,include_files=True)
         return db.op.get_partial_shelf_show_list(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             shelf_id=shelf_id,
             only_watched=True if watched_status == 'Watched' else False
         )        
@@ -297,11 +294,11 @@ def auth_required(router):
         show_id:int
     ):
         is_watched = db.op.get_show_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             show_id=show_id
         )
         db.op.set_show_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             show_id=show_id,
             is_watched=not is_watched
         )
@@ -316,7 +313,7 @@ def auth_required(router):
         if watched_status == 'All' or watched_status == None:
             return db.op.get_show_season_list_by_show_id(show_id=show_id,include_files=True)
         return db.op.get_partial_show_season_list(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             show_id=show_id,
             only_watched=True if watched_status == 'Watched' else False
         )        
@@ -327,11 +324,11 @@ def auth_required(router):
         season_id:int
     ):
         is_watched = db.op.get_show_season_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             season_id=season_id
         )
         db.op.set_show_season_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             season_id=season_id,
             is_watched=not is_watched
         )
@@ -346,7 +343,7 @@ def auth_required(router):
         if watched_status == 'All' or watched_status == None:
             return db.op.get_show_episode_list_by_season(show_season_id=show_season_id,include_files=True)
         return db.op.get_partial_show_episode_list(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             season_id=show_season_id,
             only_watched=True if watched_status == 'Watched' else False
         )       
@@ -357,11 +354,11 @@ def auth_required(router):
         episode_id:int
     ):
         is_watched = db.op.get_show_episode_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             episode_id=episode_id
         )
         db.op.set_show_episode_watched(
-            cduid=auth_user.client_device_user_id,
+            ticket=auth_user.ticket,
             episode_id=episode_id,
             is_watched=not is_watched
         )
@@ -373,7 +370,7 @@ def auth_required(router):
         episode_id: int,
     ):
         episode = db.op.get_show_episode_by_id(episode_id=episode_id)
-        episode.watched = db.op.get_show_episode_watched(cduid=auth_user.client_device_user_id,episode_id=episode_id)
+        episode.watched = db.op.get_show_episode_watched(ticket=auth_user.ticket,episode_id=episode_id)
         return episode
 
     return router

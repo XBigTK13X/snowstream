@@ -227,7 +227,7 @@ export class ApiClient {
     }
 
     getUser(userId, includeAccess) {
-        return this.get('/user', { user_id: userId, include_access: !!includeAccess })
+        return this.get('/user', { user_id: userId })
     }
 
     saveUser(payload) {

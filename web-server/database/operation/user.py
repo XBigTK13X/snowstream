@@ -12,7 +12,8 @@ def create_user(user: am.User):
         model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
         del model_dump['raw_password']
         del model_dump['id']
-        del model_dump['client_device_user_id']
+        del model_dump['cduid']
+        del model_dump['activity_pool']
         dbm = dm.User(**model_dump)
         db.add(dbm)
         db.commit()
@@ -30,7 +31,8 @@ def upsert_user(user: am.User):
     with DbSession() as db:
         old_hash = existing.hashed_password
         model_dump = user.model_dump()
-        del model_dump['client_device_user_id']
+        del model_dump['cduid']
+        del model_dump['activity_pool']
         if user.raw_password != '':
             model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
         else:        
@@ -40,30 +42,14 @@ def upsert_user(user: am.User):
         db.commit()        
         return existing
 
-def get_user_by_id(user_id:int,include_access=False):    
+def get_user_by_id(user_id:int):    
     with DbSession() as db:
         query = db.query(dm.User)
-        if include_access:
-            query = query.options(
-                sorm.joinedload(dm.User.access_tags)
-            ).options(
-                sorm.joinedload(dm.User.access_shelves)
-            ).options(
-                sorm.joinedload(dm.User.access_stream_sources)
-            )
         return query.filter(dm.User.id == user_id).first()
 
-def get_user_by_name(username: str,include_access=False):
+def get_user_by_name(username: str):
     with DbSession() as db:
         query = db.query(dm.User)
-        if include_access:
-            query = query.options(
-                sorm.joinedload(dm.User.access_tags)
-            ).options(
-                sorm.joinedload(dm.User.access_shelves)
-            ).options(
-                sorm.joinedload(dm.User.access_stream_sources)
-            )
         return query.filter(dm.User.username == username).first()
 
 

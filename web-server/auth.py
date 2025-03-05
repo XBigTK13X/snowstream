@@ -25,7 +25,7 @@ auth_scheme = OAuth2PasswordBearer(
 
 
 def authenticate_user(username: str, password: str):
-    user = db.op.get_user_by_name(username=username,include_access=True)
+    user = db.op.get_user_by_name(username=username)
     if not user:
         return False
     if not util.verify_password(password, user.hashed_password):
@@ -68,10 +68,11 @@ async def get_current_user(
         token_data = am.AuthTokenContent(username=username, scopes=token_scopes,client_device_user_id=token_cduid)
     except JWTError:
         raise credentials_exception
-    user = db.op.get_user_by_name(username=token_data.username,include_access=True)
+    user = db.op.get_user_by_name(username=token_data.username)
     if user is None:
         raise credentials_exception
-    user.client_device_user_id = token_data.client_device_user_id
+    user.cduid = token_data.client_device_user_id
+    user.ticket = db.op.get_ticket_by_cduid(cduid=user.cduid)
     # Don't bother checking permissions for the admin user
     if user.username == "admin":
         return user
@@ -104,7 +105,10 @@ def register(router):
         client_device = db.op.get_client_device_by_reported_name(device_name=device_info)
         if not client_device:
             client_device = db.op.create_client_device(device_name=device_info)
-        client_device_user = db.op.get_client_device_user(client_device_id=client_device.id,user_id=user.id)
+        client_device_user = db.op.get_client_device_user_by_ids(
+            client_device_id=client_device.id,
+            user_id=user.id
+        )
         if not client_device_user:
             client_device_user = db.op.create_client_device_user(client_device_id=client_device.id,user_id=user.id)        
         expiry = {config.jwt_expire_unit: config.jwt_expire_value}

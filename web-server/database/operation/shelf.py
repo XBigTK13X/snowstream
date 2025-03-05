@@ -22,11 +22,11 @@ def upsert_shelf(shelf: am.Shelf):
         db.commit()        
         return existing_shelf
 
-def get_shelf_list(restrictions:list[int] = None):
+def get_shelf_list(ticket:dm.Ticket=None):
     with DbSession() as db:        
         query = db.query(dm.Shelf)
-        if restrictions != None:
-            query = query.filter(dm.Shelf.id.in_(restrictions))
+        if ticket != None and ticket.shelf_ids != None:
+            query = query.filter(dm.Shelf.id.in_(ticket.shelf_ids))
         return query.all()
 
 

@@ -15,11 +15,11 @@ def create_stream_source(stream_source: am.StreamSource):
         return db_source
 
 
-def get_stream_source_list(streamables:bool=False,restrictions:list[int]=None):
+def get_stream_source_list(ticket:dm.Ticket=None,streamables:bool=False):
     with DbSession() as db:
         query = db.query(dm.StreamSource)
-        if restrictions != None:
-            query = query.filter(dm.StreamSource.id.in_(restrictions))
+        if ticket != None and ticket.stream_source_ids != None:
+            query = query.filter(dm.StreamSource.id.in_(ticket.stream_source_ids))
         if streamables:
             query = query.options(
                 sorm.joinedload(dm.StreamSource.streamables)                

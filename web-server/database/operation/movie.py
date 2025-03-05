@@ -142,16 +142,16 @@ def upsert_movie_tag(movie_id: int, tag_id: int):
         db.refresh(dbm)
         return dbm
 
-def set_movie_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
+def set_movie_shelf_watched(activity_pool:list[int],shelf_id:int,is_watched:bool=True):
     with DbSession() as db:
         db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.client_device_user_id == activity_pool[0],
             dm.Watched.shelf_id == shelf_id
         ).delete()
         db.commit()
         if is_watched:            
             dbm = dm.Watched()
-            dbm.client_device_user_id = cduid
+            dbm.client_device_user_id = activity_pool[0]
             dbm.shelf_id = shelf_id            
             db.add(dbm)
             db.commit()
@@ -159,15 +159,15 @@ def set_movie_shelf_watched(cduid:int,shelf_id:int,is_watched:bool=True):
             return dbm
         else:
             db.query(dm.Watched).filter(
-                dm.Watched.client_device_user_id == cduid,
+                dm.Watched.client_device_user_id,
                 dm.Watched.shelf_id == shelf_id
             ).delete()            
             db.commit()
 
-def get_movie_shelf_watched(cduid:int,shelf_id:int):
+def get_movie_shelf_watched(activity_pool:list[int],shelf_id:int):
     with DbSession() as db:
         watched = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.client_device_user_id.in_(activity_pool),
             dm.Watched.shelf_id == shelf_id,
             dm.Watched.movie_id == None
         ).first()
@@ -190,24 +190,26 @@ def get_partial_shelf_movie_list(cduid:int,shelf_id:int,only_watched:bool=True):
         return [xx for xx in movies if not xx.id in watched_ids]
 
 
-def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
+def set_movie_watched(activity_pool:list[int],movie_id:int,is_watched:bool=True):
     with DbSession() as db:
         movie = get_movie_details_by_id(movie_id=movie_id)
         shelf_id = movie.shelf.id
-        shelf_watched = get_movie_shelf_watched(cduid=cduid,shelf_id=shelf_id)
+        shelf_watched = get_movie_shelf_watched(activity_pool=activity_pool,shelf_id=shelf_id)
         movies = get_movie_list_by_shelf(shelf_id=shelf_id)  
         if is_watched and not shelf_watched:
             watched_movies = db.query(dm.Watched).filter(
-                dm.Watched.client_device_user_id == cduid,
+                dm.Watched.client_device_user_id.in_(activity_pool),
                 dm.Watched.shelf_id == shelf_id,
                 dm.Watched.movie_id != None
             ).all()
+            # TODO This part will need to dedupe entries from the activity pool
+            # This is true for all len - 1 things in shows/seasons/episodes as well
             if len(watched_movies) == len(movies) - 1:
-                set_movie_shelf_watched(cduid,shelf_id=shelf_id,is_watched=True)
+                set_movie_shelf_watched(activity_pool=activity_pool,shelf_id=shelf_id,is_watched=True)
                 return True
             else:
                 dbm = dm.Watched()
-                dbm.client_device_user_id = cduid
+                dbm.client_device_user_id = activity_pool[0]
                 dbm.shelf_id = shelf_id
                 dbm.movie_id = movie_id
                 db.add(dbm)
@@ -215,7 +217,7 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
                 db.refresh(dbm)                                    
                 return True
         if not is_watched and shelf_watched:
-            set_movie_shelf_watched(cduid=cduid,shelf_id=shelf_id,is_watched=False)
+            set_movie_shelf_watched(activity_pool=activity_pool,shelf_id=shelf_id,is_watched=False)
             movies_watched = []
             for other_movie in movies:
                 if other_movie.id == movie_id:
@@ -223,14 +225,14 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
                 movies_watched.append({
                     'movie_id': other_movie.id,
                     'shelf_id': shelf_id,
-                    'client_device_user_id': cduid
+                    'client_device_user_id': activity_pool[0]
                 })
             db.bulk_insert_mappings(dm.Watched,movies_watched)
             db.commit()
             return False
         if not is_watched and not shelf_watched:
             db.query(dm.Watched).filter(
-                dm.Watched.client_device_user_id == cduid,
+                dm.Watched.client_device_user_id.in_(activity_pool),
                 dm.Watched.shelf_id == shelf_id,
                 dm.Watched.movie_id == movie_id
             ).delete()          
@@ -238,15 +240,15 @@ def set_movie_watched(cduid:int,movie_id:int,is_watched:bool=True):
             return False
     return is_watched
 
-def get_movie_watched(cduid:int,movie_id:int):
+def get_movie_watched(activity_pool:list[int],movie_id:int):
     movie = get_movie_details_by_id(movie_id=movie_id)
     shelf_id = movie.shelf.id
-    shelf_watched = get_movie_shelf_watched(cduid=cduid,shelf_id=shelf_id)
+    shelf_watched = get_movie_shelf_watched(activity_pool=activity_pool,shelf_id=shelf_id)
     if shelf_watched:
         return True
     with DbSession() as db:
         watched = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id == cduid,
+            dm.Watched.client_device_user_id.in_(activity_pool),
             dm.Watched.shelf_id == shelf_id,
             dm.Watched.movie_id == movie_id
         ).first()

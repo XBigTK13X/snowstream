@@ -22,10 +22,10 @@ First Pass Thoughts
     - Server-side, mark a user/client device pair as isolated
     - Isolation considers the device/user being used (self) and all other device/users (group)
     - Four isolation modes: silo, quiet, loud, and shout depending on  client device
-      - Silent => don't show activity from self in group, don't show activty from group
-      - Quiet => don't show activity from self in group, do show activity from group
-      - Loud => do show activity from self in group, do show activity from group
-      - Shout => do show activity from self in group
+      - Silent => don't show activity from self in group, don't show activty from group to self
+      - Quiet => don't show activity from self in group, do show activity from group to self
+      - Loud => do show activity from self in group, do show activity from group to self
+      - Shout => do show activity from self in group, don't show activity from group to self
 
 
   5. Watched / Unwatched
