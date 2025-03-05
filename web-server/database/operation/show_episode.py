@@ -168,15 +168,12 @@ def get_partial_show_episode_list(cduid:int,season_id:int,only_watched:bool=True
         show = db_show.get_show_by_id(show_id=season.show.id)
         shelf_watched = db_show.get_show_shelf_watched(cduid=cduid,shelf_id=show.shelf.id)        
         if shelf_watched:
-            print("Shelf watched")
             return episodes if only_watched else []
         show_watched = db_show.get_show_watched(cduid=cduid,show_id=show.id)
         if show_watched:
-            print("Show watched")
             return episodes if only_watched else []        
         season_watched = db_season.get_show_season_watched(cduid=cduid,season_id=season_id)
         if season_watched:
-            print("Season watched")
             return episodes if only_watched else []        
         watched_episodes = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id == cduid,
@@ -186,8 +183,6 @@ def get_partial_show_episode_list(cduid:int,season_id:int,only_watched:bool=True
             dm.Watched.show_episode_id != None
         ).all()
         watched_ids = [xx.show_episode_id for xx in watched_episodes]
-        print(watched_episodes)
-        print(episodes)
         if only_watched:
             return [xx for xx in episodes if xx.id in watched_ids]
         return [xx for xx in episodes if not xx.id in watched_ids]
@@ -206,12 +201,6 @@ def set_show_episode_watched(cduid:int,episode_id:int,is_watched:bool=True):
             dm.Watched.show_episode_id == episode_id
         ).delete()
         db.commit()
-        # import pprint
-        # pprint.pprint({
-        #     'is_watched':is_watched,
-        #     'show_watched': show_watched,
-        #     'shelf_watched': shelf_watched
-        # })
         if is_watched and not shelf_watched and not show_watched and not season_watched:
             watched_episodes = (
                 db.query(dm.Watched).filter(

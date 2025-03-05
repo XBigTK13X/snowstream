@@ -157,12 +157,6 @@ def set_show_season_watched(cduid:int,season_id:int,is_watched:bool=True):
             dm.Watched.show_season_id == season_id
         ).delete()
         db.commit()
-        # import pprint
-        # pprint.pprint({
-        #     'is_watched':is_watched,
-        #     'show_watched': show_watched,
-        #     'shelf_watched': shelf_watched
-        # })
         if is_watched and not shelf_watched and not show_watched:
             watched_seasons = (
                 db.query(dm.Watched).filter(
