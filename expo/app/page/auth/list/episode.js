@@ -14,7 +14,7 @@ export default function EpisodeListPage() {
         routes.goto(routes.episodeList, { shelfId, showId, seasonId, watchStatus })
     }
     const gotoItem = (routes, shelfId, itemId) => {
-        let destination = { shelfId: shelf.id, showId: showId, seasonId: seasonId, episodeId: itemId }
+        let destination = { shelfId: shelfId, showId: showId, seasonId: seasonId, episodeId: itemId }
         routes.goto(routes.episodeDetails, destination)
     }
     const toggleItemWatched = (apiClient, itemId) => {

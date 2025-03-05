@@ -344,20 +344,36 @@ def auth_required(router):
         watched_status: str
     ):
         if watched_status == 'All' or watched_status == None:
-            return db.op.get_show_season_episode_list(show_season_id=show_season_id,include_files=True)
+            return db.op.get_show_episode_list_by_season(show_season_id=show_season_id,include_files=True)
         return db.op.get_partial_show_episode_list(
             cduid=auth_user.client_device_user_id,
             season_id=show_season_id,
             only_watched=True if watched_status == 'Watched' else False
         )       
 
+    @router.post("/show/season/episode/watched/toggle")
+    def toggle_show_episode_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        episode_id:int
+    ):
+        is_watched = db.op.get_show_episode_watched(
+            cduid=auth_user.client_device_user_id,
+            episode_id=episode_id
+        )
+        db.op.set_show_episode_watched(
+            cduid=auth_user.client_device_user_id,
+            episode_id=episode_id,
+            is_watched=not is_watched
+        )
+        return not is_watched    
+
     @router.get("/show/season/episode",tags=['Show'])
     def get_show_episode_details(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         episode_id: int,
     ):
-        episode = db.op.get_show_episode_details_by_id(episode_id=episode_id)
-        episode.watched = db.op.get_show_episode_watch_status(cduid=auth_user.client_device_user_id,episode_id=episode_id)
+        episode = db.op.get_show_episode_by_id(episode_id=episode_id)
+        episode.watched = db.op.get_show_episode_watched(cduid=auth_user.client_device_user_id,episode_id=episode_id)
         return episode
 
     return router

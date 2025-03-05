@@ -170,7 +170,7 @@ class ShowsScanHandler(base.BaseHandler):
         return season_slug, season
 
     def get_or_create_episode(self, season, episode_order_counter):
-        episode = db.op.get_show_episode(
+        episode = db.op.get_show_episode_by_season_order(
             show_season_id=season.id,
             episode_order_counter=episode_order_counter,
         )

@@ -19,6 +19,16 @@ export function WatchableListPage(props) {
         if (!items) {
             props.loadItems(apiClient, shelfId, currentStatus).then((response) => {
                 setItems(response)
+                if (response.length == 0) {
+                    setMessageDisplay(`Found no items to display.`)
+                }
+                if (response.length == 1) {
+                    setMessageDisplay(`Found ${response.length} item to display.`)
+                }
+                if (response.length > 1) {
+                    setMessageDisplay(`Found ${response.length} items to display.`)
+                }
+
             })
         }
     })
