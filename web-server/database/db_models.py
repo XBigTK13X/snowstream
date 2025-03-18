@@ -16,6 +16,9 @@ class User(BaseModel):
     access_tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="user_tag")
     access_shelves: sorm.Mapped[List["Shelf"]] = sorm.relationship(secondary="user_shelf")
     access_stream_sources: sorm.Mapped[List["StreamSource"]] = sorm.relationship(secondary="user_stream_source")
+    
+    def is_admin(self):
+        return 'admin' in self.permissions
 
 # This is a ticket for admission
 # It tells snowstream
@@ -33,25 +36,45 @@ class Ticket:
         self.shelf_ids = None
         self.stream_source_ids = None
 
-    def is_allowed(self,stream_source_id:int=None,tag_id:int=None,shelf_id:int=None):
-        if(stream_source_id):
+    def has_shelf_restrictions(self):
+        return self.shelf_ids != None
+
+    def has_tag_restrictions(self):
+        return self.tag_ids != None
+
+    def has_stream_source_restrictions(self):
+        return self.stream_source_ids != None
+
+    def is_allowed(self,
+        stream_source_id:int=None,
+        tag_id:int=None,
+        shelf_id:int=None,
+        tag_ids:list[int]=None
+    ):
+        if stream_source_id:
             if self.stream_source_ids == None:
                 return True
             else:
                 return stream_source_id in self.stream_source_ids
-        if(tag_id):
+        if tag_id:
             if self.tag_ids == None:
                 return True
             else:
                 return tag_id in self.tag_ids
-        if(shelf_id):
+        if shelf_id:
             if self.shelf_ids == None:
                 return True
             else:
                 return shelf_id in self.shelf_ids
-                
-    def is_admin(self):
-        return 'admin' in self.permissions
+        if tag_ids:
+            if self.tag_ids == None:
+                return True
+            else:
+                for allowed_tag_id in self.tag_ids:
+                    if allowed_tag_id in tag_ids:
+                        return True
+                return False
+        return True
 
 class UserTag(BaseModel):
     __tablename__ = "user_tag"
@@ -243,6 +266,9 @@ class Movie(BaseModel):
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="movie_image_file",back_populates="movie")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="movie_metadata_file",back_populates="movie")
     shelf: sorm.Mapped["Shelf"] = sorm.relationship(secondary="movie_shelf")
+
+    def get_tag_ids(self):
+        return [xx.id for xx in self.tags]
 
     def convert_local_paths_to_web_paths(self, config):
         shelf_root = self.shelf.directory.split("/")

@@ -231,7 +231,7 @@ def auth_required(router):
         watched_status:str=None
     ):
         if watched_status == 'All' or watched_status == None:
-            return db.op.get_movie_list_by_shelf(shelf_id=shelf_id)
+            return db.op.get_movie_list_by_shelf(ticket=auth_user.ticket,shelf_id=shelf_id)
         return db.op.get_partial_shelf_movie_list(
             ticket=auth_user.ticket,
             shelf_id=shelf_id,
@@ -243,7 +243,9 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_id: int,
     ):
-        movie = db.op.get_movie_details_by_id(movie_id=movie_id)
+        movie = db.op.get_movie_details_by_id(ticket=auth_user.ticket,movie_id=movie_id)
+        if movie == None:
+            return None
         movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
         return movie
 

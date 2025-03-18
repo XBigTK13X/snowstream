@@ -61,11 +61,6 @@ def get_show_list_by_shelf(shelf_id: int,include_files:bool=True):
             show.convert_local_paths_to_web_paths(config=config)
         return shows
 
-
-
-
-
-
 def create_show_image_file(show_id: int, image_file_id: int):
     with DbSession() as db:
         dbm = dm.ShowImageFile()

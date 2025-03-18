@@ -110,7 +110,7 @@ class MoviesScanHandler(base.BaseHandler):
     def get_or_create_movie(self, info):
         movie_slug = f'{info["movie_name"]}-{info["movie_year"]}'
         if not movie_slug in self.batch_lookup:
-            movie = db.op.get_movie(
+            movie = db.op.get_movie_by_name_and_year(
                 name=info["movie_name"], release_year=info["movie_year"]
             )
             if not movie:

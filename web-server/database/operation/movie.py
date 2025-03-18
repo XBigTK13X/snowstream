@@ -6,7 +6,6 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 from settings import config
 
-
 def create_movie(name: str, release_year: int):
     with DbSession() as db:
         dbm = dm.Movie()
@@ -16,7 +15,6 @@ def create_movie(name: str, release_year: int):
         db.commit()
         db.refresh(dbm)
         return dbm
-
 
 def add_movie_to_shelf(movie_id: int, shelf_id: int):
     with DbSession() as db:
@@ -28,8 +26,7 @@ def add_movie_to_shelf(movie_id: int, shelf_id: int):
         db.refresh(dbm)
         return dbm
 
-
-def get_movie_details_by_id(movie_id: int):
+def get_movie_details_by_id(ticket:dm.Ticket,movie_id: int):
     with DbSession() as db:
         movie = (
             db.query(dm.Movie)
@@ -38,12 +35,15 @@ def get_movie_details_by_id(movie_id: int):
             .options(sorm.joinedload(dm.Movie.shelf))
             .filter(dm.Movie.id == movie_id)            
             .first()
-        )
+        ) 
+        if not ticket.is_allowed(shelf_id=movie.shelf.id):
+            return None
+        if not ticket.is_allowed(tag_ids=movie.get_tag_ids()):
+            return None
         movie.convert_local_paths_to_web_paths(config=config)
         return movie
 
-
-def get_movie(name: str, release_year: int):
+def get_movie_by_name_and_year(name: str, release_year: int):
     with DbSession() as db:
         return (
             db.query(dm.Movie)
@@ -52,20 +52,29 @@ def get_movie(name: str, release_year: int):
             .first()
         )
 
-
-def get_movie_list_by_shelf(shelf_id: int):
+def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
+    if not ticket.is_allowed(shelf_id=shelf_id):
+        return []
     with DbSession() as db:
-        movies = (
-            db.query(dm.Movie)
-            .join(dm.MovieShelf)
-            .filter(dm.MovieShelf.shelf_id == shelf_id)
+        query = db.query(dm.Movie).join(dm.MovieShelf)
+        if ticket.has_tag_restrictions():
+            query = query.join(dm.Movie.tags)
+        query = (
+            query.filter(dm.MovieShelf.shelf_id == shelf_id)
             .order_by(dm.Movie.name)
-            .all()
         )
+        movies = query.all()
+        # TODO
+        # It would be more performant to do this filtering in the database.
+        # But I like how simple this code is.
+        # I will revisit if it actually becomes a performance bottleneck
+        results = []
         for movie in movies:
+            if ticket.has_tag_restrictions() and not ticket.is_allowed(tag_ids=movie.get_tag_ids()):
+                continue
             movie.convert_local_paths_to_web_paths(config=config)
-        return movies
-
+            results.append(movie)
+        return results
 
 def create_movie_video_file(movie_id: int, video_file_id: int):
     with DbSession() as db:
@@ -77,7 +86,6 @@ def create_movie_video_file(movie_id: int, video_file_id: int):
         db.refresh(dbm)
         return dbm
 
-
 def get_movie_video_file(movie_id: int, video_file_id: int):
     with DbSession() as db:
         return (
@@ -86,7 +94,6 @@ def get_movie_video_file(movie_id: int, video_file_id: int):
             .filter(dm.MovieVideoFile.video_file_id == video_file_id)
             .first()
         )
-
 
 def create_movie_image_file(movie_id: int, image_file_id: int):
     with DbSession() as db:
@@ -98,7 +105,6 @@ def create_movie_image_file(movie_id: int, image_file_id: int):
         db.refresh(dbm)
         return dbm
 
-
 def get_movie_image_file(movie_id: int, image_file_id: int):
     with DbSession() as db:
         return (
@@ -107,7 +113,6 @@ def get_movie_image_file(movie_id: int, image_file_id: int):
             .filter(dm.MovieImageFile.image_file_id == image_file_id)
             .first()
         )
-
 
 def create_movie_metadata_file(movie_id: int, metadata_file_id: int):
     with DbSession() as db:
@@ -118,7 +123,6 @@ def create_movie_metadata_file(movie_id: int, metadata_file_id: int):
         db.commit()
         db.refresh(dbm)
         return dbm
-
 
 def get_movie_metadata_file(movie_id: int, metadata_file_id: int):
     with DbSession() as db:
@@ -131,7 +135,13 @@ def get_movie_metadata_file(movie_id: int, metadata_file_id: int):
 
 def upsert_movie_tag(movie_id: int, tag_id: int):    
     with DbSession() as db:
-        existing = db.query(dm.MovieTag).filter(dm.MovieTag.movie_id == movie_id and dm.MovieTag.tag_id == tag_id).first()
+        existing = (
+            db.query(dm.MovieTag)
+            .filter(
+                dm.MovieTag.movie_id == movie_id,
+                dm.MovieTag.tag_id == tag_id
+            ).first()
+        )
         if existing:
             return existing
         dbm = dm.MovieTag()
@@ -143,6 +153,8 @@ def upsert_movie_tag(movie_id: int, tag_id: int):
         return dbm
 
 def set_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
+    if not ticket.is_allowed(shelf_id=shelf_id):
+        return False    
     with DbSession() as db:
         db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
@@ -165,6 +177,8 @@ def set_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
             db.commit()
 
 def get_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int):
+    if not ticket.is_allowed(shelf_id=shelf_id):
+        return False    
     with DbSession() as db:
         watched = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
@@ -174,8 +188,12 @@ def get_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int):
         return False if watched == None else True
 
 def get_partial_shelf_movie_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool=True):
+    if not ticket.is_allowed(shelf_id=shelf_id):
+        return []
     with DbSession() as db:
-        movies = get_movie_list_by_shelf(shelf_id=shelf_id)
+        movies = get_movie_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
+        if not movies:
+            return []
         shelf_watched = get_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id)
         if shelf_watched:
             return movies if only_watched else []
@@ -192,10 +210,14 @@ def get_partial_shelf_movie_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool
 
 def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
     with DbSession() as db:
-        movie = get_movie_details_by_id(movie_id=movie_id)
+        movie = get_movie_details_by_id(ticket=ticket,movie_id=movie_id)
+        if not movie:
+            return False
         shelf_id = movie.shelf.id
         shelf_watched = get_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id)
-        movies = get_movie_list_by_shelf(shelf_id=shelf_id)  
+        movies = get_movie_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
+        if not movies:
+            return False
         if is_watched and not shelf_watched:
             watched_movies = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
@@ -241,7 +263,9 @@ def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
     return is_watched
 
 def get_movie_watched(ticket:dm.Ticket,movie_id:int):
-    movie = get_movie_details_by_id(movie_id=movie_id)
+    movie = get_movie_details_by_id(ticket=ticket,movie_id=movie_id)
+    if not movie:
+        return False
     shelf_id = movie.shelf.id
     shelf_watched = get_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id)
     if shelf_watched:
