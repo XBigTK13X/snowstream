@@ -1,6 +1,7 @@
 import axios from 'axios'
 import config from './settings'
 import DeviceInfo from 'react-native-device-info';
+import { UAParser } from 'ua-parser-js'
 import { Platform } from 'react-native'
 
 
@@ -100,7 +101,15 @@ export class ApiClient {
                 })
             }
             if (Platform.OS === 'web') {
-                getDeviceId = DeviceInfo.getUserAgent
+                getDeviceId = () => {
+                    return new Promise(resolve => {
+                        // TODO Generate a unique ID in localstorage for the device
+                        const uaParser = new UAParser()
+                        const result = uaParser.getResult()
+                        const deviceId = `${result.os}${result.version ? ' ' + result.version : ''} ${result.browser.name} ${result.browser.major}`
+                        return resolve(deviceId)
+                    })
+                }
             }
             getDeviceId().then((deviceId) => {
                 return self.httpClient

@@ -58,7 +58,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source_id: int,
     ):
-        if not auth_user.ticket.can_access(stream_source_id=stream_source_id):            
+        if not auth_user.ticket.is_allowed(stream_source_id=stream_source_id):            
             return None
         return db.op.get_stream_source(stream_source_id=stream_source_id)
 
@@ -102,7 +102,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
     ):
-        if not auth_user.ticket.can_access(shelf_id=shelf_id):
+        if not auth_user.ticket.is_allowed(shelf_id=shelf_id):
             return None
         return db.op.get_shelf_by_id(shelf_id=shelf_id)
 
@@ -190,7 +190,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         tag_id: int
     ):
-        if not auth_user.ticket.can_access(tag_id=tag_id):
+        if not auth_user.ticket.is_allowed(tag_id=tag_id):
             return None
         return db.op.get_tag_by_id(tag_id=tag_id)
 

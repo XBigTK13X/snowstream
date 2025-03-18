@@ -49,6 +49,7 @@ class Ticket:
                 return True
             else:
                 return shelf_id in self.shelf_ids
+                
     def is_admin(self):
         return 'admin' in self.permissions
 

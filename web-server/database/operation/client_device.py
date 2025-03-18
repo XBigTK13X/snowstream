@@ -53,6 +53,9 @@ def get_ticket_by_cduid(cduid:int):
     ticket.client = get_client_device_user_by_cduid(cduid=cduid)
     ticket.cduid = ticket.client.id
     isolation = ticket.client.isolation_mode
+    # Default isolation mode is Loud
+    if isolation == None:
+        isolation = 'Loud'
     with DbSession() as db:
         ticket.tag_ids = (
             db.query(dm.UserTag).filter(dm.UserTag.user_id == ticket.client.user_id).all()
@@ -79,13 +82,16 @@ def get_ticket_by_cduid(cduid:int):
             watch_group = (
                 db.query(dm.ClientDeviceUser)
                 .filter(
+                    dm.ClientDeviceUser.id != ticket.cduid,
                     dm.ClientDeviceUser.user_id == ticket.client.user_id,
-                    dm.ClientDeviceUser.isolation_mode.in_(
-                        [None,'Loud','Shout']
-                    )
+                    (dm.ClientDeviceUser.isolation_mode.in_(['Loud','Shout'])) 
+                    | (dm.ClientDeviceUser.isolation_mode == None)
                 )
                 .all()
             )
+            # TODO I think there needs to be a read group and write group
+            # On read, you will care about any device that watched
+            # On write, you will want to delete all the other watched entries depending on the isolation mode
             ticket.watch_group = [xx.id for xx in watch_group]
             ticket.watch_group.insert(0,ticket.cduid)
             return ticket
