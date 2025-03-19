@@ -445,7 +445,12 @@ class ShowEpisode(BaseModel):
     tags: sorm.Mapped["Tag"] = sorm.relationship(secondary="show_episode_tag",back_populates="show_episodes")
 
     def get_tag_ids(self):
-        return [xx.id for xx in self.tags]
+        tag_ids = []
+        if self.show:
+            tag_ids += self.show.get_tag_ids()
+        if self.season:
+            tag_ids += self.season.get_tag_ids()
+        return [xx.id for xx in self.tags] + tag_ids
 
     def convert_local_paths_to_web_paths(self, config):
         shelf_root = self.season.show.shelf.directory.split("/")

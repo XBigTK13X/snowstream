@@ -349,7 +349,7 @@ def auth_required(router):
         watched_status: str
     ):
         if watched_status == 'All' or watched_status == None:
-            return db.op.get_show_episode_list_by_season(show_season_id=show_season_id)
+            return db.op.get_show_episode_list_by_season(ticket=auth_user.ticket,show_season_id=show_season_id)
         return db.op.get_partial_show_episode_list(
             ticket=auth_user.ticket,
             season_id=show_season_id,
@@ -377,7 +377,9 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         episode_id: int,
     ):
-        episode = db.op.get_show_episode_by_id(episode_id=episode_id)
+        episode = db.op.get_show_episode_by_id(ticket=auth_user.ticket,episode_id=episode_id)
+        if not episode:
+            return None
         episode.watched = db.op.get_show_episode_watched(ticket=auth_user.ticket,episode_id=episode_id)
         return episode
 

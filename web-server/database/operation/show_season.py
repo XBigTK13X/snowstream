@@ -19,7 +19,6 @@ def create_show_season(show_id: int, season_order_counter: int):
 
 
 def get_show_season_by_id(ticket:dm.Ticket,season_id:int):
-    print(season_id)
     with DbSession() as db:
         query = (
             db.query(dm.ShowSeason)      
@@ -60,6 +59,7 @@ def get_show_season_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
         for show_season in show_seasons:
             if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
                 continue
+            show_season.convert_local_paths_to_web_paths(config=config)
             results.append(show_season)
         return results
 
@@ -82,7 +82,6 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket, show_id: int):
                 continue
             show_season.convert_local_paths_to_web_paths(config=config)
             results.append(show_season)
-                
         return results
 
 def create_show_season_image_file(show_season_id: int, image_file_id: int):
@@ -229,7 +228,6 @@ def set_show_season_watched(ticket:dm.Ticket,season_id:int,is_watched:bool=True)
 def get_show_season_watched(ticket:dm.Ticket,season_id:int):
     season = get_show_season_by_id(ticket=ticket,season_id=season_id)
     if not season:
-        print("No season returned")
         return False
     show_watched = db_show.get_show_watched(ticket=ticket,show_id=season.show.id)
     if show_watched:

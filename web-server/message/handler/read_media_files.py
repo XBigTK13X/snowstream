@@ -10,7 +10,7 @@ def handle(job_id, message_payload):
     results = {}
     handlers = []
     for shelf in shelves:
-        log.info(f"Reading media for shelf [{shelf.name}->{shelf.kind}] v2")
+        log.info(f"Reading media for shelf [{shelf.name}->{shelf.kind}]")
         metadata_files = db.op.get_metadata_file_list()
         defined_tag_ids = {}
         for metadata_file in metadata_files:
