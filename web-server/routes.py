@@ -243,7 +243,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_id: int,
     ):
-        movie = db.op.get_movie_details_by_id(ticket=auth_user.ticket,movie_id=movie_id)
+        movie = db.op.get_movie_by_id(ticket=auth_user.ticket,movie_id=movie_id)
         if movie == None:
             return None
         movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
@@ -283,7 +283,10 @@ def auth_required(router):
         watched_status:str=None
     ):
         if watched_status == 'All' or watched_status == None:
-            return db.op.get_show_list_by_shelf(shelf_id=shelf_id,include_files=True)
+            return db.op.get_show_list_by_shelf(
+                ticket=auth_user.ticket,
+                shelf_id=shelf_id
+            )
         return db.op.get_partial_shelf_show_list(
             ticket=auth_user.ticket,
             shelf_id=shelf_id,
@@ -313,7 +316,10 @@ def auth_required(router):
         watched_status:str=None
     ):
         if watched_status == 'All' or watched_status == None:
-            return db.op.get_show_season_list_by_show_id(show_id=show_id,include_files=True)
+            return db.op.get_show_season_list_by_show_id(
+                ticket=auth_user.ticket,
+                show_id=show_id
+            )
         return db.op.get_partial_show_season_list(
             ticket=auth_user.ticket,
             show_id=show_id,
@@ -343,7 +349,7 @@ def auth_required(router):
         watched_status: str
     ):
         if watched_status == 'All' or watched_status == None:
-            return db.op.get_show_episode_list_by_season(show_season_id=show_season_id,include_files=True)
+            return db.op.get_show_episode_list_by_season(show_season_id=show_season_id)
         return db.op.get_partial_show_episode_list(
             ticket=auth_user.ticket,
             season_id=show_season_id,

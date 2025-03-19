@@ -27,7 +27,7 @@ export function SnowThumbGrid(props) {
                         hasTVPreferredFocus={itemIndex === 0}
                         style={{ height: 120, width: 250, margin: 10, padding: 10 }}
                         icon={<Image
-                            style={{ height: 100, width: 150 }}
+                            style={{ height: 100, width: 150, resizeMode: 'contain' }}
                             key={item.id}
                             source={{ uri: posterUrl }} />}
                         onPress={() => { props.onPress(item) }}

@@ -26,19 +26,19 @@ def add_movie_to_shelf(movie_id: int, shelf_id: int):
         db.refresh(dbm)
         return dbm
 
-def get_movie_details_by_id(ticket:dm.Ticket,movie_id: int):
+def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
     with DbSession() as db:
         movie = (
             db.query(dm.Movie)
-            .options(sorm.joinedload(dm.Movie.video_files))
-            .options(sorm.joinedload(dm.Movie.image_files))
-            .options(sorm.joinedload(dm.Movie.shelf))
+            .join(dm.MovieVideoFile)
+            .join(dm.MovieImageFile)
+            .join(dm.MovieShelf)
             .filter(dm.Movie.id == movie_id)            
             .first()
         ) 
         if not ticket.is_allowed(shelf_id=movie.shelf.id):
             return None
-        if not ticket.is_allowed(tag_ids=movie.get_tag_ids()):
+        if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
             return None
         movie.convert_local_paths_to_web_paths(config=config)
         return movie
@@ -58,7 +58,7 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
     with DbSession() as db:
         query = db.query(dm.Movie).join(dm.MovieShelf)
         if ticket.has_tag_restrictions():
-            query = query.join(dm.Movie.tags)
+            query = query.join(dm.MovieTag)
         query = (
             query.filter(dm.MovieShelf.shelf_id == shelf_id)
             .order_by(dm.Movie.name)
@@ -70,7 +70,7 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
         # I will revisit if it actually becomes a performance bottleneck
         results = []
         for movie in movies:
-            if ticket.has_tag_restrictions() and not ticket.is_allowed(tag_ids=movie.get_tag_ids()):
+            if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
                 continue
             movie.convert_local_paths_to_web_paths(config=config)
             results.append(movie)
@@ -197,11 +197,15 @@ def get_partial_shelf_movie_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool
         shelf_watched = get_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id)
         if shelf_watched:
             return movies if only_watched else []
-        watched_movies = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == shelf_id,
-            dm.Watched.movie_id != None
-        ).all()
+        watched_movies = (db.query(dm.Watched)
+            .filter(
+                dm.Watched.client_device_user_id.in_(ticket.watch_group),
+                dm.Watched.shelf_id == shelf_id,
+                dm.Watched.movie_id != None            
+            )
+            .distinct(dm.Watched.movie_id)
+            .all()
+        )
         watched_ids = [xx.movie_id for xx in watched_movies]
         if only_watched:
             return [xx for xx in movies if xx.id in watched_ids]
@@ -210,7 +214,7 @@ def get_partial_shelf_movie_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool
 
 def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
     with DbSession() as db:
-        movie = get_movie_details_by_id(ticket=ticket,movie_id=movie_id)
+        movie = get_movie_by_id(ticket=ticket,movie_id=movie_id)
         if not movie:
             return False
         shelf_id = movie.shelf.id
@@ -222,10 +226,8 @@ def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
             watched_movies = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
                 dm.Watched.shelf_id == shelf_id,
-                dm.Watched.movie_id != None
-            ).all()
-            # TODO This part will need to dedupe entries from the activity pool
-            # This is true for all len - 1 things in shows/seasons/episodes as well
+                dm.Watched.movie_id != None,                
+            ).distinct(dm.Watched.movie_id).all()
             if len(watched_movies) == len(movies) - 1:
                 set_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id,is_watched=True)
                 return True
@@ -263,7 +265,7 @@ def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
     return is_watched
 
 def get_movie_watched(ticket:dm.Ticket,movie_id:int):
-    movie = get_movie_details_by_id(ticket=ticket,movie_id=movie_id)
+    movie = get_movie_by_id(ticket=ticket,movie_id=movie_id)
     if not movie:
         return False
     shelf_id = movie.shelf.id

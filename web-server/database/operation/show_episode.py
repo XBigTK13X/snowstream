@@ -65,23 +65,16 @@ def get_show_episode_by_season_order(show_season_id: int, episode_order_counter:
         )
 
 
-def get_show_episode_list_by_season(show_season_id: int,include_files:bool=False):
+def get_show_episode_list_by_season(show_season_id: int):
     with DbSession() as db:
-        query = db.query(dm.ShowEpisode)
-        if include_files:
-            query = (
-                query.options(sorm.joinedload(dm.ShowEpisode.image_files))
-                .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
-                .options(sorm.joinedload(dm.ShowEpisode.tags))
-            )
+        query = db.query(dm.ShowEpisode).join(dm.ShowSeason).join(dm.Show)
         episodes = (
             query.filter(dm.ShowEpisode.show_season_id == show_season_id)
             .order_by(dm.ShowEpisode.episode_order_counter)
             .all()
         )
-        if include_files:
-            for episode in episodes:
-                episode.convert_local_paths_to_web_paths(config=config)
+        for episode in episodes:
+            episode.convert_local_paths_to_web_paths(config=config)
         return episodes
 
 def create_show_episode_video_file(show_episode_id: int, video_file_id: int):
@@ -161,9 +154,9 @@ def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
         db.refresh(dbm)
         return dbm
 
-def get_partial_show_episode_list(cduid:int,season_id:int,only_watched:bool=True):
+def get_partial_show_episode_list(ticket:dm.Ticket,season_id:int,only_watched:bool=True):
     with DbSession() as db:
-        episodes = get_show_episode_list_by_season(show_season_id=season_id,include_files=True)
+        episodes = get_show_episode_list_by_season(show_season_id=season_id)
         season = db_season.get_show_season_by_id(season_id=season_id)
         show = db_show.get_show_by_id(show_id=season.show.id)
         shelf_watched = db_show.get_show_shelf_watched(cduid=cduid,shelf_id=show.shelf.id)        
@@ -196,7 +189,7 @@ def set_show_episode_watched(cduid:int,episode_id:int,is_watched:bool=True):
         shelf_watched = db_show.get_show_shelf_watched(cduid=cduid,shelf_id=shelf_id)
         show_watched = db_show.get_show_watched(cduid=cduid,show_id=show.id)
         season_watched = db_season.get_show_season_watched(cduid=cduid,season_id=season.id)
-        episodes = get_show_episode_list_by_season(show_season_id=season.id,include_files=False)
+        episodes = get_show_episode_list_by_season(show_season_id=season.id)
         db.query(dm.Watched).filter(
             dm.Watched.show_episode_id == episode_id
         ).delete()

@@ -49,7 +49,8 @@ class Ticket:
         stream_source_id:int=None,
         tag_id:int=None,
         shelf_id:int=None,
-        tag_ids:list[int]=None
+        tag_ids:list[int]=None,
+        tag_provider=None
     ):
         if stream_source_id:
             if self.stream_source_ids == None:
@@ -74,6 +75,14 @@ class Ticket:
                     if allowed_tag_id in tag_ids:
                         return True
                 return False
+        if tag_provider:
+            if self.tag_ids == None:
+                return True
+            tag_ids = tag_provider()
+            for allowed_tag_id in self.tag_ids:
+                if allowed_tag_id in tag_ids:
+                    return True
+            return False
         return True
 
 class UserTag(BaseModel):
@@ -330,6 +339,9 @@ class Show(BaseModel):
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_metadata_file",back_populates="show")
     tags: sorm.Mapped[List['Tag']] = sorm.relationship(secondary="show_tag",back_populates="shows")
 
+    def get_tag_ids(self):
+        return [xx.id for xx in self.tags]
+
     def convert_local_paths_to_web_paths(self, config):
         shelf_root = self.shelf.directory.split("/")
         shelf_root.pop()
@@ -382,6 +394,12 @@ class ShowSeason(BaseModel):
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_season_metadata_file",back_populates="show_season")
     tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_season_tag",back_populates="show_seasons")
 
+    def get_tag_ids(self):
+        tag_ids = []
+        if self.show:
+            tag_ids += self.show.get_tag_ids()
+        return [xx.id for xx in self.tags] + tag_ids
+
     #TODO This was useful during development, but really only needs to be done once on ingest
     def convert_local_paths_to_web_paths(self, config):
         shelf_root = self.show.shelf.directory.split("/")
@@ -425,6 +443,9 @@ class ShowEpisode(BaseModel):
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_episode_metadata_file",back_populates="show_episode")
     season: sorm.Mapped["ShowSeason"] = sorm.relationship(back_populates="episodes")
     tags: sorm.Mapped["Tag"] = sorm.relationship(secondary="show_episode_tag",back_populates="show_episodes")
+
+    def get_tag_ids(self):
+        return [xx.id for xx in self.tags]
 
     def convert_local_paths_to_web_paths(self, config):
         shelf_root = self.season.show.shelf.directory.split("/")

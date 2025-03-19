@@ -26,7 +26,7 @@ SHOW_SEASON_REGEX = re.compile(
 )
 
 SHOW_EPISODE_REGEX = re.compile(
-    r"(?P<directory>.*?)(?P<show_name>[^\/]*?)\/(Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/S(?P<season_start>\d{0,5})E(?P<episode_start>\d{1,6})(-S(?P<season_end>\d{1,6})E(?P<episode_end>\d{0,5}))*",
+    r"(?P<directory>.*?)(?P<show_name>[^\/]*?)\/(Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/(?P<metadata>metadata\/)?S(?P<season_start>\d{0,5})E(?P<episode_start>\d{1,6})(-S(?P<season_end>\d{1,6})E(?P<episode_end>\d{0,5}))*",
     re.IGNORECASE,
 )
 
@@ -158,7 +158,7 @@ class ShowsScanHandler(base.BaseHandler):
     def get_or_create_season(self, show_slug, show, info):
         season_slug = f'season-{info["season"]}'
         if not season_slug in self.batch_lookup[show_slug]:
-            season = db.op.get_show_season(
+            season = db.op.get_show_season_by_show_and_order(
                 show_id=show.id, season_order_counter=info["season"]
             )
             if not season:
