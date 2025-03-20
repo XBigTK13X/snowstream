@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme } from '@rneui/themed'
 import { SessionProvider } from './auth-context'
 import { SettingsProvider } from './settings-context'
 import { MessageDisplayProvider } from './message-context'
+import * as NavigationBar from 'expo-navigation-bar'
 
 const routes = require('./routes')
 
@@ -121,6 +122,8 @@ export default function RootLayout() {
             )
         }
     }
+
+    NavigationBar.setVisibilityAsync("hidden")
 
     return (
         <ThemeProvider theme={theme}>

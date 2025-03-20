@@ -23,6 +23,9 @@
     ],
     "name": "snowstream",
     "slug": "snowstream",
+    "androidNavigationBar": {
+      "visible": "sticky-immersive"
+    },
     "android": {
       "package": "com.simplepathstudios.snowstream"
     },

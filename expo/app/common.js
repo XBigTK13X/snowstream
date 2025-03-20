@@ -3,16 +3,17 @@ import React from 'react'
 import { Link, Redirect, Slot, useLocalSearchParams, useNavigation } from 'expo-router'
 
 import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-    FlatList,
     Dimensions,
-    TVFocusGuideView,
+    FlatList,
     Linking,
+    Modal,
     Platform,
     ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TVFocusGuideView,
+    View,
 } from 'react-native'
 
 // https://www.npmjs.com/package/react-native-tvos
@@ -50,6 +51,7 @@ export default {
     Link,
     Linking,
     ListItem,
+    Modal,
     Platform,
     React,
     Redirect,

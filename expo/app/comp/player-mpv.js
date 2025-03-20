@@ -7,15 +7,37 @@ const windowHeight = C.Dimensions.get('window').height
 // Pass in the needed parts for auth
 var styles = C.StyleSheet.create({
     videoView: {
-        position: 'absolute',
-        top: -9,
+        top: 0,
+        right: 0,
         left: 0,
         bottom: 0,
-        right: 0,
+        position: 'absolute',
         width: windowWidth,
         height: windowHeight,
-        elevation: 1000,
+        elevation: 1,
+        zIndex: 1
     },
+    video: {
+        position: 'absolute',
+        border: "1px solid transparent",
+        margin: "-1px",
+        width: windowWidth,
+        height: windowHeight,
+        elevation: 1,
+        zIndex: 1
+    },
+    videoModal: {
+        width: windowWidth,
+        height: windowHeight,
+        elevation: 1,
+        zIndex: 1
+    },
+    videoVideo: {
+        width: windowWidth,
+        height: windowHeight,
+        elevation: 1,
+        zIndex: 1
+    }
 })
 
 export default function PlayerMpv(props) {
@@ -23,6 +45,7 @@ export default function PlayerMpv(props) {
     let libmpv = require('react-native-libmpv')
     let Libmpv = libmpv.Libmpv
     let LibmpvVideo = libmpv.LibmpvVideo
+    const [videoVisible, setVideoVisible] = C.React.useState(true)
 
     C.React.useEffect(() => {
         const cleanup = navigation.addListener('beforeRemove', (e) => {
@@ -34,12 +57,10 @@ export default function PlayerMpv(props) {
         return cleanup
     }, [navigation])
 
-    if (videoUrl && videoUrl.path) {
-        return (
-            <C.View style={styles.videoView}>
-                <LibmpvVideo playUrl={props.videoUrl} />
-            </C.View>
-        )
-    }
+    return (
+        <C.Modal visible={videoVisible} styles={styles.videoModal} onRequestClose={() => { console.log("Pausing..."); Libmpv.pause(); Libmpv.cleanup(); setVideoVisible(false); }}>
+            <LibmpvVideo playUrl={props.videoUrl} styles={styles.videoInside} />
+        </C.Modal>
+    )
     return <Text style={{ color: 'white' }}>Getting video info...</Text>
 }

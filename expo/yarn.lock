@@ -3484,6 +3484,14 @@ expo-modules-core@1.12.26:
   dependencies:
     invariant "^2.2.4"
 
+expo-navigation-bar@~3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/expo-navigation-bar/-/expo-navigation-bar-3.0.7.tgz#1830a302a89fa5c26cb27ce4cf6ac6c1d22907ff"
+  integrity sha512-KCNHyZ58zoN4xdy7D1lUdJvveCYNVQHGSX4M6xO/SZypvI6GZbLzKSN6Lx4GDGEFxG6Kb+EAckZl48tSiNeGYQ==
+  dependencies:
+    "@react-native/normalize-colors" "0.74.85"
+    debug "^4.3.2"
+
 expo-router@~3.5.23:
   version "3.5.23"
   resolved "https://registry.yarnpkg.com/expo-router/-/expo-router-3.5.23.tgz#da038e28c64cb69f19d046d7c651c389c5207a3e"
@@ -5902,10 +5910,10 @@ react-native-helmet-async@2.0.4:
     react-fast-compare "^3.2.2"
     shallowequal "^1.1.0"
 
-react-native-libmpv@0.5.6:
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/react-native-libmpv/-/react-native-libmpv-0.5.6.tgz#53cbc83fc43c5cc9daffaba76f1dc4bcf46c474a"
-  integrity sha512-WV/pUI/v6e/54rkoLieUVeSxZlTg7quWvvtVlsrzxyVMF2q6exG9qph4H8B2veAZ7nz90jXQjxvL+1BJQamCvg==
+react-native-libmpv@0.5.7:
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/react-native-libmpv/-/react-native-libmpv-0.5.7.tgz#81e36be4d58d0aff0d2953192f6292318cca723f"
+  integrity sha512-ViFGbGXreXbCvSO4HL0KQOp3ESjoO1imeML+LMFX/ucMznYFFrPxaINdWzbeL1FHVpyqWOM4XP48aOzKsKSL/A==
 
 react-native-ratings@^8.1.0:
   version "8.1.0"
