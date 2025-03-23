@@ -62,5 +62,4 @@ export default function PlayerMpv(props) {
             <LibmpvVideo playUrl={props.videoUrl} styles={styles.videoInside} />
         </C.Modal>
     )
-    return <Text style={{ color: 'white' }}>Getting video info...</Text>
 }

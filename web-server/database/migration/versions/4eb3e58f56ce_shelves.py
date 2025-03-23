@@ -27,8 +27,8 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime, nullable=False),
         sa.Column("name", sa.Text, nullable=False),
         sa.Column("kind", sa.Text),
-        sa.Column("directory", sa.Text),
-        sa.Column("direct_stream_url", sa.Text),
+        sa.Column("local_path", sa.Text),
+        sa.Column("network_path", sa.Text),
     )
 
     op.create_unique_constraint("unique_shelf_directory", "shelf", ["directory"])
@@ -40,7 +40,9 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime, nullable=False),
         sa.Column("shelf_id", sa.Integer, sa.ForeignKey("shelf.id"), nullable=False),
         sa.Column("kind", sa.Text, nullable=False),
-        sa.Column("path", sa.Text, nullable=False),
+        sa.Column("local_path", sa.Text, nullable=False),
+        sa.Column("web_path", sa.Text, nullable=False),
+        sa.Column("network_path", sa.Text, nullable=False),
     )
 
     op.create_unique_constraint("unique_video_file_path", "video_file", ["path"])

@@ -18,9 +18,9 @@ export default function ShelfEditPage() {
                 setShelfId(shelf.id)
                 setShelfKind(shelf.kind)
                 setShelfKindIndex(shelf.kind == 'Movies' ? 0 : 1)
-                setLocalPath(shelf.directory)
+                setLocalPath(shelf.local_path)
                 setShelfName(shelf.name)
-                setNetworkPath(shelf.direct_stream_url || '')
+                setNetworkPath(shelf.network_path || '')
                 //TODO setup network paths
             })
         }

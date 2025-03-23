@@ -27,7 +27,9 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime, nullable=False),
         sa.Column("shelf_id", sa.Integer, sa.ForeignKey("shelf.id"), nullable=False),
         sa.Column("kind", sa.Text, nullable=False),
-        sa.Column("path", sa.Text, nullable=False),
+        sa.Column("local_path", sa.Text, nullable=False),
+        sa.Column("web_path", sa.Text, nullable=False),
+        sa.Column("network_path", sa.Text, nullable=False),
     )
 
     op.create_unique_constraint("unique_image_file_path", "image_file", ["path"])
@@ -113,7 +115,9 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime, nullable=False),
         sa.Column("shelf_id", sa.Integer, sa.ForeignKey("shelf.id"), nullable=False),
         sa.Column("kind", sa.Text, nullable=False),
-        sa.Column("path", sa.Text, nullable=False),
+        sa.Column("local_path", sa.Text, nullable=False),
+        sa.Column("web_path", sa.Text, nullable=False),
+        sa.Column("network_path", sa.Text, nullable=False),
     )
 
     op.create_unique_constraint("unique_metadata_file_path", "metadata_file", ["path"])

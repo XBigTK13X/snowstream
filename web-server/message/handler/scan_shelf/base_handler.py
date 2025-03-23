@@ -1,13 +1,10 @@
 import os
 from log import log
-
 import mimetypes
-
 mimetypes.init()
-
 from typing import Callable
-
 import ingest as db_ingest
+from settings import config
 
 
 def get_file_kind(file_path):
@@ -48,9 +45,9 @@ class BaseHandler:
         self.file_info_parser = parser
 
     def get_files_in_directory(self):
-        log.info(f"Scanning directory [{self.shelf.directory}]")
+        log.info(f"Scanning directory [{self.shelf.local_path}]")
         file_count = 0
-        for root, dirs, files in os.walk(self.shelf.directory, followlinks=True):
+        for root, dirs, files in os.walk(self.shelf.local_path, followlinks=True):
             for shelf_file in files:
                 file_path = os.path.join(root, shelf_file)
                 file_count += 1
@@ -89,8 +86,18 @@ class BaseHandler:
     def ingest_content(self, kind):
         items = self.ingest_files(kind=kind)
         for info in items:
-            dbm = getattr(db_ingest, kind)(
-                shelf_id=self.shelf.id, kind=info["kind"], file_path=info["file_path"]
+            local_path = info['file_path']
+            web_path = config.web_media_url + local_path
+            network_path = ""
+            if self.shelf.network_path:
+                network_path = local_path.replace(self.shelf.local_path,self.shelf.network_path)
+            ItemModel = getattr(db_ingest, kind)
+            dbm = ItemModel(
+                shelf_id=self.shelf.id,
+                kind=info["kind"],
+                local_path=local_path,
+                web_path=web_path,
+                network_path=network_path
             )
             info["id"] = dbm.id
         self.file_info_lookup[kind] = items

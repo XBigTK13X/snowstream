@@ -190,7 +190,8 @@ export class ApiClient {
         return this.post('/shelf', {
             name: payload.name,
             kind: payload.kind,
-            directory: payload.directory,
+            local_path: payload.local_path,
+            network_path: payload.network_path,
             id: payload.id
         })
     }
