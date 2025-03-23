@@ -67,7 +67,8 @@ class Shelf(BaseModel):
     id: int | None = None
     kind: str
     name: str
-    directory: str
+    local_path: str
+    network_path: str
 
 
 class VideoFile(BaseModel):

@@ -62,7 +62,6 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
         for show in shows:
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):
                 continue
-            show.convert_local_paths_to_web_paths(config=config)
             results.append(show)
         return results
 

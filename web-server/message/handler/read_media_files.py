@@ -14,7 +14,7 @@ def handle(job_id, message_payload):
         metadata_files = db.op.get_metadata_file_list()
         defined_tag_ids = {}
         for metadata_file in metadata_files:
-            with open(metadata_file.path,'r') as read_handle:
+            with open(metadata_file.local_path,'r') as read_handle:
                 metadata_xml = etree.fromstring(bytes(read_handle.read(), encoding="utf8"))
                 for top_node in metadata_xml:
                     if "tag" in top_node.tag and ':' in top_node.text:
@@ -25,7 +25,7 @@ def handle(job_id, message_payload):
                                 tag = am.Tag(**{'name':tag_name})
                                 tag = db.op.upsert_tag(tag)
                             defined_tag_ids[tag_name] = tag.id
-                            print(f"Processed {tag.name} for the first time on {metadata_file.path}")
+                            print(f"Processed {tag.name} for the first time on {metadata_file.local_path}")
                         tag_id = defined_tag_ids[tag_name]
                         if metadata_file.movie != None:
                             db.op.upsert_movie_tag(metadata_file.movie.id,tag_id)

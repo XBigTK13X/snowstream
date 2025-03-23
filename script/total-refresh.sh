@@ -3,4 +3,10 @@ script/db-refresh.sh
 sleep 4
 script/dev-run-all.sh
 sleep 4
-script/seed-data.sh || script/seed-data.py
+if [ -f script/seed-data.sh ]; then
+    script/seed-data.sh
+fi
+
+if [ -f script/seed-data.py ]; then
+    script/seed-data.py
+fi

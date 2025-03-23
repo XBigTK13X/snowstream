@@ -3,8 +3,8 @@ from log import log
 import mimetypes
 mimetypes.init()
 from typing import Callable
-import ingest as db_ingest
 from settings import config
+from db import db
 
 
 def get_file_kind(file_path):
@@ -91,8 +91,12 @@ class BaseHandler:
             network_path = ""
             if self.shelf.network_path:
                 network_path = local_path.replace(self.shelf.local_path,self.shelf.network_path)
-            ItemModel = getattr(db_ingest, kind)
-            dbm = ItemModel(
+            ingest = db.op.get_or_create_video_file
+            if kind == 'image':
+                ingest = db.op.get_or_create_image_file
+            if kind == 'metadata':
+                ingest = db.op.get_or_create_metadata_file
+            dbm = ingest(
                 shelf_id=self.shelf.id,
                 kind=info["kind"],
                 local_path=local_path,

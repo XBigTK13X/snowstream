@@ -24,7 +24,6 @@ def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
         for episode in episodes:
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
-            episode.convert_local_paths_to_web_paths(config=config)
             results.append(episode)
         return results
 
@@ -60,7 +59,6 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
         for episode in episodes:
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
-            episode.convert_local_paths_to_web_paths(config=config)
             results.append(episode)
         return results
 
@@ -80,7 +78,6 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
             return None
         if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
             return None
-        episode.convert_local_paths_to_web_paths(config=config)
         return episode
 
 
@@ -109,7 +106,6 @@ def get_show_episode_list_by_season(ticket:dm.Ticket,show_season_id: int):
         for episode in episodes:
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
-            episode.convert_local_paths_to_web_paths(config=config)
             results.append(episode)
         return results
 

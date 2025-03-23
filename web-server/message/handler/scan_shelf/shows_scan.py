@@ -1,6 +1,5 @@
 from log import log
 import message.handler.scan_shelf.base_handler as base
-import ingest as db_ingest
 from pathlib import Path
 import re
 from db import db

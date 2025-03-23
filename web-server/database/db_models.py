@@ -6,28 +6,6 @@ from typing import List
 # Reminder -> back_populates is necessary to avoid a bunch of warnings and subtle bugs
 from database.sql_alchemy import BaseModel
 
-
-#TODO This was useful during development, but is it still needed?
-# During ingest I could calculate the direct network paths
-# I could have a field to indicate if its the main_poster_image instead of calculating dynamically
-# Revisit when things are a bit more stable to see if it can be ripped out
-def populate_item_paths(items,network_root,config):
-    for item in items:
-        item.web_path = config.web_media_url + item.path
-        item.direct_network_path = network_root + item.path
-    return items
-
-def populate_paths(model,shelf,config):
-    local_root = shelf.directory
-    network_root = shelf.direct_stream_url
-    local_path_parts = local_root.split('/')
-    local_path_parts.pop()
-    local_path = "/".join(local_path_parts)
-    model.video_files = populate_item_paths(model.video_files,network_root,config)
-    model.image_files = populate_item_paths(model.image_files,network_root,config)
-    model.metadata_files = populate_item_paths(model.metadata_files,network_root,config)    
-    return model
-
 class User(BaseModel):
     __tablename__ = "snowstream_user"
     username = sa.Column(sa.Text, nullable=False)
@@ -292,9 +270,6 @@ class Movie(BaseModel):
     def get_tag_ids(self):
         return [xx.id for xx in self.tags]
 
-    def convert_local_paths_to_web_paths(self, config):
-        return populate_paths(self,self.shelf,config)
-
 class MovieShelf(BaseModel):
     __tablename__ = "movie_shelf"
     movie_id = sa.Column(sa.Integer, sa.ForeignKey("movie.id"))
@@ -338,9 +313,6 @@ class Show(BaseModel):
     def get_tag_ids(self):
         return [xx.id for xx in self.tags]
 
-    def convert_local_paths_to_web_paths(self, config):
-        return populate_paths(self,self.shelf,config)
-
 class ShowShelf(BaseModel):
     __tablename__ = "show_shelf"
     show_id = sa.Column(sa.Integer, sa.ForeignKey("show.id"))
@@ -381,9 +353,6 @@ class ShowSeason(BaseModel):
         if self.show:
             tag_ids += self.show.get_tag_ids()
         return [xx.id for xx in self.tags] + tag_ids
-    
-    def convert_local_paths_to_web_paths(self, config):
-        return populate_paths(self,self.show.shelf,config)        
 
 class ShowSeasonTag(BaseModel):
     __tablename__ = "show_season_tag"
@@ -420,9 +389,6 @@ class ShowEpisode(BaseModel):
         if self.season:
             tag_ids += self.season.get_tag_ids()
         return [xx.id for xx in self.tags] + tag_ids
-
-    def convert_local_paths_to_web_paths(self, config):
-        return populate_paths(self,self.season.show.shelf,config)        
 
 class ShowEpisodeTag(BaseModel):
     __tablename__ = "show_episode_tag"

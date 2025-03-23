@@ -31,7 +31,8 @@ def upgrade() -> None:
         sa.Column("network_path", sa.Text),
     )
 
-    op.create_unique_constraint("unique_shelf_directory", "shelf", ["directory"])
+    op.create_unique_constraint("unique_shelf_local_path", "shelf", ["local_path"])
+    op.create_unique_constraint("unique_shelf_network_path", "shelf", ["local_path"])
 
     op.create_table(
         "video_file",
@@ -45,7 +46,9 @@ def upgrade() -> None:
         sa.Column("network_path", sa.Text, nullable=False),
     )
 
-    op.create_unique_constraint("unique_video_file_path", "video_file", ["path"])
+    op.create_unique_constraint("unique_video_file_local_path", "video_file", ["local_path"])
+    op.create_unique_constraint("unique_video_file_web_path", "video_file", ["web_path"])
+    op.create_unique_constraint("unique_video_file_network_path", "video_file", ["network_path"])
 
     op.create_table(
         "tag",

@@ -40,7 +40,6 @@ def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
             return None
         if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
             return None
-        movie.convert_local_paths_to_web_paths(config=config)
         return movie
 
 def get_movie_by_name_and_year(name: str, release_year: int):
@@ -72,7 +71,6 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
         for movie in movies:
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
                 continue
-            movie.convert_local_paths_to_web_paths(config=config)
             results.append(movie)
         return results
 

@@ -38,7 +38,8 @@ export default function ShelfEditPage() {
         let shelf = {
             id: shelfId,
             kind: shelfKind,
-            directory: localPath,
+            localPath: localPath,
+            networkPath: networkPath,
             name: shelfName
         }
         apiClient.saveShelf(shelf)
@@ -70,10 +71,10 @@ export default function ShelfEditPage() {
             <C.SnowLabel>Kind</C.SnowLabel>
             <C.SnowDropdown options={['Movies', 'Shows']} onChoose={chooseShelfKind} value={shelfKindIndex} />
 
-            <C.SnowLabel>Shelf Local Directory Path</C.SnowLabel>
+            <C.SnowLabel>Shelf Local Path</C.SnowLabel>
             <C.SnowInput onChangeText={setLocalPath} value={localPath} />
 
-            <C.SnowLabel>Shelf Network Share Path</C.SnowLabel>
+            <C.SnowLabel>Shelf Network Path</C.SnowLabel>
             <C.SnowInput onChangeText={setNetworkPath} value={networkPath} />
 
             <C.SnowButton title="Save Shelf" onPress={saveShelf} />

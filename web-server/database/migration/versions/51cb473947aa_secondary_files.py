@@ -32,7 +32,9 @@ def upgrade() -> None:
         sa.Column("network_path", sa.Text, nullable=False),
     )
 
-    op.create_unique_constraint("unique_image_file_path", "image_file", ["path"])
+    op.create_unique_constraint("unique_image_file_local_path", "image_file", ["local_path"])
+    op.create_unique_constraint("unique_image_file_web_path", "image_file", ["web_path"])
+    op.create_unique_constraint("unique_image_file_network_path", "image_file", ["network_path"])
 
     op.create_table(
         "movie_image_file",
@@ -120,7 +122,9 @@ def upgrade() -> None:
         sa.Column("network_path", sa.Text, nullable=False),
     )
 
-    op.create_unique_constraint("unique_metadata_file_path", "metadata_file", ["path"])
+    op.create_unique_constraint("unique_metadata_file_local_path", "metadata_file", ["local_path"])
+    op.create_unique_constraint("unique_metadata_file_web_path", "metadata_file", ["web_path"])
+    op.create_unique_constraint("unique_metadata_file_network_path", "metadata_file", ["network_path"])
 
     op.create_table(
         "movie_metadata_file",
