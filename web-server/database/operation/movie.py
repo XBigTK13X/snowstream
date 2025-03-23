@@ -71,7 +71,7 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
         for movie in movies:
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
                 continue
-            results.append(movie)
+            results.append(dm.set_primary_images(movie))
         return results
 
 def create_movie_video_file(movie_id: int, video_file_id: int):

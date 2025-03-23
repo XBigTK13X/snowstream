@@ -6,6 +6,22 @@ from typing import List
 # Reminder -> back_populates is necessary to avoid a bunch of warnings and subtle bugs
 from database.sql_alchemy import BaseModel
 
+# TODO Might be more efficient to do this DB side
+def set_primary_images(model):
+    model.thumbnail_image = None
+    model.poster_image = None
+    for image_file in model.image_files:
+        if model.poster_image and model.thumbnail_image:
+            return model
+        if not model.poster_image:
+            if 'poster' in image_file.kind:
+                model.poster_image = image_file
+        if not model.thumbnail_image:
+            print(image_file.kind)
+            if 'thumbnail' in image_file.kind:
+                model.thumbnail_image = image_file
+    return model
+
 class User(BaseModel):
     __tablename__ = "snowstream_user"
     username = sa.Column(sa.Text, nullable=False)
@@ -346,7 +362,7 @@ class ShowSeason(BaseModel):
     episodes: sorm.Mapped[List["ShowEpisode"]] = sorm.relationship(back_populates="season")
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_season_image_file",back_populates="show_season")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_season_metadata_file",back_populates="show_season")
-    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_season_tag",back_populates="show_seasons")
+    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_season_tag",back_populates="show_seasons")    
 
     def get_tag_ids(self):
         tag_ids = []

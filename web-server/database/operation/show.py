@@ -53,6 +53,11 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
         query = db.query(dm.Show).join(dm.ShowShelf).filter(dm.ShowShelf.shelf_id == shelf_id)
         if ticket.has_tag_restrictions():
             query = query.options(sorm.joinedload(dm.Show.tags))
+        query = (
+            query
+            .options(sorm.joinedload(dm.Show.image_files))
+            .options(sorm.joinedload(dm.Show.metadata_files))
+        )
         shows = (
             query            
             .order_by(dm.Show.name)
@@ -62,7 +67,7 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
         for show in shows:
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):
                 continue
-            results.append(show)
+            results.append(dm.set_primary_images(show))
         return results
 
 def create_show_image_file(show_id: int, image_file_id: int):

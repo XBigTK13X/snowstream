@@ -112,16 +112,15 @@ def identify_show_file_kind(extension_kind: str, info: dict, file_path: str):
             if "banner" in info["asset_name"]:
                 image_kind = "banner"
             if "backdrop" in info["asset_name"]:
-                image_kind = "backdrop"
-            
-        if "season" in info:
-            if image_kind == None:
-                image_kind = 'poster'
-            return f"season_{image_kind}"
+                image_kind = "backdrop"    
         if "episode_start" in info:
             if image_kind == None:
                 image_kind = 'thumbnail'
-            return f"episode_{image_kind}"
+            return f"episode_{image_kind}"            
+        if "season" in info:
+            if image_kind == None:
+                image_kind = 'poster'
+            return f"season_{image_kind}"        
         return f"show_{image_kind}"
     if extension_kind == "metadata":
         if "season" in info:

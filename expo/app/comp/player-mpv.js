@@ -58,8 +58,25 @@ export default function PlayerMpv(props) {
     }, [navigation])
 
     return (
-        <C.Modal visible={videoVisible} styles={styles.videoModal} onRequestClose={() => { console.log("Pausing..."); Libmpv.pause(); Libmpv.cleanup(); setVideoVisible(false); }}>
-            <LibmpvVideo playUrl={props.videoUrl} styles={styles.videoInside} />
+        <C.Modal
+            visible={videoVisible}
+            styles={styles.videoModal}
+            onRequestClose={() => {
+                console.log("Pausing...");
+                Libmpv.pause();
+                Libmpv.cleanup();
+                setVideoVisible(false);
+            }}>
+            <LibmpvVideo
+                playUrl={props.videoUrl}
+                styles={styles.videoInside}
+                onLibmpvEvent={(libmpvEvent) => {
+                    console.log({ libmpvEvent })
+                }}
+                onLibmpvLog={(libmpvLog) => {
+                    console.log({ libmpvLog })
+                }}
+            />
         </C.Modal>
     )
 }

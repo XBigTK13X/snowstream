@@ -4,19 +4,12 @@ import SnowGrid from './snow-grid'
 
 export function SnowThumbGrid(props) {
     const renderItem = (item, itemIndex) => {
-        let posterUrl = null
-        if (item.main_poster_image) {
-            posterUrl = item.main_poster_image.web_path
-        }
-        else {
-            for (let image of item.image_files) {
-                if (image.kind === 'thumbnail') {
-                    posterUrl = image.web_path
-                }
-            }
+        let thumbUrl = null
+        if (item.thumbnail_image) {
+            thumbUrl = item.thumbnail_image.web_path
         }
 
-        if (posterUrl) {
+        if (thumbUrl) {
             let title = null
             if (props.itemTitle) {
                 title = <Text style={{ textAlign: 'center' }}>{props.itemTitle(item)}</Text>
@@ -29,7 +22,7 @@ export function SnowThumbGrid(props) {
                         icon={<Image
                             style={{ height: 100, width: 150, resizeMode: 'contain' }}
                             key={item.id}
-                            source={{ uri: posterUrl }} />}
+                            source={{ uri: thumbUrl }} />}
                         onPress={() => { props.onPress(item) }}
                         onLongPress={() => { props.onLongPress(item) }}
                     />

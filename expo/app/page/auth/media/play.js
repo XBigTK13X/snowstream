@@ -27,7 +27,7 @@ export default function PlayMediaPage() {
                 const webPath = response.video_files[videoFileIndex].web_path
                 setVideoFileId(response.video_files[videoFileIndex].id)
                 setForceTranscode(true)
-                setVideoUrl({ path: webPath })
+                setVideoUrl(webPath)
             })
         }
         if (!shelf && episodeId) {
@@ -36,15 +36,15 @@ export default function PlayMediaPage() {
             })
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
-                const webPath = response.video_files[videoFileIndex].web_path
+                const webPath = response.video_files[videoFileIndex].network_path
                 setVideoFileId(response.video_files[videoFileIndex].id)
-                setVideoUrl({ path: webPath })
-                setForceTranscode(true)
+                setVideoUrl(webPath)
+                setForceTranscode(false)
             })
         }
         if (!videoUrl && streamableId) {
             apiClient.getStreamable(streamableId).then((response) => {
-                setVideoUrl({ path: response.url })
+                setVideoUrl(response.url)
                 setForceTranscode(false)
             })
         }
@@ -59,7 +59,7 @@ export default function PlayMediaPage() {
     }
 
 
-    if (videoUrl && videoUrl.path) {
+    if (videoUrl) {
         let devVideoUrl = null
         const mkvUrl = "http://192.168.101.10:8000/mnt/m-media/movie/a/Ocean's Eleven (2001)/Ocean's Eleven (2001) WEBDL-480p.mkv"
         const frigateUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=68'
@@ -69,9 +69,10 @@ export default function PlayMediaPage() {
         //devVideoUrl = frigateUrl
         //console.log({ devVideoUrl })
         //console.log({ videoUrl })
+        console.log({ videoUrl })
         return (
             <VideoPlayer
-                videoUrl={devVideoUrl ? devVideoUrl : videoUrl.path}
+                videoUrl={devVideoUrl ? devVideoUrl : videoUrl}
                 videoFileId={videoFileId}
                 forceTranscode={forceTranscode}
             />

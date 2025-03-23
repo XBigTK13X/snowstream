@@ -59,7 +59,7 @@ def get_show_season_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
         for show_season in show_seasons:
             if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
                 continue
-            results.append(show_season)
+            results.append(dm.set_primary_images(show_season))
         return results
 
 def get_show_season_list_by_show_id(ticket:dm.Ticket, show_id: int):
@@ -79,7 +79,7 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket, show_id: int):
         for show_season in show_seasons:
             if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
                 continue
-            results.append(show_season)
+            results.append(dm.set_primary_images(show_season))
         return results
 
 def create_show_season_image_file(show_season_id: int, image_file_id: int):
