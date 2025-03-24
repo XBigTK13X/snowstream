@@ -7,8 +7,8 @@ export default function ShowListPage() {
     const refreshList = (routes, shelfId, watchStatus) => {
         routes.goto(routes.showList, { shelfId, watchStatus })
     }
-    const gotoItem = (routes, shelfId, itemId) => {
-        routes.goto(routes.seasonList, { shelfId, showId: itemId })
+    const gotoItem = (routes, shelfId, itemId, item) => {
+        routes.goto(routes.seasonList, { shelfId, showId: itemId, showName: item.name })
     }
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleShowWatchStatus(itemId)

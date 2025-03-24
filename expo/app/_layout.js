@@ -79,16 +79,19 @@ function Footer() {
     return (
         <>
             <C.Text>{'\n'}</C.Text>
-            <C.SnowText>Client v{config.clientVersion} talking to server at [{config.webApiUrl}] - {authedInfo}</C.SnowText>
+            <C.SnowText>
+                Client v{config.clientVersion} talking to server at [{config.webApiUrl}] - {authedInfo}
+            </C.SnowText>
         </>
     )
 }
 
 function MessageDisplay() {
+    // This is mainly a debugging helper.
+    // Not sure if there's any reason to keep it in the deployed app
     const { message } = C.useMessageDisplay()
-    return (
-        <C.SnowText>Message: {message}</C.SnowText>
-    )
+    return null
+    return <C.SnowText>Message: {message}</C.SnowText>
 }
 
 // TODO Do I want always visible nav bars, or some kind of drawer?
@@ -105,7 +108,6 @@ export default function RootLayout() {
                     <C.View>{props.children}</C.View>
                 </SafeAreaStub>
             )
-
         }
     } else {
         PlatformWrapper = (props) => {
@@ -114,16 +116,15 @@ export default function RootLayout() {
             let SafeAreaView = safeArea.SafeAreaView
             return (
                 <SafeAreaProvider style={styles.default}>
-                    <SafeAreaView><C.TVFocusGuideView>
-                        {props.children}
-                    </C.TVFocusGuideView>
+                    <SafeAreaView>
+                        <C.TVFocusGuideView>{props.children}</C.TVFocusGuideView>
                     </SafeAreaView>
                 </SafeAreaProvider>
             )
         }
     }
 
-    NavigationBar.setVisibilityAsync("hidden")
+    NavigationBar.setVisibilityAsync('hidden')
 
     return (
         <ThemeProvider theme={theme}>

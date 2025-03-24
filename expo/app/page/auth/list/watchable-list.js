@@ -28,11 +28,14 @@ export function WatchableListPage(props) {
                 if (response.length > 1) {
                     setMessageDisplay(`Found ${response.length} items to display.`)
                 }
-
             })
         }
     })
     if (shelf && items) {
+        let pageTitle = `Found ${items.length} items from shelf ${shelf.name}`
+        if (props.getPageTitle) {
+            pageTitle = props.getPageTitle(shelf, items)
+        }
         const nextWatchedStatus = () => {
             if (currentStatus == 'Unwatched') {
                 nextStatus = 'Watched'
@@ -47,7 +50,7 @@ export function WatchableListPage(props) {
         }
 
         const gotoItem = (item) => {
-            props.gotoItem(routes, shelfId, item.id)
+            props.gotoItem(routes, shelfId, item.id, item)
         }
 
         const toggleWatchedItem = (item) => {
@@ -60,18 +63,19 @@ export function WatchableListPage(props) {
         }
 
         let Grid = C.SnowPosterGrid
-        if (props.gridKind == "thumb") {
+        if (props.gridKind == 'thumb') {
             Grid = C.SnowThumbGrid
         }
 
         return (
             <C.View>
-                <C.Button title={"Showing: " + currentStatus} onPress={nextWatchedStatus} />
+                <C.SnowText>{pageTitle}</C.SnowText>
+                <C.Button title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
                 <Grid onPress={gotoItem} onLongPress={toggleWatchedItem} data={items} />
             </C.View>
         )
     }
-    return <C.Text style={{ color: 'white' }}>Loading shelf {localParams.shelfId}.</C.Text>
+    return <C.Text style={{ color: 'white' }}>Loading items from shelf {localParams.shelfId}.</C.Text>
 }
 
 export default WatchableListPage

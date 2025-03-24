@@ -6,7 +6,12 @@ export default function EpisodeListPage() {
     const localParams = C.useLocalSearchParams()
     const shelfId = localParams.shelfId
     const showId = localParams.showId
+    const showName = localParams.showName
     const seasonId = localParams.seasonId
+    const seasonOrder = localParams.seasonOrder
+    const getPageTitle = (shelf, items) => {
+        return `Found ${items.length} episodes for ${showName} season ${seasonOrder}`
+    }
     const loadItems = (apiClient, shelfId, currentStatus) => {
         return apiClient.getEpisodeList(seasonId, currentStatus)
     }
@@ -14,7 +19,7 @@ export default function EpisodeListPage() {
         routes.goto(routes.episodeList, { shelfId, showId, seasonId, watchStatus })
     }
     const gotoItem = (routes, shelfId, itemId) => {
-        let destination = { shelfId: shelfId, showId: showId, seasonId: seasonId, episodeId: itemId }
+        let destination = { shelfId: shelfId, showId, seasonId, episodeId: itemId, showName, seasonOrder }
         routes.goto(routes.episodeDetails, destination)
     }
     const toggleItemWatched = (apiClient, itemId) => {
@@ -22,6 +27,7 @@ export default function EpisodeListPage() {
     }
     return (
         <WatchableListPage
+            getPageTitle={getPageTitle}
             loadItems={loadItems}
             refreshList={refreshList}
             gotoItem={gotoItem}
