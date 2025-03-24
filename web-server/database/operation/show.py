@@ -23,11 +23,11 @@ def get_show_by_name(name: str):
         return db.query(dm.Show).filter(dm.Show.name == name).first()
 
 def get_show_by_id(ticket:dm.Ticket,show_id: int):    
-    with DbSession() as db:
+    with DbSession() as db:        
         show = (
-            db.query(dm.Show)
-            .join(dm.ShowShelf)
+            db.query(dm.Show)            
             .filter(dm.Show.id == show_id)
+            .options(sorm.joinedload(dm.Show.shelf))
             .first()
         )
         if not ticket.is_allowed(shelf_id=show.shelf.id):
@@ -50,7 +50,7 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return None
     with DbSession() as db:
-        query = db.query(dm.Show).join(dm.ShowShelf).filter(dm.ShowShelf.shelf_id == shelf_id)
+        query = db.query(dm.Show).options(sorm.joinedload(dm.Show.shelf))
         if ticket.has_tag_restrictions():
             query = query.options(sorm.joinedload(dm.Show.tags))
         query = (
