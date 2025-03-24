@@ -50,14 +50,6 @@ export default function PlayMediaPage() {
         }
     })
 
-    let VideoPlayer = null
-    if (C.Platform.OS !== 'web') {
-        VideoPlayer = require('../../../comp/player-mpv').default
-    }
-    else {
-        VideoPlayer = require('../../../comp/player-web').default
-    }
-
 
     if (videoUrl) {
         let devVideoUrl = null
@@ -71,7 +63,7 @@ export default function PlayMediaPage() {
         //console.log({ videoUrl })
         console.log({ videoUrl })
         return (
-            <VideoPlayer
+            <C.SnowVideoPlayer
                 videoUrl={devVideoUrl ? devVideoUrl : videoUrl}
                 videoFileId={videoFileId}
                 forceTranscode={forceTranscode}

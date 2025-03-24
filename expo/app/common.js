@@ -25,14 +25,15 @@ import { useSession } from './auth-context'
 import { useSettings } from './settings-context'
 import { useMessageDisplay } from './message-context'
 
-import SnowGrid from './comp/snow-grid'
-import SnowText from './comp/snow-text'
-import SnowInput from './comp/snow-input'
-import SnowDropdown from './comp/snow-dropdown'
-import SnowLabel from './comp/snow-label'
 import SnowButton from './comp/snow-button'
+import SnowDropdown from './comp/snow-dropdown'
+import SnowGrid from './comp/snow-grid'
+import SnowInput from './comp/snow-input'
+import SnowLabel from './comp/snow-label'
 import SnowPosterGrid from './comp/snow-poster-grid'
+import SnowText from './comp/snow-text'
 import SnowThumbGrid from './comp/snow-thumb-grid'
+import SnowVideoPlayer from './comp/snow-video-player'
 
 const Styles = StyleSheet.create({
     box: {
@@ -43,7 +44,22 @@ const Styles = StyleSheet.create({
     },
 })
 
+const getWindowHeight = () => {
+    return Dimensions.get('window').height
+}
+
+const getWindowWidth = () => {
+    return Dimensions.get('window').width
+}
+
 export default {
+    getWindowWidth,
+    getWindowHeight,
+    useLocalSearchParams,
+    useMessageDisplay,
+    useNavigation,
+    useSession,
+    useSettings,
     Button,
     Dimensions,
     FlatList,
@@ -70,10 +86,6 @@ export default {
     Text,
     TouchableOpacity,
     TVFocusGuideView,
-    useLocalSearchParams,
-    useMessageDisplay,
-    useNavigation,
-    useSession,
-    useSettings,
+    SnowVideoPlayer,
     View,
 }

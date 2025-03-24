@@ -13,7 +13,7 @@ def create_user(user: am.User):
         del model_dump['raw_password']
         del model_dump['id']
         del model_dump['cduid']
-        del model_dump['activity_pool']
+        del model_dump['ticket']
         dbm = dm.User(**model_dump)
         db.add(dbm)
         db.commit()
@@ -32,7 +32,7 @@ def upsert_user(user: am.User):
         old_hash = existing.hashed_password
         model_dump = user.model_dump()
         del model_dump['cduid']
-        del model_dump['activity_pool']
+        del model_dump['ticket']
         if user.raw_password != '':
             model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
         else:        
