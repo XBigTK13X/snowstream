@@ -7,8 +7,10 @@ export default function MpvVideoView(props) {
     let Libmpv = libmpv.Libmpv
     let LibmpvVideo = libmpv.LibmpvVideo
 
-
     React.useEffect(() => {
+        if (!props.isReady && props.onReady) {
+            props.onReady()
+        }
         const cleanup = navigation.addListener('beforeRemove', (e) => {
             if (Libmpv && Libmpv.cleanup) {
                 Libmpv.cleanup()
@@ -30,10 +32,6 @@ export default function MpvVideoView(props) {
         }
     }
 
-    if (props.onReady) {
-        props.onReady()
-    }
-
     return (
         <LibmpvVideo
             playUrl={props.videoUrl}
@@ -43,7 +41,7 @@ export default function MpvVideoView(props) {
                 }
             }}
             onLibmpvLog={(libmpvLog) => {
-                if (props.unUpdate) {
+                if (props.onUpdate) {
                     props.onUpdate({ kind: 'log', libmpvLog })
                 }
             }}

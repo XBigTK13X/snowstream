@@ -28,14 +28,15 @@ def add_movie_to_shelf(movie_id: int, shelf_id: int):
 
 def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
     with DbSession() as db:
-        movie = (
-            db.query(dm.Movie)
-            .join(dm.MovieVideoFile)
-            .join(dm.MovieImageFile)
-            .join(dm.MovieShelf)
+        query = (
+            db.query(dm.Movie)            
             .filter(dm.Movie.id == movie_id)            
-            .first()
-        ) 
+            .options(sorm.joinedload(dm.Movie.video_files))
+            .options(sorm.joinedload(dm.Movie.image_files))
+            .options(sorm.joinedload(dm.Movie.shelf))
+        )
+
+        movie = query.first()
         if not ticket.is_allowed(shelf_id=movie.shelf.id):
             return None
         if not ticket.is_allowed(tag_provider=movie.get_tag_ids):

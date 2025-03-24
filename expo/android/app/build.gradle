@@ -4,7 +4,7 @@ apply plugin: "com.facebook.react"
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
-def keystorePropertiesFile = "../keystore.properties"
+def keystorePropertiesFile = "/home/kretst/develop/snowstream/keystore.properties"
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
