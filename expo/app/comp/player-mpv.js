@@ -15,29 +15,43 @@ var styles = C.StyleSheet.create({
         width: windowWidth,
         height: windowHeight,
         elevation: 1,
-        zIndex: 1
+        zIndex: 1,
     },
     video: {
         position: 'absolute',
-        border: "1px solid transparent",
-        margin: "-1px",
+        border: '1px solid transparent',
+        margin: '-1px',
         width: windowWidth,
         height: windowHeight,
         elevation: 1,
-        zIndex: 1
+        zIndex: 1,
     },
     videoModal: {
         width: windowWidth,
         height: windowHeight,
         elevation: 1,
-        zIndex: 1
+        zIndex: 1,
     },
     videoVideo: {
         width: windowWidth,
         height: windowHeight,
         elevation: 1,
-        zIndex: 1
-    }
+        zIndex: 1,
+    },
+    videoOverlay: {
+        backgroundColor: 'transparent',
+        width: windowWidth,
+        height: windowHeight,
+        elevation: 2,
+        zIndex: 2,
+    },
+    controlsModal: {
+        width: windowWidth,
+        height: windowHeight,
+        elevation: 3,
+        zIndex: 3,
+        backgroundColor: 'black',
+    },
 })
 
 export default function PlayerMpv(props) {
@@ -46,6 +60,7 @@ export default function PlayerMpv(props) {
     let Libmpv = libmpv.Libmpv
     let LibmpvVideo = libmpv.LibmpvVideo
     const [videoVisible, setVideoVisible] = C.React.useState(true)
+    const [controlsVisible, setControlsVisible] = C.React.useState(false)
 
     C.React.useEffect(() => {
         const cleanup = navigation.addListener('beforeRemove', (e) => {
@@ -57,26 +72,42 @@ export default function PlayerMpv(props) {
         return cleanup
     }, [navigation])
 
+    const toggleControls = () => {
+        console.log('Pressed the toggle!')
+        if (Libmpv && Libmpv.pauseOrUnpause) {
+            Libmpv.pauseOrUnpause()
+        }
+        setControlsVisible(!controlsVisible)
+    }
+
     return (
-        <C.Modal
-            visible={videoVisible}
-            styles={styles.videoModal}
-            onRequestClose={() => {
-                console.log("Pausing...");
-                Libmpv.pause();
-                Libmpv.cleanup();
-                setVideoVisible(false);
-            }}>
-            <LibmpvVideo
-                playUrl={props.videoUrl}
-                styles={styles.videoInside}
-                onLibmpvEvent={(libmpvEvent) => {
-                    console.log({ libmpvEvent })
+        <>
+            <C.Modal
+                visible={videoVisible}
+                styles={styles.videoModal}
+                onRequestClose={() => {
+                    console.log('Pausing...')
+                    Libmpv.pause()
+                    Libmpv.cleanup()
+                    setVideoVisible(false)
                 }}
-                onLibmpvLog={(libmpvLog) => {
-                    console.log({ libmpvLog })
-                }}
-            />
-        </C.Modal>
+            >
+                <LibmpvVideo
+                    playUrl={props.videoUrl}
+                    styles={styles.videoInside}
+                    onLibmpvEvent={(libmpvEvent) => {
+                        console.log({ libmpvEvent })
+                    }}
+                    onLibmpvLog={(libmpvLog) => {
+                        console.log({ libmpvLog })
+                    }}
+                />
+                <C.TouchableOpacity style={styles.videoOverlay} onPress={toggleControls}></C.TouchableOpacity>
+            </C.Modal>
+            <C.Modal visible={controlsVisible} styles={styles.controlsModal}>
+                <C.SnowText>Well, this was easier than expected.</C.SnowText>
+                <C.SnowButton title="Click to close" onPress={toggleControls} />
+            </C.Modal>
+        </>
     )
 }
