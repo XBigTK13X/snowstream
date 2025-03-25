@@ -12,7 +12,9 @@ export default function MpvVideoView(props) {
             props.onReady()
         }
         const cleanup = navigation.addListener('beforeRemove', (e) => {
+            console.log("Attempting cleanup")
             if (Libmpv && Libmpv.cleanup) {
+                console.log("Cleanup attempting")
                 Libmpv.cleanup()
             }
             return

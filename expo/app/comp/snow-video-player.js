@@ -11,6 +11,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         width: windowWidth,
         height: windowHeight,
+    },
+    videoView: {
+        width: windowWidth,
+        height: windowHeight,
+        backgroundColor: 'black'
+    },
+    dark: {
+        backgroundColor: 'black'
     }
 })
 
@@ -39,7 +47,6 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoReady = () => {
-        console.log("Ready")
         setIsReady(true)
         setIsPlaying(true)
     }
@@ -62,7 +69,7 @@ export default function SnowVideoPlayer(props) {
     }
 
     return (
-        <View>
+        <View style={styles.dark}>
             <Modal
                 visible={videoVisible}
                 onRequestClose={() => {
@@ -71,9 +78,10 @@ export default function SnowVideoPlayer(props) {
                     setIsPlaying(false)
                 }}
             >
-                <View style={{ backgroundColor: 'black' }}>
+                <View style={styles.videoView}>
                     <VideoView
                         windowHeight={windowHeight}
+                        windowWidth={windowWidth}
                         videoUrl={props.videoUrl}
                         isPlaying={isPlaying}
                         onUpdate={onVideoUpdate}
@@ -85,7 +93,7 @@ export default function SnowVideoPlayer(props) {
             <Modal
                 visible={controlsVisible}
             >
-                <View>
+                <View style={styles.dark}>
                     <SnowText>Well, this was easier than expected.</SnowText>
                     <SnowButton title="Press to close" onPress={hideControls} />
                 </View>
