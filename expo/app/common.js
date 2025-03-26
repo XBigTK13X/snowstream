@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Link, Redirect, Slot, useLocalSearchParams, useNavigation } from 'expo-router'
+import { Link, Redirect, Slot, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 
 import {
     Dimensions,
@@ -58,6 +58,7 @@ export default {
     useLocalSearchParams,
     useMessageDisplay,
     useNavigation,
+    useRouter,
     useSession,
     useSettings,
     Button,

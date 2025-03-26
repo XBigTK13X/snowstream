@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Dimensions, Modal, TouchableOpacity, Platform, View } from 'react-native'
 import SnowText from './snow-text'
 import SnowButton from './snow-button'
+import { useRouter } from 'expo-router'
 
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
@@ -23,27 +24,29 @@ const styles = StyleSheet.create({
 })
 
 export default function SnowVideoPlayer(props) {
-    const [videoVisible, setVideoVisible] = React.useState(true)
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
+    const router = useRouter()
 
     const showControls = () => {
+        console.log("Show controls, pause video")
         setControlsVisible(true)
         setIsPlaying(false)
     }
 
     const hideControls = () => {
+        console.log("Hide controls, play video")
         setControlsVisible(false)
         setIsPlaying(true)
     }
 
     const onVideoUpdate = (info) => {
-        console.log({ info })
+        //console.log({ info })
     }
 
     const onVideoError = (err) => {
-        console.log({ err })
+        //console.log({ err })
     }
 
     const onVideoReady = () => {
@@ -71,11 +74,10 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             <Modal
-                visible={videoVisible}
                 onRequestClose={() => {
-                    setVideoVisible(false)
                     setControlsVisible(false)
                     setIsPlaying(false)
+                    router.back()
                 }}
             >
                 <View style={styles.videoView}>
@@ -84,6 +86,7 @@ export default function SnowVideoPlayer(props) {
                         windowWidth={windowWidth}
                         videoUrl={props.videoUrl}
                         isPlaying={isPlaying}
+                        isReady={isReady}
                         onUpdate={onVideoUpdate}
                         onError={onVideoError}
                         onReady={onVideoReady} />

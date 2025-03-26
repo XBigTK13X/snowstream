@@ -15,17 +15,11 @@ export default function MpvVideoView(props) {
         }
         if (!cleanup) {
             navigation.addListener('beforeRemove', (e) => {
-                console.log("Attempting cleanup")
-                console.log("=-=-=-=-                  =-=-=-=-")
-                console.log("=-=-=-=-Cleanup attempting=-=-=-=-")
-                console.log("=-=-=-=-                  =-=-=-=-")
                 Libmpv.cleanup()
             })
             setCleanup(true)
         }
     })
-
-    console.log({ playing: props.isPlaying })
 
     return (
         <LibmpvVideo
