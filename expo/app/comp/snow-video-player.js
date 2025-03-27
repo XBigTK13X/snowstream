@@ -1,8 +1,9 @@
 import React from 'react'
 import { StyleSheet, Dimensions, Modal, TouchableOpacity, Platform, View } from 'react-native'
+import { useRouter } from 'expo-router'
 import SnowText from './snow-text'
 import SnowButton from './snow-button'
-import { useRouter } from 'expo-router'
+import SnowGrid from './snow-grid'
 
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
@@ -30,13 +31,11 @@ export default function SnowVideoPlayer(props) {
     const router = useRouter()
 
     const showControls = () => {
-        console.log("Show controls, pause video")
         setControlsVisible(true)
         setIsPlaying(false)
     }
 
     const hideControls = () => {
-        console.log("Hide controls, play video")
         setControlsVisible(false)
         setIsPlaying(true)
     }
@@ -71,6 +70,14 @@ export default function SnowVideoPlayer(props) {
         VideoView = require('./rnv-video-view').default
     }
 
+    const buttons = [
+        <SnowButton hasTVPreferredFocus={true} title="Resume" onPress={hideControls} />,
+        <SnowButton title="Subtitles" onPress={hideControls} />,
+        <SnowButton title="Audio" onPress={hideControls} />
+    ]
+
+    // Make the controls transparent, so you can see the scrubbing
+
     return (
         <View style={styles.dark}>
             <Modal
@@ -96,9 +103,8 @@ export default function SnowVideoPlayer(props) {
             <Modal
                 visible={controlsVisible}
             >
-                <View style={styles.dark}>
-                    <SnowText>Well, this was easier than expected.</SnowText>
-                    <SnowButton title="Press to close" onPress={hideControls} />
+                <View style={styles.videoView}>
+                    <SnowGrid data={buttons} renderItem={(item) => item} />
                 </View>
             </Modal>
         </View >
