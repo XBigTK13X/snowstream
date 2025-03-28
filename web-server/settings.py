@@ -27,7 +27,7 @@ class Config:
         self.supervisor_url = "http://localhost:9065"
         self.transcode_dir = "./cache-transcode"
         self.transcode_create_max_wait_seconds = 10
-        self.transcode_disconnect_seconds = 20
+        self.transcode_disconnect_seconds = 60
         self.transcode_video_codec = "h264_nvenc"
         self.jwt_secret_hex = "0" * 32
         self.jwt_algorithm = "HS256"

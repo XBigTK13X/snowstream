@@ -435,8 +435,8 @@ def no_auth_required(router):
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_EPG)
 
     # TODO It would be neat if I had a little placeholder video here to let the video player show that the stream is getting ready
-    @router.get("/transcode/playlist",tags=['Unauthed Video'])
-    @router.head("/transcode/playlist",tags=['Unauthed Video'])
+    @router.get("/transcode/playlist.m3u8",tags=['Unauthed Video'])
+    @router.head("/transcode/playlist.m3u8",tags=['Unauthed Video'])
     def get_transcode_playlist(transcode_session_id:int):
         playlist_content = transcode.get_playlist_content(transcode_session_id=transcode_session_id)
         return Response(playlist_content, status_code=200, media_type="video/mp4")
@@ -444,7 +444,7 @@ def no_auth_required(router):
     @router.get("/transcode/segment",tags=['Unauthed Video'])
     @router.head("/transcode/segment",tags=['Unauthed Video'])
     def get_transcode_file_segment(transcode_session_id: int, segment_file: str):
-        segment = transcode.get_stream_segment_content(
+        segment = transcode.get_stream_segment(
             transcode_session_id=transcode_session_id, segment_file=segment_file
         )
         return Response(segment, status_code=200, media_type="video/mp4")
