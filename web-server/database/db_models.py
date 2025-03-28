@@ -17,7 +17,6 @@ def set_primary_images(model):
             if 'poster' in image_file.kind:
                 model.poster_image = image_file
         if not model.thumbnail_image:
-            print(image_file.kind)
             if 'thumbnail' in image_file.kind:
                 model.thumbnail_image = image_file
     return model
@@ -196,7 +195,7 @@ class Watched(BaseModel):
 
 class TranscodeSession(BaseModel):
     __tablename__ = 'transcode_session'
-    client_device_id: sorm.Mapped[int] = sorm.mapped_column(
+    client_device_user_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("client_device_user.id"),nullable=False
     )
     video_file_id: sorm.Mapped[int] = sorm.mapped_column(

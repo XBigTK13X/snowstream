@@ -6,116 +6,93 @@ import atexit
 import time
 import shutil
 from util import debounce
-
+from pathlib import Path
 from db import db
+from database import db_models as dm
 from settings import config
 
 
-class Transcode:
-    def __init__(self):
-        # TODO Rewrite using db.model.TranscodeSession
-        self.transcode_processes = {}
-        self.cleanup_registered = False
+class Transcode:    
+    def register_cleanup(self):
+        atexit.register(self.cleanup)
 
-    def open_video_file(self, video_file: db.model.VideoFile):
-        if not self.cleanup_registered:
-            atexit.register(self.cleanup)
-            self.cleanup_registered = True
-        output_dir = f"{config.transcode_dir}/video/{video_file.id}"
-        output_file = os.path.join(output_dir, "stream.m3u8")
-        transcode_base_url = f"{config.web_api_url}/api/video/transcode/segment?video_file_id={video_file.id}&segment_file="
-        transcode_url = f"{config.web_api_url}/api/video/transcode?video_file_id={video_file.id}"
-        if os.path.exists(output_dir):
-            shutil.rmtree(output_dir)
-        os.makedirs(output_dir,exist_ok=True)
-        hls_options = f'-f hls -hls_flags delete_segments -hls_time 4 -hls_base_url "{transcode_base_url}"'
-        av_options = "-c:v copy -c:a copy"
-        protocol_options = ""
+    # TODO apply fitlers/tag restrictions/shelf access
+    def create_session(
+        self,
+        cduid:int,
+        video_file_id:int=None,
+        streamable_id:int=None
+    ):
+        input_path = None
+        output_dir = None
         live_stream_options = ""
-        command = f'ffmpeg -hide_banner {live_stream_options} {protocol_options} -i "{video_file.path}" {av_options} {hls_options} -user_agent ffmpeg/snowstream "{output_file}"'
-        log.info(command)
-        transcode_process = util.run_cli(command, background=True)
-        self.transcode_processes[f'video_file-{video_file.id}'] = {
-            "process": transcode_process,
-            "output_dir": output_dir,
-            "video_file_id": video_file.id,
-            "output_file": output_file,
-        }
-        max_wait_seconds = 10
-        while not os.path.exists(output_file):
-            if max_wait_seconds <= 0:
-                log.info(f"Unable to create transcode file: {output_file}")
-                break
-            time.sleep(1)
-            max_wait_seconds -= 1
-        return transcode_url
+        protocol_options = ''
+        if video_file_id != None:
+            video_file = db.op.get_video_file_by_id(video_file_id=video_file_id)
+            if not video_file:
+                return None
+            input_path = video_file.local_path
+            output_dir = f"{config.transcode_dir}/video/{video_file.id}"
+        if streamable_id != None:
+            streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
+            if not streamable:
+                return None
+            input_path = streamable.url
+            output_dir = f"{config.transcode_dir}/streamable/{streamable.id}"
+            live_stream_options = "-reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 6"
+            if "rtsp" in streamable.url:
+                protocol_options = "-rtsp_transport tcp"
 
-    def open_streamable(self, streamable: db.model.Streamable):
-        if not self.cleanup_registered:
-            atexit.register(self.cleanup)
-            self.cleanup_registered = True
-        output_dir = f"{config.transcode_dir}/streamable/{streamable.id}"
+        output_dir = f'{Path(output_dir).absolute()}'
         output_file = os.path.join(output_dir, "stream.m3u8")
-        transcode_base_url = f"{config.web_api_url}/api/streamable/transcode/segment?streamable_id={streamable.id}&segment_file="
-        transcode_url = f"{config.web_api_url}/api/streamable/transcode?streamable_id={streamable.id}"
+        transcode_session = db.op.create_transcode_session(
+            cduid=cduid,
+            transcode_directory=output_dir,
+            transcode_file=output_file,
+            video_file_id=video_file_id,
+            streamable_id=streamable_id
+        )
+        transcode_segment_url = f"{config.web_api_url}/api/transcode/segment?transcode_session_id={transcode_session.id}&segment_file="
+        transcode_playlist_url = f"{config.web_api_url}/api/transcode/playlist?transcode_session_id={transcode_session.id}"
         if os.path.exists(output_dir):
-            shutil.rmtree(output_dir)
+            shutil.rmtree(output_dir)            
         os.makedirs(output_dir,exist_ok=True)
-        hls_options = f'-f hls -hls_flags delete_segments -hls_time 4 -hls_base_url "{transcode_base_url}"'
-        av_options = "-c:v copy -c:a copy"
-        protocol_options = ""
-        # These are only used for HTTP based sources
-        live_stream_options = "-reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 6"
-        if streamable.stream_source.kind == "HdHomeRun":
-            av_options = (
-                f'-c:v h264_nvenc -preset fast -vf "bwdif,format=yuv420p" -c:a aac'
-            )
-        if "rtsp" in streamable.url:
-            protocol_options = "-rtsp_transport tcp"
-            live_stream_options = ""
-        command = f'ffmpeg -hide_banner {live_stream_options} {protocol_options} -i "{streamable.url}" {av_options} {hls_options} -user_agent ffmpeg/snowstream "{output_file}"'
+        hls_options = f'-f hls -hls_flags delete_segments -hls_time 4 -hls_base_url "{transcode_segment_url}"'
+        av_options = f'-c:v {config.transcode_video_codec} -preset medium -vf "bwdif,format=yuv420p" -c:a aac'
+        
+        command = f'ffmpeg -hide_banner {live_stream_options}'
+        command += f' {protocol_options} -i "{input_path}" {av_options}'
+        command += f' {hls_options} -user_agent ffmpeg/snowstream "{output_file}"'
         log.info(command)
+
         transcode_process = util.run_cli(command, background=True)
-        self.transcode_processes[f'streamable-{streamable.id}'] = {
-            "process": transcode_process,
-            "output_dir": output_dir,
-            "streamable_id": streamable.id,
-            "output_file": output_file,
-        }
-        max_wait_seconds = 10
+        db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
+
+        max_wait_seconds = config.transcode_create_max_wait_seconds
         while not os.path.exists(output_file):
             if max_wait_seconds <= 0:
                 log.info(f"Unable to create transcode file: {output_file}")
                 break
             time.sleep(1)
             max_wait_seconds -= 1
-        # TODO If HdHomeRun and HTTP 503 returned, then all tuners in use or channel not available (low signal)
-        return transcode_url
+        return {
+            'transcode_url': transcode_playlist_url,
+            'transcode_session_id': transcode_session.id
+        } 
 
-    def is_open(self, streamable_id: int = None,video_file_id:int = None):
-        if streamable_id != None:
-            return f'streamable-{streamable_id}' in self.transcode_processes
-        if video_file_id != None:
-            return f'video_file-{video_file_id}' in self.transcode_processes
-
-    def get_playlist(self, streamable_id: int = None, video_file_id:int = None):
-        transcode_process = None
-        if streamable_id != None:
-            transcode_process = self.transcode_processes[f'streamable-{streamable_id}']
-        if video_file_id != None:
-            transcode_process = self.transcode_processes[f'video_file-{video_file_id}']
+    def get_playlist_content(self, transcode_session_id:int):
+        transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
+        if not transcode_session:
+            return None
         binary_data = None
-        playlist_path = transcode_process["output_file"]
-        max_wait_seconds = 10
+        playlist_path = transcode_session.transcode_file
+        max_wait_seconds = config.transcode_create_max_wait_seconds
         while not os.path.exists(playlist_path) and max_wait_seconds > 0:
             time.sleep(1)
             max_wait_seconds -= 1
         with open(playlist_path, "rb") as read_handle:
             binary_data = read_handle.read()
-        if streamable_id != None:
-            self.close_on_disconnect(streamable_id=streamable_id)
-        if video_file_id != None:
-            self.close_on_disconnect(video_file_id=video_file_id)
+        self.close_on_disconnect(transcode_session=transcode_session)
         return binary_data
 
     def get_segment(self, segment_file: str, streamable_id: int = None, video_file_id:int = None):
@@ -140,32 +117,21 @@ class Transcode:
         return binary_data
 
     @debounce(config.transcode_disconnect_seconds)
-    def close_on_disconnect(self, streamable_id: int = None, video_file_id: int = None):
-        pass
-        #self.close(streamable_id = streamable_id, video_file_id = video_file_id)
+    def close_on_disconnect(self, transcode_session:dm.TranscodeSession):
+        self.close(transcode_session=transcode_session)
 
-    def close(self, streamable_id: int = None, video_file_id: int = None):
-        if streamable_id != None and self.is_open(streamable_id=streamable_id):
-            self.kill(self.transcode_processes[f'streamable-{streamable_id}'])
-        if video_file_id != None and self.is_open(video_file_id=video_file_id):
-            self.kill(self.transcode_processes[f'video_file-{video_file_id}'])
-
-    def kill(self, transcode_process: dict):
-        os.kill(transcode_process["process"].pid, signal.SIGTERM)
-        shutil.rmtree(transcode_process["output_dir"],ignore_errors=True)
-        if 'streamable_id' in transcode_process:
-            if transcode_process["streamable_id"] in self.transcode_processes:
-                del self.transcode_processes[transcode_process["streamable_id"]]
-        if 'video_file_id' in transcode_process:
-            if transcode_process["video_file_id"] in self.transcode_processes:
-                del self.transcode_processes[transcode_process["video_file_id"]]
+    def close(self, transcode_session:dm.TranscodeSession=None,transcode_session_id:int=None):
+        if transcode_session_id:
+            transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)        
+        os.kill(transcode_session.process_id, signal.SIGTERM)
+        shutil.rmtree(transcode_session.transcode_directory,ignore_errors=True)
+        db.op.delete_transcode_session(transcode_session_id=transcode_session.id)
 
     def cleanup(self):
-        children = self.transcode_processes.items()
-        if len(children) > 0:
-            log.info(f"Cleaning up {len(children)} transcode child processes")
-            for k, v in children:
-                self.kill(transcode_process=v)
-
+        transcode_sessions = db.op.get_transcode_session_list()
+        if transcode_sessions and len(transcode_sessions) > 0:
+            log.info(f"Cleaning up {len(transcode_sessions)} transcode child processes")
+            for transcode_session in transcode_sessions:
+                self.close(transcode_session=transcode_session)
 
 transcode = Transcode()

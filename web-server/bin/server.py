@@ -2,8 +2,10 @@ from log import log
 from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+
 from settings import config
 import routes
+from transcode import transcode
 
 import os
 import auth
@@ -50,12 +52,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+transcode.register_cleanup()
+
 api_router = APIRouter(prefix="/api")
 
 # TODO Could probably use a static route and get rid of nginx now that transcoding is handled via the API
+# There are still web_path exposed through it for direct streaming
 
 if not os.environ.get("SNOWSTREAM_WEB_API_URL"):
-
     @app.get("/", response_class=RedirectResponse, include_in_schema=False)
     def serve_web_app():
         return config.frontend_url

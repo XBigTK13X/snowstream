@@ -14,8 +14,8 @@ export default function PlayMediaPage() {
     const [movie, setMovie] = C.React.useState(null)
     const [episode, setEpisode] = C.React.useState(null)
     const [videoUrl, setVideoUrl] = C.React.useState(null)
-    const [videoFileId, setVideoFileId] = C.React.useState(null)
-    const [forceTranscode, setForceTranscode] = C.React.useState(false)
+
+    const useTranscode = true;
 
     C.React.useEffect(() => {
         if (!shelf && movieId) {
@@ -24,10 +24,14 @@ export default function PlayMediaPage() {
             })
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
-                const webPath = response.video_files[videoFileIndex].web_path
-                setVideoFileId(response.video_files[videoFileIndex].id)
-                setForceTranscode(true)
-                setVideoUrl(webPath)
+                const videoFile = response.video_files[videoFileIndex]
+                if (useTranscode) {
+                    apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
+                        setVideoUrl(transcodeSession.transcode_url)
+                    })
+                } else {
+                    setVideoUrl(videoFile.network_path)
+                }
             })
         }
         if (!shelf && episodeId) {
@@ -36,16 +40,25 @@ export default function PlayMediaPage() {
             })
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
-                const webPath = response.video_files[videoFileIndex].network_path
-                setVideoFileId(response.video_files[videoFileIndex].id)
-                setVideoUrl(webPath)
-                setForceTranscode(false)
+                const videoFile = response.video_files[videoFileIndex]
+                if (useTranscode) {
+                    apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
+                        setVideoUrl(transcodeSession.transcode_url)
+                    })
+                } else {
+                    setVideoUrl(videoFile.network_path)
+                }
             })
         }
         if (!videoUrl && streamableId) {
             apiClient.getStreamable(streamableId).then((response) => {
-                setVideoUrl(response.url)
-                setForceTranscode(false)
+                if (useTranscode) {
+                    apiClient.createStreamableTranscodeSession(streamableId).then((transcodeSession) => {
+                        setVideoUrl(transcodeSession.transcode_url)
+                    })
+                } else {
+                    setVideoUrl(response.url)
+                }
             })
         }
     })
@@ -65,8 +78,6 @@ export default function PlayMediaPage() {
         return (
             <C.SnowVideoPlayer
                 videoUrl={devVideoUrl ? devVideoUrl : videoUrl}
-                videoFileId={videoFileId}
-                forceTranscode={forceTranscode}
             />
         )
     }

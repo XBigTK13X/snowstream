@@ -7,8 +7,7 @@ import sqlalchemy.orm as sorm
 
 
 def create_transcode_session(
-    client_device_id:int,
-    process_id:int,
+    cduid:int,
     transcode_directory:str,
     transcode_file:str,
     video_file_id:int=None,
@@ -16,10 +15,9 @@ def create_transcode_session(
 ):
     with DbSession() as db:
         dbm = dm.TranscodeSession()
-        dbm.client_device_id = client_device_id
+        dbm.client_device_user_id = cduid
         dbm.video_file_id = video_file_id
         dbm.streamable_id = streamable_id
-        dbm.process_id = process_id
         dbm.transcode_directory = transcode_directory
         dbm.transcode_file = transcode_file
         db.add(dbm)
@@ -27,33 +25,40 @@ def create_transcode_session(
         db.refresh(dbm)
         return dbm
 
+def set_transcode_process_id(
+    transcode_session_id:int,
+    process_id:int
+):
+    with DbSession() as db:
+        transcode_session = db.query(dm.TranscodeSession).filter(dm.TranscodeSession.id == transcode_session_id).first()
+        if not transcode_session:
+            return False
+        transcode_session.process_id = process_id
+        db.commit()
+        return True
 
-def get_transcode_session(
-    client_device_id:int,
-    video_file_id:int=None,
-    streamable_id:int=None
+def get_transcode_session_by_id(
+    transcode_session_id:int
 ):
     with DbSession() as db:
         return (
             db.query(dm.TranscodeSession)
             .filter(
-                dm.TranscodeSession.client_device_id == client_device_id,
-                dm.TranscodeSession.video_file_id == video_file_id,
-                dm.TranscodeSession.streamable_id == streamable_id
+                dm.TranscodeSession.id == transcode_session_id
             )
             .first()
         )
 
+def get_transcode_session_list():
+    with DbSession() as db:
+        return db.query(dm.TranscodeSession).all()
+
 def delete_transcode_session(
-    client_device_id:int,
-    video_file_id:int=None,
-    streamable_id:int=None
+    transcode_session_id:int
 ):
     with DbSession() as db:
         result = db.query(dm.TranscodeSession).filter(
-            dm.TranscodeSession.client_device_id == client_device_id,
-            dm.TranscodeSession.video_file_id == video_file_id,
-            dm.TranscodeSession.streamable_id == streamable_id
+            dm.TranscodeSession.id == transcode_session_id
         ).delete()
         db.commit()
         return result

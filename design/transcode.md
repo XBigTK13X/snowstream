@@ -1,3 +1,11 @@
+# Thoughts on v2
+
+ 1. Allow different users to stream the same file at different settings?
+ 2. Transcode will always change the underlying video/audio codec.
+   a) Otherwise rely on direct access to a resource
+ 3. Settings to change the codec used (for when using nvidia vs intel etc)
+ 4. Move transcode sessions into the database
+
 # Transcode Schema
 
 - TranscodeSession

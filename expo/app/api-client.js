@@ -282,8 +282,12 @@ export class ApiClient {
         return this.delete(`/tag/${tagId}`)
     }
 
-    getVideoFileTranscodeUrl(video_file_id) {
-        return `${this.baseURL}/video/transcode?video_file_id=${video_file_id}`
+    createVideoFileTranscodeSession(videoFileId) {
+        return this.post(`${this.baseURL}/transcode/session?video_file_id=${videoFileId}`)
+    }
+
+    createStreamableTranscodeSession(streamableId) {
+        return this.post(`${this.baseURL}/transcode/session?streamable_id=${streamableId}`)
     }
 
     setShelfWatchStatus(shelfId, watched) {

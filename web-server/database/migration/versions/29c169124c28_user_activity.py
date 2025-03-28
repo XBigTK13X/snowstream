@@ -181,15 +181,15 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime, nullable=False),
         sa.Column("updated_at", sa.DateTime, nullable=False),
         sa.Column(
-            "client_device_id",
+            "client_device_user_id",
             sa.Integer,
-            sa.ForeignKey("client_device.id"),
+            sa.ForeignKey("client_device_user.id"),
             nullable=True,
         ),
         sa.Column(
             "video_file_id",
             sa.Integer,
-            sa.ForeignKey("show_episode.id"),
+            sa.ForeignKey("video_file.id"),
             nullable=True,
         ),
         sa.Column(
@@ -201,17 +201,17 @@ def upgrade() -> None:
         sa.Column(
             "process_id",
             sa.Integer,
-            nullable=False
+            nullable=True
         ),
         sa.Column(
             "transcode_directory",
             sa.Text,
-            nullable=False
+            nullable=True
         ),
         sa.Column(
             "transcode_file",
             sa.Text,
-            nullable=False
+            nullable=True
         )
     )
 
