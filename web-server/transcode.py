@@ -53,11 +53,11 @@ class Transcode:
             streamable_id=streamable_id
         )
         transcode_segment_url = f"{config.web_api_url}/api/transcode/segment?transcode_session_id={transcode_session.id}&segment_file="
-        transcode_playlist_url = f"{config.web_api_url}/api/transcode/playlist?transcode_session_id={transcode_session.id}"
+        transcode_playlist_url = f"{config.web_api_url}/api/transcode/playlist.m3u8?transcode_session_id={transcode_session.id}"
         if os.path.exists(output_dir):
             shutil.rmtree(output_dir)            
         os.makedirs(output_dir,exist_ok=True)
-        hls_options = f'-f hls -hls_flags delete_segments -hls_time 4 -hls_base_url "{transcode_segment_url}"'
+        hls_options = f'-f hls -hls_flags delete_segments -hls_time 30 -hls_base_url "{transcode_segment_url}"'
         av_options = f'-c:v {config.transcode_video_codec} -preset medium -vf "bwdif,format=yuv420p" -c:a aac'
         
         command = f'ffmpeg -hide_banner {live_stream_options}'
@@ -95,25 +95,18 @@ class Transcode:
         self.close_on_disconnect(transcode_session=transcode_session)
         return binary_data
 
-    def get_segment(self, segment_file: str, streamable_id: int = None, video_file_id:int = None):
-        if not self.is_open(streamable_id):
+    def get_stream_segment(self, segment_file: str, transcode_session_id: int):
+        transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
+        if not transcode_session:
             return None
-        binary_data = None
-        transcode_process = None
-        if streamable_id != None:
-            transcode_process = self.transcode_processes[f'streamable-{streamable_id}']
-        if video_file_id != None:
-            transcode_process = self.transcode_processes[f'video_file-{video_file_id}']
-        segment_path = os.path.join(transcode_process["output_dir"], segment_file)
+        binary_data = None        
+        segment_path = os.path.join(transcode_session.transcode_directory, segment_file)
         while not os.path.exists(segment_path) and max_wait_seconds > 0:
             time.sleep(1)
             max_wait_seconds -= 1
         with open(segment_path, "rb") as read_handle:
             binary_data = read_handle.read()
-        if streamable_id != None:
-            self.close_on_disconnect(streamable_id=streamable_id)
-        if video_file_id != None:
-            self.close_on_disconnect(video_file_id=video_file_id)
+        self.close_on_disconnect(transcode_session=transcode_session)
         return binary_data
 
     @debounce(config.transcode_disconnect_seconds)
