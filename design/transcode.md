@@ -13,6 +13,8 @@ Maybe host a loval restream in the docker container for non-media server hosted 
 
 # Local FFMPEG Streaming tests
 
+Note that even with a different path at the end, trying to run a second transcode runs into the port being used. Need a block of ports and cap transcodes.
+
 ## Host the rtmp stream locally (working !)
 `ffmpeg  -i "${INPUT_VIDEO}" -c:v h264_nvenc -preset medium -vf "bwdif,format=yuv420p" -c:a aac -f flv -listen 1 rtmp://0.0.0.0:1935/hls/abom`
 
