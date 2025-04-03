@@ -15,7 +15,7 @@ export default function PlayMediaPage() {
     const [episode, setEpisode] = C.React.useState(null)
     const [videoUrl, setVideoUrl] = C.React.useState(null)
 
-    const useTranscode = true;
+    const useTranscode = false;
 
     C.React.useEffect(() => {
         if (!shelf && movieId) {

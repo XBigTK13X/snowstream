@@ -11,7 +11,6 @@ from db import db
 from database import db_models as dm
 from settings import config
 
-
 class Transcode:    
     def register_cleanup(self):
         atexit.register(self.cleanup)
