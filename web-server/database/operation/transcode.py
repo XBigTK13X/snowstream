@@ -11,7 +11,8 @@ def create_transcode_session(
     transcode_directory:str,
     transcode_file:str,
     video_file_id:int=None,
-    streamable_id:int=None
+    streamable_id:int=None,
+    rtmp_port:int=None
 ):
     with DbSession() as db:
         dbm = dm.TranscodeSession()
@@ -20,6 +21,7 @@ def create_transcode_session(
         dbm.streamable_id = streamable_id
         dbm.transcode_directory = transcode_directory
         dbm.transcode_file = transcode_file
+        dbm.rtmp_port = rtmp_port
         db.add(dbm)
         db.commit()
         db.refresh(dbm)

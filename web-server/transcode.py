@@ -11,7 +11,34 @@ from db import db
 from database import db_models as dm
 from settings import config
 
-class Transcode:    
+def build_ffmpeg_command(input_url, transcode_port):
+    streaming_url = f'http://{config.transcode_rtmp_host}:{transcode_port}/stream'
+    command =  f'ffmpeg  -i "{input_url}"'
+    command += f' -c:v av1_nvenc'
+    command += f' -c:a libvorbis'
+    command += f' -f webm -listen 1'
+    command += f' "{streaming_url}"'
+    log.info(command)
+    return command,streaming_url
+
+class Transcode:
+    def __init__(self):
+        parts = config.transcode_port_range.split('-')
+        self.port_start = int(parts[0])
+        self.port_end = int(parts[1])
+
+    # TODO This isn't great if a lot of sessions are being generated at once.
+    # Fairly easy for collisions to happen
+    def get_unused_port(self):
+        open_port = self.port_start
+        transcode_sessions = db.op.get_transcode_session_list()
+        used_ports = [xx.rtmp_port for xx in transcode_sessions]
+        if len(used_ports) == self.port_end - self.port_start:
+            return None
+        while open_port in used_ports:
+            open_port += 1
+        return open_port
+
     def register_cleanup(self):
         atexit.register(self.cleanup)
 
@@ -23,59 +50,35 @@ class Transcode:
         streamable_id:int=None
     ):
         input_path = None
-        output_dir = None
-        live_stream_options = ""
-        protocol_options = ''
         if video_file_id != None:
             video_file = db.op.get_video_file_by_id(video_file_id=video_file_id)
             if not video_file:
                 return None
             input_path = video_file.local_path
-            output_dir = f"{config.transcode_dir}/video/{video_file.id}"
         if streamable_id != None:
             streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
             if not streamable:
                 return None
             input_path = streamable.url
-            output_dir = f"{config.transcode_dir}/streamable/{streamable.id}"
-            live_stream_options = "-reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 6"
-            if "rtsp" in streamable.url:
-                protocol_options = "-rtsp_transport tcp"
 
-        output_dir = f'{Path(output_dir).absolute()}'
-        output_file = os.path.join(output_dir, "stream.m3u8")
+        rtmp_port = self.get_unused_port()
+
         transcode_session = db.op.create_transcode_session(
             cduid=cduid,
-            transcode_directory=output_dir,
-            transcode_file=output_file,
+            transcode_directory=None,
+            transcode_file=None,
             video_file_id=video_file_id,
-            streamable_id=streamable_id
+            streamable_id=streamable_id,
+            rtmp_port=rtmp_port
         )
-        transcode_segment_url = f"{config.web_api_url}/api/transcode/segment?transcode_session_id={transcode_session.id}&segment_file="
-        transcode_playlist_url = f"{config.web_api_url}/api/transcode/playlist.m3u8?transcode_session_id={transcode_session.id}"
-        if os.path.exists(output_dir):
-            shutil.rmtree(output_dir)            
-        os.makedirs(output_dir,exist_ok=True)
-        hls_options = f'-f hls -hls_flags delete_segments -hls_time 30 -hls_base_url "{transcode_segment_url}"'
-        av_options = f'-c:v {config.transcode_video_codec} -preset medium -vf "bwdif,format=yuv420p" -c:a aac'
-        
-        command = f'ffmpeg -hide_banner {live_stream_options}'
-        command += f' {protocol_options} -i "{input_path}" {av_options}'
-        command += f' {hls_options} -user_agent ffmpeg/snowstream "{output_file}"'
-        log.info(command)
-
+        command,streaming_url = build_ffmpeg_command(input_url=input_path,transcode_port=rtmp_port)
         transcode_process = util.run_cli(command, background=True)
         db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
 
-        max_wait_seconds = config.transcode_create_max_wait_seconds
-        while not os.path.exists(output_file):
-            if max_wait_seconds <= 0:
-                log.info(f"Unable to create transcode file: {output_file}")
-                break
-            time.sleep(1)
-            max_wait_seconds -= 1
+        # TODO wait for the stream to respond to a ping?
+
         return {
-            'transcode_url': transcode_playlist_url,
+            'transcode_url': streaming_url,
             'transcode_session_id': transcode_session.id
         } 
 
