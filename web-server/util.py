@@ -6,7 +6,7 @@ import os
 from passlib.context import CryptContext
 
 
-def run_cli(command, background=False, log_path=None):
+def run_cli(command, raw_output=False, background=False, log_path=None):
     stdout_target = subprocess.PIPE
     stderr_target = subprocess.PIPE
     if log_path:
@@ -36,6 +36,12 @@ def run_cli(command, background=False, log_path=None):
         log.error(f"stdout: [{stdout}]")
         log.error(f"stderr: [{stderr}]")
         sys.exit(1)
+    if raw_output:
+        return {
+        "result": result,
+        "stdout": stdout.decode("utf-8"),
+        "stderr": stderr.decode("utf-8"),
+    }
     return {
         "result": result,
         "stdout": stdout.decode("utf-8").split("\n"),

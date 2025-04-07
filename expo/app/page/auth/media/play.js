@@ -16,6 +16,7 @@ export default function PlayMediaPage() {
     const [videoUrl, setVideoUrl] = C.React.useState(null)
     const [transcode, setTranscode] = C.React.useState(false)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(false)
+    const [videoTracks, setVideoTracks] = C.React.useState(null)
 
     C.React.useEffect(() => {
         if (!shelf && movieId) {
@@ -28,9 +29,11 @@ export default function PlayMediaPage() {
                 if (transcode) {
                     apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
                         setVideoUrl(transcodeSession.transcode_url)
+                        setVideoTracks(null)
                     })
                 } else {
                     setVideoUrl(videoFile.network_path)
+                    setVideoTracks(videoFile.ffprobe.parsed)
                 }
             })
         }
@@ -43,10 +46,12 @@ export default function PlayMediaPage() {
                 const videoFile = response.video_files[videoFileIndex]
                 if (transcode) {
                     apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
+                        setVideoTracks(null)
                         setVideoUrl(transcodeSession.transcode_url)
                     })
                 } else {
                     setVideoUrl(videoFile.network_path)
+                    setVideoTracks(videoFile.ffprobe.parsed)
                 }
             })
         }
@@ -57,6 +62,7 @@ export default function PlayMediaPage() {
                         setVideoUrl(transcodeSession.transcode_url)
                     })
                 } else {
+                    // TODO ffprobe the streamable before handing it back to the client
                     setVideoUrl(response.url)
                 }
             })

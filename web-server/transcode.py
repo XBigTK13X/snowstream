@@ -10,16 +10,7 @@ from pathlib import Path
 from db import db
 from database import db_models as dm
 from settings import config
-
-def build_ffmpeg_command(input_url, stream_port):
-    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream'
-    command =  f'ffmpeg  -i "{input_url}"'
-    command += f' -c:v av1_nvenc'
-    command += f' -c:a libvorbis'
-    command += f' -f webm -listen 1'
-    command += f' "{streaming_url}"'
-    log.info(command)
-    return command,streaming_url
+import ffmpeg
 
 class Transcode:
     def __init__(self):
@@ -71,7 +62,7 @@ class Transcode:
             streamable_id=streamable_id,
             stream_port=stream_port
         )
-        command,streaming_url = build_ffmpeg_command(input_url=input_path,stream_port=stream_port)
+        command,streaming_url = ffmpeg.transcode_command(input_url=input_path,stream_port=stream_port)
         if config.transcode_log_dir:
             os.makedirs(config.transcode_log_dir, exist_ok=True)
             log_path = os.path.join(config.transcode_log_dir,f'{transcode_session.id}.log')            

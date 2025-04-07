@@ -16,6 +16,7 @@ import auth
 from auth import get_current_user
 from transcode import transcode
 from settings import config
+import ffmpeg
 
 
 def register(router):
@@ -247,6 +248,8 @@ def auth_required(router):
         if movie == None:
             return None
         movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
+        for video_file in movie.video_files:
+            video_file.ffprobe = ffmpeg.ffprobe_media(video_file.local_path)
         return movie
 
     @router.post("/movie/watched")
@@ -381,6 +384,8 @@ def auth_required(router):
         if not episode:
             return None
         episode.watched = db.op.get_show_episode_watched(ticket=auth_user.ticket,episode_id=episode_id)
+        for video_file in episode.video_files:
+            video_file.ffprobe = ffmpeg.ffprobe_media(video_file.local_path)
         return episode
 
     @router.post("/transcode/session",tags=['Transcode'])
