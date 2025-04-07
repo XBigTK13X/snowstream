@@ -204,7 +204,7 @@ def upgrade() -> None:
             nullable=True
         ),
         sa.Column(
-            "rtmp_port",
+            "stream_port",
             sa.Integer,
             nullable=True
         ),
@@ -221,9 +221,9 @@ def upgrade() -> None:
     )
 
     op.create_unique_constraint(
-        "unique_transcode_rtmp_port",
+        "unique_transcode_stream_port",
         "transcode_session",
-        ["rtmp_port"]
+        ["stream_port"]
     )
 
 def downgrade() -> None:

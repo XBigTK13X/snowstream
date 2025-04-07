@@ -2,7 +2,6 @@ import database.db_models as dm
 from database.sql_alchemy import DbSession
 import api_models as am
 
-
 def create_shelf(shelf: am.Shelf):
     with DbSession() as db:
         dbm = dm.Shelf(**shelf.model_dump())

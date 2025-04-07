@@ -30,7 +30,7 @@ class Config:
         self.transcode_disconnect_seconds = 60
         self.transcode_video_codec = "h264_nvenc"
         self.transcode_port_range = "11910-11950"
-        self.transcode_rtmp_host = '0.0.0.0'
+        self.transcode_stream_host = '0.0.0.0'
         self.jwt_secret_hex = "0" * 32
         self.jwt_algorithm = "HS256"
         self.jwt_expire_value = 30

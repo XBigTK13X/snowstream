@@ -41,11 +41,11 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoUpdate = (info) => {
-        //console.log({ info })
+        console.log({ info })
     }
 
     const onVideoError = (err) => {
-        //console.log({ err })
+        console.log({ err })
     }
 
     const onVideoReady = () => {
@@ -76,7 +76,7 @@ export default function SnowVideoPlayer(props) {
         <SnowButton title="Audio" onPress={hideControls} />
     ]
 
-    // Make the controls transparent, so you can see the scrubbing
+    // TODO Make the controls transparent, so you can see the scrubbing
 
     return (
         <View style={styles.dark}>

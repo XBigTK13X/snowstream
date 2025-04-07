@@ -205,7 +205,7 @@ class TranscodeSession(BaseModel):
         sa.ForeignKey("streamable.id"),nullable=True
     )
     process_id = sa.Column(sa.Integer)
-    rtmp_port = sa.Column(sa.Integer)
+    stream_port = sa.Column(sa.Integer)
     transcode_directory = sa.Column(sa.Text)
     transcode_file = sa.Column(sa.Text)
 

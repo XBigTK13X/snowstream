@@ -11,8 +11,8 @@ from db import db
 from database import db_models as dm
 from settings import config
 
-def build_ffmpeg_command(input_url, transcode_port):
-    streaming_url = f'http://{config.transcode_rtmp_host}:{transcode_port}/stream'
+def build_ffmpeg_command(input_url, stream_port):
+    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream'
     command =  f'ffmpeg  -i "{input_url}"'
     command += f' -c:v av1_nvenc'
     command += f' -c:a libvorbis'
@@ -32,7 +32,7 @@ class Transcode:
     def get_unused_port(self):
         open_port = self.port_start
         transcode_sessions = db.op.get_transcode_session_list()
-        used_ports = [xx.rtmp_port for xx in transcode_sessions]
+        used_ports = [xx.stream_port for xx in transcode_sessions]
         if len(used_ports) == self.port_end - self.port_start:
             return None
         while open_port in used_ports:
@@ -61,7 +61,7 @@ class Transcode:
                 return None
             input_path = streamable.url
 
-        rtmp_port = self.get_unused_port()
+        stream_port = self.get_unused_port()
 
         transcode_session = db.op.create_transcode_session(
             cduid=cduid,
@@ -69,9 +69,9 @@ class Transcode:
             transcode_file=None,
             video_file_id=video_file_id,
             streamable_id=streamable_id,
-            rtmp_port=rtmp_port
+            stream_port=stream_port
         )
-        command,streaming_url = build_ffmpeg_command(input_url=input_path,transcode_port=rtmp_port)
+        command,streaming_url = build_ffmpeg_command(input_url=input_path,stream_port=stream_port)
         transcode_process = util.run_cli(command, background=True)
         db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
 
