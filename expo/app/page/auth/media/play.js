@@ -14,8 +14,8 @@ export default function PlayMediaPage() {
     const [movie, setMovie] = C.React.useState(null)
     const [episode, setEpisode] = C.React.useState(null)
     const [videoUrl, setVideoUrl] = C.React.useState(null)
-
-    const useTranscode = true;
+    const [transcode, setTranscode] = C.React.useState(false)
+    const [playbackFailed, setPlaybackFailed] = C.React.useState(false)
 
     C.React.useEffect(() => {
         if (!shelf && movieId) {
@@ -25,7 +25,7 @@ export default function PlayMediaPage() {
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
                 const videoFile = response.video_files[videoFileIndex]
-                if (useTranscode) {
+                if (transcode) {
                     apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
                         setVideoUrl(transcodeSession.transcode_url)
                     })
@@ -41,7 +41,7 @@ export default function PlayMediaPage() {
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
                 const videoFile = response.video_files[videoFileIndex]
-                if (useTranscode) {
+                if (transcode) {
                     apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
                         setVideoUrl(transcodeSession.transcode_url)
                     })
@@ -52,7 +52,7 @@ export default function PlayMediaPage() {
         }
         if (!videoUrl && streamableId) {
             apiClient.getStreamable(streamableId).then((response) => {
-                if (useTranscode) {
+                if (transcode) {
                     apiClient.createStreamableTranscodeSession(streamableId).then((transcodeSession) => {
                         setVideoUrl(transcodeSession.transcode_url)
                     })
@@ -63,6 +63,21 @@ export default function PlayMediaPage() {
         }
     })
 
+    const onError = (err) => {
+        if (!transcode) {
+            setTranscode(true)
+            setShelf(null)
+        }
+        else {
+            setPlaybackFailed(true)
+        }
+    }
+
+    if (playbackFailed) {
+        return (
+            <C.SnowText>Unable to play the video.</C.SnowText>
+        )
+    }
 
     if (videoUrl) {
         let devVideoUrl = null
@@ -78,6 +93,7 @@ export default function PlayMediaPage() {
         return (
             <C.SnowVideoPlayer
                 videoUrl={devVideoUrl ? devVideoUrl : videoUrl}
+                onError={onError}
             />
         )
     }

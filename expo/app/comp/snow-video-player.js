@@ -28,6 +28,7 @@ export default function SnowVideoPlayer(props) {
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
+    const [subMenu, setSubMenu] = React.useState(false)
     const router = useRouter()
 
     const showControls = () => {
@@ -46,6 +47,19 @@ export default function SnowVideoPlayer(props) {
 
     const onVideoError = (err) => {
         console.log({ err })
+        if (props.onError) {
+            if (err && err.kind && err.kind == 'rnv') {
+                if (err.error.code === 4) {
+                    props.onError(err)
+                }
+                else {
+                    console.log("Unhandled error kind")
+                }
+            }
+            else {
+                console.log("Unhandled error source")
+            }
+        }
     }
 
     const onVideoReady = () => {
@@ -70,10 +84,16 @@ export default function SnowVideoPlayer(props) {
         VideoView = require('./rnv-video-view').default
     }
 
+    const buttonInfos = [
+        ["Resume", hideControls],
+        ["Subtitles",]
+    ]
+
     const buttons = [
         <SnowButton hasTVPreferredFocus={true} title="Resume" onPress={hideControls} />,
         <SnowButton title="Subtitles" onPress={hideControls} />,
-        <SnowButton title="Audio" onPress={hideControls} />
+        <SnowButton title="Audio" onPress={hideControls} />,
+        <SnowButton title="Logs" onPress={hideControls} />
     ]
 
     // TODO Make the controls transparent, so you can see the scrubbing

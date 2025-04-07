@@ -72,10 +72,16 @@ class Transcode:
             stream_port=stream_port
         )
         command,streaming_url = build_ffmpeg_command(input_url=input_path,stream_port=stream_port)
-        transcode_process = util.run_cli(command, background=True)
+        if config.transcode_log_dir:
+            os.makedirs(config.transcode_log_dir, exist_ok=True)
+            log_path = os.path.join(config.transcode_log_dir,f'{transcode_session.id}.log')            
+        transcode_process = util.run_cli(command, background=True, log_path=log_path)
         db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
 
         # TODO wait for the stream to respond to a ping?
+        # TODO will need a new way to cleanup since the playlist isn't being hit
+
+        time.sleep(5)
 
         return {
             'transcode_url': streaming_url,

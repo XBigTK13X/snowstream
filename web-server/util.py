@@ -2,27 +2,35 @@ import threading
 import subprocess
 import sys
 from log import log
+import os
 from passlib.context import CryptContext
 
 
-def run_cli(command, background=False):
+def run_cli(command, background=False, log_path=None):
+    stdout_target = subprocess.PIPE
+    stderr_target = subprocess.PIPE
+    if log_path:
+        stdout_target = open(log_path+'.stdout', 'w')
+        stdout_target.write(command)
+        stderr_target = open(log_path+'.stderr', 'w')
+        stderr_target.write(command)
     if background:
         return subprocess.Popen(
             command,
             shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stdout=stdout_target,
+            stderr=stderr_target,
             executable="/bin/bash",
         )
     process = subprocess.Popen(
         command,
         shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=stdout_target,
+        stderr=stderr_target,
         executable="/bin/bash",
     )
     stdout, stderr = process.communicate()
-    result = process.returncode
+    result = process.returncode    
     if result != 0:
         log.error(f"An error occurred while running [{command}]")
         log.error(f"stdout: [{stdout}]")

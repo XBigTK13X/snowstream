@@ -22,7 +22,12 @@ export default function RnvVideoView(props) {
         )
     }
 
-    console.log({ url: props.videoUrl })
+    const onError = (err) => {
+        if (props.onError) {
+            err.kind = 'rnv'
+            props.onError(err)
+        }
+    }
 
     return (
         <Video
@@ -31,11 +36,7 @@ export default function RnvVideoView(props) {
             paused={!props.isPlaying}
             controls={false}
             muted={!props.isPlaying}
-            onError={(err) => {
-                if (props.onError) {
-                    props.onError(err)
-                }
-            }}
+            onError={onError}
         />
     )
 }
