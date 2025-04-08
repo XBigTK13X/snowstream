@@ -56,7 +56,12 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
-        query = db.query(dm.Movie).options(sorm.joinedload(dm.Movie.shelf))
+        query = (
+            db.query(dm.Movie)
+            .join(dm.MovieShelf)
+            .filter(dm.MovieShelf.shelf_id == shelf_id)
+            .options(sorm.joinedload(dm.Movie.shelf))
+        )
         if ticket.has_tag_restrictions():
             query = query.options(sorm.joinedload(dm.Movie.tags))
         query = (

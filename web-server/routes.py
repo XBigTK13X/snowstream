@@ -250,6 +250,7 @@ def auth_required(router):
         movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
         for video_file in movie.video_files:
             video_file.ffprobe = ffmpeg.ffprobe_media(video_file.local_path)
+        movie.tracks = movie.video_files[0].ffprobe['parsed']
         return movie
 
     @router.post("/movie/watched")
@@ -386,6 +387,7 @@ def auth_required(router):
         episode.watched = db.op.get_show_episode_watched(ticket=auth_user.ticket,episode_id=episode_id)
         for video_file in episode.video_files:
             video_file.ffprobe = ffmpeg.ffprobe_media(video_file.local_path)
+        episode.tracks = episode.video_files[0].ffprobe['parsed']
         return episode
 
     @router.post("/transcode/session",tags=['Transcode'])

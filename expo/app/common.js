@@ -34,6 +34,8 @@ import SnowPosterGrid from './comp/snow-poster-grid'
 import SnowText from './comp/snow-text'
 import SnowThumbGrid from './comp/snow-thumb-grid'
 import SnowVideoPlayer from './comp/snow-video-player'
+import SnowVideoControls from './comp/snow-video-controls'
+import SnowTrackSelector from './comp/snow-track-selector'
 
 const Styles = StyleSheet.create({
     box: {
@@ -79,14 +81,16 @@ export default {
     SnowGrid,
     SnowInput,
     SnowLabel,
-    SnowThumbGrid,
     SnowPosterGrid,
     SnowText,
-    StyleSheet,
+    SnowThumbGrid,
+    SnowTrackSelector,
+    SnowVideoControls,
+    SnowVideoPlayer,
     Styles,
+    StyleSheet,
     Text,
     TouchableOpacity,
     TVFocusGuideView,
-    SnowVideoPlayer,
     View,
 }

@@ -1,5 +1,14 @@
 import C from '../../../common'
 
+// TODO Remove this debugging stuff once all the video players are functional
+let devVideoUrl = null
+const mkvUrl = "http://192.168.101.10:8000/mnt/m-media/movie/a/Ocean's Eleven (2001)/Ocean's Eleven (2001) WEBDL-480p.mkv"
+const frigateUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=68'
+const hdHomeRunUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=1'
+const hdHomeRunUrlTrans = 'http://192.168.101.10:8000/api/streamable/transcode?streamable_id=1'
+const iptvUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=124'
+//devVideoUrl = frigateUrl
+
 export default function PlayMediaPage() {
     const { apiClient } = C.useSession()
     const localParams = C.useLocalSearchParams()
@@ -8,7 +17,6 @@ export default function PlayMediaPage() {
     const movieId = localParams.movieId
     const episodeId = localParams.episodeId
     const streamableId = localParams.streamableId
-    const videoFileIndex = localParams.videoFileIndex
 
     const [shelf, setShelf] = C.React.useState(null)
     const [movie, setMovie] = C.React.useState(null)
@@ -16,7 +24,11 @@ export default function PlayMediaPage() {
     const [videoUrl, setVideoUrl] = C.React.useState(null)
     const [transcode, setTranscode] = C.React.useState(false)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(false)
-    const [videoTracks, setVideoTracks] = C.React.useState(null)
+    const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(localParams.audioIndex || 0)
+    const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(localParams.subtitleIndex || 0)
+    const [tracks, setTracks] = C.React.useState(null)
+
+    const videoFileIndex = 0
 
     C.React.useEffect(() => {
         if (!shelf && movieId) {
@@ -29,11 +41,11 @@ export default function PlayMediaPage() {
                 if (transcode) {
                     apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
                         setVideoUrl(transcodeSession.transcode_url)
-                        setVideoTracks(null)
+                        setTracks(null)
                     })
                 } else {
                     setVideoUrl(videoFile.network_path)
-                    setVideoTracks(videoFile.ffprobe.parsed)
+                    setTracks(response.tracks)
                 }
             })
         }
@@ -46,12 +58,12 @@ export default function PlayMediaPage() {
                 const videoFile = response.video_files[videoFileIndex]
                 if (transcode) {
                     apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
-                        setVideoTracks(null)
+                        setTracks(null)
                         setVideoUrl(transcodeSession.transcode_url)
                     })
                 } else {
                     setVideoUrl(videoFile.network_path)
-                    setVideoTracks(videoFile.ffprobe.parsed)
+                    setTracks(response.tracks)
                 }
             })
         }
@@ -86,20 +98,14 @@ export default function PlayMediaPage() {
     }
 
     if (videoUrl) {
-        let devVideoUrl = null
-        const mkvUrl = "http://192.168.101.10:8000/mnt/m-media/movie/a/Ocean's Eleven (2001)/Ocean's Eleven (2001) WEBDL-480p.mkv"
-        const frigateUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=68'
-        const hdHomeRunUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=1'
-        const hdHomeRunUrlTrans = 'http://192.168.101.10:8000/api/streamable/transcode?streamable_id=1'
-        const iptvUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=124'
-        //devVideoUrl = frigateUrl
-        //console.log({ devVideoUrl })
-        //console.log({ videoUrl })
         console.log({ videoUrl })
         return (
             <C.SnowVideoPlayer
                 videoUrl={devVideoUrl ? devVideoUrl : videoUrl}
                 onError={onError}
+                tracks={tracks}
+                subtitleIndex={subtitleTrackIndex}
+                audioIndex={audioTrackIndex}
             />
         )
     }

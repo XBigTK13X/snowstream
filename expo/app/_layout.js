@@ -25,6 +25,7 @@ var styles = C.StyleSheet.create({
     default: {
         backgroundColor: '#000000',
     },
+    // TODO Is this note below still valid? I think that bug is fixed and this style unused
     // This needs to be slightly larger than the offset in play.js for the videoview
     // I don't know why, but without gap the surfaceview doesn't clean up.
     // It leaves the screen blank after hitting back on a video on Android TV

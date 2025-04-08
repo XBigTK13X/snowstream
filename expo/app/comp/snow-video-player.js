@@ -99,7 +99,10 @@ export default function SnowVideoPlayer(props) {
                         isReady={isReady}
                         onUpdate={onVideoUpdate}
                         onError={onVideoError}
-                        onReady={onVideoReady} />
+                        onReady={onVideoReady}
+                        subtitleIndex={props.subtitleIndex}
+                        audioIndex={props.audioIndex}
+                    />
                     {controlToggleButton}
                 </View>
             </Modal >

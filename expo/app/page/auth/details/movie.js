@@ -6,8 +6,12 @@ export default function MovieDetailsPage() {
     const localParams = C.useLocalSearchParams();
     const [shelf, setShelf] = C.React.useState(null);
     const [movie, setMovie] = C.React.useState(null);
+    const [audioTrack, setAudioTrack] = C.React.useState(0)
+    const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
+
     const shelfId = localParams.shelfId;
     const movieId = localParams.movieId;
+
     C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(shelfId).then((response) => {
@@ -28,13 +32,28 @@ export default function MovieDetailsPage() {
                 })
             })
     }
+    const selectTrack = (track) => {
+        if (track.kind === 'audio') {
+            setAudioTrack(track.relative_index)
+        }
+        if (track.kind === 'subtitle') {
+            setSubtitleTrack(track.relative_index)
+        }
+    }
     if (shelf && movie) {
         const watchTitle = movie.watched ? "Set Status to Unwatched" : "Set Status to Watched"
         return (
             <C.View>
                 <C.SnowText>Title: {movie.name}</C.SnowText>
-                <C.SnowButton title="Play" onPress={routes.func(routes.playMedia, { videoFileIndex: 0, movieId: movieId, shelfId: shelfId })} />
+                <C.SnowButton title="Play" onPress={routes.func(routes.playMedia, {
+                    videoFileIndex: 0,
+                    audioTrack: audioTrack,
+                    subtitleTrack: subtitleTrack,
+                    movieId: movieId,
+                    shelfId: shelfId
+                })} />
                 <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
+                <C.SnowTrackSelector tracks={movie.tracks} selectTrack={selectTrack} />
             </C.View>
         )
     }

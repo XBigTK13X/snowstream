@@ -37,6 +37,8 @@ export default function RnvVideoView(props) {
             controls={false}
             muted={!props.isPlaying}
             onError={onError}
+            selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
+            selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
         />
     )
 }

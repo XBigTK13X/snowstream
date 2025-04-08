@@ -50,7 +50,12 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return None
     with DbSession() as db:
-        query = db.query(dm.Show).options(sorm.joinedload(dm.Show.shelf))
+        query = (
+            db.query(dm.Show)
+            .join(dm.ShowShelf)
+            .filter(dm.ShowShelf.shelf_id == shelf_id)
+            .options(sorm.joinedload(dm.Show.shelf))
+        )
         if ticket.has_tag_restrictions():
             query = query.options(sorm.joinedload(dm.Show.tags))
         query = (
