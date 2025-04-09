@@ -24,13 +24,23 @@ export default function PlayMediaPage() {
     const [videoUrl, setVideoUrl] = C.React.useState(null)
     const [transcode, setTranscode] = C.React.useState(false)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(false)
-    const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(localParams.audioIndex || 0)
-    const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(localParams.subtitleIndex || 0)
+    const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
+    const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
     const [tracks, setTracks] = C.React.useState(null)
+
+    console.log({ localParams })
 
     const videoFileIndex = 0
 
     C.React.useEffect(() => {
+        if (!shelf) {
+            if (localParams.audioTrack) {
+                setAudioTrackIndex(parseInt(localParams.audioTrack), 10)
+            }
+            if (localParams.subtitleTrack) {
+                setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
+            }
+        }
         if (!shelf && movieId) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)

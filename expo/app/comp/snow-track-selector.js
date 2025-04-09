@@ -46,7 +46,6 @@ export default function SnowTrackSelector(props) {
     if (!props.tracks) {
         return null
     }
-    console.log({ props })
     return (
         <View style={columnsStyle}>
             <TrackList

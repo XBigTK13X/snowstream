@@ -35,6 +35,8 @@ export default function MpvVideoView(props) {
                     props.onUpdate({ kind: 'log', libmpvLog })
                 }
             }}
+            selectedAudioTrack={props.audioIndex}
+            selectedSubtitleTrack={props.subtitleIndex}
         />
     )
 }

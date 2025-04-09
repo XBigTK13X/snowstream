@@ -36,7 +36,6 @@ export default function EpisodeDetailsPage() {
         })
     }
     const selectTrack = (track) => {
-        console.log({ track })
         if (track.kind === 'audio') {
             setAudioTrack(track.relative_index)
         }

@@ -29,6 +29,8 @@ export default function RnvVideoView(props) {
         }
     }
 
+    console.log({ props })
+
     return (
         <Video
             source={{ uri: props.videoUrl }}
