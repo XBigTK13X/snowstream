@@ -44,6 +44,6 @@ docker run -d \
     -v /mnt/m-media/movie:/mnt/m-media/movie \
     xbigtk13x/snowstream
 
-sleep 8
+sleep 12
 
 script/db-migrate.sh

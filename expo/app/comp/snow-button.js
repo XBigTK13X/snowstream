@@ -1,24 +1,69 @@
+import React from 'react'
+
 import { Button, Image } from '@rneui/themed'
 
-const buttonStyle = { margin: 10, padding: 10, maxWidth: 350, justifyContent: 'center' }
-const highlightStyle = { margin: 10, padding: 10, maxWidth: 350, justifyContent: 'center', backgroundColor: 'green' }
-const hoverStyle = { margin: 10, padding: 10, maxWidth: 350, justifyContent: 'center', backgroundColor: 'yellow' }
+import { TouchableOpacity } from 'react-native';
+
+const baseButtonStyle = { margin: 5, padding: 10, maxWidth: 350, justifyContent: 'center' }
+const selectedButtonStyle = { ...baseButtonStyle }
+const hoverButtonStyle = { ...baseButtonStyle }
+
+const baseContainerStyle = { margin: 5 }
+const selectedContainerStyle = { ...baseContainerStyle, ...{ backgroundColor: 'green' } }
+const hoverContainerStyle = { ...baseContainerStyle, ...{ backgroundColor: 'white' } }
 
 const longPressIcon = <Image
     style={{ height: 25, width: 25, tintColor: '#ffffff', marginRight: 10 }}
     source={require('../image/icon/long-press.png')} />
 
 export function SnowButton(props) {
+    const [focused, setFocused] = React.useState(false)
+    let buttonStyle = baseButtonStyle
+    let containerStyle = baseContainerStyle
+    if (props.selected) {
+        buttonStyle = selectedButtonStyle
+        containerStyle = selectedContainerStyle
+    }
+    if (focused) {
+        buttonStyle = hoverButtonStyle
+        containerStyle = hoverContainerStyle
+    }
+    if (props.buttonStyle) {
+        buttonStyle = { ...buttonStyle, ...props.buttonStyle }
+    }
+
+    if (props.containerStyle) {
+        containerStyle = { ...containerStyle, ...props.containerStyle }
+    }
+
     let icon = null
     if (props.onLongPress) {
         icon = longPressIcon
     }
-    return <Button
-        style={props.highlighted ? highlightStyle : buttonStyle}
-        icon={icon}
-        title={props.title}
-        onPress={props.onPress}
-        onLongPress={props.onLongPress} />
+
+
+    const gainFocus = () => {
+        setFocused(true);
+    }
+
+    const loseFocus = () => {
+        setFocused(false);
+    }
+
+    return (
+        <TouchableOpacity
+            activeOpacity={1.0}
+            onFocus={gainFocus}
+            onBlur={loseFocus}>
+            <Button
+                buttonStyle={buttonStyle}
+                containerStyle={containerStyle}
+                icon={icon}
+                title={props.title}
+                onPress={props.onPress}
+                onLongPress={props.onLongPress} />
+        </TouchableOpacity>
+    )
 }
 
 export default SnowButton

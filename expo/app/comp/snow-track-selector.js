@@ -5,6 +5,21 @@ import SnowText from './snow-text'
 import SnowGrid from './snow-grid'
 import SnowButton from './snow-button'
 
+const columnsStyle = {
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+}
+
+const itemStyle = {
+    width: 250,
+    height: 50,
+    padding: 10,
+    margin: 10,
+}
+
 function TrackList(props) {
     if (!props.tracks) {
         return null
@@ -12,34 +27,21 @@ function TrackList(props) {
     return (
         <View>
             <SnowText>{props.title}</SnowText>
-            {props.tracks.map((track, trackKey) => {
-                return (
-                    <SnowButton
-                        key={trackKey}
-                        highlighted={track.relative_index === props.activeTrack}
-                        title={`${track.relative_index}) ${track.display}`}
-                        onPress={() => { props.selectTrack(track) }}
-                    />
-                )
-            })}
+            <View class={columnsStyle}>
+                {props.tracks.map((track, trackKey) => {
+                    return (
+                        <SnowButton
+                            style={itemStyle}
+                            key={trackKey}
+                            selected={track.relative_index === props.activeTrack}
+                            title={`${track.relative_index}) ${track.display}`}
+                            onPress={() => { props.selectTrack(track) }}
+                        />
+                    )
+                })}
+            </View>
         </View>
     )
-}
-
-let columnsStyle = {
-    width: '100%',
-    height: '100%',
-    flex: 1,
-    padding: 20,
-    flexDirection: 'row',
-    flexWrap: 'wrap'
-}
-
-let itemStyle = {
-    width: 250,
-    height: 60,
-    padding: 5,
-    margin: 5
 }
 
 export default function SnowTrackSelector(props) {
@@ -49,7 +51,6 @@ export default function SnowTrackSelector(props) {
     return (
         <View style={columnsStyle}>
             <TrackList
-                style={itemStyle}
                 kind="audio"
                 title="Audio"
                 tracks={props.tracks.audio}
@@ -57,7 +58,6 @@ export default function SnowTrackSelector(props) {
                 activeTrack={props.audioTrack}
             />
             <TrackList
-                style={itemStyle}
                 kind="subtitle"
                 title="Subtitles"
                 tracks={props.tracks.subtitle}
