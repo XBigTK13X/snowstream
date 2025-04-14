@@ -44,6 +44,17 @@ export default function EpisodeDetailsPage() {
         }
     }
     if (shelf && episode) {
+        let trackSelector = null
+        if (C.Platform.OS !== 'web') {
+            trackSelector = (
+                <C.SnowTrackSelector
+                    tracks={episode.tracks}
+                    selectTrack={selectTrack}
+                    audioTrack={audioTrack}
+                    subtitleTrack={subtitleTrack}
+                />
+            )
+        }
         const watchTitle = episode.watched ? 'Set Status to Unwatched' : 'Set Status to Watched'
         return (
             <C.View>
@@ -61,12 +72,7 @@ export default function EpisodeDetailsPage() {
                     })}
                 />
                 <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
-                <C.SnowTrackSelector
-                    tracks={episode.tracks}
-                    selectTrack={selectTrack}
-                    audioTrack={audioTrack}
-                    subtitleTrack={subtitleTrack}
-                />
+                {trackSelector}
             </C.View>
         )
     }

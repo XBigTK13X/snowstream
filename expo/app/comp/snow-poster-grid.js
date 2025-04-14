@@ -3,7 +3,7 @@ import { Button, Image } from '@rneui/themed'
 import SnowGrid from './snow-grid'
 import SnowText from './snow-text'
 
-const itemStyle = { height: 310, width: 220, justifyContent: 'center' }
+const itemStyle = { height: 300, width: 220, justifyContent: 'center' }
 const imageStyle = { height: 310, width: 180, resizeMode: "contain" }
 
 export function SnowPosterGrid(props) {

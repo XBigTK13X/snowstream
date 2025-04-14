@@ -27,9 +27,6 @@ export default function PlayMediaPage() {
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
     const [tracks, setTracks] = C.React.useState(null)
-
-    console.log({ localParams })
-
     const videoFileIndex = 0
 
     C.React.useEffect(() => {
@@ -108,7 +105,6 @@ export default function PlayMediaPage() {
     }
 
     if (videoUrl) {
-        console.log({ videoUrl })
         return (
             <C.SnowVideoPlayer
                 videoUrl={devVideoUrl ? devVideoUrl : videoUrl}

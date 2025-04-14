@@ -26,7 +26,7 @@ function TrackList(props) {
     }
     return (
         <View>
-            <SnowText>{props.title}</SnowText>
+            <SnowText>{props.title} ({props.tracks.length})</SnowText>
             <View class={columnsStyle}>
                 {props.tracks.map((track, trackKey) => {
                     return (

@@ -23,10 +23,10 @@ export default function SnowVideoControls(props) {
 
 
     const buttons = [
-        <SnowButton hasTVPreferredFocus={true} title="Resume" onPress={hideControls} />,
-        <SnowButton title="Subtitles" onPress={hideControls} />,
-        <SnowButton title="Audio" onPress={hideControls} />,
-        <SnowButton title="Logs" onPress={hideControls} />
+        <SnowButton hasTVPreferredFocus={true} title="Resume" onPress={props.hideControls} />,
+        <SnowButton title="Subtitles" onPress={props.hideControls} />,
+        <SnowButton title="Audio" onPress={props.hideControls} />,
+        <SnowButton title="Logs" onPress={props.hideControls} />
     ]
 
     return (

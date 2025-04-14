@@ -29,14 +29,12 @@ export default function RnvVideoView(props) {
         }
     }
 
-    console.log({ props })
-
     return (
         <Video
             source={{ uri: props.videoUrl }}
             ref={videoRef}
             paused={!props.isPlaying}
-            controls={false}
+            controls={true}
             muted={!props.isPlaying}
             onError={onError}
             selectedAudioTrack={{ type: 'index', value: props.audioIndex }}

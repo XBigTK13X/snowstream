@@ -41,6 +41,17 @@ export default function MovieDetailsPage() {
         }
     }
     if (shelf && movie) {
+        let trackSelector = null
+        if (C.Platform.OS !== 'web') {
+            trackSelector = (
+                <C.SnowTrackSelector
+                    tracks={movie.tracks}
+                    selectTrack={selectTrack}
+                    audioTrack={audioTrack}
+                    subtitleTrack={subtitleTrack}
+                />
+            )
+        }
         const watchTitle = movie.watched ? "Set Status to Unwatched" : "Set Status to Watched"
         return (
             <C.View>
@@ -53,7 +64,7 @@ export default function MovieDetailsPage() {
                     shelfId: shelfId
                 })} />
                 <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
-                <C.SnowTrackSelector tracks={movie.tracks} selectTrack={selectTrack} />
+                {trackSelector}
             </C.View>
         )
     }

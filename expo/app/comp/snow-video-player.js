@@ -110,7 +110,7 @@ export default function SnowVideoPlayer(props) {
                 visible={controlsVisible}
             >
                 <View style={styles.videoView}>
-                    <SnowVideoControls />
+                    <SnowVideoControls hideControls={hideControls} />
                 </View>
             </Modal>
         </View >
