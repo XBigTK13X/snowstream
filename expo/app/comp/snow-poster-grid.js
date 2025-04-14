@@ -3,6 +3,9 @@ import { Button, Image } from '@rneui/themed'
 import SnowGrid from './snow-grid'
 import SnowText from './snow-text'
 
+const itemStyle = { height: 310, width: 220, justifyContent: 'center' }
+const imageStyle = { height: 310, width: 180, resizeMode: "contain" }
+
 export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {
         let posterUrl = null
@@ -12,22 +15,24 @@ export function SnowPosterGrid(props) {
 
         if (posterUrl) {
             return (
-                <Button
-                    hasTVPreferredFocus={itemIndex === 0}
-                    style={{ height: 350, width: 200, margin: 10, padding: 10 }}
-                    icon={<Image
-                        style={{ height: 220, width: 150, resizeMode: "contain" }}
-                        key={item.id}
-                        source={{ uri: posterUrl }} />}
-                    onPress={() => { props.onPress(item) }}
-                    onLongPress={() => { props.onLongPress(item) }}
-                />
+                <View style={itemStyle}>
+                    <Button
+                        hasTVPreferredFocus={itemIndex === 0}
+                        style={itemStyle}
+                        icon={<Image
+                            style={imageStyle}
+                            key={item.id}
+                            source={{ uri: posterUrl }} />}
+                        onPress={() => { props.onPress(item) }}
+                        onLongPress={() => { props.onLongPress(item) }}
+                    />
+                </View>
             )
         }
     }
     return (
         <View>
-            <SnowGrid data={props.data} renderItem={renderItem} itemWidth={250} itemHeight={250} />
+            <SnowGrid data={props.data} renderItem={renderItem} itemStyle={itemStyle} />
         </View>
     )
 }
