@@ -1,10 +1,11 @@
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 import { Button, Image } from '@rneui/themed'
 import SnowGrid from './snow-grid'
 import SnowText from './snow-text'
 
-const itemStyle = { height: 300, width: 220, justifyContent: 'center' }
-const imageStyle = { height: 310, width: 180 }
+
+let itemStyle = { height: 220, width: 150, justifyContent: 'center' }
+let imageStyle = { height: 200, width: 130 }
 
 export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {

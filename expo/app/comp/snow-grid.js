@@ -17,8 +17,8 @@ const gridStyle = {
 const defaultItemStyle = {
     width: 250,
     height: 60,
-    padding: 10,
-    margin: 10
+    padding: 0,
+    margin: 5
 }
 
 export function SnowGrid(props) {

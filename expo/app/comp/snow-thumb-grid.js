@@ -2,8 +2,8 @@ import { View } from 'react-native'
 import { Button, Image, Text } from '@rneui/themed'
 import SnowGrid from './snow-grid'
 
-const itemStyle = { width: 330, height: 200, justifyContent: 'center' }
-const imageStyle = { width: 290, height: 180 }
+const itemStyle = { width: 200, height: 110, justifyContent: 'center' }
+const imageStyle = { width: 180, height: 100 }
 
 export function SnowThumbGrid(props) {
     const renderItem = (item, itemIndex) => {
