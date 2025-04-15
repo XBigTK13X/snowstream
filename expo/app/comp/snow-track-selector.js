@@ -50,20 +50,20 @@ export default function SnowTrackSelector(props) {
     }
     return (
         <View style={columnsStyle}>
-            <TrackList
+            {props.tracks.audio.length ? <TrackList
                 kind="audio"
                 title="Audio"
                 tracks={props.tracks.audio}
                 selectTrack={props.selectTrack}
                 activeTrack={props.audioTrack}
-            />
-            <TrackList
+            /> : null}
+            {props.tracks.subtitle.length ? <TrackList
                 kind="subtitle"
                 title="Subtitles"
                 tracks={props.tracks.subtitle}
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}
-            />
+            /> : null}
         </View>
     )
 }

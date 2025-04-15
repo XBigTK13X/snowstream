@@ -21,6 +21,8 @@ export default function MovieDetailsPage() {
         if (!movie) {
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
+                setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
+                setSubtitleTrack(response.tracks.inspection.scored_tracks['subtitle'][0].relative_index)
             })
         }
     })
@@ -54,7 +56,7 @@ export default function MovieDetailsPage() {
                 })} />
                 <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
                 <C.SnowTrackSelector
-                    tracks={movie.tracks}
+                    tracks={movie.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}
                     audioTrack={audioTrack}
                     subtitleTrack={subtitleTrack}

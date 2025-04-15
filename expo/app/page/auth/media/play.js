@@ -71,7 +71,7 @@ export default function PlayMediaPage() {
                     })
                 } else {
                     setVideoUrl(videoFile.network_path)
-                    setTracks(response.tracks)
+                    setTracks(response.tracks.inspection.scored_tracks)
                 }
             })
         }

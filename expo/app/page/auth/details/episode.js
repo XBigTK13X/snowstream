@@ -25,6 +25,8 @@ export default function EpisodeDetailsPage() {
         if (!episode) {
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
+                setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
+                setSubtitleTrack(response.tracks.inspection.scored_tracks['subtitle'][0].relative_index)
             })
         }
     })
@@ -62,7 +64,7 @@ export default function EpisodeDetailsPage() {
                 />
                 <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
                 <C.SnowTrackSelector
-                    tracks={episode.tracks}
+                    tracks={episode.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}
                     audioTrack={audioTrack}
                     subtitleTrack={subtitleTrack}
