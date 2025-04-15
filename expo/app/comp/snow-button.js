@@ -13,8 +13,9 @@ const selectedContainerStyle = { ...baseContainerStyle, ...{ backgroundColor: 'g
 const hoverContainerStyle = { ...baseContainerStyle, ...{ backgroundColor: 'white' } }
 
 const longPressIcon = <Image
-    style={{ height: 25, width: 25, tintColor: '#ffffff', marginRight: 10 }}
-    source={require('../image/icon/long-press.png')} />
+    style={{ height: 25, width: 25, marginRight: 10 }}
+    source={require('../image/icon/long-press.png')}
+    tintColor='#ffffff' />
 
 export function SnowButton(props) {
     const [focused, setFocused] = React.useState(false)

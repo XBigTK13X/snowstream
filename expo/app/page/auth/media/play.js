@@ -23,6 +23,7 @@ export default function PlayMediaPage() {
     const [episode, setEpisode] = C.React.useState(null)
     const [videoUrl, setVideoUrl] = C.React.useState(null)
     const [transcode, setTranscode] = C.React.useState(false)
+    const [transcodeReady, setTranscodeReady] = C.React.useState(false)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(false)
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
@@ -46,9 +47,9 @@ export default function PlayMediaPage() {
                 setMovie(response)
                 const videoFile = response.video_files[videoFileIndex]
                 if (transcode) {
-                    apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
+                    apiClient.createVideoFileTranscodeSession(videoFile.id, audioTrackIndex, subtitleTrackIndex).then((transcodeSession) => {
                         setVideoUrl(transcodeSession.transcode_url)
-                        setTracks(null)
+                        setTranscodeReady(true)
                     })
                 } else {
                     setVideoUrl(videoFile.network_path)
@@ -64,9 +65,9 @@ export default function PlayMediaPage() {
                 setEpisode(response)
                 const videoFile = response.video_files[videoFileIndex]
                 if (transcode) {
-                    apiClient.createVideoFileTranscodeSession(videoFile.id).then((transcodeSession) => {
-                        setTracks(null)
+                    apiClient.createVideoFileTranscodeSession(videoFile.id, audioTrackIndex, subtitleTrackIndex).then((transcodeSession) => {
                         setVideoUrl(transcodeSession.transcode_url)
+                        setTranscodeReady(true)
                     })
                 } else {
                     setVideoUrl(videoFile.network_path)
@@ -88,6 +89,15 @@ export default function PlayMediaPage() {
         }
     })
 
+    const selectTrack = (track) => {
+        if (track.kind === 'audio') {
+            setAudioTrackIndex(track.relative_index)
+        }
+        if (track.kind === 'subtitle') {
+            setSubtitleTrackIndex(track.relative_index)
+        }
+    }
+
     const onError = (err) => {
         if (!transcode) {
             setTranscode(true)
@@ -108,10 +118,12 @@ export default function PlayMediaPage() {
         return (
             <C.SnowVideoPlayer
                 videoUrl={devVideoUrl ? devVideoUrl : videoUrl}
+                isTranscode={transcodeReady}
                 onError={onError}
                 tracks={tracks}
                 subtitleIndex={subtitleTrackIndex}
                 audioIndex={audioTrackIndex}
+                selectTrack={selectTrack}
             />
         )
     }

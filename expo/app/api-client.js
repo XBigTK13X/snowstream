@@ -282,12 +282,15 @@ export class ApiClient {
         return this.delete(`/tag/${tagId}`)
     }
 
-    createVideoFileTranscodeSession(videoFileId) {
-        return this.post(`${this.baseURL}/transcode/session?video_file_id=${videoFileId}`)
+    createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex) {
+        let requestUrl = `${this.baseURL}/transcode/session?video_file_id=${videoFileId}`
+        requestUrl += `&audio_track_index=${audioTrackIndex}`
+        requestUrl += `&subtitle_track_index=${subtitleTrackIndex}`
+        return this.post(requestUrl)
     }
 
     createStreamableTranscodeSession(streamableId) {
-        return this.post(`${this.baseURL}/transcode/session?streamable_id=${streamableId}`)
+        return this.post(`${this.baseURL} / transcode / session ? streamable_id = ${streamableId}`)
     }
 
     setShelfWatchStatus(shelfId, watched) {
@@ -295,27 +298,27 @@ export class ApiClient {
     }
 
     toggleMovieShelfWatchStatus(shelfId) {
-        return this.post(`/shelf/watched/toggle?movie_shelf_id=${shelfId}`)
+        return this.post(`/ shelf / watched / toggle ? movie_shelf_id = ${shelfId}`)
     }
 
     toggleShowShelfWatchStatus(shelfId) {
-        return this.post(`/shelf/watched/toggle?show_shelf_id=${shelfId}`)
+        return this.post(`/ shelf / watched / toggle ? show_shelf_id = ${shelfId}`)
     }
 
     toggleMovieWatchStatus(movieId) {
-        return this.post(`/movie/watched/toggle?movie_id=${movieId}`)
+        return this.post(`/ movie / watched / toggle ? movie_id = ${movieId}`)
     }
 
     toggleShowWatchStatus(showId) {
-        return this.post(`/show/watched/toggle?show_id=${showId}`)
+        return this.post(`/ show / watched / toggle ? show_id = ${showId}`)
     }
 
     toggleSeasonWatchStatus(seasonId) {
-        return this.post(`/show/season/watched/toggle?season_id=${seasonId}`)
+        return this.post(`/ show / season / watched / toggle ? season_id = ${seasonId}`)
     }
 
     toggleEpisodeWatchStatus(episodeId) {
-        return this.post(`/show/season/episode/watched/toggle?episode_id=${episodeId}`)
+        return this.post(`/ show / season / episode / watched / toggle ? episode_id = ${episodeId}`)
     }
 
     debug() {

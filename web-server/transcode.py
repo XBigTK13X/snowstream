@@ -38,7 +38,9 @@ class Transcode:
         self,
         cduid:int,
         video_file_id:int=None,
-        streamable_id:int=None
+        streamable_id:int=None,
+        audio_track_index:int=None,
+        subtitle_track_index:int=None
     ):
         input_path = None
         if video_file_id != None:
@@ -62,7 +64,12 @@ class Transcode:
             streamable_id=streamable_id,
             stream_port=stream_port
         )
-        command,streaming_url = ffmpeg.transcode_command(input_url=input_path,stream_port=stream_port)
+        command,streaming_url = ffmpeg.transcode_command(
+            input_url=input_path,
+            stream_port=stream_port,
+            audio_track_index=audio_track_index,
+            subtitle_track_index=subtitle_track_index
+        )
         if config.transcode_log_dir:
             os.makedirs(config.transcode_log_dir, exist_ok=True)
             log_path = os.path.join(config.transcode_log_dir,f'{transcode_session.id}.log')            

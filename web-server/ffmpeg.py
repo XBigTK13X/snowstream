@@ -3,11 +3,17 @@ from log import log
 import json
 import util
 
-def transcode_command(input_url, stream_port):
+# TODO Should be way to specify not burning in subtitles and passing them through to the client
+def transcode_command(input_url:str, stream_port:int, audio_track_index:int, subtitle_track_index:int):
     streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream'
     command =  f'ffmpeg  -i "{input_url}"'
     command += f' -c:v av1_nvenc'
-    command += f' -c:a libvorbis'
+    if subtitle_track_index:
+        command += f' -vf "subtitles=\'{input_url}\':si={subtitle_track_index}"'
+    command += f' -c:a libvorbis'    
+    if audio_track_index:
+        command += f' -map 0:v:0'
+        command += f' -map 0:a:{audio_track_index}'
     command += f' -f webm -listen 1'
     command += f' "{streaming_url}"'
     log.info(command)

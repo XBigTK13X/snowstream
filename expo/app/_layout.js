@@ -125,7 +125,10 @@ export default function RootLayout() {
         }
     }
 
-    NavigationBar.setVisibilityAsync('hidden')
+    if (C.Platform.OS === 'android') {
+        NavigationBar.setVisibilityAsync('hidden')
+    }
+
 
     return (
         <ThemeProvider theme={theme}>

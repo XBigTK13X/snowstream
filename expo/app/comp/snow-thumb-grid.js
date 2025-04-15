@@ -3,7 +3,7 @@ import { Button, Image, Text } from '@rneui/themed'
 import SnowGrid from './snow-grid'
 
 const itemStyle = { width: 330, height: 200, justifyContent: 'center' }
-const imageStyle = { width: 290, height: 180, resizeMode: "contain" }
+const imageStyle = { width: 290, height: 180 }
 
 export function SnowThumbGrid(props) {
     const renderItem = (item, itemIndex) => {
@@ -24,6 +24,7 @@ export function SnowThumbGrid(props) {
                         style={itemStyle}
                         icon={<Image
                             style={imageStyle}
+                            resizeMode="contain"
                             key={item.id}
                             source={{ uri: thumbUrl }} />}
                         onPress={() => { props.onPress(item) }}

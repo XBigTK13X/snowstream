@@ -8,7 +8,7 @@ import SnowButton from './snow-button'
 const columnsStyle = {
     width: '100%',
     height: '100%',
-    flex: 1,
+    flex: 4,
     flexDirection: 'row',
     flexWrap: 'wrap'
 }

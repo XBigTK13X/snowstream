@@ -74,6 +74,7 @@ export default function SnowVideoPlayer(props) {
     }
 
     let VideoView = null
+    // TODO If using the web player and any track other than 0/0 is selected, then transcode
     if (Platform.OS !== 'web') {
         VideoView = require('./mpv-video-view').default
     }
@@ -97,6 +98,7 @@ export default function SnowVideoPlayer(props) {
                         videoUrl={props.videoUrl}
                         isPlaying={isPlaying}
                         isReady={isReady}
+                        isTranscode={props.isTranscode}
                         onUpdate={onVideoUpdate}
                         onError={onVideoError}
                         onReady={onVideoReady}
@@ -110,7 +112,13 @@ export default function SnowVideoPlayer(props) {
                 visible={controlsVisible}
             >
                 <View style={styles.videoView}>
-                    <SnowVideoControls hideControls={hideControls} />
+                    <SnowVideoControls
+                        hideControls={hideControls}
+                        selectTrack={props.selectTrack}
+                        audioTrack={props.audioIndex}
+                        subtitleTrack={props.subtitleIndex}
+                        tracks={props.tracks}
+                    />
                 </View>
             </Modal>
         </View >

@@ -4,7 +4,7 @@ import SnowGrid from './snow-grid'
 import SnowText from './snow-text'
 
 const itemStyle = { height: 300, width: 220, justifyContent: 'center' }
-const imageStyle = { height: 310, width: 180, resizeMode: "contain" }
+const imageStyle = { height: 310, width: 180 }
 
 export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {
@@ -21,6 +21,7 @@ export function SnowPosterGrid(props) {
                         style={itemStyle}
                         icon={<Image
                             style={imageStyle}
+                            resizeMode="contain"
                             key={item.id}
                             source={{ uri: posterUrl }} />}
                         onPress={() => { props.onPress(item) }}

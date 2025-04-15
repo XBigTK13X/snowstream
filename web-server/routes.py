@@ -394,16 +394,17 @@ def auth_required(router):
     def create_transcode_session(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         video_file_id:int=None,
-        streamable_id:int=None
+        streamable_id:int=None,
+        audio_track_index:int=None,
+        subtitle_track_index:int=None
     ):
-        print(auth_user.cduid)
         transcode_session = transcode.create_session(
             cduid=auth_user.cduid,
             video_file_id=video_file_id,
-            streamable_id=streamable_id
+            streamable_id=streamable_id,
+            audio_track_index=audio_track_index,
+            subtitle_track_index=subtitle_track_index
         )
-        import pprint
-        pprint.pprint(transcode_session)
         return transcode_session
 
     return router
