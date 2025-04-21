@@ -26,7 +26,9 @@ export default function SnowVideoPlayer(props) {
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
     const [SubMenu, setSubMenu] = React.useState(null)
+    const [progressSeconds, setProgressSeconds] = React.useState(null)
     const router = useRouter()
+
 
     const showControls = () => {
         setControlsVisible(true)
@@ -39,7 +41,16 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoUpdate = (info) => {
-        console.log({ info })
+        //console.log({ info })
+        if (info && info.kind && info.kind === 'mpvevent') {
+            let mpvEvent = info.libmpvEvent
+            if (mpvEvent.property && mpvEvent.property === 'time-pos') {
+                setProgressSeconds(mpvEvent.value)
+                if (props.onProgress) {
+                    props.onProgress(mpvEvent.value)
+                }
+            }
+        }
     }
 
     const onVideoError = (err) => {
@@ -64,6 +75,12 @@ export default function SnowVideoPlayer(props) {
         setIsPlaying(true)
     }
 
+    const onSeek = (progressPercent) => {
+        if (props.onSeek) {
+            props.onSeek(progressPercent)
+        }
+    }
+
     let controlToggleButton = null
     if (isReady) {
         controlToggleButton = (
@@ -80,6 +97,10 @@ export default function SnowVideoPlayer(props) {
     }
     else {
         VideoView = require('./rnv-video-view').default
+    }
+
+    if (!props.tracks) {
+        return null
     }
 
     return (
@@ -118,6 +139,9 @@ export default function SnowVideoPlayer(props) {
                         audioTrack={props.audioIndex}
                         subtitleTrack={props.subtitleIndex}
                         tracks={props.tracks}
+                        progressSeconds={progressSeconds}
+                        durationSeconds={props.durationSeconds}
+                        onSeek={props.onSeek}
                     />
                 </View>
             </Modal>

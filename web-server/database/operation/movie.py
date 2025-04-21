@@ -283,3 +283,28 @@ def get_movie_watched(ticket:dm.Ticket,movie_id:int):
             dm.Watched.movie_id == movie_id
         ).first()
         return False if watched == None else True
+
+def set_movie_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
+    movie = get_movie_by_id(ticket=ticket,movie_id=watch_progress.movie_id)
+    if not movie:
+        return False
+    with DbSession() as db:
+        db.query(dm.WatchProgress).filter(
+                dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
+                dm.WatchProgress.movie_id == watch_progress.movie_id
+            ).delete()
+        watch_percent = float(watch_progress.played_seconds) / float(watch_progress.duration_seconds)
+        if watch_percent <= config.watch_progress_unwatched_threshold:
+            set_movie_watched(ticket=ticket,movie_id=watch_progress.movie_id,is_watched=False)
+        elif watch_percent >= config.watch_progress_watched_threshold:
+            set_movie_watched(ticket=ticket,movie_id=watch_progress.movie_id,is_watched=True)
+        else:
+            dbm = dm.WatchProgress()
+            dbm.client_device_user_id = ticket.cduid
+            dbm.movie_id = watch_progress.movie_id
+            dbm.duration_seconds = watch_progress.duration_seconds
+            dbm.played_seconds = watch_progress.played_seconds
+            db.add(dbm)
+            db.commit()
+            db.refresh(dbm)
+    return True

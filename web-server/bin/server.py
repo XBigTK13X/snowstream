@@ -47,12 +47,26 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=True, 
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 transcode.register_cleanup()
+
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+app = FastAPI()
+
+# Taken from https://github.com/fastapi/fastapi/issues/3361#issuecomment-1168303468
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+	exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+	log.error(f"{request}: {exc_str}")
+	content = {'status_code': 10422, 'message': exc_str, 'data': None}
+	return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 api_router = APIRouter(prefix="/api")
 

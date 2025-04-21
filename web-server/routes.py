@@ -253,7 +253,7 @@ def auth_required(router):
         movie.tracks = movie.video_files[0].ffprobe['parsed']
         return movie
 
-    @router.post("/movie/watched")
+    @router.post("/movie/watched",tags=['Movie'])
     def set_movie_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         status:am.WatchedStatus
@@ -264,7 +264,7 @@ def auth_required(router):
             is_watched=status.is_watched
         )
 
-    @router.post("/movie/watched/toggle")
+    @router.post("/movie/watched/toggle",tags=['Movie'])
     def toggle_movie_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_id:int
@@ -279,6 +279,13 @@ def auth_required(router):
             is_watched=not is_watched
         )
         return not is_watched
+
+    @router.post("/movie/progress",tags=['Movie'])
+    def set_movie_watch_progress(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        watch_progress: am.WatchProgress
+    ):
+        return db.op.set_movie_watch_progress(ticket=auth_user.ticket,watch_progress=watch_progress)
 
     @router.get("/show/list",tags=['Show'])
     def get_show_list(
@@ -389,6 +396,14 @@ def auth_required(router):
             video_file.ffprobe = ffmpeg.ffprobe_media(video_file.local_path)
         episode.tracks = episode.video_files[0].ffprobe['parsed']
         return episode
+
+    @router.post("/show/season/episode/progress",tags=['Show'])
+    def set_show_episode_watch_progress(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        watch_progress: am.WatchProgress
+    ):
+        return db.op.set_show_episode_watch_progress(ticket=auth_user.ticket,watch_progress=watch_progress)
+        
 
     @router.post("/transcode/session",tags=['Transcode'])
     def create_transcode_session(

@@ -90,8 +90,8 @@ def upgrade() -> None:
             sa.ForeignKey("streamable.id"),
             nullable=True,
         ),
-        sa.Column("played_seconds", sa.Integer),
-        sa.Column("duration_seconds", sa.Integer)
+        sa.Column("played_seconds", sa.Float),
+        sa.Column("duration_seconds", sa.Float)
     )
 
     op.create_table(

@@ -27,8 +27,11 @@ export default function PlayMediaPage() {
     const [playbackFailed, setPlaybackFailed] = C.React.useState(false)
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
+    const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const [tracks, setTracks] = C.React.useState(null)
     const videoFileIndex = 0
+
+    const durationRef = C.React.useRef(durationSeconds)
 
     C.React.useEffect(() => {
         if (!shelf) {
@@ -53,7 +56,9 @@ export default function PlayMediaPage() {
                     })
                 } else {
                     setVideoUrl(videoFile.network_path)
-                    setTracks(response.tracks)
+                    setTracks(response.tracks.inspection.scored_tracks)
+                    setDurationSeconds(response.tracks.duration_seconds)
+                    durationRef.current = response.tracks.duration_seconds
                 }
             })
         }
@@ -72,6 +77,8 @@ export default function PlayMediaPage() {
                 } else {
                     setVideoUrl(videoFile.network_path)
                     setTracks(response.tracks.inspection.scored_tracks)
+                    setDurationSeconds(response.tracks.duration_seconds)
+                    durationRef.current = response.tracks.duration_seconds
                 }
             })
         }
@@ -95,6 +102,23 @@ export default function PlayMediaPage() {
         }
         if (track.kind === 'subtitle') {
             setSubtitleTrackIndex(track.relative_index)
+        }
+    }
+
+    const onSeek = (progressPercent) => {
+        percentSeconds = (progressPercent / 100) * durationRef.current
+        onProgress(percentSeconds)
+    }
+
+    const onProgress = (progressSeconds) => {
+        const duration = durationRef.current
+        if (duration > 0) {
+            if (movie) {
+                apiClient.setMovieWatchProgress(movieId, progressSeconds, duration)
+            }
+            if (episode) {
+                apiClient.setEpisodeWatchProgress(episodeId, progressSeconds, duration)
+            }
         }
     }
 
@@ -124,6 +148,9 @@ export default function PlayMediaPage() {
                 subtitleIndex={subtitleTrackIndex}
                 audioIndex={audioTrackIndex}
                 selectTrack={selectTrack}
+                onSeek={onSeek}
+                onProgress={onProgress}
+                durationSeconds={durationSeconds}
             />
         )
     }

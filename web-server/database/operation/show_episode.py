@@ -70,7 +70,8 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
             .options(sorm.joinedload(dm.ShowEpisode.video_files))
             .options(sorm.joinedload(dm.ShowEpisode.image_files))
             .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
-            .options(sorm.joinedload(dm.ShowEpisode.tags))      
+            .options(sorm.joinedload(dm.ShowEpisode.tags))
+            .options(sorm.joinedload(dm.ShowEpisode.season))
         )
         episode = query.first()
         season = db_season.get_show_season_by_id(ticket=ticket,season_id=episode.season.id)
@@ -301,3 +302,28 @@ def get_show_episode_watched(ticket:dm.Ticket,episode_id:int):
             dm.Watched.show_episode_id == episode_id
         ).first()
         return False if watched == None else True
+
+def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
+    episode = get_show_episode_by_id(ticket=ticket,episode_id=watch_progress.show_episode_id)
+    if not episode:
+        return False
+    with DbSession() as db:
+        db.query(dm.WatchProgress).filter(
+                dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
+                dm.WatchProgress.show_episode_id == watch_progress.show_episode_id
+            ).delete()
+        watch_percent = float(watch_progress.played_seconds) / float(watch_progress.duration_seconds)
+        if watch_percent <= config.watch_progress_unwatched_threshold:
+            set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=False)
+        elif watch_percent >= config.watch_progress_watched_threshold:
+            set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=True)
+        else:
+            dbm = dm.WatchProgress()
+            dbm.client_device_user_id = ticket.cduid
+            dbm.show_episode_id = watch_progress.show_episode_id
+            dbm.duration_seconds = watch_progress.duration_seconds
+            dbm.played_seconds = watch_progress.played_seconds
+            db.add(dbm)
+            db.commit()
+            db.refresh(dbm)
+    return True

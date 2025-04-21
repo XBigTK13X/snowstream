@@ -27,7 +27,7 @@ def ffprobe_media(media_path:str):
     command_output = util.run_cli(command,raw_output=True)
     raw_ffprobe = json.loads(command_output['stdout'])
     parsed = {'video':[],'audio':[],'subtitle':[],'other':[]}
-    parsed['duration_seconds'] = raw_ffprobe['format']['duration']
+    parsed['duration_seconds'] = float(raw_ffprobe['format']['duration'])
     audio_index = 0
     video_index = 0
     subtitle_index = 0

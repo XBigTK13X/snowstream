@@ -290,7 +290,7 @@ export class ApiClient {
     }
 
     createStreamableTranscodeSession(streamableId) {
-        return this.post(`${this.baseURL} / transcode / session ? streamable_id = ${streamableId}`)
+        return this.post(`${this.baseURL}/transcode/session?streamable_id=${streamableId}`)
     }
 
     setShelfWatchStatus(shelfId, watched) {
@@ -298,28 +298,45 @@ export class ApiClient {
     }
 
     toggleMovieShelfWatchStatus(shelfId) {
-        return this.post(`/ shelf / watched / toggle ? movie_shelf_id = ${shelfId}`)
+        return this.post(`/shelf/watched/toggle?movie_shelf_id=${shelfId}`)
     }
 
     toggleShowShelfWatchStatus(shelfId) {
-        return this.post(`/ shelf / watched / toggle ? show_shelf_id = ${shelfId}`)
+        return this.post(`/shelf/watched/toggle?show_shelf_id = ${shelfId}`)
     }
 
     toggleMovieWatchStatus(movieId) {
-        return this.post(`/ movie / watched / toggle ? movie_id = ${movieId}`)
+        return this.post(`/movie/watched/toggle?movie_id=${movieId}`)
     }
 
     toggleShowWatchStatus(showId) {
-        return this.post(`/ show / watched / toggle ? show_id = ${showId}`)
+        return this.post(`/show/watched/toggle?show_id=${showId}`)
     }
 
     toggleSeasonWatchStatus(seasonId) {
-        return this.post(`/ show / season / watched / toggle ? season_id = ${seasonId}`)
+        return this.post(`/show/season/watched/toggle?season_id=${seasonId}`)
     }
 
     toggleEpisodeWatchStatus(episodeId) {
-        return this.post(`/ show / season / episode / watched / toggle ? episode_id = ${episodeId}`)
+        return this.post(`/show/season/episode/watched/toggle?episode_id=${episodeId}`)
     }
+
+    setEpisodeWatchProgress(episodeId, playedSeconds, durationSeconds) {
+        return this.post(`/show/season/episode/progress`, {
+            show_episode_id: episodeId,
+            played_seconds: playedSeconds,
+            duration_seconds: durationSeconds
+        })
+    }
+
+    setMovieWatchProgress(movieId, playedSeconds, durationSeconds) {
+        return this.post(`/movie/progress`, {
+            movie_id: movieId,
+            played_seconds: playedSeconds,
+            duration_seconds: durationSeconds
+        })
+    }
+
 
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })

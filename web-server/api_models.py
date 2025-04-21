@@ -117,3 +117,10 @@ class WatchedStatus(BaseModel):
     show_season_id: int | None = None
     show_episode_id: int | None = None
     streamable_id: int | None = None
+
+class WatchProgress(BaseModel):
+    show_episode_id: int  | None = None
+    movie_id: int  | None = None
+    streamable_id: int  | None = None
+    duration_seconds: float | None = None
+    played_seconds: float | None  = None

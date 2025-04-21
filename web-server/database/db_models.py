@@ -146,8 +146,8 @@ class WatchProgress(BaseModel):
         sa.ForeignKey("streamable.id"),nullable=True
     )
     streamable: sorm.Mapped['Streamable'] = sorm.relationship()
-    played_seconds = sa.Column(sa.Integer)
-    duration_seconds = sa.Column(sa.Integer)
+    played_seconds = sa.Column(sa.Float)
+    duration_seconds = sa.Column(sa.Float)
 
 class WatchCount(BaseModel):
     __tablename__ = 'watch_count'

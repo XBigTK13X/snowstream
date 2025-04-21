@@ -1,8 +1,11 @@
 import React from 'react'
 import { Dimensions, ScrollView, View } from 'react-native'
+import Slider from '@react-native-community/slider';
+
 import SnowButton from './snow-button'
 import SnowGrid from './snow-grid'
 import SnowTrackSelector from './snow-track-selector'
+import SnowText from './snow-text';
 // TODO Make the controls transparent, so you can see the scrubbing
 
 function Logs(props) {
@@ -33,6 +36,8 @@ export default function SnowVideoControls(props) {
         justifyContent: 'center'
     }
 
+    const progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
+
     const buttons = [
         <SnowButton hasTVPreferredFocus={true} title="Resume" onPress={props.hideControls} />,
         <SnowButton title="Logs" onPress={props.hideControls} />
@@ -45,6 +50,16 @@ export default function SnowVideoControls(props) {
                 style={scrollStyle}
                 contentContainerStyle={scrollContainerStyle}>
                 <SnowGrid style={{ flex: 1 }} data={buttons} renderItem={(item) => item} />
+                <Slider
+                    style={{ height: 400, flex: 2 }}
+                    minimumValue={0}
+                    maximumValue={100}
+                    value={progressPercent}
+                    minimumTrackTintColor="#FFFFFF"
+                    maximumTrackTintColor="#cccccc"
+                    onSlidingComplete={props.onSeek}
+                />
+                <SnowText style={{ flex: 2 }}>{props.progressSeconds} / {props.durationSeconds}</SnowText>
                 <SnowTrackSelector
                     style={{ flex: 4 }}
                     tracks={props.tracks}

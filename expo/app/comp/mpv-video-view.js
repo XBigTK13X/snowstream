@@ -27,12 +27,12 @@ export default function MpvVideoView(props) {
             isPlaying={props.isPlaying}
             onLibmpvEvent={(libmpvEvent) => {
                 if (props.onUpdate) {
-                    props.onUpdate({ kind: 'event', libmpvEvent })
+                    props.onUpdate({ kind: 'mpvevent', libmpvEvent })
                 }
             }}
             onLibmpvLog={(libmpvLog) => {
                 if (props.onUpdate) {
-                    props.onUpdate({ kind: 'log', libmpvLog })
+                    props.onUpdate({ kind: 'mpvlog', libmpvLog })
                 }
             }}
             selectedAudioTrack={props.audioIndex}
