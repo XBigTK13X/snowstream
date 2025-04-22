@@ -337,6 +337,9 @@ export class ApiClient {
         })
     }
 
+    getContinueWatchingList() {
+        return this.get('/continue/watching')
+    }
 
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })

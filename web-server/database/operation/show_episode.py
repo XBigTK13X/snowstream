@@ -79,7 +79,7 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
             return None
         if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
             return None
-        return episode
+        return dm.set_primary_images(episode)            
 
 
 def get_show_episode_by_season_order(show_season_id: int, episode_order_counter: int):

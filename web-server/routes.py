@@ -405,6 +405,12 @@ def auth_required(router):
         return db.op.set_show_episode_watch_progress(ticket=auth_user.ticket,watch_progress=watch_progress)
         
 
+    @router.get('/continue/watching')
+    def get_continue_watching_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        return db.op.get_continue_watching_list(ticket=auth_user.ticket)
+
     @router.post("/transcode/session",tags=['Transcode'])
     def create_transcode_session(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],

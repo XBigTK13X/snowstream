@@ -20,7 +20,7 @@ export default function LandingPage(props) {
         }
     })
 
-    let destinations = []
+    let destinations = [{ kind: 'continue' }]
 
     if (shelves) {
         destinations = destinations.concat(shelves)
@@ -34,7 +34,16 @@ export default function LandingPage(props) {
         const renderItem = (item, itemIndex) => {
             let destination = item
             markup = null
-            if (destination.kind && destination.kind === 'Movies') {
+            if (destination.kind === 'continue') {
+                return (
+                    <C.Button
+                        hasTVPreferredFocus={itemIndex === 0}
+                        title="Continue Watching"
+                        onPress={routes.func(routes.continueWatching)}
+                    />
+                )
+            }
+            else if (destination.kind && destination.kind === 'Movies') {
                 return (
                     <C.Button
                         hasTVPreferredFocus={itemIndex === 0}
