@@ -25,8 +25,12 @@ export default function EpisodeDetailsPage() {
         if (!episode) {
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
-                setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
-                setSubtitleTrack(response.tracks.inspection.scored_tracks['subtitle'][0].relative_index)
+                if (response.tracks.inspection.scored_tracks['audio'].length) {
+                    setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
+                }
+                if (response.tracks.inspection.scored_tracks['subtitle']) {
+                    setSubtitleTrack(response.tracks.inspection.scored_tracks['subtitle'][0].relative_index)
+                }
             })
         }
     })

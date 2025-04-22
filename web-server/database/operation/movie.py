@@ -293,6 +293,7 @@ def set_movie_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
                 dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
                 dm.WatchProgress.movie_id == watch_progress.movie_id
             ).delete()
+        db.commit()
         watch_percent = float(watch_progress.played_seconds) / float(watch_progress.duration_seconds)
         if watch_percent <= config.watch_progress_unwatched_threshold:
             set_movie_watched(ticket=ticket,movie_id=watch_progress.movie_id,is_watched=False)

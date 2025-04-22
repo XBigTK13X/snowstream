@@ -105,9 +105,8 @@ export default function PlayMediaPage() {
         }
     }
 
-    const onSeek = (progressPercent) => {
-        percentSeconds = (progressPercent / 100) * durationRef.current
-        onProgress(percentSeconds)
+    const onSeek = (seekedToSeconds) => {
+        onProgress(seekedToSeconds)
     }
 
     const onProgress = (progressSeconds) => {

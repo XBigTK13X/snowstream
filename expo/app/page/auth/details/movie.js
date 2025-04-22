@@ -21,8 +21,12 @@ export default function MovieDetailsPage() {
         if (!movie) {
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
-                setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
-                setSubtitleTrack(response.tracks.inspection.scored_tracks['subtitle'][0].relative_index)
+                if (response.tracks.inspection.scored_tracks['audio'].length) {
+                    setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
+                }
+                if (response.tracks.inspection.scored_tracks['subtitle'].length) {
+                    setSubtitleTrack(response.tracks.inspection.scored_tracks['subtitle'][0].relative_index)
+                }
             })
         }
     })

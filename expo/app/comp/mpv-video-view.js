@@ -37,6 +37,7 @@ export default function MpvVideoView(props) {
             }}
             selectedAudioTrack={props.audioIndex}
             selectedSubtitleTrack={props.subtitleIndex}
+            seekToSeconds={props.seekToSeconds}
         />
     )
 }

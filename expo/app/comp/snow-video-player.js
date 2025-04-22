@@ -27,6 +27,7 @@ export default function SnowVideoPlayer(props) {
     const [isReady, setIsReady] = React.useState(false)
     const [SubMenu, setSubMenu] = React.useState(null)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
+    const [seekToSeconds, setSeekToSeconds] = React.useState(0)
     const router = useRouter()
 
 
@@ -41,13 +42,20 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoUpdate = (info) => {
-        //console.log({ info })
+        console.log({ info })
         if (info && info.kind && info.kind === 'mpvevent') {
             let mpvEvent = info.libmpvEvent
-            if (mpvEvent.property && mpvEvent.property === 'time-pos') {
-                setProgressSeconds(mpvEvent.value)
-                if (props.onProgress) {
-                    props.onProgress(mpvEvent.value)
+            if (mpvEvent.property) {
+                if (mpvEvent.property === 'time-pos') {
+                    setProgressSeconds(mpvEvent.value)
+                    if (props.onProgress) {
+                        props.onProgress(mpvEvent.value)
+                    }
+                }
+                if (mpvEvent.property === 'eof-reached') {
+                    if (props.onProgress) {
+                        props.onProgress(props.durationSeconds)
+                    }
                 }
             }
         }
@@ -76,9 +84,11 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onSeek = (progressPercent) => {
+        const progressSeconds = (progressPercent / 100) * props.durationSeconds
         if (props.onSeek) {
-            props.onSeek(progressPercent)
+            props.onSeek(progressSeconds)
         }
+        setSeekToSeconds(progressSeconds)
     }
 
     let controlToggleButton = null
@@ -125,6 +135,7 @@ export default function SnowVideoPlayer(props) {
                         onReady={onVideoReady}
                         subtitleIndex={props.subtitleIndex}
                         audioIndex={props.audioIndex}
+                        seekToSeconds={seekToSeconds}
                     />
                     {controlToggleButton}
                 </View>
@@ -141,7 +152,7 @@ export default function SnowVideoPlayer(props) {
                         tracks={props.tracks}
                         progressSeconds={progressSeconds}
                         durationSeconds={props.durationSeconds}
-                        onSeek={props.onSeek}
+                        onSeek={onSeek}
                     />
                 </View>
             </Modal>

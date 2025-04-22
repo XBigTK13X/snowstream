@@ -312,6 +312,7 @@ def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchPro
                 dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
                 dm.WatchProgress.show_episode_id == watch_progress.show_episode_id
             ).delete()
+        db.commit()
         watch_percent = float(watch_progress.played_seconds) / float(watch_progress.duration_seconds)
         if watch_percent <= config.watch_progress_unwatched_threshold:
             set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=False)
