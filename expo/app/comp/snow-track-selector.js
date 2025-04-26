@@ -5,19 +5,31 @@ import SnowText from './snow-text'
 import SnowGrid from './snow-grid'
 import SnowButton from './snow-button'
 
-const columnsStyle = {
-    width: '100%',
-    height: '100%',
-    flex: 4,
-    flexDirection: 'row',
-    flexWrap: 'wrap'
+const styles = {
+    rows: {
+        flexBasis: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    row: {
+        flexBasis: '100%'
+    },
+    columns: {
+        flexBasis: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        flex: 1
+    },
+    column: {
+        width: 250,
+        height: 50,
+        padding: 10,
+        margin: 10,
+    }
 }
 
-const itemStyle = {
-    width: 250,
-    height: 50,
-    padding: 10,
-    margin: 10,
+const buttonStyles = {
+    wrapper: styles.column
 }
 
 function TrackList(props) {
@@ -25,13 +37,13 @@ function TrackList(props) {
         return null
     }
     return (
-        <View>
-            <SnowText>{props.title} ({props.tracks.length})</SnowText>
-            <View class={columnsStyle}>
+        <View style={styles.rows}>
+            <SnowText heading style={styles.row}>{props.title} ({props.tracks.length})</SnowText>
+            <View style={styles.columns}>
                 {props.tracks.map((track, trackKey) => {
                     return (
                         <SnowButton
-                            style={itemStyle}
+                            styles={buttonStyles}
                             key={trackKey}
                             selected={track.relative_index === props.activeTrack}
                             title={`${track.relative_index}) ${track.display}`}
@@ -49,7 +61,7 @@ export default function SnowTrackSelector(props) {
         return null
     }
     return (
-        <View style={columnsStyle}>
+        <View style={styles.rows}>
             {props.tracks.audio.length ? <TrackList
                 kind="audio"
                 title="Audio"

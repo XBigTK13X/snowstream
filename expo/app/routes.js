@@ -51,4 +51,14 @@ routes.func = (target, params) => {
     }
 }
 
+routes.back = () => {
+    router.back()
+}
+
+routes.funcBack = () => {
+    return () => {
+        routes.back()
+    }
+}
+
 module.exports = routes

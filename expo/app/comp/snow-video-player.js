@@ -17,15 +17,15 @@ const styles = StyleSheet.create({
         height: windowHeight,
         backgroundColor: 'black',
     },
+    controlsModal: {
+        backgroundColor: 'rgba(0,0,0,0.1)'
+    },
     videoControls: {
         width: windowWidth,
-        height: windowHeight,
-        backgroundColor: 'black',
-        opacity: 0.85
+        height: windowHeight
     },
     dark: {
         backgroundColor: 'black',
-        opacity: 0.5
     }
 })
 

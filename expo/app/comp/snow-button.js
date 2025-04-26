@@ -8,7 +8,7 @@ const baseButtonStyle = { margin: 5, padding: 10, maxWidth: 350, justifyContent:
 const selectedButtonStyle = { ...baseButtonStyle }
 const hoverButtonStyle = { ...baseButtonStyle }
 
-const baseContainerStyle = { margin: 5 }
+const baseContainerStyle = { margin: 5, maxWidth: 350 }
 const selectedContainerStyle = { ...baseContainerStyle, ...{ backgroundColor: 'green' } }
 const hoverContainerStyle = { ...baseContainerStyle, ...{ backgroundColor: 'white' } }
 
@@ -19,15 +19,27 @@ const longPressIcon = <Image
 
 export function SnowButton(props) {
     const [focused, setFocused] = React.useState(false)
-    let buttonStyle = baseButtonStyle
-    let containerStyle = baseContainerStyle
+    let buttonStyle = [baseButtonStyle]
+    let containerStyle = [baseContainerStyle]
+    let wrapperStyle = null
     if (props.selected) {
-        buttonStyle = selectedButtonStyle
-        containerStyle = selectedContainerStyle
+        buttonStyle = [selectedButtonStyle]
+        containerStyle = [selectedContainerStyle]
     }
     if (focused) {
-        buttonStyle = hoverButtonStyle
-        containerStyle = hoverContainerStyle
+        buttonStyle = [hoverButtonStyle]
+        containerStyle = [hoverContainerStyle]
+    }
+    if (props.styles) {
+        if (props.styles.button) {
+            buttonStyle.push(props.styles.button)
+        }
+        if (props.styles.container) {
+            containerStyle.push(props.styles.container)
+        }
+        if (props.styles.wrapper) {
+            wrapperStyle = props.styles.wrapper
+        }
     }
     if (props.buttonStyle) {
         buttonStyle = { ...buttonStyle, ...props.buttonStyle }
@@ -42,7 +54,6 @@ export function SnowButton(props) {
         icon = longPressIcon
     }
 
-
     const gainFocus = () => {
         setFocused(true);
     }
@@ -51,11 +62,13 @@ export function SnowButton(props) {
         setFocused(false);
     }
 
+
     return (
         <TouchableOpacity
             activeOpacity={1.0}
             onFocus={gainFocus}
-            onBlur={loseFocus}>
+            onBlur={loseFocus}
+            style={wrapperStyle}>
             <Button
                 buttonStyle={buttonStyle}
                 containerStyle={containerStyle}

@@ -3,12 +3,13 @@ import { Dimensions, ScrollView, View } from 'react-native'
 import Slider from '@react-native-community/slider';
 
 import util from '../util'
+import { useSettings } from '../settings-context'
 
 import SnowButton from './snow-button'
 import SnowGrid from './snow-grid'
 import SnowTrackSelector from './snow-track-selector'
 import SnowText from './snow-text';
-// TODO Make the controls transparent, so you can see the scrubbing
+
 
 function Logs(props) {
     return <View></View>
@@ -17,44 +18,55 @@ function Logs(props) {
 const windowWidth = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
-const scrollStyle = {
-    height: '100%',
-    width: '100%',
-    flex: 1,
-    padding: 20,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+const styles = {
+    rows: {
+        flexBasis: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        padding: 60,
+        backgroundColor: 'rgba(0,0,0,0.6)'
+    },
+
+    row: {
+        flexBasis: '100%',
+    },
+
+    columns: {
+        flexBasis: '100%',
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+
+    column: {
+        flex: 1
+    },
+
+    progress: {
+        flexBasis: '100%',
+        textAlign: 'center'
+    }
 }
 
-const scrollContainerStyle = {
-    height: '100%',
-    width: '100%',
-    flex: 1,
-    padding: 20,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center'
-}
-
-const containerStyle = {
-    margin: 30
+const buttonStyles = {
+    wrapper: styles.column,
+    container: styles.column,
+    button: styles.column
 }
 
 export default function SnowVideoControls(props) {
 
-    const progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
+    const { routes } = useSettings()
 
-    const buttons = [
-        <SnowButton hasTVPreferredFocus={true} title="Resume" onPress={props.hideControls} />,
-        <SnowButton title="Logs" onPress={props.hideControls} />
-    ]
+    const progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
     const progressDisplay = util.secondsToTimestamp(props.progressSeconds)
     const durationDisplay = util.secondsToTimestamp(props.durationSeconds)
     return (
         (
-            <View style={containerStyle}>
+            <View style={styles.rows}>
                 <Slider
-                    style={{ height: 400, flex: 2 }}
+                    style={styles.row}
                     minimumValue={0}
                     maximumValue={100}
                     value={progressPercent}
@@ -62,10 +74,16 @@ export default function SnowVideoControls(props) {
                     maximumTrackTintColor="#cccccc"
                     onSlidingComplete={props.onSeek}
                 />
-                <SnowText style={{ textAlign: 'center' }}>{progressDisplay} / {durationDisplay}</SnowText>
-                <SnowGrid style={{ flex: 1 }} data={buttons} renderItem={(item) => item} />
+                <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
+
+                <View style={styles.columns}>
+                    <SnowButton styles={buttonStyles} hasTVPreferredFocus={true} title="Resume" onPress={props.hideControls} />
+                    <SnowButton styles={buttonStyles} title="Logs" onPress={props.hideControls} />
+                    <SnowButton styles={buttonStyles} title="Stop" onPress={routes.funcBack()} />
+                </View>
+
                 <SnowTrackSelector
-                    style={{ flex: 4 }}
+                    style={styles.row}
                     tracks={props.tracks}
                     selectTrack={props.selectTrack}
                     audioTrack={props.audioTrack}

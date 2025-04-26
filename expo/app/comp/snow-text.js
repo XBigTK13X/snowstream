@@ -2,12 +2,15 @@ import { Text } from 'react-native'
 
 const textStyle = { color: 'white', margin: 10, padding: 10 }
 
+const headingStyle = { color: 'white', margin: 5, padding: 5, fontSize: 20 }
+
 export function SnowText(props) {
-    let style = textStyle
-    if (props.style) {
-        style = { ...style, ...props.style }
+    let styles = [textStyle]
+    if (props.heading) {
+        styles = [headingStyle]
     }
-    return <Text style={style}>{props.children}</Text>
+    styles.push(props.style)
+    return <Text style={styles}>{props.children}</Text>
 }
 
 export default SnowText
