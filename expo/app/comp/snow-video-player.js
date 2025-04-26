@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Dimensions, Modal, TouchableOpacity, Platform, View } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useSettings } from '../settings-context'
 import SnowVideoControls from './snow-video-controls'
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
@@ -22,6 +23,7 @@ const styles = StyleSheet.create({
 })
 
 export default function SnowVideoPlayer(props) {
+    const { config } = useSettings()
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
@@ -101,13 +103,18 @@ export default function SnowVideoPlayer(props) {
     }
 
     let VideoView = null
-    // TODO If using the web player and any track other than 0/0 is selected, then transcode
-    if (Platform.OS !== 'web') {
-        VideoView = require('./mpv-video-view').default
+    if (config.useNullVideoView) {
+        VideoView = require('./null-video-view').default
     }
     else {
-        VideoView = require('./rnv-video-view').default
+        if (Platform.OS !== 'web') {
+            VideoView = require('./mpv-video-view').default
+        }
+        else {
+            VideoView = require('./rnv-video-view').default
+        }
     }
+
 
     if (!props.tracks) {
         return null

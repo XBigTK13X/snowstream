@@ -1,14 +1,18 @@
+import os
 from log import log
 from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
-from settings import config
+import auth
 import routes
+from settings import config
 from transcode import transcode
 
-import os
-import auth
+transcode.register_cleanup()
 
 # This should only happen inside a deployed docker container
 if os.environ.get("SNOWSTREAM_WEB_API_URL"):
@@ -52,15 +56,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-transcode.register_cleanup()
-
-from fastapi import FastAPI, Request, status
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-
-app = FastAPI()
-
 # Taken from https://github.com/fastapi/fastapi/issues/3361#issuecomment-1168303468
+# Gives developer friendly info when a bad request comes from the client
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
 	exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
@@ -71,7 +68,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 api_router = APIRouter(prefix="/api")
 
 # TODO Could probably use a static route and get rid of nginx now that transcoding is handled via the API
-# There are still web_path exposed through it for direct streaming
+# But there are still web_path exposed through it for direct streaming
 
 if not os.environ.get("SNOWSTREAM_WEB_API_URL"):
     @app.get("/", response_class=RedirectResponse, include_in_schema=False)
@@ -84,8 +81,7 @@ routes.register(router=api_router)
 
 app.include_router(api_router)
 
-# Default route - Serve the web_app if nothing else matched
-
+# Default route - Serve the web client if nothing else matched
 
 @app.get("/{full_path:path}", response_class=RedirectResponse, include_in_schema=False)
 def capture_routes(request: Request, full_path: str):

@@ -13,6 +13,7 @@ class Config {
 
         this.clientVersion = '0.5.7'
         this.clientBuildDate = 'November 12, 2024'
+        this.useNullVideoView = true
         console.log('[DEBUG] Using the web api URL: ' + this.webApiUrl)
     }
 }
