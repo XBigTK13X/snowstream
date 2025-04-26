@@ -54,7 +54,7 @@ export default function EpisodeDetailsPage() {
         return (
             <C.View>
                 <C.SnowText>
-                    {showName} season {seasonOrder} episode {apiClient.formatEpisodeTitle(episode)}
+                    {showName} season {seasonOrder} episode {C.util.formatEpisodeTitle(episode)}
                 </C.SnowText>
                 <C.SnowButton
                     title="Play"

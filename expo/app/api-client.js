@@ -344,14 +344,4 @@ export class ApiClient {
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }
-
-    formatEpisodeTitle(episode) {
-        let seasonPad = episode.season.season_order_counter.toString().padStart(2, '0')
-        let episodePad = episode.episode_order_counter.toString().padStart(3, '0')
-        let slug = `S${seasonPad}E${episodePad}`
-        if (!episode.name) {
-            return slug
-        }
-        return `${slug} - ${episode.name}`
-    }
 }

@@ -15,10 +15,17 @@ const styles = StyleSheet.create({
     videoView: {
         width: windowWidth,
         height: windowHeight,
-        backgroundColor: 'black'
+        backgroundColor: 'black',
+    },
+    videoControls: {
+        width: windowWidth,
+        height: windowHeight,
+        backgroundColor: 'black',
+        opacity: 0.85
     },
     dark: {
-        backgroundColor: 'black'
+        backgroundColor: 'black',
+        opacity: 0.5
     }
 })
 
@@ -44,7 +51,7 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoUpdate = (info) => {
-        console.log({ info })
+        //console.log({ info })
         if (info && info.kind && info.kind === 'mpvevent') {
             let mpvEvent = info.libmpvEvent
             if (mpvEvent.property) {
@@ -61,10 +68,16 @@ export default function SnowVideoPlayer(props) {
                 }
             }
         }
+        if (info && info.kind && info.kind === 'nullevent') {
+            const nullEvent = info.nullEvent
+            if (nullEvent.progress) {
+                setProgressSeconds(nullEvent.progress)
+            }
+        }
     }
 
     const onVideoError = (err) => {
-        console.log({ err })
+        //console.log({ err })
         if (props.onError) {
             if (err && err.kind && err.kind == 'rnv') {
                 if (err.error.code === 4) {
@@ -149,8 +162,9 @@ export default function SnowVideoPlayer(props) {
             </Modal >
             <Modal
                 visible={controlsVisible}
+                transparent
             >
-                <View style={styles.videoView}>
+                <View style={styles.videoControls}>
                     <SnowVideoControls
                         hideControls={hideControls}
                         selectTrack={props.selectTrack}
