@@ -1,19 +1,15 @@
 import database.db_models as dm
-import api_models as am
 from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
-from sqlalchemy.sql import func
-import util
-import database.operation.user as db_user
+import database.operation.shelf as db_shelf
 import database.operation.movie as db_movie
+import database.operation.show as db_show
+import database.operation.show_season as db_season
 import database.operation.show_episode as db_episode
 
 def get_continue_watching_list(ticket:dm.Ticket):
     with DbSession() as db:
         results = []
-        # TODO This is soooo inefficient. Improve this by joining the data server-side
+        # TODO Improve this by joining the data db-side
         movies_in_progress = (
             db.query(dm.WatchProgress)
             .filter(
@@ -44,4 +40,61 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'kind': 'episodes_in_progress',
                 'items': items
             })
+        
+        unwatched_movies = []        
+        next_episodes = []
+        new_seasons = []
+        new_shows = []
+        shelves = db_shelf.get_shelf_list(ticket=ticket)
+        for shelf in shelves:
+            if shelf.kind == 'Movies':
+                movies = db_movie.get_partial_shelf_movie_list(ticket=ticket,shelf_id=shelf.id,only_watched=False)
+                if not movies:
+                    continue
+                unwatched_movies += movies
+            if shelf.kind == 'Shows':        
+                shows = db_show.get_partial_shelf_show_list(ticket=ticket,shelf_id=shelf.id,only_watched=False)
+                if not shows:
+                    continue
+                for show in shows:
+                    seasons = db_season.get_partial_show_season_list(ticket=ticket,show_id=show.id,only_watched=False)
+                    if not seasons:
+                        continue
+                    next_season = seasons[0]
+                    episodes = db_episode.get_partial_show_episode_list(ticket=ticket,season_id=next_season.id,only_watched=False)
+                    if not episodes:
+                        continue
+                    next_episode = episodes[0]
+                    next_episode.season = next_season
+                    next_episode.show = show
+                    if next_season.season_order_counter == 1:
+                        if next_episode.episode_order_counter == 1:
+                            new_shows.append(next_episode)
+                        else:
+                            next_episodes.append(next_episode)
+                    else:
+                        if next_episode.episode_order_counter == 1:
+                            new_seasons.append(next_episode)
+                        else:
+                            next_episodes.append(next_episode)
+            if next_episodes and len(next_episodes) > 0:
+                results.append({
+                    'kind': 'next_episodes',
+                    'items': next_episodes
+                })
+            if new_seasons and len(new_seasons) > 0:
+                results.append({
+                    'kind': 'new_seasons',
+                    'items': new_seasons
+                })          
+            if unwatched_movies and len(unwatched_movies) > 0:
+                results.append({
+                    'kind': 'new_movies',
+                    'items': unwatched_movies
+                })
+            if new_shows and len(new_shows) > 0:
+                results.append({
+                    'kind': 'new_shows',
+                    'items': new_shows
+                })
         return results

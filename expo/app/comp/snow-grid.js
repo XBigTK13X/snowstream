@@ -22,8 +22,13 @@ const defaultItemStyle = {
 }
 
 export function SnowGrid(props) {
-    const scrollStyle = {
+    let scrollStyle = {
         height: props.short ? (windowHeight * .15) : (windowHeight * 0.66)
+    }
+    if (props.big) {
+        scrollStyle = {
+            height: 800
+        }
     }
 
     let itemStyle = defaultItemStyle
