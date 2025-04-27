@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dimensions, ScrollView, View } from 'react-native'
+import { Dimensions, View } from 'react-native'
 import Slider from '@react-native-community/slider';
 
 import util from '../util'
@@ -15,28 +15,24 @@ function Logs(props) {
     return <View></View>
 }
 
-const windowWidth = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
-
 const styles = {
     rows: {
-        flexBasis: '100%',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'center',
         padding: 60,
         backgroundColor: 'rgba(0,0,0,0.6)'
     },
 
     row: {
-        flexBasis: '100%',
+        flexBasis: '100%'
     },
 
     columns: {
         flexBasis: '100%',
         flexWrap: 'wrap',
         flexDirection: 'row',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        height: 80
     },
 
     column: {

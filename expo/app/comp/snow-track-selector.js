@@ -21,11 +21,14 @@ const styles = {
         flex: 1
     },
     column: {
-        width: 250,
-        height: 50,
-        padding: 10,
-        margin: 10,
+        flex: 3,
+        flexBasis: '33%'
     }
+}
+styles.button = {
+    wrapper: styles.column,
+    container: styles.column,
+    button: styles.column
 }
 
 const buttonStyles = {

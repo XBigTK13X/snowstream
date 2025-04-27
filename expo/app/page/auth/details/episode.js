@@ -1,5 +1,14 @@
 import C from '../../../common'
 
+styles = {
+    columns: {
+        flexBasis: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        flex: 1
+    },
+}
+
 export default function EpisodeDetailsPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes } = C.useSettings()
@@ -28,7 +37,7 @@ export default function EpisodeDetailsPage() {
                 if (response.tracks.inspection.scored_tracks['audio'].length) {
                     setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
                 }
-                if (response.tracks.inspection.scored_tracks['subtitle']) {
+                if (response.tracks.inspection.scored_tracks['subtitle'].length) {
                     setSubtitleTrack(response.tracks.inspection.scored_tracks['subtitle'][0].relative_index)
                 }
             })

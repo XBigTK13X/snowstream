@@ -21,29 +21,9 @@ const theme = createTheme({
     mode: 'dark',
 })
 
-var styles = C.StyleSheet.create({
-    default: {
-        backgroundColor: '#000000',
-    },
-    // TODO Is this note below still valid? I think that bug is fixed and this style unused
-    // This needs to be slightly larger than the offset in play.js for the videoview
-    // I don't know why, but without gap the surfaceview doesn't clean up.
-    // It leaves the screen blank after hitting back on a video on Android TV
-    videoSqueeze: {
-        margin: 10,
-    },
-    safeArea: {
-        padding: 10,
-        backgroundColor: '#000000',
-        height: '100%',
-        width: '100%',
-    },
-    header: {
-        marginBottom: 10,
-    },
-})
 
-function Header() {
+
+function Header(props) {
     const { isAdmin, displayName } = C.useSession()
     const { routes } = C.useSettings()
 
@@ -64,13 +44,13 @@ function Header() {
         buttons.push({ title: 'Admin', route: routes.admin.dashboard })
     }
     return (
-        <C.View style={styles.header}>
+        <C.View style={props.styles.header}>
             <C.SnowGrid short={true} data={buttons} renderItem={renderItem}></C.SnowGrid>
         </C.View>
     )
 }
 
-function Footer() {
+function Footer(props) {
     const { routes, config } = C.useSettings()
     const { displayName } = C.useSession()
     let authedInfo = 'Not logged in.'
@@ -97,15 +77,37 @@ function MessageDisplay() {
 
 // TODO Do I want always visible nav bars, or some kind of drawer?
 function SafeAreaStub(props) {
-    return <C.View style={styles.safeArea}>{props.children}</C.View>
+    return <C.View style={[props.styles.safeArea, props.styles.page]}>{props.children}</C.View>
 }
 
 export default function RootLayout() {
+    var styles = {
+        default: {
+            backgroundColor: '#000000',
+        },
+        safeArea: {
+            padding: 10,
+            backgroundColor: '#000000',
+            height: C.getWindowHeight(),
+            width: '100%',
+        },
+        header: {
+            marginBottom: 10,
+        },
+        page: {
+            height: C.getWindowHeight(),
+            width: '100%'
+        },
+        scroll: {
+            height: C.getWindowHeight() - 300,
+            width: '100%'
+        }
+    }
     let PlatformWrapper = null
     if (C.Platform.OS === 'web') {
         PlatformWrapper = (props) => {
             return (
-                <SafeAreaStub>
+                <SafeAreaStub styles={styles}>
                     <C.View>{props.children}</C.View>
                 </SafeAreaStub>
             )
@@ -116,8 +118,8 @@ export default function RootLayout() {
             let SafeAreaProvider = safeArea.SafeAreaProvider
             let SafeAreaView = safeArea.SafeAreaView
             return (
-                <SafeAreaProvider style={styles.default}>
-                    <SafeAreaView>
+                <SafeAreaProvider style={[styles.default, styles.page]}>
+                    <SafeAreaView style={styles.page}>
                         <C.TVFocusGuideView>{props.children}</C.TVFocusGuideView>
                     </SafeAreaView>
                 </SafeAreaProvider>
@@ -136,13 +138,13 @@ export default function RootLayout() {
                 <SettingsProvider>
                     <SessionProvider>
                         <MessageDisplayProvider>
-                            <C.View style={styles.videoSqueeze}>
-                                <Header />
+                            <C.View styles={styles.page}>
+                                <Header styles={styles} />
                                 <MessageDisplay />
-                                <C.ScrollView>
+                                <C.ScrollView style={styles.scroll}>
                                     <C.Slot />
                                 </C.ScrollView>
-                                <Footer />
+                                <Footer styles={styles} />
                             </C.View>
                         </MessageDisplayProvider>
                     </SessionProvider>
