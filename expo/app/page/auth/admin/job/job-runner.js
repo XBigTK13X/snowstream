@@ -24,7 +24,7 @@ export default function ShelfEditPage() {
     ]
 
     const renderItem = (item) => {
-        return <C.SnowButton title={item.name} onPress={() => { createJob(item.kind) }} />
+        return <C.SnowTextButton title={item.name} onPress={() => { createJob(item.kind) }} />
     }
 
     return (

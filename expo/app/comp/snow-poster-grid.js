@@ -1,11 +1,13 @@
 import { Platform, View } from 'react-native'
-import { Button, Image } from '@rneui/themed'
 import SnowGrid from './snow-grid'
-import SnowText from './snow-text'
+import SnowImageButton from './snow-image-button'
 
 
-let itemStyle = { height: 220, width: 150, justifyContent: 'center' }
-let imageStyle = { height: 200, width: 130 }
+let wrapperStyle = {
+    height: 300,
+    justifyContent: 'center',
+    backgroundColor: 'rgb(219, 158, 44)'
+}
 
 export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {
@@ -13,28 +15,23 @@ export function SnowPosterGrid(props) {
         if (item.poster_image) {
             posterUrl = item.poster_image.web_path
         }
+        let longPress = null
+        if (props.onLongPress) {
+            longPress = () => {
+                props.onLongPress(item)
+            }
+        }
 
         if (posterUrl) {
-            return (
-                <View style={itemStyle}>
-                    <Button
-                        hasTVPreferredFocus={itemIndex === 0}
-                        style={itemStyle}
-                        icon={<Image
-                            style={imageStyle}
-                            resizeMode="contain"
-                            key={item.id}
-                            source={{ uri: posterUrl }} />}
-                        onPress={() => { props.onPress(item) }}
-                        onLongPress={() => { props.onLongPress(item) }}
-                    />
-                </View>
-            )
+            return <SnowImageButton
+                imageUrl={posterUrl}
+                onPress={() => { props.onPress(item) }}
+                onLongPress={longPress} />
         }
     }
     return (
         <View>
-            <SnowGrid data={props.data} renderItem={renderItem} itemStyle={itemStyle} />
+            <SnowGrid data={props.data} renderItem={renderItem} />
         </View>
     )
 }

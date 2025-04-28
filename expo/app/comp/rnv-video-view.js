@@ -2,7 +2,7 @@ import React from 'react'
 import Video from 'react-native-video';
 import { View } from 'react-native'
 import SnowText from './snow-text'
-import SnowButton from './snow-button'
+import SnowTextButton from './snow-text-button'
 
 export default function RnvVideoView(props) {
     const videoRef = React.useRef(null);
@@ -34,7 +34,7 @@ export default function RnvVideoView(props) {
     if (!userPlayed) {
         return (
             <View style={{ backgroundColor: 'black', height: props.windowHeight }}>
-                <SnowButton title="Web requires this button be pressed" onPress={userClickedPlay} />
+                <SnowTextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
             </View>
         )
     }

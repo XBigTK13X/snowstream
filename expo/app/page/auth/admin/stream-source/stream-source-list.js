@@ -17,7 +17,7 @@ export default function StreamSourceListPage() {
     if (!!streamSources) {
         const renderItem = (streamSource, itemIndex) => {
             return (
-                <C.Button
+                <C.SnowTextButton
                     hasTVPreferredFocus={itemIndex === 0}
                     style={C.Styles.box}
                     title={streamSource.name}
@@ -29,7 +29,7 @@ export default function StreamSourceListPage() {
         }
         return (
             <C.View >
-                <C.SnowButton title="Create New Stream Source" onPress={routes.func(routes.admin.streamSourceEdit)} />
+                <C.SnowTextButton title="Create New Stream Source" onPress={routes.func(routes.admin.streamSourceEdit)} />
                 <C.SnowText>{streamSources.length} stream sources found</C.SnowText>
                 <C.SnowGrid data={streamSources} renderItem={renderItem} />
             </C.View>

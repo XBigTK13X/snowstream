@@ -4,8 +4,6 @@
     "main": "expo-router/entry",
     "dependencies": {
         "@react-native-community/slider": "4.5.2",
-        "@rneui/base": "^4.0.0-rc.8",
-        "@rneui/themed": "^4.0.0-rc.8",
         "axios": "1.7.2",
         "expo": "~51.0.38",
         "expo-linking": "6.3.1",

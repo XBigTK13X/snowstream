@@ -1,6 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Button, ButtonGroup, Text } from "@rneui/themed"
+import SnowGrid from './snow-grid'
+import SnowTextButton from './snow-text-button'
 import SnowText from './snow-text'
 
 export function SnowDropdown(props) {
@@ -17,13 +18,14 @@ export function SnowDropdown(props) {
         }
     }
 
-    return <ButtonGroup
-        buttons={props.options.map((option) => {
-            return <Text>{option}</Text>
-        })}
-        selectedIndex={selectedIndex}
-        onPress={choose}
-    />
+    const renderItem = (item, itemIndex) => {
+        return <SnowTextButton
+            selected={itemIndex === selectedIndex}
+            title={item}
+            onPress={() => { choose(itemIndex) }} />
+    }
+
+    return <SnowGrid data={props.options} renderItem={renderItem} />
 }
 
 export default SnowDropdown

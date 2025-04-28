@@ -37,7 +37,7 @@ export default function TagEditPage() {
 
     let deleteButton = null
     if (tagId) {
-        deleteButton = <C.SnowButton title={`Delete Tag (${tagDeleteCount})`} onPress={deleteTag} />
+        deleteButton = <C.SnowTextButton title={`Delete Tag (${tagDeleteCount})`} onPress={deleteTag} />
     }
     if (tagDeleted) {
         return <C.Redirect href={routes.admin.tagList} />
@@ -47,7 +47,7 @@ export default function TagEditPage() {
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onChangeText={setTagName} value={tagName} />
 
-            <C.SnowButton title="Save Tag" onPress={saveTag} />
+            <C.SnowTextButton title="Save Tag" onPress={saveTag} />
             {deleteButton}
         </C.View >
     )

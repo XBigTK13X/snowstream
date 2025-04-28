@@ -3,7 +3,7 @@ import C from '../../../common'
 export default function AdminDashboardPage() {
     const { routes } = C.useSettings();
     const renderItem = (item) => {
-        return <C.Button title={item.title} onPress={routes.func(item.route)} />
+        return <C.SnowTextButton title={item.title} onPress={routes.func(item.route)} />
     }
     const buttons = [
         { title: 'Shelves', route: routes.admin.shelfList },

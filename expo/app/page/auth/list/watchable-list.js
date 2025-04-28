@@ -70,12 +70,14 @@ export function WatchableListPage(props) {
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
-                <C.Button title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
+                <C.View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
+                </C.View>
                 <Grid onPress={gotoItem} onLongPress={toggleWatchedItem} data={items} />
-            </C.View>
+            </C.View >
         )
     }
-    return <C.Text style={{ color: 'white' }}>Loading items from shelf {localParams.shelfId}.</C.Text>
+    return <C.SnowText>Loading items from shelf {localParams.shelfId}.</C.SnowText>
 }
 
 export default WatchableListPage

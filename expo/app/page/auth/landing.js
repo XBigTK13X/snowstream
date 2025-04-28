@@ -36,7 +36,7 @@ export default function LandingPage(props) {
             markup = null
             if (destination.kind === 'continue') {
                 return (
-                    <C.Button
+                    <C.SnowTextButton
                         hasTVPreferredFocus={itemIndex === 0}
                         title="Continue Watching"
                         onPress={routes.func(routes.continueWatching)}
@@ -45,7 +45,7 @@ export default function LandingPage(props) {
             }
             else if (destination.kind && destination.kind === 'Movies') {
                 return (
-                    <C.Button
+                    <C.SnowTextButton
                         hasTVPreferredFocus={itemIndex === 0}
                         title={destination.name}
                         onPress={routes.func(routes.movieList, { shelfId: destination.id })}
@@ -61,7 +61,7 @@ export default function LandingPage(props) {
                 )
             } else if (destination.kind && destination.kind === 'Shows') {
                 return (
-                    <C.Button
+                    <C.SnowTextButton
                         hasTVPreferredFocus={itemIndex === 0}
                         title={destination.name}
                         onPress={routes.func(routes.showList, { shelfId: destination.id })}
@@ -77,7 +77,7 @@ export default function LandingPage(props) {
                 )
             } else {
                 return (
-                    <C.Button
+                    <C.SnowTextButton
                         hasTVPreferredFocus={itemIndex === 0}
                         title={destination.name}
                         onPress={routes.func(routes.streamSourceDetails, {

@@ -51,14 +51,14 @@ export default function MovieDetailsPage() {
         return (
             <C.View>
                 <C.SnowText>Title: {movie.name}</C.SnowText>
-                <C.SnowButton title="Play" onPress={routes.func(routes.playMedia, {
+                <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, {
                     videoFileIndex: 0,
                     audioTrack: audioTrack,
                     subtitleTrack: subtitleTrack,
                     movieId: movieId,
                     shelfId: shelfId
                 })} />
-                <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
+                <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
                 <C.SnowTrackSelector
                     tracks={movie.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}

@@ -16,7 +16,7 @@ export default function UserListPage() {
     if (!!users) {
         const renderItem = (user, itemIndex) => {
             return (
-                <C.SnowButton
+                <C.SnowTextButton
                     hasTVPreferredFocus={itemIndex === 0}
                     style={C.Styles.box}
                     title={user.username || user.display_name}
@@ -27,7 +27,7 @@ export default function UserListPage() {
         }
         return (
             <C.View >
-                <C.SnowButton title="Create New User" onPress={routes.func(routes.admin.userEdit)} />
+                <C.SnowTextButton title="Create New User" onPress={routes.func(routes.admin.userEdit)} />
                 <C.SnowText>{users.length} users found</C.SnowText>
                 <C.SnowGrid data={users} renderItem={renderItem} />
             </C.View>

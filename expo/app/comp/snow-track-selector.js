@@ -3,7 +3,7 @@ import { StyleSheet, Dimensions, Modal, TouchableOpacity, Platform, View } from 
 import { useRouter } from 'expo-router'
 import SnowText from './snow-text'
 import SnowGrid from './snow-grid'
-import SnowButton from './snow-button'
+import SnowTextButton from './snow-text-button'
 
 const styles = {
     rows: {
@@ -45,8 +45,7 @@ function TrackList(props) {
             <View style={styles.columns}>
                 {props.tracks.map((track, trackKey) => {
                     return (
-                        <SnowButton
-                            styles={buttonStyles}
+                        <SnowTextButton
                             key={trackKey}
                             selected={track.relative_index === props.activeTrack}
                             title={`${track.relative_index}) ${track.display}`}

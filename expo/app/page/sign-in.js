@@ -28,7 +28,7 @@ export default function SignInPage() {
         // TODO Don't hardcord the admin login
         // TODO Allow text entry for both fields
         let renderItem = (item) => {
-            return <C.Button
+            return <C.SnowTextButton
                 title={item.username}
                 onPress={() => { clickSignIn(item.username, item.username == 'admin' ? 'admin' : '_-_-_EMPTY_-_-_') }}
             />

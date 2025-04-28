@@ -5,6 +5,7 @@ import { Link, Redirect, Slot, useLocalSearchParams, useNavigation, useRouter } 
 import {
     Dimensions,
     FlatList,
+    Image,
     Linking,
     Modal,
     Platform,
@@ -19,15 +20,13 @@ import {
 // https://www.npmjs.com/package/react-native-tvos
 // TVFocusGuideView docs
 
-import { Button, ListItem, Image } from '@rneui/themed'
-
 import util from './util'
 
 import { useSession } from './auth-context'
 import { useSettings } from './settings-context'
 import { useMessageDisplay } from './message-context'
 
-import SnowButton from './comp/snow-button'
+import SnowImageButton from './comp/snow-image-button'
 import SnowDropdown from './comp/snow-dropdown'
 import SnowGrid from './comp/snow-grid'
 import SnowInput from './comp/snow-input'
@@ -38,6 +37,7 @@ import SnowThumbGrid from './comp/snow-thumb-grid'
 import SnowVideoPlayer from './comp/snow-video-player'
 import SnowVideoControls from './comp/snow-video-controls'
 import SnowTrackSelector from './comp/snow-track-selector'
+import SnowTextButton from './comp/snow-text-button'
 
 const Styles = StyleSheet.create({
     box: {
@@ -66,26 +66,25 @@ export default {
     useSession,
     useSettings,
     util,
-    Button,
     Dimensions,
     FlatList,
     Image,
     Link,
     Linking,
-    ListItem,
     Modal,
     Platform,
     React,
     Redirect,
     ScrollView,
     Slot,
-    SnowButton,
     SnowDropdown,
     SnowGrid,
+    SnowImageButton,
     SnowInput,
     SnowLabel,
     SnowPosterGrid,
     SnowText,
+    SnowTextButton,
     SnowThumbGrid,
     SnowTrackSelector,
     SnowVideoControls,

@@ -1,7 +1,7 @@
-import { Input } from '@rneui/themed'
+import { TextInput } from 'react-native'
 
 export function SnowInput(props) {
-    return <Input
+    return <TextInput
         style={{
             border: 'solid white 2px',
             backgroundColor: 'rgb(219, 158, 44)',

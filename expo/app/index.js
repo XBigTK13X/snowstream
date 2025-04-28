@@ -1,8 +1,5 @@
 
-import { Link } from "expo-router";
-import { useEffect } from 'react'
 import { View, Text, TouchableOpacity } from "react-native";
-import { Button, ListItem } from '@rneui/themed';
 const routes = require('./routes')
 
 

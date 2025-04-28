@@ -5,7 +5,6 @@ import Slider from '@react-native-community/slider';
 import util from '../util'
 import { useSettings } from '../settings-context'
 
-import SnowButton from './snow-button'
 import SnowGrid from './snow-grid'
 import SnowTrackSelector from './snow-track-selector'
 import SnowText from './snow-text';
@@ -73,9 +72,9 @@ export default function SnowVideoControls(props) {
                 <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
 
                 <View style={styles.columns}>
-                    <SnowButton styles={buttonStyles} hasTVPreferredFocus={true} title="Resume" onPress={props.hideControls} />
-                    <SnowButton styles={buttonStyles} title="Logs" onPress={props.hideControls} />
-                    <SnowButton styles={buttonStyles} title="Stop" onPress={routes.funcBack()} />
+                    <SnowTextButton hasTVPreferredFocus={true} title="Resume" onPress={props.hideControls} />
+                    <SnowTextButton title="Logs" onPress={props.hideControls} />
+                    <SnowTextButton title="Stop" onPress={routes.funcBack()} />
                 </View>
 
                 <SnowTrackSelector

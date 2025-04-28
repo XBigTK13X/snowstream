@@ -17,7 +17,7 @@ export default function StreamSourceDetailsPage() {
     if (streamSource && streamSource.streamables) {
         const renderItem = (streamable, itemIndex) => {
             return (
-                <C.Button
+                <C.SnowTextButton
                     hasTVPreferredFocus={itemIndex === 0}
                     key={streamable.id}
                     title={streamable.name}

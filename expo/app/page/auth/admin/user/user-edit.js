@@ -49,7 +49,7 @@ export default function UserEditPage() {
 
     let deleteButton = null
     if (userId) {
-        deleteButton = <C.SnowButton title={`Delete User (${userDeleteCount})`} onPress={deleteUser} />
+        deleteButton = <C.SnowTextButton title={`Delete User (${userDeleteCount})`} onPress={deleteUser} />
     }
     if (userDeleted) {
         return <C.Redirect href={routes.admin.userList} />
@@ -59,8 +59,8 @@ export default function UserEditPage() {
     if (userId) {
         existingUserControls = (
             <C.View>
-                <C.SnowButton title="User Details" onPress={routes.func(routes.admin.userEdit, { userId: userId })} />
-                <C.SnowButton title="User Access" onPress={routes.func(routes.admin.userAccess, { userId: userId })} />
+                <C.SnowTextButton title="User Details" onPress={routes.func(routes.admin.userEdit, { userId: userId })} />
+                <C.SnowTextButton title="User Access" onPress={routes.func(routes.admin.userAccess, { userId: userId })} />
             </C.View>
         )
     }
@@ -80,7 +80,7 @@ export default function UserEditPage() {
             <C.SnowLabel>Permissions</C.SnowLabel>
             <C.SnowInput onChangeText={setUserPermissions} value={userPermissions} />
 
-            <C.SnowButton title="Save User" onPress={saveUser} />
+            <C.SnowTextButton title="Save User" onPress={saveUser} />
             {deleteButton}
         </C.View >
     )

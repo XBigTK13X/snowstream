@@ -58,7 +58,7 @@ export default function ShelfEditPage() {
 
     let deleteButton = null
     if (shelfId) {
-        deleteButton = <C.SnowButton title={`Delete Shelf (${shelfDeleteCount})`} onPress={deleteShelf} />
+        deleteButton = <C.SnowTextButton title={`Delete Shelf (${shelfDeleteCount})`} onPress={deleteShelf} />
     }
     if (shelfDeleted) {
         return <C.Redirect href={routes.admin.shelfList} />
@@ -77,7 +77,7 @@ export default function ShelfEditPage() {
             <C.SnowLabel>Shelf Network Path</C.SnowLabel>
             <C.SnowInput onChangeText={setNetworkPath} value={networkPath} />
 
-            <C.SnowButton title="Save Shelf" onPress={saveShelf} />
+            <C.SnowTextButton title="Save Shelf" onPress={saveShelf} />
             {deleteButton}
         </C.View >
     )

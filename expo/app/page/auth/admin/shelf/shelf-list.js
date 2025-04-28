@@ -22,7 +22,7 @@ export default function ShelfListPage() {
         const renderItem = (item, itemIndex) => {
             let destination = item
             return (
-                <C.Button
+                <C.SnowTextButton
                     hasTVPreferredFocus={itemIndex === 0}
                     style={C.Styles.box}
                     title={destination.name}
@@ -32,7 +32,7 @@ export default function ShelfListPage() {
         }
         return (
             <C.View >
-                <C.Button title="Create New Shelf" onPress={routes.func(routes.admin.shelfEdit)} />
+                <C.SnowTextButton title="Create New Shelf" onPress={routes.func(routes.admin.shelfEdit)} />
                 {
                     destinations.length > 0 ?
                         <>

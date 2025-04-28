@@ -10,26 +10,12 @@ const gridStyle = {
     justifyContent: 'center'
 }
 
-const defaultItemStyle = {
-    width: 250,
-    height: 60,
-    padding: 0,
-    margin: 5
-}
-
 export function SnowGrid(props) {
-
-    let itemStyle = defaultItemStyle
-
-    if (props.itemStyle) {
-        itemStyle = { ...itemStyle, ...props.itemStyle }
-    }
-
     return (
         <View style={gridStyle}>
             {props.data.map((item, itemIndex) => {
                 return (
-                    <View key={itemIndex} style={itemStyle}>
+                    <View key={itemIndex}>
                         {props.renderItem(item, itemIndex)}
                     </View>
                 )

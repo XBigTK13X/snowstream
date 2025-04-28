@@ -5,7 +5,7 @@ export default function OptionsPage() {
     return (
         <C.View>
             <C.Text style={{ color: 'white' }}>These are the options.</C.Text>
-            <C.Button
+            <C.SnowTextButton
                 title="Download Latest APK"
                 onPress={() => {
                     if (C.Platform.isTV) {

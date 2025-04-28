@@ -114,21 +114,21 @@ export default function UserEditPage() {
         const renderShelf = (shelf) => {
             if (userShelves && userShelves.indexOf(shelf.id) !== -1) {
                 return (
-                    <C.SnowButton
+                    <C.SnowTextButton
                         title={shelf.name + ' YES'}
                         onPress={() => {
                             setShelfAccess(shelf.id, false)
                         }}
-                    ></C.SnowButton>
+                    ></C.SnowTextButton>
                 )
             }
             return (
-                <C.SnowButton
+                <C.SnowTextButton
                     title={shelf.name + ' NO'}
                     onPress={() => {
                         setShelfAccess(shelf.id, true)
                     }}
-                ></C.SnowButton>
+                ></C.SnowTextButton>
             )
         }
         shelfPicker = (
@@ -144,21 +144,21 @@ export default function UserEditPage() {
         const renderStreamSource = (streamSource) => {
             if (userStreamSources && userStreamSources.indexOf(streamSource.id) !== -1) {
                 return (
-                    <C.SnowButton
+                    <C.SnowTextButton
                         title={streamSource.name + ' YES'}
                         onPress={() => {
                             setStreamSourceAccess(streamSource.id, false)
                         }}
-                    ></C.SnowButton>
+                    ></C.SnowTextButton>
                 )
             }
             return (
-                <C.SnowButton
+                <C.SnowTextButton
                     title={streamSource.name + ' NO'}
                     onPress={() => {
                         setStreamSourceAccess(streamSource.id, true)
                     }}
-                ></C.SnowButton>
+                ></C.SnowTextButton>
             )
         }
         streamSourcePicker = (
@@ -174,21 +174,21 @@ export default function UserEditPage() {
         const renderTag = (tag) => {
             if (userTags && userTags.indexOf(tag.id) !== -1) {
                 return (
-                    <C.SnowButton
+                    <C.SnowTextButton
                         title={tag.name + ' YES'}
                         onPress={() => {
                             setTagAccess(tag.id, false)
                         }}
-                    ></C.SnowButton>
+                    ></C.SnowTextButton>
                 )
             }
             return (
-                <C.SnowButton
+                <C.SnowTextButton
                     title={tag.name + ' NO'}
                     onPress={() => {
                         setTagAccess(tag.id, true)
                     }}
-                ></C.SnowButton>
+                ></C.SnowTextButton>
             )
         }
         tagPicker = (
@@ -201,14 +201,14 @@ export default function UserEditPage() {
 
     return (
         <C.View>
-            <C.SnowButton title="User Details" onPress={routes.func(routes.admin.userEdit, { userId: userId })} />
-            <C.SnowButton title="User Access" onPress={routes.func(routes.admin.userAccess, { userId: userId })} />
+            <C.SnowTextButton title="User Details" onPress={routes.func(routes.admin.userEdit, { userId: userId })} />
+            <C.SnowTextButton title="User Access" onPress={routes.func(routes.admin.userAccess, { userId: userId })} />
 
             {shelfPicker}
             {streamSourcePicker}
             {tagPicker}
 
-            <C.SnowButton title="Save User Access" onPress={saveUserAccess} />
+            <C.SnowTextButton title="Save User Access" onPress={saveUserAccess} />
         </C.View>
     )
 }

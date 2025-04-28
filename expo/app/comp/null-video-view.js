@@ -1,7 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
 import SnowText from './snow-text'
-import SnowButton from './snow-button'
 
 
 export default function NullVideoView(props) {

@@ -1,6 +1,6 @@
 import { View } from 'react-native'
-import { Button, Image, Text } from '@rneui/themed'
 import SnowGrid from './snow-grid'
+import SnowImageButton from './snow-image-button'
 
 const itemStyle = { width: 200, height: 110, justifyContent: 'center' }
 const imageStyle = { width: 180, height: 100 }
@@ -19,14 +19,10 @@ export function SnowThumbGrid(props) {
             }
             return (
                 <View style={itemStyle}>
-                    <Button
+                    <SnowImageButton
                         hasTVPreferredFocus={itemIndex === 0}
                         style={itemStyle}
-                        icon={<Image
-                            style={imageStyle}
-                            resizeMode="contain"
-                            key={item.id}
-                            source={{ uri: thumbUrl }} />}
+                        imageUrl={thumbUrl}
                         onPress={() => { props.onPress(item) }}
                         onLongPress={() => { props.onLongPress(item) }}
                     />

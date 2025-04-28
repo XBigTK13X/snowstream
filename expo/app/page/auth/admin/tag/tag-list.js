@@ -15,7 +15,7 @@ export default function TagListPage() {
     if (!!tags) {
         const renderItem = (item, itemIndex) => {
             return (
-                <C.Button
+                <C.SnowTextButton
                     hasTVPreferredFocus={itemIndex === 0}
                     style={C.Styles.box}
                     title={item.name}
@@ -25,7 +25,7 @@ export default function TagListPage() {
         }
         return (
             <C.View >
-                <C.Button title="Create New Tag" onPress={routes.func(routes.admin.tagEdit)} />
+                <C.SnowTextButton title="Create New Tag" onPress={routes.func(routes.admin.tagEdit)} />
                 <C.SnowText>{tags.length} tags found</C.SnowText>
                 <C.SnowGrid data={tags} renderItem={renderItem} />
             </C.View>

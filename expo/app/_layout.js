@@ -1,26 +1,11 @@
 import C from './common'
 
-import { ThemeProvider, createTheme } from '@rneui/themed'
 import { SessionProvider } from './auth-context'
 import { SettingsProvider } from './settings-context'
 import { MessageDisplayProvider } from './message-context'
 import * as NavigationBar from 'expo-navigation-bar'
 
 const routes = require('./routes')
-
-// https://reactnativeelements.com/docs/customization/theme_object
-const theme = createTheme({
-    lightColors: {
-        primary: '#db9e2c',
-        background: '#000000',
-    },
-    darkColors: {
-        primary: '#db9e2c',
-        background: '#000000',
-    },
-    mode: 'dark',
-})
-
 
 
 function Header(props) {
@@ -33,7 +18,7 @@ function Header(props) {
 
     const renderItem = (item) => {
         const entry = item
-        return <C.Button title={entry.title} onPress={routes.func(entry.route)} />
+        return <C.SnowTextButton title={entry.title} onPress={routes.func(entry.route)} />
     }
     const buttons = [
         { title: 'Home', route: routes.landing },
@@ -45,7 +30,7 @@ function Header(props) {
     }
     return (
         <C.View style={props.styles.header}>
-            <C.SnowGrid short={true} data={buttons} renderItem={renderItem}></C.SnowGrid>
+            <C.SnowGrid data={buttons} renderItem={renderItem}></C.SnowGrid>
         </C.View>
     )
 }
@@ -133,23 +118,21 @@ export default function RootLayout() {
 
 
     return (
-        <ThemeProvider theme={theme}>
-            <PlatformWrapper>
-                <SettingsProvider>
-                    <SessionProvider>
-                        <MessageDisplayProvider>
-                            <C.View styles={styles.page}>
-                                <Header styles={styles} />
-                                <MessageDisplay />
-                                <C.ScrollView style={styles.scroll}>
-                                    <C.Slot />
-                                </C.ScrollView>
-                                <Footer styles={styles} />
-                            </C.View>
-                        </MessageDisplayProvider>
-                    </SessionProvider>
-                </SettingsProvider>
-            </PlatformWrapper>
-        </ThemeProvider>
+        <PlatformWrapper>
+            <SettingsProvider>
+                <SessionProvider>
+                    <MessageDisplayProvider>
+                        <C.View styles={styles.page}>
+                            <Header styles={styles} />
+                            <MessageDisplay />
+                            <C.ScrollView style={styles.scroll}>
+                                <C.Slot />
+                            </C.ScrollView>
+                            <Footer styles={styles} />
+                        </C.View>
+                    </MessageDisplayProvider>
+                </SessionProvider>
+            </SettingsProvider>
+        </PlatformWrapper>
     )
 }

@@ -62,7 +62,7 @@ export default function StreamSourceEditPage() {
 
     let deleteButton = null
     if (streamSourceId) {
-        deleteButton = <C.SnowButton title={`Delete Stream Source (${streamSourceDeleteCount})`} onPress={deleteStreamSource} />
+        deleteButton = <C.SnowTextButton title={`Delete Stream Source (${streamSourceDeleteCount})`} onPress={deleteStreamSource} />
     }
     if (streamSourceDeleted) {
         return <C.Redirect href={routes.admin.streamSourceList} />
@@ -85,7 +85,7 @@ export default function StreamSourceEditPage() {
             <C.SnowLabel>Password</C.SnowLabel>
             <C.SnowInput onChangeText={setStreamSourcePassword} value={streamSourcePassword} />
 
-            <C.SnowButton title="Save Stream Source" onPress={saveStreamSource} />
+            <C.SnowTextButton title="Save Stream Source" onPress={saveStreamSource} />
             {deleteButton}
         </C.View >
     )

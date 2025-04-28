@@ -65,7 +65,7 @@ export default function EpisodeDetailsPage() {
                 <C.SnowText>
                     {showName} season {seasonOrder} episode {C.util.formatEpisodeTitle(episode)}
                 </C.SnowText>
-                <C.SnowButton
+                <C.SnowTextButton
                     title="Play"
                     onPress={routes.func(routes.playMedia, {
                         videoFileIndex: 0,
@@ -75,7 +75,7 @@ export default function EpisodeDetailsPage() {
                         shelfId: shelfId
                     })}
                 />
-                <C.SnowButton title={watchTitle} onLongPress={setWatchStatus} />
+                <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
                 <C.SnowTrackSelector
                     tracks={episode.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}
