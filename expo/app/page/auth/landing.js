@@ -89,7 +89,7 @@ export default function LandingPage(props) {
         }
         return (
             <C.View >
-                <C.SnowGrid data={destinations} renderItem={renderItem} />
+                <C.SnowGrid items={destinations} renderItem={renderItem} />
             </C.View>
         )
     }

@@ -29,7 +29,7 @@ export default function UserListPage() {
             <C.View >
                 <C.SnowTextButton title="Create New User" onPress={routes.func(routes.admin.userEdit)} />
                 <C.SnowText>{users.length} users found</C.SnowText>
-                <C.SnowGrid data={users} renderItem={renderItem} />
+                <C.SnowGrid items={users} renderItem={renderItem} />
             </C.View>
         )
     }

@@ -18,6 +18,7 @@ export function SnowPosterGrid(props) {
 
         if (posterUrl) {
             return <SnowImageButton
+                wide={false}
                 imageUrl={posterUrl}
                 onPress={() => { props.onPress(item) }}
                 onLongPress={longPress}
@@ -27,7 +28,7 @@ export function SnowPosterGrid(props) {
     }
     return (
         <View>
-            <SnowGrid data={props.data} renderItem={renderItem} />
+            <SnowGrid items={props.items} renderItem={renderItem} />
         </View>
     )
 }

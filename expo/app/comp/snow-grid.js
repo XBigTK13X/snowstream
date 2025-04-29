@@ -9,19 +9,13 @@ styles = {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center'
-    },
-    wide: {
     }
 }
 
 export function SnowGrid(props) {
-    let style = [styles.grid]
-    if (props.wide) {
-        style.push(styles.wide)
-    }
     return (
-        <View style={style}>
-            {props.data.map((item, itemIndex) => {
+        <View style={styles.grid}>
+            {props.items.map((item, itemIndex) => {
                 return (
                     <View key={itemIndex}>
                         {props.renderItem(item, itemIndex)}

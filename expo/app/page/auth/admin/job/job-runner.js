@@ -28,6 +28,6 @@ export default function ShelfEditPage() {
     }
 
     return (
-        <C.SnowGrid data={buttons} renderItem={renderItem} />
+        <C.SnowGrid items={buttons} renderItem={renderItem} />
     )
 }

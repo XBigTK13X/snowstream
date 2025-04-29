@@ -29,7 +29,7 @@ export default function StreamSourceDetailsPage() {
             )
         }
         return (
-            <C.SnowGrid data={streamSource.streamables} renderItem={renderItem} />
+            <C.SnowGrid items={streamSource.streamables} renderItem={renderItem} />
         )
     }
     return <C.Text>Loading stream source {localParams.streamSourceId}.</C.Text>

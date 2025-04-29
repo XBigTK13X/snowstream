@@ -30,7 +30,7 @@ function Header(props) {
     }
     return (
         <C.View style={props.styles.header}>
-            <C.SnowGrid data={buttons} renderItem={renderItem}></C.SnowGrid>
+            <C.SnowGrid items={buttons} renderItem={renderItem}></C.SnowGrid>
         </C.View>
     )
 }

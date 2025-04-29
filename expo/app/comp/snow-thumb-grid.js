@@ -35,7 +35,7 @@ export function SnowThumbGrid(props) {
     }
     return (
         <View>
-            <SnowGrid wide={true} data={props.data} renderItem={renderItem} itemStyle={itemStyle} />
+            <SnowGrid wide={true} items={props.items} renderItem={renderItem} itemStyle={itemStyle} />
         </View>
     )
 }

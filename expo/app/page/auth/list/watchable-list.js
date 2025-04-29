@@ -73,7 +73,7 @@ export function WatchableListPage(props) {
                 <C.View style={{ alignItems: 'center', justifyContent: 'center' }}>
                     <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
                 </C.View>
-                <Grid onPress={gotoItem} onLongPress={toggleWatchedItem} data={items} />
+                <Grid onPress={gotoItem} onLongPress={toggleWatchedItem} items={items} />
             </C.View >
         )
     }

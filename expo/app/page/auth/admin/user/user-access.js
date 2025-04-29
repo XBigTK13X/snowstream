@@ -134,7 +134,7 @@ export default function UserEditPage() {
         shelfPicker = (
             <C.View>
                 <C.SnowText>Shelves</C.SnowText>
-                <C.SnowGrid short={true} data={shelves} renderItem={renderShelf} />
+                <C.SnowGrid short={true} items={shelves} renderItem={renderShelf} />
             </C.View>
         )
     }
@@ -164,7 +164,7 @@ export default function UserEditPage() {
         streamSourcePicker = (
             <C.View>
                 <C.SnowText>Stream Sources</C.SnowText>
-                <C.SnowGrid short={true} data={streamSources} renderItem={renderStreamSource} />
+                <C.SnowGrid short={true} items={streamSources} renderItem={renderStreamSource} />
             </C.View>
         )
     }
@@ -194,7 +194,7 @@ export default function UserEditPage() {
         tagPicker = (
             <C.View>
                 <C.SnowText>Tags</C.SnowText>
-                <C.SnowGrid short={true} data={tags} renderItem={renderTag} />
+                <C.SnowGrid short={true} items={tags} renderItem={renderTag} />
             </C.View>
         )
     }

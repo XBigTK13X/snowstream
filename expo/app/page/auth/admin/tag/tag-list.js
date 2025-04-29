@@ -27,7 +27,7 @@ export default function TagListPage() {
             <C.View >
                 <C.SnowTextButton title="Create New Tag" onPress={routes.func(routes.admin.tagEdit)} />
                 <C.SnowText>{tags.length} tags found</C.SnowText>
-                <C.SnowGrid data={tags} renderItem={renderItem} />
+                <C.SnowGrid items={tags} renderItem={renderItem} />
             </C.View>
         )
     }

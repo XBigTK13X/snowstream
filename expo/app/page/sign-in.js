@@ -34,7 +34,7 @@ export default function SignInPage() {
             />
         }
         userList = (
-            <C.SnowGrid data={users} renderItem={renderItem} />
+            <C.SnowGrid items={users} renderItem={renderItem} />
         )
     }
 

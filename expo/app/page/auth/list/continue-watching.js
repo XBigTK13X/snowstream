@@ -78,7 +78,7 @@ export function ContinueWatchingListPage(props) {
                 <C.View style={styles.columns}>
                     {tabButtons}
                 </C.View>
-                <C.SnowPosterGrid data={tabItems} onPress={pressItem} />
+                <C.SnowPosterGrid items={tabItems} onPress={pressItem} />
             </C.View>
         )
     }

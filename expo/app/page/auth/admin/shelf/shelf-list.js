@@ -37,7 +37,7 @@ export default function ShelfListPage() {
                     destinations.length > 0 ?
                         <>
                             <C.SnowText>{destinations.length} shelves found</C.SnowText>
-                            <C.SnowGrid data={destinations} renderItem={renderItem} />
+                            <C.SnowGrid items={destinations} renderItem={renderItem} />
                         </>
                         : null
                 }
