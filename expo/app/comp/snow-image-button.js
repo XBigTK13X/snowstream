@@ -20,7 +20,7 @@ const styles = {
         borderRadius: 5,
     },
     wrapperWide: {
-        height: 125 * mult,
+        height: 170 * mult,
         width: 200 * mult
     },
     selected: {
@@ -40,7 +40,7 @@ const styles = {
         borderRadius: 5
     },
     imageWide: {
-        height: 100 * mult,
+        height: 90 * mult,
         width: 150 * mult,
     },
     text: {

@@ -2,7 +2,6 @@ import { Platform, View } from 'react-native'
 import SnowGrid from './snow-grid'
 import SnowImageButton from './snow-image-button'
 
-
 export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {
         let posterUrl = null
