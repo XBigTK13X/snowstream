@@ -35,7 +35,7 @@ export default function EpisodeDetailsPage() {
         }
     })
     const setWatchStatus = (status) => {
-        apiClient.setEpisodeWatchStatus(episodeId, !episode.watched).then(() => {
+        apiClient.toggleEpisodeWatchStatus(episodeId).then(() => {
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
             })

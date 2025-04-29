@@ -1,7 +1,7 @@
 import React from 'react'
 
 
-import { Image, TouchableOpacity, Pressable, View } from 'react-native';
+import { Platform, Image, TouchableOpacity, Pressable, View } from 'react-native';
 import SnowText from './snow-text'
 
 
@@ -53,7 +53,10 @@ const styles = {
     },
 }
 
-
+if (Platform.OS === 'android') {
+    styles.text.height = 80
+    styles.text.marginTop = -10
+}
 
 export function SnowImageButton(props) {
     const [focused, setFocused] = React.useState(false)

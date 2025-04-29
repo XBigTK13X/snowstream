@@ -95,13 +95,13 @@ def get_continue_watching_list(ticket:dm.Ticket):
         if next_episodes and len(next_episodes) > 0:
             results.append({
                 'kind': 'next_episodes',
-                'name': "Next Up Episodes",
+                'name': "Next Episodes",
                 'items': next_episodes
             })
         if new_seasons and len(new_seasons) > 0:
             results.append({
                 'kind': 'new_seasons',
-                'name': 'Next Up Seasons',
+                'name': 'Next Seasons',
                 'items': new_seasons
             })          
         if unwatched_movies and len(unwatched_movies) > 0:

@@ -34,6 +34,7 @@ const styles = {
 }
 
 if (Platform.OS === 'android') {
+    styles.text.height = 30
 }
 
 export function SnowTextButton(props) {
