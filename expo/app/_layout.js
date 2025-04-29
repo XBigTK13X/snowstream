@@ -52,48 +52,48 @@ function Footer(props) {
     )
 }
 
-function MessageDisplay() {
-    // This is mainly a debugging helper.
-    // Not sure if there's any reason to keep it in the deployed app
-    const { message } = C.useMessageDisplay()
-    return null
-    return <C.SnowText>Message: {message}</C.SnowText>
+var styles = {
+    default: {
+        backgroundColor: '#000000',
+    },
+    safeArea: {
+        padding: 10,
+        backgroundColor: '#000000',
+        height: C.getWindowHeight(),
+        width: C.getWindowWidth(),
+    },
+    header: {
+        marginBottom: 10,
+    },
+    page: {
+        height: C.getWindowHeight(),
+        width: C.getWindowWidth()
+    },
+    scroll: {
+        height: C.getWindowHeight() - 300,
+        width: C.getWindowWidth()
+    }
 }
 
 // TODO Do I want always visible nav bars, or some kind of drawer?
 function SafeAreaStub(props) {
-    return <C.View style={[props.styles.safeArea, props.styles.page]}>{props.children}</C.View>
+    return <C.View style={styles.safeArea}>{props.children}</C.View>
+}
+
+function MessageDisplay() {
+    // This is mainly a debugging helper.
+    // Not sure if there's any reason to keep it in the deployed app
+    const { message } = C.useMessageDisplay()
+    return <C.SnowText>Message: {message}</C.SnowText>
 }
 
 export default function RootLayout() {
-    var styles = {
-        default: {
-            backgroundColor: '#000000',
-        },
-        safeArea: {
-            padding: 10,
-            backgroundColor: '#000000',
-            height: C.getWindowHeight(),
-            width: '100%',
-        },
-        header: {
-            marginBottom: 10,
-        },
-        page: {
-            height: C.getWindowHeight(),
-            width: '100%'
-        },
-        scroll: {
-            height: C.getWindowHeight() - 300,
-            width: '100%'
-        }
-    }
     let PlatformWrapper = null
     if (C.Platform.OS === 'web') {
         PlatformWrapper = (props) => {
             return (
-                <SafeAreaStub styles={styles}>
-                    <C.View>{props.children}</C.View>
+                <SafeAreaStub>
+                    {props.children}
                 </SafeAreaStub>
             )
         }

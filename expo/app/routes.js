@@ -3,6 +3,7 @@ import { router } from 'expo-router'
 // DOCS router method https://docs.expo.dev/router/navigating-pages/#imperative-navigation
 
 let routes = {
+    root: '/',
     admin: {
         dashboard: '/page/auth/admin/dashboard',
         jobList: '/page/auth/admin/job/job-list',
@@ -17,7 +18,6 @@ let routes = {
         userEdit: '/page/auth/admin/user/user-edit',
         userList: '/page/auth/admin/user/user-list',
     },
-    root: '/',
     continueWatching: '/page/auth/list/continue-watching',
     episodeDetails: '/page/auth/details/episode',
     episodeList: '/page/auth/list/episode',
