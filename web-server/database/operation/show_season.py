@@ -1,3 +1,4 @@
+import util
 import database.db_models as dm
 import api_models as am
 from database.sql_alchemy import DbSession
@@ -79,7 +80,9 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket, show_id: int):
         for show_season in show_seasons:
             if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
                 continue
-            results.append(dm.set_primary_images(show_season))
+            season = dm.set_primary_images(show_season)
+            season.name = util.get_season_title(season)
+            results.append(season)
         return results
 
 def create_show_season_image_file(show_season_id: int, image_file_id: int):

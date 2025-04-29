@@ -1,3 +1,4 @@
+import util
 import database.db_models as dm
 from database.sql_alchemy import DbSession
 import database.operation.shelf as db_shelf
@@ -20,9 +21,12 @@ def get_continue_watching_list(ticket:dm.Ticket):
         if movies_in_progress and len(movies_in_progress) > 0:
             items = []
             for progress in movies_in_progress:
-                items.append(db_movie.get_movie_by_id(ticket=ticket,movie_id=progress.movie_id))
+                movie = db_movie.get_movie_by_id(ticket=ticket,movie_id=progress.movie_id)
+                movie.kind = 'movie'
+                items.append(movie)
             results.append({
                 'kind': 'movies_in_progress',
+                'name': 'Movies In Progress',
                 'items': items
             })
         episodes_in_progress = (
@@ -35,9 +39,12 @@ def get_continue_watching_list(ticket:dm.Ticket):
         if episodes_in_progress and len(episodes_in_progress) > 0:
             items = []
             for progress in episodes_in_progress:
-                items.append(db_episode.get_show_episode_by_id(ticket=ticket,episode_id=progress.show_episode_id))
+                episode = db_episode.get_show_episode_by_id(ticket=ticket,episode_id=progress.show_episode_id)
+                episode.kind = 'episode'
+                items.append(episode)
             results.append({
                 'kind': 'episodes_in_progress',
+                'name': 'Episodes In Progress',
                 'items': items
             })
         
@@ -49,6 +56,8 @@ def get_continue_watching_list(ticket:dm.Ticket):
         for shelf in shelves:
             if shelf.kind == 'Movies':
                 movies = db_movie.get_partial_shelf_movie_list(ticket=ticket,shelf_id=shelf.id,only_watched=False)
+                for movie in movies:
+                    movie.kind = 'movie'
                 if not movies:
                     continue
                 unwatched_movies += movies
@@ -60,13 +69,17 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     seasons = db_season.get_partial_show_season_list(ticket=ticket,show_id=show.id,only_watched=False)
                     if not seasons:
                         continue
+                    seasons = [xx for xx in seasons if xx.season_order_counter > 0]
                     next_season = seasons[0]
                     episodes = db_episode.get_partial_show_episode_list(ticket=ticket,season_id=next_season.id,only_watched=False)
                     if not episodes:
-                        continue
+                        continue                    
                     next_episode = episodes[0]
+                    next_episode.kind = 'episode'
                     next_episode.season = next_season
                     next_episode.show = show
+                    next_episode.poster_image = show.poster_image  
+                    next_episode.name = util.get_episode_title(next_episode)  
                     if next_season.season_order_counter == 1:
                         if next_episode.episode_order_counter == 1:
                             new_shows.append(next_episode)
@@ -77,24 +90,30 @@ def get_continue_watching_list(ticket:dm.Ticket):
                             new_seasons.append(next_episode)
                         else:
                             next_episodes.append(next_episode)
-            if next_episodes and len(next_episodes) > 0:
-                results.append({
-                    'kind': 'next_episodes',
-                    'items': next_episodes
-                })
-            if new_seasons and len(new_seasons) > 0:
-                results.append({
-                    'kind': 'new_seasons',
-                    'items': new_seasons
-                })          
-            if unwatched_movies and len(unwatched_movies) > 0:
-                results.append({
-                    'kind': 'new_movies',
-                    'items': unwatched_movies
-                })
-            if new_shows and len(new_shows) > 0:
-                results.append({
-                    'kind': 'new_shows',
-                    'items': new_shows
-                })
+        # TODO Figure out a strategy for recommending special episodes
+        # Often in between seasons, but labelled as season 0
+        if next_episodes and len(next_episodes) > 0:
+            results.append({
+                'kind': 'next_episodes',
+                'name': "Next Up Episodes",
+                'items': next_episodes
+            })
+        if new_seasons and len(new_seasons) > 0:
+            results.append({
+                'kind': 'new_seasons',
+                'name': 'Next Up Seasons',
+                'items': new_seasons
+            })          
+        if unwatched_movies and len(unwatched_movies) > 0:
+            results.append({
+                'kind': 'new_movies',
+                'name': 'New Movies',
+                'items': unwatched_movies
+            })
+        if new_shows and len(new_shows) > 0:
+            results.append({
+                'kind': 'new_shows',
+                'name': 'New Shows',
+                'items': new_shows
+            })
         return results

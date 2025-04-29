@@ -20,9 +20,11 @@ export function SnowThumbGrid(props) {
             return (
                 <View style={itemStyle}>
                     <SnowImageButton
+                        wide={true}
                         hasTVPreferredFocus={itemIndex === 0}
                         style={itemStyle}
                         imageUrl={thumbUrl}
+                        title={item.name}
                         onPress={() => { props.onPress(item) }}
                         onLongPress={() => { props.onLongPress(item) }}
                     />
@@ -33,7 +35,7 @@ export function SnowThumbGrid(props) {
     }
     return (
         <View>
-            <SnowGrid data={props.data} renderItem={renderItem} itemStyle={itemStyle} />
+            <SnowGrid wide={true} data={props.data} renderItem={renderItem} itemStyle={itemStyle} />
         </View>
     )
 }

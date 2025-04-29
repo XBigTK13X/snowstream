@@ -1,3 +1,4 @@
+import util
 import database.db_models as dm
 import api_models as am
 from database.sql_alchemy import DbSession
@@ -24,7 +25,9 @@ def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
         for episode in episodes:
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
-            results.append(dm.set_primary_images(episode))
+            episode = dm.set_primary_images(episode)
+            episode.name = util.get_episode_title(episode)
+            results.append(episode)
         return results
 
 def create_show_episode(show_season_id: int, episode_order_counter: int):
@@ -59,7 +62,9 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
         for episode in episodes:
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
-            results.append(dm.set_primary_images(episode))
+            episode = dm.set_primary_images(episode)
+            episode.name = util.get_episode_title(episode)
+            results.append(episode)
         return results
 
 def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
@@ -79,7 +84,9 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
             return None
         if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
             return None
-        return dm.set_primary_images(episode)            
+        episode = dm.set_primary_images(episode)            
+        episode.name = util.get_episode_title(episode)
+        return episode
 
 
 def get_show_episode_by_season_order(show_season_id: int, episode_order_counter: int):
@@ -107,7 +114,9 @@ def get_show_episode_list_by_season(ticket:dm.Ticket,show_season_id: int):
         for episode in episodes:
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
-            results.append(dm.set_primary_images(episode))
+            episode = dm.set_primary_images(episode)
+            episode.name = util.get_episode_title(episode)
+            results.append(episode)
         return results
 
 def create_show_episode_video_file(show_episode_id: int, video_file_id: int):

@@ -22,10 +22,12 @@ def transcode_command(input_url:str, stream_port:int, audio_track_index:int, sub
 
 
 def ffprobe_media(media_path:str):
-    command = f'ffprobe -hide_banner "{media_path}" -print_format json -show_format -show_streams'
+    command = f'ffprobe -hide_banner -loglevel quiet "{media_path}" -print_format json -show_format -show_streams'
     log.info(command)
     command_output = util.run_cli(command,raw_output=True)
-    raw_ffprobe = json.loads(command_output['stdout'])
+    ffprobe_output = command_output['stdout']
+    cleaned = ffprobe_output.replace("�",'')
+    raw_ffprobe = json.loads(cleaned)
     parsed = {'video':[],'audio':[],'subtitle':[],'other':[]}
     parsed['duration_seconds'] = float(raw_ffprobe['format']['duration'])
     audio_index = 0

@@ -39,7 +39,23 @@ export function ContinueWatchingListPage(props) {
         }
     })
     const pressItem = (item) => {
-        console.log({ item })
+        if (item.kind === 'movie') {
+            routes.goto(routes.movieDetails, {
+                shelfId: item.shelf.id,
+                movieId: item.id
+            })
+        }
+        if (item.kind === 'episode') {
+            let destination = {
+                shelfId: item.show.shelf.id,
+                showId: item.show.id,
+                seasonId: item.season.id,
+                episodeId: item.id,
+                showName: item.show.name,
+                seasonOrder: item.season.season_order_counter
+            }
+            routes.goto(routes.episodeDetails, destination)
+        }
     }
     const loadTab = (tabEntry, tabIndex) => {
         setTabIndex(tabIndex)
@@ -49,7 +65,12 @@ export function ContinueWatchingListPage(props) {
         let tabButtons = continueWatchingList.map((entry, entryIndex) => {
             const selected = entryIndex === tabIndex
             return (
-                <C.SnowTextButton key={entryIndex} selected={selected} style={styles.column} onPress={() => { loadTab(entry, entryIndex) }} title={entry.name} />
+                <C.SnowTextButton
+                    key={entryIndex}
+                    selected={selected}
+                    style={styles.column}
+                    onPress={() => { loadTab(entry, entryIndex) }}
+                    title={entry.name} />
             )
         })
         return (
@@ -59,47 +80,6 @@ export function ContinueWatchingListPage(props) {
                 </C.View>
                 <C.SnowPosterGrid data={tabItems} onPress={pressItem} />
             </C.View>
-        )
-        return (<C.ScrollView
-            showsVerticalScrollIndicator={true}
-            persistentScrollbar={true}
-            style={{ height: 600 }}>
-            {continueWatchingList.map((sublist, sublistIndex) => {
-                let gotoItem = null
-                let subtitle = null
-                if (sublist.kind === 'movies_in_progress') {
-                    gotoItem = () => { }
-                    subtitle = `${sublist.items.length} Movies in Progress`
-                }
-                else if (sublist.kind === 'episodes_in_progress') {
-                    gotoItem = () => { }
-                    subtitle = `${sublist.items.length} Episodes in Progress`
-                }
-                else if (sublist.kind === 'new_movies') {
-                    gotoItem = () => { }
-                    subtitle = `${sublist.items.length} New Movies`
-                }
-                else if (sublist.kind === 'next_episodes') {
-                    gotoItem = () => { }
-                    subtitle = `${sublist.items.length} Next Episodes`
-                }
-                else if (sublist.kind === 'new_seasons') {
-                    gotoItem = () => { }
-                    subtitle = `${sublist.items.length} New Seasons`
-                }
-                else if (sublist.kind === 'new_shows') {
-                    gotoItem = () => { }
-                    subtitle = `${sublist.items.length} New Shows`
-                }
-                return (
-                    <C.View key={sublistIndex}>
-                        <C.SnowText>{subtitle}</C.SnowText>
-                        <C.SnowText></C.SnowText>
-                        <C.SnowPosterGrid onPress={gotoItem} data={sublist.items} />
-                    </C.View>
-                )
-            })}
-        </ C.ScrollView>
         )
     }
     return <C.Text style={{ color: 'white' }}>Loading the continue watching list.</C.Text>

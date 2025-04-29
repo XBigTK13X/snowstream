@@ -3,12 +3,6 @@ import SnowGrid from './snow-grid'
 import SnowImageButton from './snow-image-button'
 
 
-let wrapperStyle = {
-    height: 300,
-    justifyContent: 'center',
-    backgroundColor: 'rgb(219, 158, 44)'
-}
-
 export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {
         let posterUrl = null
@@ -26,7 +20,9 @@ export function SnowPosterGrid(props) {
             return <SnowImageButton
                 imageUrl={posterUrl}
                 onPress={() => { props.onPress(item) }}
-                onLongPress={longPress} />
+                onLongPress={longPress}
+                title={item.name}
+            />
         }
     }
     return (
