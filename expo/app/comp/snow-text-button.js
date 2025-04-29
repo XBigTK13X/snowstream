@@ -1,7 +1,7 @@
 import React from 'react'
 
 
-import { Image, TouchableOpacity, Pressable, View } from 'react-native';
+import { Platform, Image, TouchableOpacity, Pressable, View } from 'react-native';
 import SnowText from './snow-text'
 
 
@@ -31,6 +31,9 @@ const styles = {
         padding: 0,
         margin: 0
     },
+}
+
+if (Platform.OS === 'android') {
 }
 
 export function SnowTextButton(props) {

@@ -1,4 +1,4 @@
-import { Dimensions, View } from 'react-native'
+import { Platform, Dimensions, View } from 'react-native'
 
 
 
@@ -14,6 +14,9 @@ const styles = {
     item: {
         flexBasis: '20%'
     }
+}
+
+if (Platform.OS === 'android') {
 }
 
 export function SnowGrid(props) {

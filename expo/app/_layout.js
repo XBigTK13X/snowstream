@@ -1,5 +1,4 @@
 import C from './common'
-
 import { SessionProvider } from './auth-context'
 import { SettingsProvider } from './settings-context'
 import { MessageDisplayProvider } from './message-context'
@@ -73,6 +72,10 @@ const styles = {
         height: C.getWindowHeight() - 300,
         width: C.getWindowWidth()
     }
+}
+
+if (C.Platform.OS === 'android') {
+    styles.header.marginBottom = 100
 }
 
 // TODO Do I want always visible nav bars, or some kind of drawer?
