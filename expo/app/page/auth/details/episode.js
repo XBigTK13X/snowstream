@@ -1,14 +1,5 @@
 import C from '../../../common'
 
-styles = {
-    columns: {
-        flexBasis: '100%',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        flex: 1
-    },
-}
-
 export default function EpisodeDetailsPage() {
     const { signOut, apiClient } = C.useSession()
     const { routes } = C.useSettings()

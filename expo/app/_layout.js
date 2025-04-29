@@ -52,7 +52,7 @@ function Footer(props) {
     )
 }
 
-var styles = {
+const styles = {
     default: {
         backgroundColor: '#000000',
     },
@@ -83,8 +83,9 @@ function SafeAreaStub(props) {
 function MessageDisplay() {
     // This is mainly a debugging helper.
     // Not sure if there's any reason to keep it in the deployed app
+    return null
     const { message } = C.useMessageDisplay()
-    return <C.SnowText>Message: {message}</C.SnowText>
+    return <C.SnowText style={{ width: C.getWindowWidth() }}>Message: {message}</C.SnowText>
 }
 
 export default function RootLayout() {
