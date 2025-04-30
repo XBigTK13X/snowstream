@@ -48,7 +48,7 @@ function TrackList(props) {
                         <SnowTextButton
                             key={trackKey}
                             selected={track.relative_index === props.activeTrack}
-                            title={`${track.relative_index}) ${track.display}`}
+                            title={`${track.display} [${track.relative_index}]`}
                             onPress={() => { props.selectTrack(track) }}
                         />
                     )

@@ -11,7 +11,7 @@ def transcode_command(input_url:str, stream_port:int, audio_track_index:int, sub
     command += f' -c:v av1_nvenc'
     if subtitle_track_index:
         command += f' -vf "subtitles=\'{input_url}\':si={subtitle_track_index}"'
-    command += f' -c:a libvorbis'    
+    command += f' -c:a libvorbis'
     if audio_track_index:
         command += f' -map 0:v:0'
         command += f' -map 0:a:{audio_track_index}'
@@ -36,7 +36,7 @@ def ffprobe_media(media_path:str):
     absolute_index = 0
     for stream in raw_ffprobe['streams']:
         entry = {
-            'absolute_index': absolute_index,            
+            'absolute_index': absolute_index,
         }
         if 'codec_name' in stream:
             entry['codec'] = stream['codec_name']
@@ -47,19 +47,24 @@ def ffprobe_media(media_path:str):
             parsed['resolution_height'] = int(stream['height'])
             if 'tags' in stream and 'BPS-eng' in stream['tags']:
                 entry['megabits_per_second'] = float(stream['tags']['BPS-eng']) / 1000.0
-            parsed['video'].append(entry)            
+            parsed['video'].append(entry)
             video_index += 1
         if stream['codec_type'] == 'audio':
             entry['relative_index'] = audio_index
-            entry['display'] = f"{stream['channels']} ch - {stream["codec_name"]}"
+            entry['display'] = f"{stream['channels']} ch"
+            if stream['codec_name']:
+                 entry['display'] += f' - {stream["codec_name"]}'
             entry['title'] = ''
+            entry['kind'] = 'audio'
+            if 'tags' in stream and 'language' in stream['tags'] and stream['tags']['language'] != '':
+                entry['language'] = stream['tags']['language']
+                entry['display'] += f" - {entry['language']}"
+            else:
+                entry['language'] = '???'
+                entry['display'] += f' - {entry['language']}'
             if 'tags' in stream and 'title' in stream['tags']:
                 entry['display'] += f' - {stream['tags']['title']}'
                 entry['title'] = stream['tags']['title']
-            entry['kind'] = 'audio'
-            if 'tags' in stream and 'language' in stream['tags']:
-                entry['language'] = stream['tags']['language']
-                entry['display'] = f"{entry['language']} - {entry['display']}"
             entry['is_forced'] = False
             entry['is_default'] = False
             entry['is_closed_caption'] = False
@@ -78,11 +83,11 @@ def ffprobe_media(media_path:str):
             if 'tags' in stream and 'title' in stream['tags']:
                  entry['display'] += f' - {stream['tags']['title']}'
                  entry['title'] = stream['tags']['title']
-            entry['kind'] = 'subtitle'            
+            entry['kind'] = 'subtitle'
             if 'pgs' in entry['display'].lower():
                 entry['display'] = 'pgs'
             if 'tags' in stream and 'language' in stream['tags']:
-                entry['language'] = stream['tags']['language']                
+                entry['language'] = stream['tags']['language']
                 if 'HANDLER_NAME' in stream['tags']:
                     entry['display'] = f"{stream['tags']['HANDLER_NAME']} - {entry['display']}"
                 else:
@@ -114,7 +119,7 @@ def score_audio_track(track):
         if 'jap' in track['language'] or 'jpn' in track['language']:
             return 1000
     return 0
-            
+
 
 def score_subtitle_track(track):
     if 'language' in track:
@@ -137,7 +142,7 @@ def score_subtitle_track(track):
                 return 2020
             return 2050
     return 0
-            
+
 
 # Originally from snowby
 # https://github.com/XBigTK13X/snowby/blob/acb151d05f60c77845b3b1e5ba2417f97a7acff2/desktop/media/inspector.js
@@ -147,7 +152,7 @@ def inspect_media(media_path:str, ffprobe:dict):
     result['is_anime'] = True if '/anime/' in media_path else False
     result['source_kind'] = 'transcode'
     if 'Remux' in media_path:
-        result['source_kind'] = 'remux'    
+        result['source_kind'] = 'remux'
 
     if ffprobe['resolution_height'] == 2160:
         result['resolution_name'] = 'UHD 2160'
@@ -160,7 +165,7 @@ def inspect_media(media_path:str, ffprobe:dict):
     else:
         result['resolution_name'] = 'Unknown'
 
-    result['is_hdr'] = False    
+    result['is_hdr'] = False
     if 'color_space' in ffprobe['video'][0] and '2020' in ffprobe['video'][0]['color_space']:
         result['is_hdr'] = True
 
@@ -174,8 +179,12 @@ def inspect_media(media_path:str, ffprobe:dict):
                 score += 2000
             track_copy['score'] = score
             result['scored_tracks']['audio'].append(track_copy)
-
-    result['scored_tracks']['audio'] = sorted(result['scored_tracks']['audio'],key=lambda xx:xx['score'])
+    # This will only happen if the inspector doesn't understand what the audio tracks are
+    # Usually only the case for really old files
+    if len(result['scored_tracks']['audio']) == 0:
+        result['scored_tracks']['audio'] = ffprobe['audio']
+    else:
+        result['scored_tracks']['audio'] = sorted(result['scored_tracks']['audio'],key=lambda xx:xx['score'])
 
     for track in ffprobe['subtitle']:
         score = score_subtitle_track(track)
@@ -184,6 +193,11 @@ def inspect_media(media_path:str, ffprobe:dict):
             track_copy['score'] = score
             result['scored_tracks']['subtitle'].append(track_copy)
 
-    result['scored_tracks']['subtitle'] = sorted(result['scored_tracks']['subtitle'],key=lambda xx:xx['score'])
+    # This will only happen if the inspector doesn't understand what the subtitle tracks are
+    # Usually only the case for really old files
+    if len(result['scored_tracks']['subtitle']) == 0:
+        result['scored_tracks']['subtitle'] = ffprobe['subtitle']
+    else:
+        result['scored_tracks']['subtitle'] = sorted(result['scored_tracks']['subtitle'],key=lambda xx:xx['score'])
 
     return result
