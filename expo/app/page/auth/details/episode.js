@@ -8,6 +8,7 @@ export default function EpisodeDetailsPage() {
     const [episode, setEpisode] = C.React.useState(null)
     const [audioTrack, setAudioTrack] = C.React.useState(0)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
+    const [videoFile, setVideoFile] = C.React.useState(null)
 
     const shelfId = localParams.shelfId
     const showId = localParams.showId
@@ -25,6 +26,7 @@ export default function EpisodeDetailsPage() {
         if (!episode) {
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
+                setVideoFile(response.video_files[0])
                 if (response.tracks.inspection.scored_tracks['audio'].length) {
                     setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
                 }
@@ -49,24 +51,40 @@ export default function EpisodeDetailsPage() {
             setSubtitleTrack(track.relative_index)
         }
     }
-    if (shelf && episode) {
+    if (shelf && episode && videoFile) {
         const watchTitle = episode.watched ? 'Set Status to Unwatched' : 'Set Status to Watched'
+        const episodeListPayload = {
+            shelfId,
+            showId: episode.show.id,
+            seasonId: episode.season.id,
+            showName: showName,
+            seasonOrder: episode.season.season_order_counter,
+        }
+        const seasonListPayload = { shelfId, showId, showName }
+        const buttons = [
+            <C.SnowTextButton
+                title="Play"
+                onPress={routes.func(routes.playMedia, {
+                    videoFileIndex: 0,
+                    audioTrack: audioTrack,
+                    subtitleTrack: subtitleTrack,
+                    episodeId: episodeId,
+                    shelfId: shelfId
+                })}
+            />,
+            <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />,
+            <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />,
+            <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />,
+            <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />
+        ]
         return (
             <C.View>
                 <C.SnowText>
                     {showName} season {seasonOrder} episode {C.util.formatEpisodeTitle(episode)}
                 </C.SnowText>
-                <C.SnowTextButton
-                    title="Play"
-                    onPress={routes.func(routes.playMedia, {
-                        videoFileIndex: 0,
-                        audioTrack: audioTrack,
-                        subtitleTrack: subtitleTrack,
-                        episodeId: episodeId,
-                        shelfId: shelfId
-                    })}
-                />
-                <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
+                <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
+                <C.SnowText>Times Watched: {episode.watch_count ? episode.watch_count.amount : 0}</C.SnowText>
+                <C.SnowGrid items={buttons} />
                 <C.SnowTrackSelector
                     tracks={episode.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}

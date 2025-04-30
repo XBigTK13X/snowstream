@@ -31,7 +31,7 @@ class User(BaseModel):
     access_tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="user_tag")
     access_shelves: sorm.Mapped[List["Shelf"]] = sorm.relationship(secondary="user_shelf")
     access_stream_sources: sorm.Mapped[List["StreamSource"]] = sorm.relationship(secondary="user_stream_source")
-    
+
     def is_admin(self):
         return 'admin' in self.permissions
 
@@ -119,7 +119,7 @@ class ClientDevice(BaseModel):
     __tablename__ = "client_device"
     reported_name = sa.Column(sa.Text)
     display_name = sa.Column(sa.Text)
-    device_kind = sa.Column(sa.Text)    
+    device_kind = sa.Column(sa.Text)
 
 class ClientDeviceUser(BaseModel):
     __tablename__ = "client_device_user"
@@ -166,7 +166,8 @@ class WatchCount(BaseModel):
     streamable_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("streamable.id"),nullable=True
     )
-    streamable: sorm.Mapped['Streamable'] = sorm.relationship() 
+    streamable: sorm.Mapped['Streamable'] = sorm.relationship()
+    amount = sa.Column(sa.Integer)
 
 class Watched(BaseModel):
     __tablename__ = 'watched'
@@ -182,7 +183,7 @@ class Watched(BaseModel):
     )
     show_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("show.id"),nullable=True
-    )    
+    )
     show_season_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("show_season.id"),nullable=True
     )
@@ -282,6 +283,7 @@ class Movie(BaseModel):
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="movie_image_file",back_populates="movie")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="movie_metadata_file",back_populates="movie")
     shelf: sorm.Mapped["Shelf"] = sorm.relationship(secondary="movie_shelf")
+    watch_count: sorm.Mapped['WatchCount'] = sorm.relationship()
 
     def get_tag_ids(self):
         return [xx.id for xx in self.tags]
@@ -362,7 +364,7 @@ class ShowSeason(BaseModel):
     episodes: sorm.Mapped[List["ShowEpisode"]] = sorm.relationship(back_populates="season")
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_season_image_file",back_populates="show_season")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_season_metadata_file",back_populates="show_season")
-    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_season_tag",back_populates="show_seasons")    
+    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_season_tag",back_populates="show_seasons")
 
     def get_tag_ids(self):
         tag_ids = []
@@ -397,6 +399,7 @@ class ShowEpisode(BaseModel):
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_episode_metadata_file",back_populates="show_episode")
     season: sorm.Mapped["ShowSeason"] = sorm.relationship(back_populates="episodes")
     tags: sorm.Mapped["Tag"] = sorm.relationship(secondary="show_episode_tag",back_populates="show_episodes")
+    watch_count: sorm.Mapped['WatchCount'] = sorm.relationship()
 
     def get_tag_ids(self):
         tag_ids = []

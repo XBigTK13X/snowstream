@@ -77,6 +77,7 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
             .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
             .options(sorm.joinedload(dm.ShowEpisode.tags))
             .options(sorm.joinedload(dm.ShowEpisode.season))
+            .options(sorm.joinedload(dm.ShowEpisode.watch_count))
         )
         episode = query.first()
         season = db_season.get_show_season_by_id(ticket=ticket,season_id=episode.season.id)
@@ -84,7 +85,10 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
             return None
         if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
             return None
-        episode = dm.set_primary_images(episode)            
+        show = db_show.get_show_by_id(ticket=ticket,show_id=season.show_id)
+        episode.show = show
+        episode.season.name = util.get_season_title(episode.season)
+        episode = dm.set_primary_images(episode)
         episode.name = util.get_episode_title(episode)
         return episode
 
@@ -106,7 +110,7 @@ def get_show_episode_list_by_season(ticket:dm.Ticket,show_season_id: int):
     with DbSession() as db:
         query = (
             db.query(dm.ShowEpisode)
-            .filter(dm.ShowEpisode.show_season_id == show_season_id)            
+            .filter(dm.ShowEpisode.show_season_id == show_season_id)
             .order_by(dm.ShowEpisode.episode_order_counter)
         )
         episodes = query.all()
@@ -176,7 +180,7 @@ def get_show_episode_metadata_file(show_episode_id: int, metadata_file_id: int):
             .first()
         )
 
-def upsert_show_episode_tag(show_episode_id: int, tag_id: int):    
+def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
     with DbSession() as db:
         existing = db.query(dm.ShowEpisodeTag).filter(
             dm.ShowEpisodeTag.show_episode_id == show_episode_id and dm.ShowEpisodeTag.tag_id == tag_id
@@ -202,15 +206,15 @@ def get_partial_show_episode_list(ticket:dm.Ticket,season_id:int,only_watched:bo
         show = db_show.get_show_by_id(ticket=ticket,show_id=season.show.id)
         if not show:
             return []
-        shelf_watched = db_show.get_show_shelf_watched(ticket=ticket,shelf_id=show.shelf.id)        
+        shelf_watched = db_show.get_show_shelf_watched(ticket=ticket,shelf_id=show.shelf.id)
         if shelf_watched:
             return episodes if only_watched else []
         show_watched = db_show.get_show_watched(ticket=ticket,show_id=show.id)
         if show_watched:
-            return episodes if only_watched else []        
+            return episodes if only_watched else []
         season_watched = db_season.get_show_season_watched(ticket=ticket,season_id=season_id)
         if season_watched:
-            return episodes if only_watched else []        
+            return episodes if only_watched else []
         watched_episodes = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
             dm.Watched.shelf_id == show.shelf.id,
@@ -246,6 +250,8 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
             dm.Watched.show_episode_id == episode_id
         ).delete()
         db.commit()
+        if is_watched:
+            increase_show_episode_watch_count(ticket=ticket,show_episode_id=episode_id)
         if is_watched and not shelf_watched and not show_watched and not season_watched:
             watched_episodes = (
                 db.query(dm.Watched).filter(
@@ -267,7 +273,7 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
                 dbm.show_episode_id = episode_id
                 db.add(dbm)
                 db.commit()
-                db.refresh(dbm)                                    
+                db.refresh(dbm)
                 return True
         if not is_watched:
             if shelf_watched:
@@ -296,7 +302,7 @@ def get_show_episode_watched(ticket:dm.Ticket,episode_id:int):
     episode = get_show_episode_by_id(ticket=ticket,episode_id=episode_id)
     if not episode:
         return False
-    season = db_season.get_show_season_by_id(ticket=ticket,season_id=episode.season.id)    
+    season = db_season.get_show_season_by_id(ticket=ticket,season_id=episode.season.id)
     if not season:
         return False
     season_watched = db_season.get_show_season_watched(ticket=ticket,season_id=season.id)
@@ -337,3 +343,44 @@ def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchPro
             db.commit()
             db.refresh(dbm)
     return True
+
+def make_show_episode_watch_count(cduid:int,show_episode_id:int):
+    dbm = dm.WatchCount()
+    dbm.client_device_user_id = cduid
+    dbm.show_episode_id = show_episode_id
+    dbm.amount = 1
+    return dbm
+
+def increase_show_episode_watch_count(ticket:dm.Ticket,show_episode_id:int):
+    episode = get_show_episode_by_id(ticket=ticket,show_episode_id=show_episode_id)
+    if not episode:
+        return False
+    with DbSession() as db:
+        existing_count = (
+            db.query(dm.WatchCount)
+            .filter(
+                dm.WatchCount.client_device_user_id.in_(ticket.watch_group),
+                dm.WatchCount.show_episode_id == show_episode_id
+            ).first()
+        )
+        if existing_count:
+            existing_count.amount += 1
+            db.commit()
+            return existing_count
+        else:
+            new_count = make_show_episode_watch_count(cduid=ticket.cduid,show_episode_id=show_episode_id)
+            db.add(new_count)
+            db.commit()
+            return new_count
+
+def reset_show_episode_watch_count(ticket:dm.Ticket,show_episode_id:int):
+    with DbSession as db:
+        (
+            db.query(dm.WatchCount)
+            .filter(
+                dm.WatchCount.client_device_user_id.in_(ticket.watch_group),
+                dm.WatchCount.show_episode_id == show_episode_id
+            ).delete()
+        )
+        db.commit()
+        return True

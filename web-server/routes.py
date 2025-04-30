@@ -59,7 +59,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         stream_source_id: int,
     ):
-        if not auth_user.ticket.is_allowed(stream_source_id=stream_source_id):            
+        if not auth_user.ticket.is_allowed(stream_source_id=stream_source_id):
             return None
         return db.op.get_stream_source(stream_source_id=stream_source_id)
 
@@ -302,7 +302,7 @@ def auth_required(router):
             ticket=auth_user.ticket,
             shelf_id=shelf_id,
             only_watched=True if watched_status == 'Watched' else False
-        )        
+        )
 
     @router.post("/show/watched/toggle")
     def toggle_show_watched(
@@ -335,7 +335,7 @@ def auth_required(router):
             ticket=auth_user.ticket,
             show_id=show_id,
             only_watched=True if watched_status == 'Watched' else False
-        )        
+        )
 
     @router.post("/show/season/watched/toggle")
     def toggle_show_season_watched(
@@ -365,7 +365,7 @@ def auth_required(router):
             ticket=auth_user.ticket,
             season_id=show_season_id,
             only_watched=True if watched_status == 'Watched' else False
-        )       
+        )
 
     @router.post("/show/season/episode/watched/toggle")
     def toggle_show_episode_watched(
@@ -381,7 +381,7 @@ def auth_required(router):
             episode_id=episode_id,
             is_watched=not is_watched
         )
-        return not is_watched    
+        return not is_watched
 
     @router.get("/show/season/episode",tags=['Show'])
     def get_show_episode_details(
@@ -403,7 +403,7 @@ def auth_required(router):
         watch_progress: am.WatchProgress
     ):
         return db.op.set_show_episode_watch_progress(ticket=auth_user.ticket,watch_progress=watch_progress)
-        
+
 
     @router.get('/continue/watching')
     def get_continue_watching_list(
@@ -453,7 +453,7 @@ def no_auth_required(router):
         users = db.op.get_user_list()
         for user in users:
             user.hashed_password = None
-        return users    
+        return users
 
     @router.get("/streamable.m3u", response_class=PlainTextResponse,tags=['Unauthed Video'])
     def get_streamable_m3u():

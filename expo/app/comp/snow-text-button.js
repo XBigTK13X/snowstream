@@ -29,7 +29,8 @@ const styles = {
     text: {
         fontSize: 16,
         padding: 0,
-        margin: 0
+        margin: 0,
+        textAlign: 'center'
     },
 }
 
@@ -48,6 +49,11 @@ export function SnowTextButton(props) {
         style.push(styles.focused)
     }
 
+    let textStyle = [styles.text]
+    if (props.title.length > 40) {
+        textStyle.push({ fontSize: 12 })
+    }
+
     return (
         <TouchableOpacity
             activeOpacity={1.0}
@@ -56,7 +62,7 @@ export function SnowTextButton(props) {
             onFocus={() => { setFocused(true) }}
             onBlur={() => { setFocused(false) }}
             style={style}>
-            <SnowText style={styles.text}>{props.title}</SnowText>
+            <SnowText style={textStyle}>{props.title}</SnowText>
         </TouchableOpacity>
     )
 }

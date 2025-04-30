@@ -10,6 +10,7 @@ const styles = {
         flexBasis: '100%',
         flexDirection: 'row',
         flexWrap: 'wrap',
+        alignItems: 'flex-start'
     },
     row: {
         flexBasis: '100%'
@@ -17,8 +18,7 @@ const styles = {
     columns: {
         flexBasis: '100%',
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        flex: 1
+        flexWrap: 'wrap'
     },
     column: {
         flex: 3,

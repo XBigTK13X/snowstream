@@ -8,6 +8,7 @@ export default function MovieDetailsPage() {
     const [movie, setMovie] = C.React.useState(null);
     const [audioTrack, setAudioTrack] = C.React.useState(0)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
+    const [videoFile, setVideoFile] = C.React.useState(null)
 
     const shelfId = localParams.shelfId;
     const movieId = localParams.movieId;
@@ -21,6 +22,7 @@ export default function MovieDetailsPage() {
         if (!movie) {
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
+                setVideoFile(response.video_files[0])
                 if (response.tracks.inspection.scored_tracks['audio'].length) {
                     setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
                 }
@@ -46,19 +48,26 @@ export default function MovieDetailsPage() {
             setSubtitleTrack(track.relative_index)
         }
     }
-    if (shelf && movie) {
+    if (shelf && movie && videoFile) {
         const watchTitle = movie.watched ? "Set Status to Unwatched" : "Set Status to Watched"
+        const payload = {
+            videoFileIndex: 0,
+            audioTrack: audioTrack,
+            subtitleTrack: subtitleTrack,
+            movieId: movieId,
+            shelfId: shelfId
+        }
+        const buttons = [
+            (<C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />),
+            (<C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />),
+            (<C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />)
+        ]
         return (
             <C.View>
                 <C.SnowText>Title: {movie.name}</C.SnowText>
-                <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, {
-                    videoFileIndex: 0,
-                    audioTrack: audioTrack,
-                    subtitleTrack: subtitleTrack,
-                    movieId: movieId,
-                    shelfId: shelfId
-                })} />
-                <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
+                <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
+                <C.SnowText>Times Watched: {movie.watch_count ? movie.watch_count.amount : 0}</C.SnowText>
+                <C.SnowGrid items={buttons} />
                 <C.SnowTrackSelector
                     tracks={movie.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}

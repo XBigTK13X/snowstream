@@ -47,8 +47,8 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'name': 'Episodes In Progress',
                 'items': items
             })
-        
-        unwatched_movies = []        
+
+        unwatched_movies = []
         next_episodes = []
         new_seasons = []
         new_shows = []
@@ -61,7 +61,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 if not movies:
                     continue
                 unwatched_movies += movies
-            if shelf.kind == 'Shows':        
+            if shelf.kind == 'Shows':
                 shows = db_show.get_partial_shelf_show_list(ticket=ticket,shelf_id=shelf.id,only_watched=False)
                 if not shows:
                     continue
@@ -73,13 +73,13 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     next_season = seasons[0]
                     episodes = db_episode.get_partial_show_episode_list(ticket=ticket,season_id=next_season.id,only_watched=False)
                     if not episodes:
-                        continue                    
+                        continue
                     next_episode = episodes[0]
                     next_episode.kind = 'episode'
                     next_episode.season = next_season
                     next_episode.show = show
-                    next_episode.poster_image = show.poster_image  
-                    next_episode.name = util.get_episode_title(next_episode)  
+                    next_episode.poster_image = show.poster_image
+                    next_episode.name = util.get_episode_title(next_episode)
                     if next_season.season_order_counter == 1:
                         if next_episode.episode_order_counter == 1:
                             new_shows.append(next_episode)
@@ -103,12 +103,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'kind': 'new_seasons',
                 'name': 'Next Seasons',
                 'items': new_seasons
-            })          
-        if unwatched_movies and len(unwatched_movies) > 0:
-            results.append({
-                'kind': 'new_movies',
-                'name': 'New Movies',
-                'items': unwatched_movies
             })
         if new_shows and len(new_shows) > 0:
             results.append({
@@ -116,4 +110,11 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'name': 'New Shows',
                 'items': new_shows
             })
+        if unwatched_movies and len(unwatched_movies) > 0:
+            results.append({
+                'kind': 'new_movies',
+                'name': 'New Movies',
+                'items': unwatched_movies
+            })
+
         return results

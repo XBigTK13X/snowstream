@@ -29,11 +29,12 @@ def add_movie_to_shelf(movie_id: int, shelf_id: int):
 def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
     with DbSession() as db:
         query = (
-            db.query(dm.Movie)            
-            .filter(dm.Movie.id == movie_id)            
+            db.query(dm.Movie)
+            .filter(dm.Movie.id == movie_id)
             .options(sorm.joinedload(dm.Movie.video_files))
             .options(sorm.joinedload(dm.Movie.image_files))
             .options(sorm.joinedload(dm.Movie.shelf))
+            .options(sorm.joinedload(dm.Movie.watch_count))
         )
 
         movie = query.first()
@@ -137,7 +138,7 @@ def get_movie_metadata_file(movie_id: int, metadata_file_id: int):
             .first()
         )
 
-def upsert_movie_tag(movie_id: int, tag_id: int):    
+def upsert_movie_tag(movie_id: int, tag_id: int):
     with DbSession() as db:
         existing = (
             db.query(dm.MovieTag)
@@ -158,17 +159,17 @@ def upsert_movie_tag(movie_id: int, tag_id: int):
 
 def set_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
     if not ticket.is_allowed(shelf_id=shelf_id):
-        return False    
+        return False
     with DbSession() as db:
         db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
             dm.Watched.shelf_id == shelf_id
         ).delete()
         db.commit()
-        if is_watched:            
+        if is_watched:
             dbm = dm.Watched()
             dbm.client_device_user_id = ticket.cduid
-            dbm.shelf_id = shelf_id            
+            dbm.shelf_id = shelf_id
             db.add(dbm)
             db.commit()
             db.refresh(dbm)
@@ -177,12 +178,12 @@ def set_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
             db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id,
                 dm.Watched.shelf_id == shelf_id
-            ).delete()            
+            ).delete()
             db.commit()
 
 def get_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int):
     if not ticket.is_allowed(shelf_id=shelf_id):
-        return False    
+        return False
     with DbSession() as db:
         watched = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
@@ -205,7 +206,7 @@ def get_partial_shelf_movie_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool
             .filter(
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
                 dm.Watched.shelf_id == shelf_id,
-                dm.Watched.movie_id != None            
+                dm.Watched.movie_id != None
             )
             .distinct(dm.Watched.movie_id)
             .all()
@@ -226,11 +227,13 @@ def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
         movies = get_movie_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
         if not movies:
             return False
+        if is_watched:
+            increase_movie_watch_count(ticket=ticket,movie_id=movie_id)
         if is_watched and not shelf_watched:
             watched_movies = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
                 dm.Watched.shelf_id == shelf_id,
-                dm.Watched.movie_id != None,                
+                dm.Watched.movie_id != None,
             ).distinct(dm.Watched.movie_id).all()
             if len(watched_movies) == len(movies) - 1:
                 set_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id,is_watched=True)
@@ -242,7 +245,7 @@ def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
                 dbm.movie_id = movie_id
                 db.add(dbm)
                 db.commit()
-                db.refresh(dbm)                                    
+                db.refresh(dbm)
                 return True
         if not is_watched and shelf_watched:
             set_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id,is_watched=False)
@@ -263,7 +266,7 @@ def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
                 dm.Watched.shelf_id == shelf_id,
                 dm.Watched.movie_id == movie_id
-            ).delete()          
+            ).delete()
             db.commit()
             return False
     return is_watched
@@ -309,3 +312,46 @@ def set_movie_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
             db.commit()
             db.refresh(dbm)
     return True
+
+def make_movie_watch_count(cduid:int,movie_id):
+    dbm = dm.WatchCount()
+    dbm.amount = 1
+    dbm.client_device_user_id = cduid
+    dbm.movie_id = movie_id
+    return dbm
+
+
+def increase_movie_watch_count(ticket:dm.Ticket,movie_id:int):
+    movie = get_movie_by_id(ticket=ticket,movie_id=movie_id)
+    if not movie:
+        return False
+    with DbSession() as db:
+        existing_count = (
+            db.query(dm.WatchCount)
+            .filter(
+                dm.WatchCount.client_device_user_id.in_(ticket.watch_group),
+                dm.WatchCount.movie_id == movie_id
+            ).first()
+        )
+        if existing_count:
+            existing_count.amount += 1
+            db.commit()
+            return existing_count
+        else:
+            new_count = make_movie_watch_count(cduid=ticket.cduid,movie_id=movie_id)
+            db.add(new_count)
+            db.commit()
+            return new_count
+
+
+def reset_movie_watch_count(ticket:dm.Ticket,movie_id:int):
+    with DbSession as db:
+        (
+            db.query(dm.WatchCount)
+            .filter(
+                dm.WatchCount.client_device_user_id.in_(ticket.watch_group),
+                dm.WatchCount.movie_id == movie_id
+            ).delete()
+        )
+        db.commit()
+        return True
