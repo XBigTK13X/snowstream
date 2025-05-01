@@ -149,13 +149,16 @@ export class ApiClient {
         return this.post('/job', { name: 'read_media_files' })
     }
 
-    createJobUpdateMediaFiles(targetScope, targetId) {
+    createJobUpdateMediaFiles(targetScope, targetId, metadataId) {
         let payload = { name: 'update_media_files' }
         if (targetScope && targetId) {
             payload.input = {
                 target_scope: targetScope,
                 target_id: targetId
             }
+        }
+        if (metadataId) {
+            payload.input.metadataId = metadataId
         }
         return this.post('/job', payload)
     }

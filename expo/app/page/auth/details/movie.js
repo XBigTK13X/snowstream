@@ -60,15 +60,11 @@ export default function MovieDetailsPage() {
         const buttons = [
             (<C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />),
             (<C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />),
-            (<C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />)
+            (<C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />),
+            (<C.SnowUpdateMediaButton updateMediaJob={(metadataId) => {
+                apiClient.createJobUpdateMediaFiles('movie', movieId, metadataId)
+            }} />)
         ]
-        if (isAdmin) {
-            buttons.push(
-                <C.SnowTextButton
-                    title='Update Media'
-                    onPress={() => { apiClient.createJobUpdateMediaFiles('movie', movieId) }} />
-            )
-        }
         return (
             <C.View>
                 <C.SnowText>Title: {movie.name}</C.SnowText>
@@ -81,6 +77,7 @@ export default function MovieDetailsPage() {
                     audioTrack={audioTrack}
                     subtitleTrack={subtitleTrack}
                 />
+
             </C.View>
         )
     }

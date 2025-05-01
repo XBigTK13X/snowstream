@@ -71,9 +71,13 @@ export function WatchableListPage(props) {
             (<C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />)
         ]
 
-        if (isAdmin) {
-            buttons.push(<C.SnowTextButton title={'Update Media'} onPress={() => { props.updateMediaJob(apiClient, shelfId) }} />)
-        }
+
+
+        buttons.push(
+            <C.SnowUpdateMediaButton
+                updateMediaJob={(metadataId) => { props.updateMediaJob(apiClient, shelfId, metadataId) }}
+            />
+        )
 
         return (
             <C.View>

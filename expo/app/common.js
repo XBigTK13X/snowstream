@@ -38,6 +38,7 @@ import SnowVideoPlayer from './comp/snow-video-player'
 import SnowVideoControls from './comp/snow-video-controls'
 import SnowTrackSelector from './comp/snow-track-selector'
 import SnowTextButton from './comp/snow-text-button'
+import SnowUpdateMediaButton from './comp/snow-update-media-button'
 
 const Styles = StyleSheet.create({
     box: {
@@ -87,6 +88,7 @@ export default {
     SnowTextButton,
     SnowThumbGrid,
     SnowTrackSelector,
+    SnowUpdateMediaButton,
     SnowVideoControls,
     SnowVideoPlayer,
     Styles,

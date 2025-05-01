@@ -25,8 +25,8 @@ export default function EpisodeListPage() {
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleEpisodeWatchStatus(itemId)
     }
-    const updateMediaJob = (apiClient, shelfId) => {
-        apiClient.createJobUpdateMediaFiles('season', seasonId)
+    const updateMediaJob = (apiClient, shelfId, metadataId) => {
+        apiClient.createJobUpdateMediaFiles('season', seasonId, metadataId)
     }
     return (
         <WatchableListPage

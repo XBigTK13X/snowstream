@@ -75,15 +75,11 @@ export default function EpisodeDetailsPage() {
             <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />,
             <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />,
             <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />,
-            <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />
+            <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />,
+            <C.SnowUpdateMediaButton updateMediaJob={(metadataId) => {
+                apiClient.createJobUpdateMediaFiles('episode', episodeId, metadataId)
+            }} />
         ]
-        if (isAdmin) {
-            buttons.push(
-                <C.SnowTextButton
-                    title='Update Media'
-                    onPress={() => { apiClient.createJobUpdateMediaFiles('episode', episodeId) }} />
-            )
-        }
         return (
             <C.View>
                 <C.SnowText>
