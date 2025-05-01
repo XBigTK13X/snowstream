@@ -13,12 +13,16 @@ export default function ShowListPage() {
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleShowWatchStatus(itemId)
     }
+    const updateMediaJob = (apiClient, shelfId) => {
+        apiClient.createJobUpdateMediaFiles('shelf', shelfId)
+    }
     return (
         <WatchableListPage
             loadItems={loadItems}
             refreshList={refreshList}
             gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
+            updateMediaJob={updateMediaJob}
         />
     )
 }

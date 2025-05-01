@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function MovieDetailsPage() {
-    const { signOut, apiClient } = C.useSession();
+    const { isAdmin, apiClient } = C.useSession();
     const { routes } = C.useSettings();
     const localParams = C.useLocalSearchParams();
     const [shelf, setShelf] = C.React.useState(null);
@@ -62,6 +62,13 @@ export default function MovieDetailsPage() {
             (<C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />),
             (<C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />)
         ]
+        if (isAdmin) {
+            buttons.push(
+                <C.SnowTextButton
+                    title='Update Media'
+                    onPress={() => { apiClient.createJobUpdateMediaFiles('movie', movieId) }} />
+            )
+        }
         return (
             <C.View>
                 <C.SnowText>Title: {movie.name}</C.SnowText>

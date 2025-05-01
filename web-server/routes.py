@@ -73,10 +73,10 @@ def auth_required(router):
     @router.post("/job",tags=['Job'])
     def create_job(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        kind: am.JobKind,
+        jobRequest: am.JobRequest,
     ):
-        job = db.op.create_job(kind=kind.name)
-        message.write.send(job_id=job.id, kind=kind.name)
+        job = db.op.create_job(kind=jobRequest.name)
+        message.write.send(job_id=job.id, kind=jobRequest.name, input=jobRequest.input)
         return job
 
     @router.get("/job",tags=['Job'])

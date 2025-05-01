@@ -25,6 +25,9 @@ export default function EpisodeListPage() {
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleEpisodeWatchStatus(itemId)
     }
+    const updateMediaJob = (apiClient, shelfId) => {
+        apiClient.createJobUpdateMediaFiles('season', seasonId)
+    }
     return (
         <WatchableListPage
             getPageTitle={getPageTitle}
@@ -33,6 +36,7 @@ export default function EpisodeListPage() {
             gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
             gridKind="thumb"
+            updateMediaJob={updateMediaJob}
         />
     )
 }

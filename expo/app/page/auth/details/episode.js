@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function EpisodeDetailsPage() {
-    const { signOut, apiClient } = C.useSession()
+    const { isAdmin, apiClient } = C.useSession()
     const { routes } = C.useSettings()
     const localParams = C.useLocalSearchParams()
     const [shelf, setShelf] = C.React.useState(null)
@@ -77,6 +77,13 @@ export default function EpisodeDetailsPage() {
             <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />,
             <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />
         ]
+        if (isAdmin) {
+            buttons.push(
+                <C.SnowTextButton
+                    title='Update Media'
+                    onPress={() => { apiClient.createJobUpdateMediaFiles('episode', episodeId) }} />
+            )
+        }
         return (
             <C.View>
                 <C.SnowText>
@@ -84,7 +91,7 @@ export default function EpisodeDetailsPage() {
                 </C.SnowText>
                 <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowText>Times Watched: {episode.watch_count ? episode.watch_count.amount : 0}</C.SnowText>
-                <C.SnowGrid items={buttons} />
+                <C.SnowGrid items={buttons} itemsPerRow={3} />
                 <C.SnowTrackSelector
                     tracks={episode.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}

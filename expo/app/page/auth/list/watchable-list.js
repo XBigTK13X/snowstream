@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export function WatchableListPage(props) {
-    const { signOut, apiClient } = C.useSession()
+    const { isAdmin, apiClient } = C.useSession()
     const { routes } = C.useSettings()
     const { setMessageDisplay } = C.useMessageDisplay()
     const localParams = C.useLocalSearchParams()
@@ -67,12 +67,18 @@ export function WatchableListPage(props) {
             Grid = C.SnowThumbGrid
         }
 
+        let buttons = [
+            (<C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />)
+        ]
+
+        if (isAdmin) {
+            buttons.push(<C.SnowTextButton title={'Update Media'} onPress={() => { props.updateMediaJob(apiClient, shelfId) }} />)
+        }
+
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
-                <C.View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
-                </C.View>
+                <C.SnowGrid items={buttons} />
                 <Grid onPress={gotoItem} onLongPress={toggleWatchedItem} items={items} />
             </C.View >
         )

@@ -29,12 +29,14 @@ class UserAccess(BaseModel):
     shelf_ids: list[int]
     stream_source_ids: list[int]
 
-class JobKind(BaseModel):
+class JobRequest(BaseModel):
     name: Union[
         Literal["stream_sources_refresh"],
         Literal["scan_shelves_content"],
-        Literal["read_media_files"]
+        Literal["read_media_files"],
+        Literal["update_media_files"]
     ]
+    input: dict | None = None
 
 
 class Job(BaseModel):

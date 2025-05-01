@@ -24,11 +24,15 @@ export function SnowGrid(props) {
     if (props.renderItem) {
         renderItem = props.renderItem
     }
+    let itemStyle = [styles.item]
+    if (props.itemsPerRow) {
+        itemStyle.push({ flexBasis: `${100 / props.itemsPerRow}%` })
+    }
     return (
         <View style={styles.grid}>
             {props.items.map((item, itemIndex) => {
                 return (
-                    <View key={itemIndex} style={styles.item}>
+                    <View key={itemIndex} style={itemStyle}>
                         {renderItem(item, itemIndex)}
                     </View>
                 )

@@ -56,3 +56,9 @@ During first time setup, you may need to create a virtualenv under `web-server` 
 # Creating an Android TV APK
 
 Run `script/prod-generate-apks.sh`
+
+
+<a class="thetvdbattribution" style="" href="https://thetvdb.com/subscribe">
+    <img src="/images/attribution/logo1.png" height="45">
+    Metadata provided by TheTVDB. Please consider adding missing information or subscribing.
+</a>

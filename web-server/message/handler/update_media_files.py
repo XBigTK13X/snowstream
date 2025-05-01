@@ -1,0 +1,45 @@
+from log import log
+from db import db
+import api_models as am
+
+import message.handler.update_media.movie_shelf as update_movie_shelf
+import message.handler.update_media.movie as update_movie
+import message.handler.update_media.show_shelf as update_show_shelf
+import message.handler.update_media.show as update_show
+import message.handler.update_media.show_season as update_season
+import message.handler.update_media.show_episode as update_episode
+
+# TODO Optionally allow the job to limit the scope to 1 shelf/show/season etc
+def handle(job_id, message_payload):
+    log.info(f"[WORKER] Handling an update_media_files job")
+    job_input = message_payload['input']
+    target = job_input['target_scope']
+    target_id = job_input['target_id']
+    handler = None
+    if target == 'shelf':
+        log.info(f"Updating media for shelf {target_id}")
+    elif target == 'movie':
+        log.info(f"Updating media for movie {target_id}")
+        handler = update_movie.Movie()
+    elif target == 'show':
+        log.info(f"Updating media for show {target_id}")
+        handler = update_show.Show()
+    elif target == 'season':
+        log.info(f"Updating media for season {target_id}")
+        handler = update_season.ShowSeason()
+    elif target == 'episode':
+        log.info(f"Updating media for episode {target_id}")
+        handler = update_episode.ShowEpisode()
+    else:
+        log.info(f"Unhandled target of kind {target}")
+        return False
+
+    if handler == None:
+        return False
+
+    handler.read_local_media()
+    handler.read_remote_media()
+    handler.merge_remote_into_local()
+    handler.save_media_to_local()
+
+    return True

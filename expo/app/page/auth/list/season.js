@@ -30,6 +30,10 @@ export default function SeasonListPage() {
         return apiClient.toggleSeasonWatchStatus(itemId)
     }
 
+    const updateMediaJob = (apiClient) => {
+        apiClient.createJobUpdateMediaFiles('show', showId)
+    }
+
     return (
         <WatchableListPage
             getPageTitle={getPageTitle}
@@ -37,6 +41,7 @@ export default function SeasonListPage() {
             refreshList={refreshList}
             gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
+            updateMediaJob={updateMediaJob}
         />
     )
 }

@@ -15,12 +15,16 @@ export default function ShelfEditPage() {
         if (kind === 'read-media') {
             apiClient.createJobReadMediaFiles()
         }
+        if (kind === 'update-media') {
+            apiClient.createJobUpdateMediaFiles()
+        }
     }
 
     const buttons = [
         { name: 'Scan Shelves', kind: 'scan-shelves' }, ,
         { name: 'Refresh Streamables', kind: 'refresh-streams' },
-        { name: 'Read Media Files', kind: 'read-media' }
+        { name: 'Read Media Files', kind: 'read-media' },
+        { name: 'Update Media Files', kind: 'update-media' }
     ]
 
     const renderItem = (item) => {
