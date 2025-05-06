@@ -12,10 +12,10 @@ class BaseHandler:
     def read_local_media(self):
         pass
 
-    def merge_remote_into_local(self):
+    def read_remote_media(self, metadataId:int):
         pass
 
-    def read_remote_media(self):
+    def merge_remote_into_local(self):
         pass
 
     def save_media_to_local(self):

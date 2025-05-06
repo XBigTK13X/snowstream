@@ -149,7 +149,7 @@ export class ApiClient {
         return this.post('/job', { name: 'read_media_files' })
     }
 
-    createJobUpdateMediaFiles(targetScope, targetId, metadataId) {
+    createJobUpdateMediaFiles(targetScope, targetId, metadataId, seasonOrder, episodeOrder) {
         let payload = { name: 'update_media_files' }
         if (targetScope && targetId) {
             payload.input = {
@@ -158,7 +158,13 @@ export class ApiClient {
             }
         }
         if (metadataId) {
-            payload.input.metadataId = metadataId
+            payload.input.metadata_id = metadataId
+        }
+        if (seasonOrder) {
+            payload.input.season_order = seasonOrder
+        }
+        if (episodeOrder) {
+            payload.input.episode_order = episodeOrder
         }
         return this.post('/job', payload)
     }

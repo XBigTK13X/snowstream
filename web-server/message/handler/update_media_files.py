@@ -38,7 +38,9 @@ def handle(job_id, message_payload):
         return False
 
     handler.read_local_media()
-    handler.read_remote_media()
+    result = handler.read_remote_media(metadataId=job_input['metadata_id'],seasonOrder=job_input['season_order'])
+    import pprint
+    pprint.pprint(result)
     handler.merge_remote_into_local()
     handler.save_media_to_local()
 

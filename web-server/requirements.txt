@@ -9,7 +9,6 @@ psycopg2-binary==2.9.7
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.6
 requests==2.31.0
-requests==2.31.0
 SQLAlchemy==2.0.19
 tvdb-v4-official==1.1.0
 uvicorn[standard]==0.20.0

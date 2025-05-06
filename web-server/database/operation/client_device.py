@@ -76,7 +76,7 @@ def get_ticket_by_cduid(cduid:int):
         if len(ticket.stream_source_ids) == 0:
             ticket.stream_source_ids = None
         if isolation == 'Silent' or isolation == 'Shout':
-            ticket.watch_group = [ticket.cduid]      
+            ticket.watch_group = [ticket.cduid]
             return ticket
         if isolation == 'Quiet' or isolation == 'Loud':
             watch_group = (
@@ -84,7 +84,7 @@ def get_ticket_by_cduid(cduid:int):
                 .filter(
                     dm.ClientDeviceUser.id != ticket.cduid,
                     dm.ClientDeviceUser.user_id == ticket.client.user_id,
-                    (dm.ClientDeviceUser.isolation_mode.in_(['Loud','Shout'])) 
+                    (dm.ClientDeviceUser.isolation_mode.in_(['Loud','Shout']))
                     | (dm.ClientDeviceUser.isolation_mode == None)
                 )
                 .all()
@@ -95,5 +95,5 @@ def get_ticket_by_cduid(cduid:int):
             ticket.watch_group = [xx.id for xx in watch_group]
             ticket.watch_group.insert(0,ticket.cduid)
             return ticket
-        print(f"Unknown isolation mode encountered! [{ticket.client.isolation_mode}]")
+        log.error(f"Unknown isolation mode encountered! [{ticket.client.isolation_mode}]")
         return ticket
