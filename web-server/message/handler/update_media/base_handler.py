@@ -12,7 +12,7 @@ class BaseHandler:
     def read_local_media(self):
         pass
 
-    def read_remote_media(self, metadataId:int):
+    def read_remote_media(self, metadataId:int, seasonOrder:int, episodeOrder:int):
         pass
 
     def merge_remote_into_local(self):

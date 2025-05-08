@@ -21,7 +21,7 @@ class Config:
         self.rabbit_max_failures = 4
         self.rabbit_delay_seconds = 5
         self.log_level = "INFO"
-        self.log_file_path = "../logs/snowstream.log"        
+        self.log_file_path = "../logs/snowstream.log"
         self.supervisor_username = "snowstream"
         self.supervisor_password = "snowstream"
         self.supervisor_url = "http://localhost:9065"
@@ -41,6 +41,7 @@ class Config:
         self.thetvdb_api_key = None
         self.watch_progress_unwatched_threshold = 0.05
         self.watch_progress_watched_threshold = 0.90
+        self.cached_text_ttl_seconds = 60 * 60 * 24 # One day
 
         self.refresh_postgres_url()
 

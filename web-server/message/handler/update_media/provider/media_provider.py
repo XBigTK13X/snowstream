@@ -2,6 +2,7 @@ class MediaProvider:
     def __init__(self,kind):
         self.kind = kind
 
+
     def get_movie_info(self, metadataId):
         pass
 

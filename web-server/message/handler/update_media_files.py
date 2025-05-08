@@ -18,6 +18,9 @@ def handle(job_id, message_payload):
     handler = None
     if target == 'shelf':
         log.info(f"Updating media for shelf {target_id}")
+        # TODO This may need to be a bit different
+        # Loop through the entries on the shelf
+        # If image/meta missing, then make a query and fill in
     elif target == 'movie':
         log.info(f"Updating media for movie {target_id}")
         handler = update_movie.Movie()
@@ -38,10 +41,14 @@ def handle(job_id, message_payload):
         return False
 
     handler.read_local_media()
-    result = handler.read_remote_media(metadataId=job_input['metadata_id'],seasonOrder=job_input['season_order'])
-    import pprint
-    pprint.pprint(result)
+
+    metadataId = job_input['metadata_id']
+    seasonOrder = job_input['season_order'] if 'season_order' in job_input else None
+    episodeOrder = job_input['episode_order'] if 'episode_order' in job_input else None
+    handler.read_remote_media(metadataId=metadataId,seasonOrder=seasonOrder,episodeOrder=episodeOrder)
+
     handler.merge_remote_into_local()
+
     handler.save_media_to_local()
 
     return True

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi.security import (
     OAuth2PasswordBearer,
     OAuth2PasswordRequestForm,
@@ -36,7 +36,7 @@ def authenticate_user(username: str, password: str):
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
         to_encode, config.jwt_secret_hex, algorithm=config.jwt_algorithm
@@ -91,7 +91,7 @@ def register(router):
     async def login(
         login_form: Annotated[OAuth2PasswordRequestForm, Depends()],
         device_info: Annotated[str, Form()] = "swagger-ui"
-    ):        
+    ):
         # FIXME Workaround Pydantic validation failures on empty passwords
         if login_form.password == '_-_-_EMPTY_-_-_':
             login_form.password = ''
@@ -110,7 +110,7 @@ def register(router):
             user_id=user.id
         )
         if not client_device_user:
-            client_device_user = db.op.create_client_device_user(client_device_id=client_device.id,user_id=user.id)        
+            client_device_user = db.op.create_client_device_user(client_device_id=client_device.id,user_id=user.id)
         expiry = {config.jwt_expire_unit: config.jwt_expire_value}
         access_token_expires = timedelta(**expiry)
         user_scopes = []

@@ -1,12 +1,14 @@
 import database.db_models as dm
 from database.sql_alchemy import DbSession
+from datetime import datetime, timezone
+from settings import config
 
-
-def create_cached_text(key: str, data: str):
+def create_cached_text(key: str, data: str, ttl_seconds: int):
     with DbSession() as db:
         dbm = dm.CachedText()
         dbm.key = key
         dbm.data = data
+        dbm.time_to_live_seconds = ttl_seconds
         db.add(dbm)
         db.commit()
         db.refresh(dbm)
@@ -17,6 +19,10 @@ def get_cached_text_by_key(key: str):
     with DbSession() as db:
         result = db.query(dm.CachedText).filter(dm.CachedText.key == key).first()
         if not result:
+            return None
+        if result.updated_at.timestamp() - datetime.now(timezone.utc).timestamp() > result.time_to_live_seconds:
+            db.query(dm.CachedText).filter(dm.CachedText.key == key).delete()
+            db.commit()
             return None
         return result.data
 
@@ -29,8 +35,10 @@ def update_cached_text(key: str, data: str):
         return dbm.data
 
 
-def upsert_cached_text(key: str, data: str):
+def upsert_cached_text(key: str, data: str, ttl_seconds:int=None):
+    if not ttl_seconds:
+        ttl_seconds = config.cached_text_ttl_seconds
     cached_text = get_cached_text_by_key(key=key)
     if cached_text:
         return update_cached_text(key=key, data=data)
-    return create_cached_text(key=key, data=data)
+    return create_cached_text(key=key, data=data, ttl_seconds=ttl_seconds)

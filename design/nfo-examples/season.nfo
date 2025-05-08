@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<season>
+  <plot>Follow Ash, Pikachu, and their friends as they explore the deepest mysteries of the Kalos region! Team Flare has plans for the Legendary Pokémon Zygarde and the secret it holds. Alain's ongoing search for the source of Mega Evolution intersects with our heroes' adventures. And true to Gym Leader Olympia's prediction, Ash and his Frogadier will work together to reach surprising new heights!</plot>
+  <outline>Follow Ash, Pikachu, and their friends as they explore the deepest mysteries of the Kalos region! Team Flare has plans for the Legendary Pokémon Zygarde and the secret it holds. Alain's ongoing search for the source of Mega Evolution intersects with our heroes' adventures. And true to Gym Leader Olympia's prediction, Ash and his Frogadier will work together to reach surprising new heights!</outline>
+  <lockdata>false</lockdata>
+  <dateadded>2024-03-17 18:29:57</dateadded>
+  <title>Season 19</title>
+  <writer>Satoshi Tajiri</writer>
+  <credits>Satoshi Tajiri</credits>
+  <year>2019</year>
+  <mpaa>TV-PG</mpaa>
+  <premiered>2019-11-17</premiered>
+  <releasedate>2019-11-17</releasedate>
+  <tag>Access:Link</tag>
+  <tag>Access:Vi</tag>
+  <art>
+    <poster>/mnt/shows/cartoon/p/Pokémon/Season 19/folder.jpg</poster>
+  </art>
+  <actor>
+    <name>Rica Matsumoto</name>
+    <role>Satoshi (voice)</role>
+    <type>Actor</type>
+    <sortorder>0</sortorder>
+    <thumb>/config/metadata/People/R/Rica Matsumoto/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Ikue Otani</name>
+    <role>Pikachu (voice)</role>
+    <type>Actor</type>
+    <sortorder>1</sortorder>
+    <thumb>/config/metadata/People/I/Ikue Otani/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Megumi Hayashibara</name>
+    <role>Musashi (voice)</role>
+    <type>Actor</type>
+    <sortorder>2</sortorder>
+    <thumb>/config/metadata/People/M/Megumi Hayashibara/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Shin-ichiro Miki</name>
+    <role>Kojirou (voice)</role>
+    <type>Actor</type>
+    <sortorder>4</sortorder>
+    <thumb>/config/metadata/People/S/Shin-ichiro Miki/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Inuko Inuyama</name>
+    <role>Nyarth (voice)</role>
+    <type>Actor</type>
+    <sortorder>6</sortorder>
+    <thumb>/config/metadata/People/I/Inuko Inuyama/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Mayuki Makiguchi</name>
+    <role>Serena (voice)</role>
+    <type>Actor</type>
+    <sortorder>9</sortorder>
+  </actor>
+  <actor>
+    <name>Unsho Ishizuka</name>
+    <role>Narrator (voice)</role>
+    <type>Actor</type>
+    <sortorder>10</sortorder>
+    <thumb>/config/metadata/People/U/Unsho Ishizuka/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Yuki Kaji</name>
+    <role>Citron (voice)</role>
+    <type>Actor</type>
+    <sortorder>14</sortorder>
+  </actor>
+  <actor>
+    <name>Mika Kanai</name>
+    <role>Eureka (voice)</role>
+    <type>Actor</type>
+    <sortorder>15</sortorder>
+  </actor>
+  <seasonnumber>19</seasonnumber>
+</season>

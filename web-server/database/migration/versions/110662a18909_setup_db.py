@@ -98,6 +98,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("created_at", sa.DateTime, nullable=False),
         sa.Column("updated_at", sa.DateTime, nullable=False),
+        sa.Column("time_to_live_seconds", sa.Integer, nullable=False),
         sa.Column("key", sa.Text, nullable=False),
         sa.Column("data", sa.Text, nullable=False),
     )

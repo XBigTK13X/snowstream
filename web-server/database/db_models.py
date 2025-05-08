@@ -214,6 +214,7 @@ class CachedText(BaseModel):
     __tablename__ = "cached_text"
     key = sa.Column(sa.Text)
     data = sa.Column(sa.Text)
+    time_to_live_seconds = sa.Column(sa.Integer)
 
 class Job(BaseModel):
     __tablename__ = "job"

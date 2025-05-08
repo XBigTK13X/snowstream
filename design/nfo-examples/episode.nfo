@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<episodedetails>
+  <plot>In Pallet Town, a young Ash Ketchum is beside himself with anticipation—he’s going to Professor Oak’s Pokémon Camp! But when the day arrives, he oversleeps, and Professor Oak and the other campers leave without him. Two of the young campers, Goh and Chloe, become separated from the group and encounter the Mythical Pokémon Mew—and Goh vows to catch it someday!
+
+Meanwhile, a once-lonely Pichu is spending its days with a group of friendly Kangaskhan, but when the time comes for it to set off on its own, it suddenly evolves into Pikachu! After some time, Pikachu ends up at Professor Oak’s lab…and the rest is history!</plot>
+  <lockdata>false</lockdata>
+  <dateadded>2024-03-15 03:56:18</dateadded>
+  <title>Enter Pikachu!</title>
+  <year>2019</year>
+  <mpaa>TV-PG</mpaa>
+  <imdbid>tt5352382</imdbid>
+  <tvdbid>7422261</tvdbid>
+  <runtime>24</runtime>
+  <tag>Access:Link</tag>
+  <tag>Access:Vi</tag>
+  <art>
+    <poster>/mnt/shows/cartoon/p/Pokémon/Season 19/S19E001 - Enter Pikachu!-thumb.jpg</poster>
+  </art>
+  <showtitle>Pokémon</showtitle>
+  <episode>1</episode>
+  <season>19</season>
+  <aired>2019-11-17</aired>
+  <fileinfo>
+    <streamdetails>
+      <video>
+        <codec>h264</codec>
+        <micodec>h264</micodec>
+        <bitrate>4665527</bitrate>
+        <width>1920</width>
+        <height>1080</height>
+        <aspect>16:9</aspect>
+        <aspectratio>16:9</aspectratio>
+        <framerate>23.976025</framerate>
+        <scantype>progressive</scantype>
+        <default>True</default>
+        <forced>False</forced>
+        <duration>24</duration>
+        <durationinseconds>1442</durationinseconds>
+      </video>
+      <audio>
+        <codec>eac3</codec>
+        <micodec>eac3</micodec>
+        <bitrate>128000</bitrate>
+        <language>eng</language>
+        <scantype>progressive</scantype>
+        <channels>2</channels>
+        <samplingrate>48000</samplingrate>
+        <default>True</default>
+        <forced>False</forced>
+      </audio>
+      <audio>
+        <codec>eac3</codec>
+        <micodec>eac3</micodec>
+        <bitrate>128000</bitrate>
+        <language>eng</language>
+        <scantype>progressive</scantype>
+        <channels>2</channels>
+        <samplingrate>48000</samplingrate>
+        <default>False</default>
+        <forced>False</forced>
+      </audio>
+      <subtitle>
+        <codec>subrip</codec>
+        <micodec>subrip</micodec>
+        <language>eng</language>
+        <scantype>progressive</scantype>
+        <default>False</default>
+        <forced>False</forced>
+      </subtitle>
+    </streamdetails>
+  </fileinfo>
+  <uniqueid type="tvdb" default="true">7422261</uniqueid>
+</episodedetails>

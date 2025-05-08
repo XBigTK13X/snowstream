@@ -10,3 +10,7 @@ Pokemon tvdb id
 A textbook example of a broken show is Pokemon season 20.
 It should be horizons.
 Jellyfin thinks it is alola.
+
+
+Abominable movie tvdb id
+12176

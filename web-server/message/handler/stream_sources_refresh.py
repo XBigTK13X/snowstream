@@ -1,10 +1,8 @@
 from log import log
-import requests
 
 from db import db
 import cache
 from settings import config
-from requests.auth import HTTPBasicAuth
 
 import message.handler.stream_source.hd_home_run as hhr
 import message.handler.stream_source.iptv_epg as ie
@@ -42,7 +40,10 @@ def generate_streamable_m3u():
             m3u += f"\n{config.web_api_url}/api/streamable/direct?streamable_id={streamable.id}"
     m3u += "\n"
     log.info(f"Generated m3u with {channel_count} channels")
-    db.op.upsert_cached_text(key=cache.key.STREAMABLE_M3U, data=m3u)
+    db.op.upsert_cached_text(
+        key=cache.key.STREAMABLE_M3U,
+        data=m3u
+    )
     return True
 
 
@@ -61,12 +62,15 @@ def generate_streamable_epg():
             xml += f"\n    <title>{schedule.name}</title>"
             xml += f"\n    <desc>{schedule.description}</desc>"
             xml += f"\n    </program>"
-        xml += "\n  <\channel>"
+        xml += "\n  <\\channel>"
     xml += "\n</tv>"
     log.info(
         f"Generated EPG XML with {channel_count} channels and {schedule_count} programs"
     )
-    db.op.upsert_cached_text(key=cache.key.STREAMABLE_EPG, data=xml)
+    db.op.upsert_cached_text(
+        key=cache.key.STREAMABLE_EPG,
+        data=xml
+    )
     return True
 
 

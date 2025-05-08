@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<movie>
+  <plot>An outcast half-wolf risks his life to prevent a deadly epidemic from ravaging Nome, Alaska.</plot>
+  <lockdata>false</lockdata>
+  <dateadded>2023-03-04 04:39:38</dateadded>
+  <title>Balto</title>
+  <originaltitle>Balto</originaltitle>
+  <director>Simon Wells</director>
+  <writer>Roger S.H. Schulman</writer>
+  <writer>Elana Lesser</writer>
+  <writer>Cliff Ruby</writer>
+  <writer>David Steven Cohen</writer>
+  <credits>Roger S.H. Schulman</credits>
+  <credits>Elana Lesser</credits>
+  <credits>Cliff Ruby</credits>
+  <credits>David Steven Cohen</credits>
+  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=HJwvbmRXym4</trailer>
+  <rating>7.301</rating>
+  <year>1995</year>
+  <mpaa>G</mpaa>
+  <collectionnumber>117693</collectionnumber>
+  <imdbid>tt0112453</imdbid>
+  <tmdbid>21032</tmdbid>
+  <premiered>1995-12-22</premiered>
+  <releasedate>1995-12-22</releasedate>
+  <criticrating>56</criticrating>
+  <runtime>78</runtime>
+  <tagline>Part Dog. Part Wolf. All Hero.</tagline>
+  <country>United States of America</country>
+  <genre>Family</genre>
+  <genre>Animation</genre>
+  <genre>Adventure</genre>
+  <studio>Amblin Entertainment</studio>
+  <studio>Amblimation</studio>
+  <studio>Universal Pictures</studio>
+  <tag>wolf</tag>
+  <tag>pet</tag>
+  <tag>dog-sledding race</tag>
+  <tag>alaska</tag>
+  <tag>dog</tag>
+  <tag>goose</tag>
+  <tag>bear attack</tag>
+  <tag>dog sled</tag>
+  <tag>pets</tag>
+  <art>
+    <poster>/mnt/movies/b/Balto (1995)/folder.jpg</poster>
+    <fanart>/mnt/movies/b/Balto (1995)/backdrop.jpg</fanart>
+  </art>
+  <actor>
+    <name>Kevin Bacon</name>
+    <role>Balto (voice)</role>
+    <type>Actor</type>
+    <sortorder>0</sortorder>
+    <thumb>/config/metadata/People/K/Kevin Bacon/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Bob Hoskins</name>
+    <role>Boris the Goose (voice)</role>
+    <type>Actor</type>
+    <sortorder>1</sortorder>
+    <thumb>/config/metadata/People/B/Bob Hoskins/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Bridget Fonda</name>
+    <role>Jenna (voice)</role>
+    <type>Actor</type>
+    <sortorder>2</sortorder>
+    <thumb>/config/metadata/People/B/Bridget Fonda/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Jim Cummings</name>
+    <role>Steele the Sled Dog (voice)</role>
+    <type>Actor</type>
+    <sortorder>3</sortorder>
+    <thumb>/config/metadata/People/J/Jim Cummings/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Phil Collins</name>
+    <role>Muk and Luk (voice)</role>
+    <type>Actor</type>
+    <sortorder>4</sortorder>
+    <thumb>/config/metadata/People/P/Phil Collins/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Juliette Brewer</name>
+    <role>Young Rosy (voice)</role>
+    <type>Actor</type>
+    <sortorder>5</sortorder>
+    <thumb>/config/metadata/People/J/Juliette Brewer/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Jack Angel</name>
+    <role>Nikki (voice)</role>
+    <type>Actor</type>
+    <sortorder>6</sortorder>
+    <thumb>/config/metadata/People/J/Jack Angel/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Danny Mann</name>
+    <role>Kaltag (voice)</role>
+    <type>Actor</type>
+    <sortorder>7</sortorder>
+    <thumb>/config/metadata/People/D/Danny Mann/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Robbie Rist</name>
+    <role>Star (voice)</role>
+    <type>Actor</type>
+    <sortorder>8</sortorder>
+    <thumb>/config/metadata/People/R/Robbie Rist/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Sandra Dickinson</name>
+    <role>Dixie / Sylvie (voice)</role>
+    <type>Actor</type>
+    <sortorder>9</sortorder>
+    <thumb>/config/metadata/People/S/Sandra Dickinson/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Frank Welker</name>
+    <role>Grizzly Bear (voice)</role>
+    <type>Actor</type>
+    <sortorder>10</sortorder>
+    <thumb>/config/metadata/People/F/Frank Welker/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Miriam Margolyes</name>
+    <role>Grandma Rosy</role>
+    <type>Actor</type>
+    <sortorder>11</sortorder>
+    <thumb>/config/metadata/People/M/Miriam Margolyes/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Lola Bates-Campbell</name>
+    <role>Rosie's granddaughter</role>
+    <type>Actor</type>
+    <sortorder>12</sortorder>
+  </actor>
+  <actor>
+    <name>Steven Spielberg</name>
+    <role>Producer</role>
+    <type>Producer</type>
+    <thumb>/config/metadata/People/S/Steven Spielberg/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Kathleen Kennedy</name>
+    <role>Producer</role>
+    <type>Producer</type>
+    <thumb>/config/metadata/People/K/Kathleen Kennedy/folder.jpg</thumb>
+  </actor>
+  <id>tt0112453</id>
+  <set>Balto Collection</set>
+  <fileinfo>
+    <streamdetails>
+      <subtitle>
+        <codec>subrip</codec>
+        <micodec>subrip</micodec>
+        <language>eng</language>
+        <scantype>progressive</scantype>
+        <default>False</default>
+        <forced>False</forced>
+      </subtitle>
+      <video>
+        <codec>h264</codec>
+        <micodec>h264</micodec>
+        <bitrate>10060310</bitrate>
+        <width>1920</width>
+        <height>1040</height>
+        <aspect>1.85:1</aspect>
+        <aspectratio>1.85:1</aspectratio>
+        <framerate>23.976025</framerate>
+        <scantype>progressive</scantype>
+        <default>True</default>
+        <forced>False</forced>
+        <duration>77</duration>
+        <durationinseconds>4657</durationinseconds>
+      </video>
+      <audio>
+        <codec>dts</codec>
+        <micodec>dts</micodec>
+        <bitrate>1536000</bitrate>
+        <language>eng</language>
+        <scantype>progressive</scantype>
+        <channels>6</channels>
+        <samplingrate>48000</samplingrate>
+        <default>True</default>
+        <forced>False</forced>
+      </audio>
+    </streamdetails>
+  </fileinfo>
+</movie>

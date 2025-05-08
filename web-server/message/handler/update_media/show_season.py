@@ -4,5 +4,5 @@ class ShowSeason(base.BaseHandler):
     def __init__(self):
         super().__init__("ShowSeason")
 
-    def read_remote_media(self, metadataId:int, seasonOrder:int):
+    def read_remote_media(self, metadataId:int, seasonOrder:int, episodeOrder:int):
         return self.media_provider.get_season_info(metadataId=metadataId, seasonOrder=seasonOrder)

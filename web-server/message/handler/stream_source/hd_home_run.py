@@ -25,7 +25,7 @@ class HdHomeRun(base.BaseHandler):
         hdhomerun_response = requests.get(
             config_url, headers={"User-Agent": "Snowstream 1.0.0"}
         )
-        self.cached_data = db.op.create_cached_text(
+        self.cached_data = db.op.upsert_cached_text(
             key=self.cache_key, data=hdhomerun_response.text
         )
         return True

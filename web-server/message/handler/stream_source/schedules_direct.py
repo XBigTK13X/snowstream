@@ -3,7 +3,7 @@ import message.handler.stream_source.base_handler as base
 from db import db
 import requests
 from log import log
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from itertools import islice
 
 # requests param conflict
@@ -72,9 +72,9 @@ class SchedulesDirect(base.BaseHandler):
 
         station_ids = [x["stationID"] for x in lineup_response["map"]]
         schedule_dates = [
-            datetime.now().strftime("%Y-%m-%d"),
-            (datetime.now() + timedelta(1)).strftime("%Y-%m-%d"),
-            (datetime.now() + timedelta(2)).strftime("%Y-%m-%d"),
+            datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            (datetime.now(timezone.utc) + timedelta(1)).strftime("%Y-%m-%d"),
+            (datetime.now(timezone.utc) + timedelta(2)).strftime("%Y-%m-%d"),
         ]
         schedules_response = []
         for station_id_batch in batches(station_ids, API_BATCH_SIZE):
@@ -105,7 +105,7 @@ class SchedulesDirect(base.BaseHandler):
             "schedules": schedules_response,
             "programs": programs_response,
         }
-        self.cached_data = db.op.create_cached_text(
+        self.cached_data = db.op.upsert_cached_text(
             key=self.cache_key, data=JSON.dumps(results)
         )
         return True

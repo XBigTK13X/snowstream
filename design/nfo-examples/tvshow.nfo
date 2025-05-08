@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<tvshow>
+  <plot>A young boy named Ash Ketchum embarks on a journey to become a "Pokemon Master" with his first Pokemon, Pikachu. Joining him on his travels are Brock, a girl-obsessed Rock Pokemon Trainer, and Misty, a tomboyish Water Pokemon Trainer who may have a crush on him. Ash and Co. end up traveling through various regions, including Kanto, the Orange Islands, and Johto, and then enter the Pokemon League competitions there. Along the way, they run into many confrontations with Jessie, James, and Meowth, a trio of Pokemon thieves who are apart of an evil organization called "Team Rocket". But everytime Team Rocket try to do their evil deeds, they fail thanks to Ash and his Pokemon.</plot>
+  <outline>A young boy named Ash Ketchum embarks on a journey to become a "Pokemon Master" with his first Pokemon, Pikachu. Joining him on his travels are Brock, a girl-obsessed Rock Pokemon Trainer, and Misty, a tomboyish Water Pokemon Trainer who may have a crush on him. Ash and Co. end up traveling through various regions, including Kanto, the Orange Islands, and Johto, and then enter the Pokemon League competitions there. Along the way, they run into many confrontations with Jessie, James, and Meowth, a trio of Pokemon thieves who are apart of an evil organization called "Team Rocket". But everytime Team Rocket try to do their evil deeds, they fail thanks to Ash and his Pokemon.</outline>
+  <lockdata>false</lockdata>
+  <dateadded>2023-03-14 00:05:02</dateadded>
+  <title>Pokémon</title>
+  <originaltitle>ポケットモンスター</originaltitle>
+  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=kfgfQPA6oPI</trailer>
+  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=Dm74XaBx7js</trailer>
+  <rating>7.5</rating>
+  <year>1997</year>
+  <mpaa>TV-PG</mpaa>
+  <imdb_id>tt0168366</imdb_id>
+  <tmdbid>60572</tmdbid>
+  <premiered>1997-04-01</premiered>
+  <releasedate>1997-04-01</releasedate>
+  <enddate>2023-03-24</enddate>
+  <genre>Action</genre>
+  <genre>Adventure</genre>
+  <genre>Animation</genre>
+  <genre>Anime</genre>
+  <genre>Comedy</genre>
+  <genre>Family</genre>
+  <genre>Fantasy</genre>
+  <studio>TV Tokyo</studio>
+  <tag>Access:Link</tag>
+  <tag>Access:Vi</tag>
+  <tag>western</tag>
+  <tvdbid>76703</tvdbid>
+  <art>
+    <poster>/mnt/shows/cartoon/p/Pokémon/folder.jpg</poster>
+    <fanart>/mnt/shows/cartoon/p/Pokémon/backdrop.jpg</fanart>
+  </art>
+  <actor>
+    <name>Rika Matsumoto</name>
+    <role>Ash Ketchum</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Minori Suzuki</name>
+    <role>Liko</role>
+    <type>Actor</type>
+    <thumb>/config/metadata/People/M/Minori Suzuki/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Yuka Terasaki</name>
+    <role>Roy</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Yoshino Aoyama</name>
+    <role>Dot</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Ikue Otani</name>
+    <role>Pikachu</role>
+    <type>Actor</type>
+    <thumb>/config/metadata/People/I/Ikue Otani/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Taku Yashiro</name>
+    <role>Friede</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Ayane Sakura</name>
+    <role>Orla</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Kenta Miyake</name>
+    <role>Murdock</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Kei Shindou</name>
+    <role>Mollie</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Ikkyu Juku</name>
+    <role>Ludlow</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Shin'ichirou Miki</name>
+    <role>Charmander|Staryu</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Yuuji Ueda</name>
+    <role>Wobbuffet</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Unshou Ishizuka</name>
+    <role>Muk</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Rikako Aikawa</name>
+    <role>Butterfree|Caterpie|Krabby|Dratini|Dragonair|Lapras|Psyduck|Tapu Koko</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Megumi Hayashibara</name>
+    <role>Pidgeotto</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Koichi Sakaguchi</name>
+    <role>Arbok</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Satomi Koorogi</name>
+    <role>Togepi</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Machiko Toyoshima</name>
+    <role>Horsea</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Fumiko Takekuma</name>
+    <role>Chrys</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Hitomi Kikuchi</name>
+    <role>Cylan</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Reina Ueda</name>
+    <role>Mallow</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Kaito Ishikawa</name>
+    <role>Kiawe</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Chinami Nishimura</name>
+    <role>Litten</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Nobuhiko Okamoto</name>
+    <role>Gladion</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Mika Kanai</name>
+    <role>Togepi</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Miyuki Sawashiro</name>
+    <role>Olivia </role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Keiichi Nakagawa</name>
+    <role>Professor Kukui</role>
+    <type>Actor</type>
+  </actor>
+  <actor>
+    <name>Masami Toyoshima</name>
+    <role>Delia Ketchum</role>
+    <type>Actor</type>
+  </actor>
+  <id>76703</id>
+  <episodeguide>
+    <url cache="76703.xml">http://www.thetvdb.com/api/1D62F2F90030C444/series/76703/all/en.zip</url>
+  </episodeguide>
+  <season>-1</season>
+  <episode>-1</episode>
+  <status>Continuing</status>
+  <uniqueid type="tvdb" default="true">76703</uniqueid>
+  <uniqueid type="imdb">tt0168366</uniqueid>
+</tvshow>

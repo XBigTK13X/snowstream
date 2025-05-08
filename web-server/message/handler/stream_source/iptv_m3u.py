@@ -3,7 +3,6 @@ from db import db
 import cloudscraper
 from log import log
 
-
 class IptvM3u(base.BaseHandler):
     def __init__(self, stream_source):
         super().__init__("IPTV M3U", stream_source)
@@ -13,7 +12,7 @@ class IptvM3u(base.BaseHandler):
             return True
         scraper = cloudscraper.create_scraper()
         m3u_response = scraper.get(self.stream_source.url)
-        self.cached_data = db.op.create_cached_text(
+        self.cached_data = db.op.upsert_cached_text(
             key=self.cache_key, data=m3u_response.text
         )
         return True

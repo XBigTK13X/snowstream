@@ -18,7 +18,7 @@ class IptvEpg(base.BaseHandler):
             return True
         scraper = cloudscraper.create_scraper()
         xml_response = scraper.get(self.stream_source.url)
-        self.cached_data = db.op.create_cached_text(
+        self.cached_data = db.op.upsert_cached_text(
             key=self.cache_key, data=xml_response.text
         )
         return True
