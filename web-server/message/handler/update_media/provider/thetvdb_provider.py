@@ -108,10 +108,10 @@ class ThetvdbProvider(base.MediaProvider):
         return self.filter_season(episodes=api_results['episodes'],seasonOrder=seasonOrder)
 
     def get_episode_info(self, metadataId:int, seasonOrder:int, episodeOrder:int):
-        season = self.get_season_info(metadataId=metadataId,seasonOrder=seasonOrder)
-        if season == None:
+        episodes = self.get_season_info(metadataId=metadataId,seasonOrder=seasonOrder)
+        if episodes == None or len(episodes) == 0:
             return None
-        for episode in season['episode']:
+        for episode in episodes:
             if episode['number'] == episodeOrder:
                 return episode
         return None
