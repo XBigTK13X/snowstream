@@ -6,7 +6,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 
 
-def create_metadata_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str):
+def create_metadata_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str,xml_content:str):
     with DbSession() as db:
         dbm = dm.MetadataFile()
         dbm.local_path = local_path
@@ -14,6 +14,7 @@ def create_metadata_file(shelf_id: int, kind: str, local_path: str, web_path: st
         dbm.network_path = network_path
         dbm.kind = kind
         dbm.shelf_id = shelf_id
+        dbm.xml_content = xml_content
         db.add(dbm)
         db.commit()
         db.refresh(dbm)
@@ -26,11 +27,11 @@ def get_metadata_file_by_path(local_path: str):
             db.query(dm.MetadataFile).filter(dm.MetadataFile.local_path == local_path).first()
         )
 
-def get_or_create_metadata_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str):
+def get_or_create_metadata_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str,xml_content: str):
     metadata_file = get_metadata_file_by_path(local_path=local_path)
     if not metadata_file:
         return create_metadata_file(
-            shelf_id=shelf_id, kind=kind, local_path=local_path, web_path=web_path, network_path=network_path
+            shelf_id=shelf_id, kind=kind, local_path=local_path, web_path=web_path, network_path=network_path,xml_content=xml_content
         )
     return metadata_file
 

@@ -15,8 +15,7 @@ class ShowEpisode(base.BaseHandler):
         if not self.show_episode.metadata_files:
             return None
         self.episode_nfo_file = self.show_episode.metadata_files[0]
-        with open(self.episode_nfo_file.local_path,'r') as read_handle:
-            self.local_nfo_dict = xmltodict.parse(read_handle.read())
+        self.local_nfo_dict = xmltodict.parse(self.episode_nfo_file.xml_content)
         return self.local_nfo_dict
 
     def read_remote_info(self, metadataId:int, seasonOrder:int, episodeOrder:int):

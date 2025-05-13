@@ -5,7 +5,8 @@ mimetypes.init()
 from typing import Callable
 from settings import config
 from db import db
-
+import ffmpeg
+import json
 
 def get_file_kind(file_path):
     if file_path.endswith(".nfo"):
@@ -89,20 +90,38 @@ class BaseHandler:
             local_path = info['file_path']
             web_path = config.web_media_url + local_path
             network_path = ""
+            dbm = None
             if self.shelf.network_path:
+                #TODO This needs to upsert ffprobe changes
                 network_path = local_path.replace(self.shelf.local_path,self.shelf.network_path)
-            ingest = db.op.get_or_create_video_file
+                ffprobe = json.dumps(ffmpeg.ffprobe_media(local_path)['parsed'])
+                dbm = db.op.get_or_create_video_file(
+                    shelf_id=self.shelf.id,
+                    kind=info["kind"],
+                    local_path=local_path,
+                    web_path=web_path,
+                    network_path=network_path,
+                    ffprobe_pruned_json=ffprobe
+                )
             if kind == 'image':
-                ingest = db.op.get_or_create_image_file
+                dbm = db.op.get_or_create_image_file(
+                    shelf_id=self.shelf.id,
+                    kind=info["kind"],
+                    local_path=local_path,
+                    web_path=web_path,
+                    network_path=network_path
+                )
             if kind == 'metadata':
-                ingest = db.op.get_or_create_metadata_file
-            dbm = ingest(
-                shelf_id=self.shelf.id,
-                kind=info["kind"],
-                local_path=local_path,
-                web_path=web_path,
-                network_path=network_path
-            )
+                #TODO This needs to upsert xml content changes
+                with open(local_path) as read_handle:
+                    dbm = db.op.get_or_create_metadata_file(
+                        shelf_id=self.shelf.id,
+                        kind=info["kind"],
+                        local_path=local_path,
+                        web_path=web_path,
+                        network_path=network_path,
+                        xml_content=read_handle.read()
+                    )
             info["id"] = dbm.id
         self.file_info_lookup[kind] = items
         return True

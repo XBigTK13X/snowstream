@@ -120,6 +120,7 @@ def upgrade() -> None:
         sa.Column("local_path", sa.Text, nullable=False),
         sa.Column("web_path", sa.Text, nullable=False),
         sa.Column("network_path", sa.Text, nullable=False),
+        sa.Column("xml_content", sa.Text, nullable=False),
     )
 
     op.create_unique_constraint("unique_metadata_file_local_path", "metadata_file", ["local_path"])
