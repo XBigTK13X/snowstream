@@ -14,6 +14,7 @@ def create():
             blocked_connection_timeout=None,
             socket_timeout=None,
             stack_timeout=None,
+            heartbeat=0
         )
     )
     channel = connection.channel()

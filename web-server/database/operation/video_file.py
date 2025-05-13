@@ -4,7 +4,8 @@ from database.sql_alchemy import DbSession
 from log import log
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
-
+import json
+import ffmpeg
 
 def create_video_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str, ffprobe_pruned_json: str):
     with DbSession() as db:
@@ -25,12 +26,15 @@ def get_video_file_by_path(local_path: str):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.local_path == local_path).first()
 
-def get_or_create_video_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str, ffprobe_pruned_json: str):
+def get_or_create_video_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str):
     video_file = get_video_file_by_path(local_path=local_path)
     if not video_file:
+        #TODO This needs to upsert ffprobe changes if the file exists
+        # Or maybe that will be a update job instead of scan?
+        ffprobe = json.dumps(ffmpeg.ffprobe_media(local_path)['parsed'])
         return create_video_file(
             shelf_id=shelf_id, kind=kind, local_path=local_path,
-            web_path=web_path, network_path=network_path,ffprobe_pruned_json=ffprobe_pruned_json
+            web_path=web_path, network_path=network_path,ffprobe_pruned_json=ffprobe
         )
     return video_file
 

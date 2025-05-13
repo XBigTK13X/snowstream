@@ -180,7 +180,11 @@ class ShowsScanHandler(base.BaseHandler):
         return episode
 
     def organize_metadata(self):
+        progress_count = 0
         for info in self.file_info_lookup["metadata"]:
+            progress_count += 1
+            if progress_count % 500 == 0:
+                log.info(f'Organize show metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
             show_slug, show = self.get_or_create_show(info=info)
             season_slug = None
             season = None
@@ -221,7 +225,11 @@ class ShowsScanHandler(base.BaseHandler):
                         )
 
     def organize_images(self):
+        progress_count = 0
         for info in self.file_info_lookup["image"]:
+            progress_count += 1
+            if progress_count % 500 == 0:
+                log.info(f'Organize show image {progress_count} out of {len(self.file_info_lookup["image"])}')
             show_slug, show = self.get_or_create_show(info=info)
             season_slug = None
             season = None
@@ -262,7 +270,11 @@ class ShowsScanHandler(base.BaseHandler):
                         )
 
     def organize_videos(self):
+        progress_count = 0
         for info in self.file_info_lookup["video"]:
+            progress_count += 1
+            if progress_count % 500 == 0:
+                log.info(f'Organize show video {progress_count} out of {len(self.file_info_lookup["video"])}')
             show_slug, show = self.get_or_create_show(info=info)
             season_slug, season = self.get_or_create_season(
                 show_slug=show_slug, show=show, info=info

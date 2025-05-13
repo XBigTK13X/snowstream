@@ -15,8 +15,6 @@ const styles = {
 }
 
 export function ContinueWatchingListPage(props) {
-    // TODO Have a separate tab for each category.
-    // Click a button to load a single poster grid for category
     const { apiClient } = C.useSession()
     const { routes } = C.useSettings()
     const { setMessageDisplay } = C.useMessageDisplay()

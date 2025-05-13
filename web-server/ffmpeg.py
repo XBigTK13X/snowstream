@@ -3,6 +3,7 @@ from log import log
 import json
 import util
 import copy
+import os
 
 # TODO Should be way to specify not burning in subtitles and passing them through to the client
 def transcode_command(input_url:str, stream_port:int, audio_track_index:int, subtitle_track_index:int):
@@ -22,8 +23,16 @@ def transcode_command(input_url:str, stream_port:int, audio_track_index:int, sub
 
 
 def ffprobe_media(media_path:str):
+    hash_name = util.string_to_md5(media_path)
+    output_dir = os.path.join(config.ffprobe_dir,hash_name[0],hash_name[1])
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir,exist_ok=True)
+    output_path = os.path.join(output_dir,hash_name+'.json')
+    if os.path.exists(output_path):
+        with open(output_path,'r') as read_handle:
+            return json.loads(read_handle.read())
     command = f'ffprobe -hide_banner -loglevel quiet "{media_path}" -print_format json -show_format -show_streams'
-    log.info(command)
+    #log.info(command)
     command_output = util.run_cli(command,raw_output=True)
     ffprobe_output = command_output['stdout']
     cleaned = ffprobe_output.replace("�",'')
@@ -52,7 +61,7 @@ def ffprobe_media(media_path:str):
         if stream['codec_type'] == 'audio':
             entry['relative_index'] = audio_index
             entry['display'] = f"{stream['channels']} ch"
-            if stream['codec_name']:
+            if 'codec_name' in stream and stream['codec_name']:
                  entry['display'] += f' - {stream["codec_name"]}'
             entry['title'] = ''
             entry['kind'] = 'audio'
@@ -78,7 +87,9 @@ def ffprobe_media(media_path:str):
             audio_index += 1
         if stream['codec_type'] == 'subtitle':
             entry['relative_index'] = subtitle_index
-            entry['display'] = f"{stream['codec_name']}"
+            entry['display'] = ''
+            if 'codec_name' in stream:
+                entry['display'] = f"{stream['codec_name']}"
             entry['title'] = ''
             if 'tags' in stream and 'title' in stream['tags']:
                  entry['display'] += f' - {stream['tags']['title']}'
@@ -104,11 +115,13 @@ def ffprobe_media(media_path:str):
         absolute_index += 1
 
     parsed['inspection'] = inspect_media(media_path=media_path,ffprobe=parsed)
-
-    return {
+    result = {
         'ffprobe_raw': raw_ffprobe,
         'parsed': parsed,
     }
+    with open(output_path,'w') as write_handle:
+        write_handle.write(json.dumps(result, indent=4))
+    return result
 
 def score_audio_track(track):
     if 'language' in track:

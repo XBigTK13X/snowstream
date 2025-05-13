@@ -86,42 +86,30 @@ class BaseHandler:
 
     def ingest_content(self, kind):
         items = self.ingest_files(kind=kind)
+        progress_count = 0
         for info in items:
+            progress_count += 1
+            if progress_count % 500 == 0:
+                log.info(f'Ingesting item {progress_count} out of {len(items)}')
             local_path = info['file_path']
             web_path = config.web_media_url + local_path
             network_path = ""
-            dbm = None
+            creator = None
             if self.shelf.network_path:
-                #TODO This needs to upsert ffprobe changes
                 network_path = local_path.replace(self.shelf.local_path,self.shelf.network_path)
-                ffprobe = json.dumps(ffmpeg.ffprobe_media(local_path)['parsed'])
-                dbm = db.op.get_or_create_video_file(
-                    shelf_id=self.shelf.id,
-                    kind=info["kind"],
-                    local_path=local_path,
-                    web_path=web_path,
-                    network_path=network_path,
-                    ffprobe_pruned_json=ffprobe
-                )
+            if kind == 'video':
+                creator = db.op.get_or_create_video_file
             if kind == 'image':
-                dbm = db.op.get_or_create_image_file(
-                    shelf_id=self.shelf.id,
-                    kind=info["kind"],
-                    local_path=local_path,
-                    web_path=web_path,
-                    network_path=network_path
-                )
+                creator = db.op.get_or_create_image_file
             if kind == 'metadata':
-                #TODO This needs to upsert xml content changes
-                with open(local_path) as read_handle:
-                    dbm = db.op.get_or_create_metadata_file(
-                        shelf_id=self.shelf.id,
-                        kind=info["kind"],
-                        local_path=local_path,
-                        web_path=web_path,
-                        network_path=network_path,
-                        xml_content=read_handle.read()
-                    )
+                creator = db.op.get_or_create_metadata_file
+            dbm = creator(
+                shelf_id=self.shelf.id,
+                kind=info["kind"],
+                local_path=local_path,
+                web_path=web_path,
+                network_path=network_path
+            )
             info["id"] = dbm.id
         self.file_info_lookup[kind] = items
         return True

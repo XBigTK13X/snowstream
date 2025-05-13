@@ -30,6 +30,7 @@ def upgrade() -> None:
         sa.Column("local_path", sa.Text, nullable=False),
         sa.Column("web_path", sa.Text, nullable=False),
         sa.Column("network_path", sa.Text, nullable=False),
+        sa.Column("thumbnail_web_path", sa.Text, nullable=False),
     )
 
     op.create_unique_constraint("unique_image_file_local_path", "image_file", ["local_path"])

@@ -70,9 +70,7 @@ class Transcode:
             audio_track_index=audio_track_index,
             subtitle_track_index=subtitle_track_index
         )
-        if config.transcode_log_dir:
-            os.makedirs(config.transcode_log_dir, exist_ok=True)
-            log_path = os.path.join(config.transcode_log_dir,f'{transcode_session.id}.log')            
+        log_path = os.path.join(config.transcode_log_dir,f'{transcode_session.id}.log')
         transcode_process = util.run_cli(command, background=True, log_path=log_path)
         db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
 
@@ -84,7 +82,7 @@ class Transcode:
         return {
             'transcode_url': streaming_url,
             'transcode_session_id': transcode_session.id
-        } 
+        }
 
     def get_playlist_content(self, transcode_session_id:int):
         transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
@@ -105,7 +103,7 @@ class Transcode:
         transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
         if not transcode_session:
             return None
-        binary_data = None        
+        binary_data = None
         segment_path = os.path.join(transcode_session.transcode_directory, segment_file)
         while not os.path.exists(segment_path) and max_wait_seconds > 0:
             time.sleep(1)
@@ -121,7 +119,7 @@ class Transcode:
 
     def close(self, transcode_session:dm.TranscodeSession=None,transcode_session_id:int=None):
         if transcode_session_id:
-            transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)        
+            transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
         os.kill(transcode_session.process_id, signal.SIGTERM)
         shutil.rmtree(transcode_session.transcode_directory,ignore_errors=True)
         db.op.delete_transcode_session(transcode_session_id=transcode_session.id)

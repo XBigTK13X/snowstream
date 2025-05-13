@@ -237,6 +237,7 @@ class ImageFile(BaseModel):
     local_path = sa.Column(sa.Text)
     web_path = sa.Column(sa.Text)
     network_path = sa.Column(sa.Text)
+    thumbnail_web_path = sa.Column(sa.Text)
     movie: sorm.Mapped["Movie"] = sorm.relationship(secondary="movie_image_file", back_populates="image_files")
     movie_image_file: sorm.Mapped["MovieImageFile"] = sorm.relationship(back_populates="image_file",overlaps="movie")
     show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_image_file", back_populates="image_files")

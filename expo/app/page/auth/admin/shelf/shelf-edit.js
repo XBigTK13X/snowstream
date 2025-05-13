@@ -21,7 +21,6 @@ export default function ShelfEditPage() {
                 setLocalPath(shelf.local_path)
                 setShelfName(shelf.name)
                 setNetworkPath(shelf.network_path || '')
-                //TODO setup network paths
             })
         }
     })

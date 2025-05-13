@@ -1,10 +1,17 @@
 #! /bin/bash
 
-mkdir -p .docker-volume/postgresql
+echo "Docker services working dir"
+
+pwd
+
+docker pull xbigtk13x/snowstream
 
 docker rm -f snowstream || true
 
-docker pull xbigtk13x/snowstream
+mkdir -p .docker-volume/postgresql
+mkdir -p .docker-volume/web-transcode
+mkdir -p web-server/.snowstream/thumbnail
+chmod -R 777 .docker-volume/web-transcode
 
 # Ports
 # 5432  - postgres
@@ -13,10 +20,6 @@ docker pull xbigtk13x/snowstream
 # 8000  - snowstream
 # 80    - nginx
 # 9001  - supervisord gui
-
-mkdir -p .docker-volume/web-transcode
-
-chmod -R 777 .docker-volume/web-transcode
 
 docker run -d \
     -e POSTGRES_PASSWORD=snowstream \
@@ -40,6 +43,7 @@ docker run -d \
     -v $(pwd)/.docker-volume/postgresql:/var/lib/postgresql/data \
     -v $(pwd)/.docker-volume/rabbitmq:/var/lib/rabbitmq \
     -v $(pwd)/.docker-volume/transcode:/app/cache-transcode \
+    -v $(pwd)/web-server/.snowstream/thumbnail:/mnt/.snowstream/thumbnail \
     -v /mnt/j-media/tv:/mnt/j-media/tv \
     -v /mnt/m-media/movie:/mnt/m-media/movie \
     xbigtk13x/snowstream

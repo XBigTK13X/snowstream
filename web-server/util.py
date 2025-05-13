@@ -4,7 +4,7 @@ import sys
 from log import log
 import os
 from passlib.context import CryptContext
-
+import hashlib
 
 def run_cli(command, raw_output=False, background=False, log_path=None):
     stdout_target = subprocess.PIPE
@@ -30,7 +30,7 @@ def run_cli(command, raw_output=False, background=False, log_path=None):
         executable="/bin/bash",
     )
     stdout, stderr = process.communicate()
-    result = process.returncode    
+    result = process.returncode
     if result != 0:
         log.error(f"An error occurred while running [{command}]")
         log.error(f"stdout: [{stdout}]")
@@ -50,8 +50,6 @@ def run_cli(command, raw_output=False, background=False, log_path=None):
 
 
 # Taken from https://github.com/salesforce/decorator-operations/blob/master/decoratorOperations/debounce_functions/debounce.py#L6
-
-
 def debounce(wait_seconds):
 
     def decorator(function):
@@ -77,10 +75,8 @@ if not hasattr(bcrypt, '__about__'):
     bcrypt.__about__ = type('about', (object,), {'__version__': bcrypt.__version__})
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
-
 
 def get_password_hash(password):
     return pwd_context.hash(password)
@@ -92,3 +88,7 @@ def get_season_title(season):
     if season.season_order_counter == 0:
         return 'Specials'
     return f'Season {season.season_order_counter:02}'
+
+def string_to_md5(input_string:str):
+    encoded_bytes = input_string.encode('utf-8')
+    return hashlib.md5(encoded_bytes).hexdigest()

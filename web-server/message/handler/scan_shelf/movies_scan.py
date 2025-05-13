@@ -123,7 +123,11 @@ class MoviesScanHandler(base.BaseHandler):
         return movie_slug, movie
 
     def organize_images(self):
+        progress_count = 0
         for info in self.file_info_lookup["image"]:
+            progress_count += 1
+            if progress_count % 500 == 0:
+                log.info(f'Organize movie image {progress_count} out of {len(self.file_info_lookup["image"])}')
             movie_slug, movie = self.get_or_create_movie(info=info)
             if not db.op.get_movie_image_file(
                 movie_id=movie.id, image_file_id=info["id"]
@@ -133,7 +137,11 @@ class MoviesScanHandler(base.BaseHandler):
                 )
 
     def organize_metadata(self):
+        progress_count = 0
         for info in self.file_info_lookup["metadata"]:
+            progress_count += 1
+            if progress_count % 500 == 0:
+                log.info(f'Organize movie metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
             movie_slug, movie = self.get_or_create_movie(info=info)
             if not db.op.get_movie_metadata_file(
                 movie_id=movie.id, metadata_file_id=info["id"]
@@ -143,7 +151,11 @@ class MoviesScanHandler(base.BaseHandler):
                 )
 
     def organize_videos(self):
+        progress_count = 0
         for info in self.file_info_lookup["video"]:
+            progress_count += 1
+            if progress_count % 500 == 0:
+                log.info(f'Organize movie video {progress_count} out of {len(self.file_info_lookup["video"])}')
             movie_slug, movie = self.get_or_create_movie(info=info)
             if not db.op.get_movie_video_file(
                 movie_id=movie.id, video_file_id=info["id"]
