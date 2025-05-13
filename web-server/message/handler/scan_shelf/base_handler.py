@@ -115,3 +115,6 @@ class BaseHandler:
 
     def ingest_metadata(self):
         return self.ingest_content("metadata")
+
+    def get_files_lookup(self):
+        return self.file_lookup

@@ -12,6 +12,10 @@ def handle(job_id, message_payload):
     shelves = db.op.get_shelf_list()
     results = {}
     handlers = []
+    file_kinds = ['metadata','video','image']
+    shelf_files = {}
+    for kind in file_kinds:
+        shelf_files[kind] = []
     for shelf in shelves:
         # TODO Unit tests for file name parsing
         log.info(f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
@@ -29,6 +33,9 @@ def handle(job_id, message_payload):
         if not handler.ingest_metadata():
             results[shelf.name] = False
             continue
+        shelf_files['metadata'] += handler.get_files_lookup()['metadata']
+        shelf_files['image'] += handler.get_files_lookup()['image']
+        shelf_files['video'] += handler.get_files_lookup()['video']
         handlers.append(handler)
         results[shelf.name] = True
 
@@ -45,5 +52,10 @@ def handle(job_id, message_payload):
         handler.organize_metadata()
         handler.organize_images()
         handler.organize_videos()
+
+    log.info("Purging file records from the database if a file no longer exists on disk.")
+    log.info(f'Purged {db.op.purge_missing_video_file_records(shelf_files["video"])} video files')
+    log.info(f'Purged {db.op.purge_missing_image_file_records(shelf_files["image"])} image files')
+    log.info(f'Purged {db.op.purge_missing_metadata_file_records(shelf_files["metadata"])} metadata files')
 
     return True

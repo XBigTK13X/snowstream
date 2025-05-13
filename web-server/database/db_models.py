@@ -237,10 +237,14 @@ class ImageFile(BaseModel):
     local_path = sa.Column(sa.Text)
     web_path = sa.Column(sa.Text)
     network_path = sa.Column(sa.Text)
-    movie: sorm.Mapped["Movie"] = sorm.relationship(secondary="movie_image_file")
-    show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_image_file")
-    show_season: sorm.Mapped["ShowSeason"] = sorm.relationship(secondary="show_season_image_file")
-    show: sorm.Mapped["Show"] = sorm.relationship(secondary="show_image_file")
+    movie: sorm.Mapped["Movie"] = sorm.relationship(secondary="movie_image_file", back_populates="image_files")
+    movie_image_file: sorm.Mapped["MovieImageFile"] = sorm.relationship(back_populates="image_file",overlaps="movie")
+    show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_image_file", back_populates="image_files")
+    show_episode_image_file: sorm.Mapped["ShowEpisodeImageFile"] = sorm.relationship(back_populates="image_file",overlaps="show_episode")
+    show_season: sorm.Mapped["ShowSeason"] = sorm.relationship(secondary="show_season_image_file", back_populates="image_files")
+    show_season_image_file: sorm.Mapped["ShowSeasonImageFile"] = sorm.relationship(back_populates="image_file",overlaps="show_season")
+    show: sorm.Mapped["Show"] = sorm.relationship(secondary="show_image_file", back_populates="image_files")
+    show_image_file: sorm.Mapped["ShowImageFile"] = sorm.relationship(back_populates="image_file",overlaps="show")
 
 class MetadataFile(BaseModel):
     __tablename__ = "metadata_file"
@@ -249,10 +253,14 @@ class MetadataFile(BaseModel):
     local_path = sa.Column(sa.Text)
     web_path = sa.Column(sa.Text)
     network_path = sa.Column(sa.Text)
-    movie: sorm.Mapped["Movie"] = sorm.relationship(secondary="movie_metadata_file")
-    show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_metadata_file")
-    show_season: sorm.Mapped["ShowSeason"] = sorm.relationship(secondary="show_season_metadata_file")
-    show: sorm.Mapped["Show"] = sorm.relationship(secondary="show_metadata_file")
+    movie: sorm.Mapped["Movie"] = sorm.relationship(secondary="movie_metadata_file", back_populates="metadata_files")
+    movie_metadata_file: sorm.Mapped["MovieMetadataFile"] = sorm.relationship(back_populates="metadata_file",overlaps="movie")
+    show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_metadata_file", back_populates="metadata_files")
+    show_episode_metadata_file: sorm.Mapped["ShowEpisodeMetadataFile"] = sorm.relationship(back_populates="metadata_file",overlaps="show_episode")
+    show_season: sorm.Mapped["ShowSeason"] = sorm.relationship(secondary="show_season_metadata_file", back_populates="metadata_files")
+    show_season_metadata_file: sorm.Mapped["ShowSeasonMetadataFile"] = sorm.relationship(back_populates="metadata_file",overlaps="show_season")
+    show: sorm.Mapped["Show"] = sorm.relationship(secondary="show_metadata_file", back_populates="metadata_files")
+    show_metadata_file: sorm.Mapped["ShowMetadataFile"] = sorm.relationship(back_populates="metadata_file",overlaps="show")
 
 
 class VideoFile(BaseModel):
@@ -262,8 +270,10 @@ class VideoFile(BaseModel):
     local_path = sa.Column(sa.Text)
     web_path = sa.Column(sa.Text)
     network_path = sa.Column(sa.Text)
-    movie: sorm.Mapped["Movie"] = sorm.relationship(secondary="movie_video_file",back_populates="video_files")
-    show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_video_file",back_populates="video_files")
+    movie: sorm.Mapped["Movie"] = sorm.relationship(secondary="movie_video_file", back_populates="video_files")
+    movie_video_file: sorm.Mapped["MovieVideoFile"] = sorm.relationship(back_populates="video_file",overlaps="movie")
+    show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_video_file", back_populates="video_files")
+    show_episode_video_file: sorm.Mapped["ShowEpisodeVideoFile"] = sorm.relationship(back_populates="video_file",overlaps="show_episode")
 
 class Shelf(BaseModel):
     __tablename__ = "shelf"
@@ -280,11 +290,11 @@ class Movie(BaseModel):
     name = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
     tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="movie_tag",back_populates="movies")
-    video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="movie_video_file",back_populates="movie")
-    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="movie_image_file",back_populates="movie")
-    metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="movie_metadata_file",back_populates="movie")
+    video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="movie_video_file",back_populates="movie",overlaps="movie_video_file")
+    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="movie_image_file",back_populates="movie",overlaps="movie_image_file")
+    metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="movie_metadata_file",back_populates="movie",overlaps="movie_metadata_file")
     shelf: sorm.Mapped["Shelf"] = sorm.relationship(secondary="movie_shelf")
-    watch_count: sorm.Mapped['WatchCount'] = sorm.relationship()
+    watch_count: sorm.Mapped['WatchCount'] = sorm.relationship(overlaps="movie")
 
     def get_tag_ids(self):
         return [xx.id for xx in self.tags]
@@ -305,18 +315,21 @@ class MovieImageFile(BaseModel):
     __tablename__ = "movie_image_file"
     movie_id = sa.Column(sa.Integer, sa.ForeignKey("movie.id"))
     image_file_id = sa.Column(sa.Integer, sa.ForeignKey("image_file.id"))
+    image_file: sorm.Mapped['ImageFile'] = sorm.relationship(back_populates='movie_image_file',overlaps="movie,image_files")
 
 
 class MovieMetadataFile(BaseModel):
     __tablename__ = "movie_metadata_file"
     movie_id = sa.Column(sa.Integer, sa.ForeignKey("movie.id"))
     metadata_file_id = sa.Column(sa.Integer, sa.ForeignKey("metadata_file.id"))
+    metadata_file: sorm.Mapped['MetadataFile'] = sorm.relationship(back_populates='movie_metadata_file',overlaps="movie,metadata_files")
 
 
 class MovieVideoFile(BaseModel):
     __tablename__ = "movie_video_file"
     movie_id = sa.Column(sa.Integer, sa.ForeignKey("movie.id"))
     video_file_id = sa.Column(sa.Integer, sa.ForeignKey("video_file.id"))
+    video_file: sorm.Mapped['VideoFile'] = sorm.relationship(back_populates="movie_video_file",overlaps="movie,video_files")
 
 
 class Show(BaseModel):
@@ -325,8 +338,8 @@ class Show(BaseModel):
     directory = sa.Column(sa.Text)
     shelf: sorm.Mapped["Shelf"] = sorm.relationship(secondary="show_shelf",back_populates="shows")
     seasons: sorm.Mapped[List["ShowSeason"]] = sorm.relationship(back_populates='show')
-    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_image_file",back_populates="show")
-    metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_metadata_file",back_populates="show")
+    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_image_file",back_populates="show",overlaps="show_image_file")
+    metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_metadata_file",back_populates="show",overlaps="show_metadata_file")
     tags: sorm.Mapped[List['Tag']] = sorm.relationship(secondary="show_tag",back_populates="shows")
 
     def get_tag_ids(self):
@@ -347,13 +360,14 @@ class ShowImageFile(BaseModel):
     __tablename__ = "show_image_file"
     show_id = sa.Column(sa.Integer, sa.ForeignKey("show.id"))
     image_file_id = sa.Column(sa.Integer, sa.ForeignKey("image_file.id"))
+    image_file: sorm.Mapped['ImageFile'] = sorm.relationship(back_populates='show_image_file',overlaps="show,image_files")
 
 
 class ShowMetadataFile(BaseModel):
     __tablename__ = "show_metadata_file"
     show_id = sa.Column(sa.Integer, sa.ForeignKey("show.id"))
     metadata_file_id = sa.Column(sa.Integer, sa.ForeignKey("metadata_file.id"))
-
+    metadata_file: sorm.Mapped['MetadataFile'] = sorm.relationship(back_populates='show_metadata_file',overlaps="show,metadata_files")
 
 class ShowSeason(BaseModel):
     __tablename__ = "show_season"
@@ -363,8 +377,8 @@ class ShowSeason(BaseModel):
     show_id: sorm.Mapped[int] = sa.Column(sa.Integer, sa.ForeignKey("show.id"))
     show: sorm.Mapped["Show"] = sorm.relationship(back_populates="seasons")
     episodes: sorm.Mapped[List["ShowEpisode"]] = sorm.relationship(back_populates="season")
-    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_season_image_file",back_populates="show_season")
-    metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_season_metadata_file",back_populates="show_season")
+    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_season_image_file",back_populates="show_season",overlaps="show_season_image_file")
+    metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_season_metadata_file",back_populates="show_season",overlaps="show_season_metadata_file")
     tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_season_tag",back_populates="show_seasons")
 
     def get_tag_ids(self):
@@ -383,24 +397,26 @@ class ShowSeasonImageFile(BaseModel):
     __tablename__ = "show_season_image_file"
     show_season_id = sa.Column(sa.Integer, sa.ForeignKey("show_season.id"))
     image_file_id = sa.Column(sa.Integer, sa.ForeignKey("image_file.id"))
+    image_file: sorm.Mapped['ImageFile'] = sorm.relationship(back_populates='show_season_image_file',overlaps="show_season,image_files")
 
 
 class ShowSeasonMetadataFile(BaseModel):
     __tablename__ = "show_season_metadata_file"
     show_season_id = sa.Column(sa.Integer, sa.ForeignKey("show_season.id"))
     metadata_file_id = sa.Column(sa.Integer, sa.ForeignKey("metadata_file.id"))
+    metadata_file: sorm.Mapped['MetadataFile'] = sorm.relationship(back_populates='show_season_metadata_file',overlaps="show_season,metadata_files")
 
 class ShowEpisode(BaseModel):
     __tablename__ = "show_episode"
     name = sa.Column(sa.Text)
     episode_order_counter = sa.Column(sa.Integer)
     show_season_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_season.id"))
-    video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="show_episode_video_file",back_populates="show_episode")
-    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_episode_image_file",back_populates="show_episode")
-    metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_episode_metadata_file",back_populates="show_episode")
+    video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="show_episode_video_file",back_populates="show_episode",overlaps="show_episode_video_file")
+    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_episode_image_file",back_populates="show_episode",overlaps="show_episode_image_file")
+    metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_episode_metadata_file",back_populates="show_episode",overlaps="show_episode_metadata_file")
     season: sorm.Mapped["ShowSeason"] = sorm.relationship(back_populates="episodes")
     tags: sorm.Mapped["Tag"] = sorm.relationship(secondary="show_episode_tag",back_populates="show_episodes")
-    watch_count: sorm.Mapped['WatchCount'] = sorm.relationship()
+    watch_count: sorm.Mapped['WatchCount'] = sorm.relationship(overlaps="show_episode")
 
     def get_tag_ids(self):
         tag_ids = []
@@ -419,18 +435,21 @@ class ShowEpisodeImageFile(BaseModel):
     __tablename__ = "show_episode_image_file"
     show_episode_id = sa.Column(sa.Integer, sa.ForeignKey("show_episode.id"))
     image_file_id = sa.Column(sa.Integer, sa.ForeignKey("image_file.id"))
+    image_file: sorm.Mapped['ImageFile'] = sorm.relationship(back_populates='show_episode_image_file',overlaps="image_files,show_episode")
 
 
 class ShowEpisodeMetadataFile(BaseModel):
     __tablename__ = "show_episode_metadata_file"
     show_episode_id = sa.Column(sa.Integer, sa.ForeignKey("show_episode.id"))
     metadata_file_id = sa.Column(sa.Integer, sa.ForeignKey("metadata_file.id"))
+    metadata_file: sorm.Mapped['MetadataFile'] = sorm.relationship(back_populates='show_episode_metadata_file',overlaps="metadata_files,show_episode")
 
 
 class ShowEpisodeVideoFile(BaseModel):
     __tablename__ = "show_episode_video_file"
     show_episode_id = sa.Column(sa.Integer, sa.ForeignKey("show_episode.id"))
     video_file_id = sa.Column(sa.Integer, sa.ForeignKey("video_file.id"))
+    video_file: sorm.Mapped['VideoFile'] = sorm.relationship(back_populates="show_episode_video_file",overlaps="video_files,show_episode")
 
 
 class Streamable(BaseModel):
