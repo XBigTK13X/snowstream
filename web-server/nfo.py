@@ -98,3 +98,26 @@ def show_season_to_xml(
         nfo_dict['season']['tag'] = tags
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)
+
+def show_to_xml(
+    title:str,
+    tvdbid:int,
+    plot:str,
+    year:int,
+    release_date:str,
+    tags:list[str]=None
+):
+    nfo_dict = {
+        'tvshow': {
+            'title': title,
+            'year': year,
+            'plot': plot,
+            'releasedate': release_date,
+            'tvdbid': tvdbid
+        }
+    }
+
+    if tags:
+        nfo_dict['tvshow']['tag'] = tags
+
+    return nfo_dict_to_xml(nfo_dict=nfo_dict)

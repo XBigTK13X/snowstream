@@ -22,12 +22,14 @@ def get_show_by_name(name: str):
     with DbSession() as db:
         return db.query(dm.Show).filter(dm.Show.name == name).first()
 
-def get_show_by_id(ticket:dm.Ticket,show_id: int):    
-    with DbSession() as db:        
+def get_show_by_id(ticket:dm.Ticket,show_id: int):
+    with DbSession() as db:
         show = (
-            db.query(dm.Show)            
+            db.query(dm.Show)
             .filter(dm.Show.id == show_id)
             .options(sorm.joinedload(dm.Show.shelf))
+            .options(sorm.joinedload(dm.Show.seasons))
+            .options(sorm.joinedload(dm.Show.metadata_files))
             .first()
         )
         if not ticket.is_allowed(shelf_id=show.shelf.id):
@@ -64,7 +66,7 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
             .options(sorm.joinedload(dm.Show.metadata_files))
         )
         shows = (
-            query            
+            query
             .order_by(dm.Show.name)
             .all()
         )
@@ -113,7 +115,7 @@ def get_show_metadata_file(show_id: int, metadata_file_id: int):
             .first()
         )
 
-def upsert_show_tag(show_id: int, tag_id: int):    
+def upsert_show_tag(show_id: int, tag_id: int):
     with DbSession() as db:
         existing = db.query(dm.ShowTag).filter(dm.ShowTag.show_id == show_id and dm.ShowTag.tag_id == tag_id).first()
         if existing:
@@ -135,10 +137,10 @@ def set_show_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
             dm.Watched.shelf_id == shelf_id
         ).delete()
         db.commit()
-        if is_watched:            
+        if is_watched:
             dbm = dm.Watched()
             dbm.client_device_user_id = ticket.cduid
-            dbm.shelf_id = shelf_id            
+            dbm.shelf_id = shelf_id
             db.add(dbm)
             db.commit()
             db.refresh(dbm)
@@ -147,7 +149,7 @@ def set_show_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
             db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id == ticket.cduid,
                 dm.Watched.shelf_id == shelf_id
-            ).delete()            
+            ).delete()
             db.commit()
 
 def get_show_shelf_watched(ticket:dm.Ticket,shelf_id:int):
@@ -192,7 +194,7 @@ def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
         if not ticket.is_allowed(shelf_id=shelf_id):
             return False
         shelf_watched = get_show_shelf_watched(ticket=ticket,shelf_id=shelf_id)
-        shows = get_show_list_by_shelf(ticket=ticket,shelf_id=shelf_id)  
+        shows = get_show_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
         if is_watched and not shelf_watched:
             watched_shows = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
@@ -211,7 +213,7 @@ def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
                 dbm.show_id = show_id
                 db.add(dbm)
                 db.commit()
-                db.refresh(dbm)                                    
+                db.refresh(dbm)
                 return True
         if not is_watched and shelf_watched:
             set_show_shelf_watched(ticket=ticket,shelf_id=shelf_id,is_watched=False)
@@ -232,7 +234,7 @@ def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
                 dm.Watched.shelf_id == shelf_id,
                 dm.Watched.show_id == show_id
-            ).delete()          
+            ).delete()
             db.commit()
             return False
     return is_watched
