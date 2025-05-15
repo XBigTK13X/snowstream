@@ -5,5 +5,6 @@ class Movie(base.BaseHandler):
         super().__init__("Movie")
         self.movie_id = movie_id
 
-    def read_remote_info(self, metadataId:int, seasonOrder:int, episodeOrder:int):
-        return self.media_provider.get_movie_info(metadataId=metadataId)
+    def read_remote_info(self, metadata_id:int):
+        self.metadata_id = metadata_id
+        return self.media_provider.get_movie_info(metadata_id=metadata_id)

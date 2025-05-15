@@ -9,9 +9,9 @@ class ShowSeason(base.BaseHandler):
         self.show_season = self.db.op.get_show_season_by_id(ticket=self.ticket,season_id=self.show_season_id)
         self.episodes = self.db.op.get_show_episode_list_by_season(ticket=self.ticket,show_season_id=self.show_season_id)
 
-    def read_remote_info(self, metadataId:int, seasonOrder:int, episodeOrder:int):
-        self.metadata_id = metadataId
-        return self.media_provider.get_season_info(metadataId=metadataId, seasonOrder=seasonOrder)
+    def read_remote_info(self, metadata_id:int, season_order:int):
+        self.metadata_id = metadata_id
+        return self.media_provider.get_season_info(metadata_id=metadata_id, season_order=season_order)
 
     def schedule_subjobs(self):
         for episode in self.episodes:

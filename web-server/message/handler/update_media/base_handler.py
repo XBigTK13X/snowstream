@@ -20,7 +20,7 @@ class BaseHandler:
     def read_local_info(self):
         pass
 
-    def read_remote_info(self, metadataId:int, seasonOrder:int, episodeOrder:int):
+    def read_remote_info(self):
         pass
 
     def merge_remote_into_local(self):

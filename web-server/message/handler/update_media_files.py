@@ -15,6 +15,10 @@ def handle(job_id, message_payload):
     job_input = message_payload['input']
     target = job_input['target_scope']
     target_id = job_input['target_id']
+    metadata_id = job_input['metadata_id']
+    season_order = job_input['season_order'] if 'season_order' in job_input else None
+    episode_order = job_input['episode_order'] if 'episode_order' in job_input else None
+
     handler = None
     if target == 'shelf':
         log.info(f"Updating media for shelf {target_id}")
@@ -42,10 +46,12 @@ def handle(job_id, message_payload):
 
     handler.read_local_info()
 
-    metadataId = job_input['metadata_id']
-    seasonOrder = job_input['season_order'] if 'season_order' in job_input else None
-    episodeOrder = job_input['episode_order'] if 'episode_order' in job_input else None
-    handler.read_remote_info(metadataId=metadataId,seasonOrder=seasonOrder,episodeOrder=episodeOrder)
+    if episode_order:
+        handler.read_remote_info(metadata_id=metadata_id,season_order=season_order,episode_order=episode_order)
+    elif season_order:
+        handler.read_remote_info(metadata_id=metadata_id,season_order=season_order)
+    else:
+        handler.read_remote_info(metadata_id=metadata_id)
 
     handler.merge_remote_into_local()
 

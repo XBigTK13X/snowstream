@@ -5,5 +5,5 @@ class Show(base.BaseHandler):
         super().__init__("Show")
         self.show_id = show_id
 
-    def read_remote_info(self, metadataId:int, seasonOrder:int, episodeOrder:int):
-        return self.media_provider.get_show_info(metadataId=metadataId)
+    def read_remote_info(self, metadata_id:int):
+        return self.media_provider.get_show_info(metadata_id=metadata_id)

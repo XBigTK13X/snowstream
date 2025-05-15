@@ -11,20 +11,20 @@ class ShowEpisode(base.BaseHandler):
         self.show_episode = self.db.op.get_show_episode_by_id(ticket=self.ticket,episode_id=self.show_episode_id)
         if not self.show_episode:
             return None
-        self.seasonOrder = self.show_episode.season.season_order_counter
-        self.episodeOrder = self.show_episode.episode_order_counter
+        self.season_order = self.show_episode.season.season_order_counter
+        self.episode_order = self.show_episode.episode_order_counter
         if not self.show_episode.metadata_files:
             return None
         self.episode_nfo_file = self.show_episode.metadata_files[0]
         self.local_nfo_dict = nfo.nfo_xml_to_dict(self.episode_nfo_file.xml_content)
         return self.local_nfo_dict
 
-    def read_remote_info(self, metadataId:int, seasonOrder:int, episodeOrder:int):
-        self.metadata_id = metadataId
+    def read_remote_info(self, metadata_id:int, season_order:int, episode_order:int):
+        self.metadata_id = metadata_id
         self.tvdb_info = self.media_provider.get_episode_info(
-            metadataId=metadataId,
-            seasonOrder=self.seasonOrder,
-            episodeOrder=self.episodeOrder
+            metadata_id=metadata_id,
+            season_order=self.season_order,
+            episode_order=self.episode_order
         )
         return self.tvdb_info
 
