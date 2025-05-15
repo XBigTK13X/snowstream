@@ -27,16 +27,16 @@ def handle(job_id, message_payload):
         # If image/meta missing, then make a query and fill in
     elif target == 'movie':
         log.info(f"Updating media for movie {target_id}")
-        handler = update_movie.Movie(movie_id=target_id)
+        handler = update_movie.Movie(metadata_id=metadata_id,movie_id=target_id)
     elif target == 'show':
         log.info(f"Updating media for show {target_id}")
-        handler = update_show.Show(show_id=target_id)
+        handler = update_show.Show(metadata_id=metadata_id,show_id=target_id)
     elif target == 'season':
         log.info(f"Updating media for season {target_id}")
-        handler = update_season.ShowSeason(show_season_id=target_id)
+        handler = update_season.ShowSeason(metadata_id=metadata_id,show_season_id=target_id,season_order=season_order)
     elif target == 'episode':
         log.info(f"Updating media for episode {target_id}")
-        handler = update_episode.ShowEpisode(show_episode_id=target_id)
+        handler = update_episode.ShowEpisode(metadata_id=metadata_id,show_episode_id=target_id,season_order=season_order,episode_order=episode_order)
     else:
         log.info(f"Unhandled target of kind {target}")
         return False
@@ -46,12 +46,7 @@ def handle(job_id, message_payload):
 
     handler.read_local_info()
 
-    if episode_order:
-        handler.read_remote_info(metadata_id=metadata_id,season_order=season_order,episode_order=episode_order)
-    elif season_order:
-        handler.read_remote_info(metadata_id=metadata_id,season_order=season_order)
-    else:
-        handler.read_remote_info(metadata_id=metadata_id)
+    handler.read_remote_info()
 
     handler.merge_remote_into_local()
 

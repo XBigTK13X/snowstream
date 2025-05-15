@@ -22,6 +22,33 @@ def save_xml_as_nfo(nfo_path: str, nfo_xml: str):
     with open(nfo_path,'w',encoding='utf-8') as write_handle:
         write_handle.write(nfo_xml)
 
+def movie_to_xml(
+    title:str,
+    tagline:str,
+    plot:str,
+    release_date:str,
+    year:int,
+    tvdbid:int,
+    tags:list[str]=None
+):
+    nfo_dict = {
+        'movie':{
+            'title': title,
+            'plot': plot,
+            'releasedate': release_date,
+            'year': year,
+            'tvdbid': tvdbid
+        }
+    }
+
+    if tagline:
+        nfo_dict['movie']['tagline'] = tagline
+
+    if tags:
+        nfo_dict['movie']['tag'] = tags
+
+    return nfo_dict_to_xml(nfo_dict=nfo_dict)
+
 def show_episode_to_xml(
     season:int,
     episode:int,
@@ -49,29 +76,25 @@ def show_episode_to_xml(
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)
 
-def movie_to_xml(
-    title:str,
-    tagline:str,
-    plot:str,
-    release_date:str,
-    year:int,
-    tvdbid:int,
-    tags:list[str]=None
+def show_season_to_xml(
+    title: str,
+    year: int,
+    release_date: str,
+    season_order: int,
+    tvdbid: int,
+    tags: list[str]=None
 ):
     nfo_dict = {
-        'movie':{
-        'title': title,
-        'plot': plot,
-        'releasedate': release_date,
-        'year': year,
-        'tvdbid': tvdbid
+        'season': {
+            'title': title,
+            'year': year,
+            'releasedate': release_date,
+            'seasonnumber': season_order,
+            'tvdbid': tvdbid
         }
     }
 
-    if tagline:
-        nfo_dict['movie']['tagline'] = tagline
-
     if tags:
-        nfo_dict['movie']['tag'] = tags
+        nfo_dict['season']['tag'] = tags
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)

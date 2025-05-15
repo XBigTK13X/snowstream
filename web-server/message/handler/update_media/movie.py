@@ -1,9 +1,10 @@
 import message.handler.update_media.base_handler as base
 
 class Movie(base.BaseHandler):
-    def __init__(self,movie_id:int):
+    def __init__(self,metadata_id:int,movie_id:int):
         super().__init__("Movie")
         self.movie_id = movie_id
+        self.metadata_id = metadata_id
 
     def read_local_info(self):
         self.movie = self.db.op.get_movie_by_id(ticket=self.ticket,movie_id=self.movie_id)
@@ -15,10 +16,9 @@ class Movie(base.BaseHandler):
         self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.movie_nfo_file.xml_content)
         return self.local_nfo_dict
 
-    def read_remote_info(self, metadata_id:int):
-        self.metadata_id = metadata_id
+    def read_remote_info(self):
         self.tvdb_info = self.media_provider.get_movie_info(
-            metadata_id=metadata_id
+            metadata_id=self.metadata_id
         )
         return self.tvdb_info
 

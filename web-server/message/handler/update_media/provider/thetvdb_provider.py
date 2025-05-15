@@ -39,22 +39,20 @@ class ThetvdbProvider(base.MediaProvider):
         return show
 
     def filter_season(self, episodes, season_order:int):
-        return [xx for xx in episodes if int(xx['seasonNumber']) == int(season_order)]
+        return
 
-    def get_season_info(self, metadata_id:int, season_order:int):
-        show = self.get_show_info(metadata_id=metadata_id)
+    def get_show_episodes(self, metadata_id: int):
         cache_key = f'tvdb-show-{metadata_id}-episodes'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
-            log.info(f"Season result for {metadata_id} {season_order} is fresh, return cached result [{cache_key}]")
-            api_results = json.loads(cached_result)
-            return self.filter_season(episodes=api_results['episodes'],season_order=season_order)
+            log.info(f"Show episodes result for {metadata_id} is fresh, return cached result [{cache_key}]")
+            return json.loads(cached_result)['episodes']
         currentPage = 0
         api_results = None
-        log.info(f"Season result for {metadata_id} {season_order} is stale, return cached result [{cache_key}]")
+        log.info(f"Show episodes result for {metadata_id} is stale, read from tvdb [{cache_key}]")
         while True:
             current_results = self.tvdb_client.get_series_episodes(
-                id=show['id'],
+                id=metadata_id,
                 season_type='default',
                 lang='eng',
                 page=currentPage
@@ -72,13 +70,28 @@ class ThetvdbProvider(base.MediaProvider):
             return None
         api_results['episodes'] = sorted(api_results['episodes'],key=lambda xx:[xx['seasonNumber'],xx['number']])
         db.op.upsert_cached_text(key=cache_key, data=json.dumps(api_results))
-        return self.filter_season(episodes=api_results['episodes'],season_order=season_order)
+        return api_results['episodes']
 
-    def get_episode_info(self, metadata_id:int, season_order:int, episode_episode:int):
-        episodes = self.get_season_info(metadata_id=metadata_id,season_order=season_order)
-        if episodes == None or len(episodes) == 0:
+    def get_season_info(self, show_metadata_id:int, season_order:int):
+        cache_key = f'tvdb-show-{show_metadata_id}-season-{season_order}'
+        cached_result = db.op.get_cached_text_by_key(cache_key)
+        if cached_result:
+            log.info(f"Season result for {show_metadata_id} {season_order} is fresh, return cached result [{cache_key}]")
+            return json.loads(cached_result)
+        log.info(f"Season result for {show_metadata_id} {season_order} is stale, read from tvdb [{cache_key}]")
+        show = self.get_show_info(metadata_id=show_metadata_id)
+        season = [xx for xx in show['tvdb_extended']['seasons'] if int(xx['number']) == int(season_order)][0]
+        season['details'] = self.tvdb_client.get_season(id=season['id'])
+        season['extended'] = self.tvdb_client.get_season_extended(id=season['id'])
+        season['episodes'] = [xx for xx in self.get_show_episodes(metadata_id=show_metadata_id) if int(xx['seasonNumber']) == int(season_order)]
+        db.op.upsert_cached_text(key=cache_key, data=json.dumps(season))
+        return season
+
+    def get_episode_info(self, show_metadata_id:int, season_order:int, episode_order:int):
+        episodes = self.get_show_episodes(metadata_id=show_metadata_id)
+        if not episodes:
             return None
         for episode in episodes:
-            if episode['number'] == episode_episode:
+            if int(episode['seasonNumber']) == int(season_order) and int(episode['number']) == episode_order:
                 return episode
         return None

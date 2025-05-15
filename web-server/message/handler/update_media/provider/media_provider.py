@@ -3,14 +3,14 @@ class MediaProvider:
         self.kind = kind
 
 
-    def get_movie_info(self, metadata_id):
+    def get_movie_info(self, metadata_id:int):
         pass
 
-    def get_show_info(self, metadata_id):
+    def get_show_info(self, metadata_id:int):
         pass
 
-    def get_season_info(self, metadata_id, season_order):
+    def get_season_info(self, metadata_id:int, season_order:int):
         pass
 
-    def get_episode_info(self, metadata_id, season_order, episode_order):
+    def get_episode_info(self, metadata_id:int, season_order:int, episode_order:int):
         pass

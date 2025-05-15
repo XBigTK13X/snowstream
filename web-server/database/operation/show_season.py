@@ -22,8 +22,9 @@ def create_show_season(show_id: int, season_order_counter: int):
 def get_show_season_by_id(ticket:dm.Ticket,season_id:int):
     with DbSession() as db:
         query = (
-            db.query(dm.ShowSeason)      
-            .filter(dm.ShowSeason.id == season_id)            
+            db.query(dm.ShowSeason)
+            .filter(dm.ShowSeason.id == season_id)
+            .options(sorm.joinedload(dm.ShowSeason.metadata_files))
         )
         if ticket.has_tag_restrictions():
             query = query.options(sorm.joinedload(dm.ShowSeason.tags))
@@ -31,7 +32,7 @@ def get_show_season_by_id(ticket:dm.Ticket,season_id:int):
         if not show_season:
             return None
         if not ticket.is_allowed(shelf_id=show_season.show.shelf.id):
-            return None        
+            return None
         if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
             return None
         return show_season
@@ -123,7 +124,7 @@ def get_show_season_metadata_file(show_season_id: int, metadata_file_id: int):
             .first()
         )
 
-def upsert_show_season_tag(show_season_id: int, tag_id: int):    
+def upsert_show_season_tag(show_season_id: int, tag_id: int):
     with DbSession() as db:
         existing = db.query(dm.ShowSeasonTag).filter(
             dm.ShowSeasonTag.show_season_id == show_season_id,
@@ -147,12 +148,12 @@ def get_partial_show_season_list(ticket:dm.Ticket,show_id:int,only_watched:bool=
         seasons = get_show_season_list_by_show_id(ticket=ticket,show_id=show_id)
         if not seasons:
             return []
-        shelf_watched = db_show.get_show_shelf_watched(ticket=ticket,shelf_id=show.shelf.id)        
+        shelf_watched = db_show.get_show_shelf_watched(ticket=ticket,shelf_id=show.shelf.id)
         if shelf_watched:
             return seasons if only_watched else []
         show_watched = db_show.get_show_watched(ticket=ticket,show_id=show.id)
         if show_watched:
-            return seasons if only_watched else []        
+            return seasons if only_watched else []
         watched_seasons = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
             dm.Watched.shelf_id == show.shelf.id,
@@ -165,7 +166,7 @@ def get_partial_show_season_list(ticket:dm.Ticket,show_id:int,only_watched:bool=
             return [xx for xx in seasons if xx.id in watched_ids]
         return [xx for xx in seasons if not xx.id in watched_ids]
 
-def set_show_season_watched(ticket:dm.Ticket,season_id:int,is_watched:bool=True):    
+def set_show_season_watched(ticket:dm.Ticket,season_id:int,is_watched:bool=True):
     with DbSession() as db:
         season = get_show_season_by_id(ticket=ticket,season_id=season_id)
         if not season:
@@ -204,7 +205,7 @@ def set_show_season_watched(ticket:dm.Ticket,season_id:int,is_watched:bool=True)
                 dbm.show_season_id = season_id
                 db.add(dbm)
                 db.commit()
-                db.refresh(dbm)                                    
+                db.refresh(dbm)
                 return True
         if not is_watched:
             if shelf_watched:
@@ -232,7 +233,7 @@ def get_show_season_watched(ticket:dm.Ticket,season_id:int):
         return False
     show_watched = db_show.get_show_watched(ticket=ticket,show_id=season.show.id)
     if show_watched:
-        return True    
+        return True
     with DbSession() as db:
         watched = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),

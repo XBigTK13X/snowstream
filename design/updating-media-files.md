@@ -14,3 +14,6 @@ Jellyfin thinks it is alola.
 
 Abominable movie tvdb id
 12176
+
+Pokemon - To be a Master tvdb id
+428456
