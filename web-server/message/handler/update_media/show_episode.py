@@ -1,5 +1,6 @@
 import message.handler.update_media.base_handler as base
-import xmltodict
+import nfo
+from db import db
 
 class ShowEpisode(base.BaseHandler):
     def __init__(self, show_episode_id:int):
@@ -15,7 +16,7 @@ class ShowEpisode(base.BaseHandler):
         if not self.show_episode.metadata_files:
             return None
         self.episode_nfo_file = self.show_episode.metadata_files[0]
-        self.local_nfo_dict = xmltodict.parse(self.episode_nfo_file.xml_content)
+        self.local_nfo_dict = nfo.nfo_xml_to_dict(self.episode_nfo_file.xml_content)
         return self.local_nfo_dict
 
     def read_remote_info(self, metadataId:int, seasonOrder:int, episodeOrder:int):
@@ -28,20 +29,20 @@ class ShowEpisode(base.BaseHandler):
         return self.tvdb_info
 
     def merge_remote_into_local(self):
-        nfo_dict = {}
-        nfo_dict['season'] = self.tvdb_info['seasonNumber']
-        nfo_dict['episode'] = self.tvdb_info['number']
-        nfo_dict['title'] = self.tvdb_info['name']
-        if self.local_nfo_dict and 'episodedetails' in self.local_nfo_dict and 'tag' in self.local_nfo_dict['episodedetails']:
-            nfo_dict['tag'] = self.local_nfo_dict['episodedetails']['tag']
-        nfo_dict['plot'] = self.tvdb_info['overview']
-        nfo_dict['tvdbid'] = self.metadata_id
-        nfo_dict['aired'] = self.tvdb_info['aired']
-        nfo_dict['year'] = self.tvdb_info['year']
-
-        self.new_nfo_dict = {'episodedetails':nfo_dict}
-        self.new_nfo_xml = xmltodict.unparse(self.new_nfo_dict,pretty=True)
+        tags = None
+        if self.local_nfo_dict and 'tag' in self.local_nfo_dict:
+            tags = self.local_nfo_dict['episodedetails']['tag']
+        self.new_nfo_xml = nfo.show_episode_to_xml(
+            season=self.tvdb_info['seasonNumber'],
+            episode=self.tvdb_info['number'],
+            title=self.tvdb_info['name'],
+            plot=self.tvdb_info['plot'],
+            tvdbid=self.metadata_id,
+            aired=self.tvdb_info['aired'],
+            year=self.tvdb_info['year'],
+            tags=tags
+        )
 
     def save_info_to_local(self):
-        with open(self.episode_nfo_file.local_path,'w',encoding='utf-8') as write_handle:
-            write_handle.write(self.new_nfo_xml)
+        nfo.save_xml_as_nfo(nfo_path=self.episode_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
+        db.op.update_metadata_file_content(self.episode_nfo_file.id, xml_content=self.new_nfo_xml)

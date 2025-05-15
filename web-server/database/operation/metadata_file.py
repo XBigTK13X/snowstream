@@ -53,3 +53,12 @@ def get_metadata_file_list():
         ).options(
             sorm.joinedload(dm.MetadataFile.show_episode)
         ).all()
+
+def update_metadata_file_content(metadata_file_id:int,xml_content:str):
+    with DbSession() as db:
+        dbm = db.query(dm.MetadataFile).filter(dm.MetadataFile.id == metadata_file_id).first()
+        if not dbm:
+            return None
+        dbm.xml_content = xml_content
+        db.commit()
+        return dbm
