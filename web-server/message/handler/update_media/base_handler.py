@@ -1,6 +1,7 @@
 from db import db
 from log import log
 from settings import config
+import nfo
 
 import message.handler.update_media.provider.thetvdb_provider as thetvdb
 
@@ -11,6 +12,7 @@ class BaseHandler:
         self.kind = kind
         self.media_provider = thetvdb.ThetvdbProvider()
         self.db = db
+        self.nfo = nfo
         self.ticket = db.model.Ticket()
 
     def make_job(self, name:str, payload:dict):

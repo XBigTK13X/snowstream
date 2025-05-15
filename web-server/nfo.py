@@ -48,3 +48,30 @@ def show_episode_to_xml(
         nfo_dict['episodedetails']['tag'] = tags
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)
+
+def movie_to_xml(
+    title:str,
+    tagline:str,
+    plot:str,
+    release_date:str,
+    year:int,
+    tvdbid:int,
+    tags:list[str]=None
+):
+    nfo_dict = {
+        'movie':{
+        'title': title,
+        'plot': plot,
+        'releasedate': release_date,
+        'year': year,
+        'tvdbid': tvdbid
+        }
+    }
+
+    if tagline:
+        nfo_dict['movie']['tagline'] = tagline
+
+    if tags:
+        nfo_dict['movie']['tag'] = tags
+
+    return nfo_dict_to_xml(nfo_dict=nfo_dict)

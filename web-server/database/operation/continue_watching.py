@@ -70,6 +70,8 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     if not seasons:
                         continue
                     seasons = [xx for xx in seasons if xx.season_order_counter > 0]
+                    if not seasons:
+                        continue
                     next_season = seasons[0]
                     episodes = db_episode.get_partial_show_episode_list(ticket=ticket,season_id=next_season.id,only_watched=False)
                     if not episodes:

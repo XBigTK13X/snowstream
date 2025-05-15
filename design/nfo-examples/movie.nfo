@@ -1,155 +1,190 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <movie>
-  <plot>An outcast half-wolf risks his life to prevent a deadly epidemic from ravaging Nome, Alaska.</plot>
+  <plot>A group of misfits encounter a young Yeti named Everest, and they set off to reunite the magical creature with his family on the mountain of his namesake.</plot>
   <lockdata>false</lockdata>
-  <dateadded>2023-03-04 04:39:38</dateadded>
-  <title>Balto</title>
-  <originaltitle>Balto</originaltitle>
-  <director>Simon Wells</director>
-  <writer>Roger S.H. Schulman</writer>
-  <writer>Elana Lesser</writer>
-  <writer>Cliff Ruby</writer>
-  <writer>David Steven Cohen</writer>
-  <credits>Roger S.H. Schulman</credits>
-  <credits>Elana Lesser</credits>
-  <credits>Cliff Ruby</credits>
-  <credits>David Steven Cohen</credits>
-  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=HJwvbmRXym4</trailer>
-  <rating>7.301</rating>
-  <year>1995</year>
-  <mpaa>G</mpaa>
-  <collectionnumber>117693</collectionnumber>
-  <imdbid>tt0112453</imdbid>
-  <tmdbid>21032</tmdbid>
-  <premiered>1995-12-22</premiered>
-  <releasedate>1995-12-22</releasedate>
-  <criticrating>56</criticrating>
-  <runtime>78</runtime>
-  <tagline>Part Dog. Part Wolf. All Hero.</tagline>
+  <dateadded>2023-03-04 04:39:20</dateadded>
+  <title>Abominable</title>
+  <originaltitle>Abominable</originaltitle>
+  <director>Jill Culton</director>
+  <director>Christi Soper Hilt</director>
+  <writer>Jill Culton</writer>
+  <credits>Jill Culton</credits>
+  <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid=Ap0NRJD-2ts</trailer>
+  <rating>7.524</rating>
+  <year>2019</year>
+  <mpaa>PG</mpaa>
+  <imdbid>tt6324278</imdbid>
+  <tmdbid>431580</tmdbid>
+  <premiered>2019-09-19</premiered>
+  <releasedate>2019-09-19</releasedate>
+  <criticrating>82</criticrating>
+  <runtime>97</runtime>
+  <tagline>Find your way home.</tagline>
   <country>United States of America</country>
   <genre>Family</genre>
   <genre>Animation</genre>
   <genre>Adventure</genre>
-  <studio>Amblin Entertainment</studio>
-  <studio>Amblimation</studio>
+  <genre>Comedy</genre>
+  <studio>DreamWorks Animation</studio>
+  <studio>Pearl Studio</studio>
   <studio>Universal Pictures</studio>
-  <tag>wolf</tag>
-  <tag>pet</tag>
-  <tag>dog-sledding race</tag>
-  <tag>alaska</tag>
-  <tag>dog</tag>
-  <tag>goose</tag>
-  <tag>bear attack</tag>
-  <tag>dog sled</tag>
-  <tag>pets</tag>
+  <studio>dentsu</studio>
+  <tag>yeti</tag>
+  <tag>reunion</tag>
+  <tag>family relationships</tag>
+  <tag>snow</tag>
+  <tag>aftercreditsstinger</tag>
+  <tag>mount everest</tag>
+  <tag>quest</tag>
+  <tag>zoologist</tag>
   <art>
-    <poster>/mnt/movies/b/Balto (1995)/folder.jpg</poster>
-    <fanart>/mnt/movies/b/Balto (1995)/backdrop.jpg</fanart>
+    <poster>/mnt/movies/a/Abominable (2019)/folder.jpg</poster>
+    <fanart>/mnt/movies/a/Abominable (2019)/backdrop.jpg</fanart>
   </art>
   <actor>
-    <name>Kevin Bacon</name>
-    <role>Balto (voice)</role>
+    <name>Chloe Bennet</name>
+    <role>Yi (voice)</role>
     <type>Actor</type>
     <sortorder>0</sortorder>
-    <thumb>/config/metadata/People/K/Kevin Bacon/folder.jpg</thumb>
+    <thumb>/config/metadata/People/C/Chloe Bennet/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Bob Hoskins</name>
-    <role>Boris the Goose (voice)</role>
+    <name>Albert Tsai</name>
+    <role>Peng (voice)</role>
     <type>Actor</type>
     <sortorder>1</sortorder>
-    <thumb>/config/metadata/People/B/Bob Hoskins/folder.jpg</thumb>
+    <thumb>/config/metadata/People/A/Albert Tsai/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Bridget Fonda</name>
-    <role>Jenna (voice)</role>
+    <name>Tenzing Norgay Trainor</name>
+    <role>Jin (voice)</role>
     <type>Actor</type>
     <sortorder>2</sortorder>
-    <thumb>/config/metadata/People/B/Bridget Fonda/folder.jpg</thumb>
+    <thumb>/config/metadata/People/T/Tenzing Norgay Trainor/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Jim Cummings</name>
-    <role>Steele the Sled Dog (voice)</role>
+    <name>Joseph Izzo</name>
+    <role>Everest (voice)</role>
     <type>Actor</type>
     <sortorder>3</sortorder>
-    <thumb>/config/metadata/People/J/Jim Cummings/folder.jpg</thumb>
+    <thumb>/config/metadata/People/J/Joseph Izzo/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Phil Collins</name>
-    <role>Muk and Luk (voice)</role>
+    <name>Eddie Izzard</name>
+    <role>Burnish (voice)</role>
     <type>Actor</type>
     <sortorder>4</sortorder>
-    <thumb>/config/metadata/People/P/Phil Collins/folder.jpg</thumb>
+    <thumb>/config/metadata/People/E/Eddie Izzard/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Juliette Brewer</name>
-    <role>Young Rosy (voice)</role>
+    <name>Sarah Paulson</name>
+    <role>Dr. Zara (voice)</role>
     <type>Actor</type>
     <sortorder>5</sortorder>
-    <thumb>/config/metadata/People/J/Juliette Brewer/folder.jpg</thumb>
+    <thumb>/config/metadata/People/S/Sarah Paulson/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Jack Angel</name>
-    <role>Nikki (voice)</role>
+    <name>Tsai Chin</name>
+    <role>Nai Nai (voice)</role>
     <type>Actor</type>
     <sortorder>6</sortorder>
-    <thumb>/config/metadata/People/J/Jack Angel/folder.jpg</thumb>
+    <thumb>/config/metadata/People/T/Tsai Chin/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Danny Mann</name>
-    <role>Kaltag (voice)</role>
+    <name>Michelle Wong</name>
+    <role>Yi’s Mom (voice)</role>
     <type>Actor</type>
     <sortorder>7</sortorder>
-    <thumb>/config/metadata/People/D/Danny Mann/folder.jpg</thumb>
+    <thumb>/config/metadata/People/M/Michelle Wong/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Robbie Rist</name>
-    <role>Star (voice)</role>
+    <name>Rich Dietl</name>
+    <role>Goon Leader (voice)</role>
     <type>Actor</type>
     <sortorder>8</sortorder>
-    <thumb>/config/metadata/People/R/Robbie Rist/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Sandra Dickinson</name>
-    <role>Dixie / Sylvie (voice)</role>
+    <name>James Hong</name>
+    <role>Yak Leader (voice)</role>
     <type>Actor</type>
     <sortorder>9</sortorder>
-    <thumb>/config/metadata/People/S/Sandra Dickinson/folder.jpg</thumb>
+    <thumb>/config/metadata/People/J/James Hong/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Frank Welker</name>
-    <role>Grizzly Bear (voice)</role>
+    <name>Christine Lin</name>
+    <role>Teenage Girl #1 / Boy's Mom / Female Customer (voice)</role>
     <type>Actor</type>
     <sortorder>10</sortorder>
-    <thumb>/config/metadata/People/F/Frank Welker/folder.jpg</thumb>
+    <thumb>/config/metadata/People/C/Christine Lin/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Miriam Margolyes</name>
-    <role>Grandma Rosy</role>
+    <name>Kym Miller</name>
+    <role>Teenage Girl #2 (voice)</role>
     <type>Actor</type>
     <sortorder>11</sortorder>
-    <thumb>/config/metadata/People/M/Miriam Margolyes/folder.jpg</thumb>
+    <thumb>/config/metadata/People/K/Kym Miller/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Lola Bates-Campbell</name>
-    <role>Rosie's granddaughter</role>
+    <name>Jason Ko</name>
+    <role>Teenage Boy (voice)</role>
     <type>Actor</type>
     <sortorder>12</sortorder>
+    <thumb>/config/metadata/People/J/Jason Ko/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Steven Spielberg</name>
-    <role>Producer</role>
-    <type>Producer</type>
-    <thumb>/config/metadata/People/S/Steven Spielberg/folder.jpg</thumb>
+    <name>Trevor Devall</name>
+    <role>Van Driver / Goon (voice)</role>
+    <type>Actor</type>
+    <sortorder>13</sortorder>
+    <thumb>/config/metadata/People/T/Trevor Devall/folder.jpg</thumb>
   </actor>
   <actor>
-    <name>Kathleen Kennedy</name>
+    <name>Karen Huie</name>
+    <role>Dog Lady / Dock Worker / Goon (voice)</role>
+    <type>Actor</type>
+    <sortorder>14</sortorder>
+    <thumb>/config/metadata/People/K/Karen Huie/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Dave Polsky</name>
     <role>Producer</role>
     <type>Producer</type>
-    <thumb>/config/metadata/People/K/Kathleen Kennedy/folder.jpg</thumb>
   </actor>
-  <id>tt0112453</id>
-  <set>Balto Collection</set>
+  <actor>
+    <name>Tim Johnson</name>
+    <role>Executive Producer</role>
+    <type>Producer</type>
+    <thumb>https://image.tmdb.org/t/p/original/yQkP9wuYcIceIzH9QnECNqVwkAr.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Suzanne Buirgy</name>
+    <role>Producer</role>
+    <type>Producer</type>
+    <thumb>/config/metadata/People/S/Suzanne Buirgy/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Rebecca Huntley</name>
+    <role>Co-Producer</role>
+    <type>Producer</type>
+  </actor>
+  <actor>
+    <name>Rui Gang Li</name>
+    <role>Executive Producer</role>
+    <type>Producer</type>
+    <thumb>https://image.tmdb.org/t/p/original/gj5fK1tbLbGixUZfwvspqIWxKOg.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Peilin Chou</name>
+    <role>Producer</role>
+    <type>Producer</type>
+    <thumb>/config/metadata/People/P/Peilin Chou/folder.jpg</thumb>
+  </actor>
+  <actor>
+    <name>Frank Zhu</name>
+    <role>Executive Producer</role>
+    <type>Producer</type>
+  </actor>
+  <id>tt6324278</id>
   <fileinfo>
     <streamdetails>
       <subtitle>
@@ -161,31 +196,77 @@
         <forced>False</forced>
       </subtitle>
       <video>
-        <codec>h264</codec>
-        <micodec>h264</micodec>
-        <bitrate>10060310</bitrate>
-        <width>1920</width>
-        <height>1040</height>
-        <aspect>1.85:1</aspect>
-        <aspectratio>1.85:1</aspectratio>
+        <codec>hevc</codec>
+        <micodec>hevc</micodec>
+        <bitrate>77077557</bitrate>
+        <width>3840</width>
+        <height>2160</height>
+        <aspect>16:9</aspect>
+        <aspectratio>16:9</aspectratio>
         <framerate>23.976025</framerate>
         <scantype>progressive</scantype>
         <default>True</default>
         <forced>False</forced>
-        <duration>77</duration>
-        <durationinseconds>4657</durationinseconds>
+        <duration>97</duration>
+        <durationinseconds>5833</durationinseconds>
       </video>
       <audio>
-        <codec>dts</codec>
-        <micodec>dts</micodec>
-        <bitrate>1536000</bitrate>
+        <codec>truehd</codec>
+        <micodec>truehd</micodec>
+        <bitrate>4373808</bitrate>
         <language>eng</language>
         <scantype>progressive</scantype>
-        <channels>6</channels>
+        <channels>8</channels>
         <samplingrate>48000</samplingrate>
         <default>True</default>
         <forced>False</forced>
       </audio>
+      <audio>
+        <codec>ac3</codec>
+        <micodec>ac3</micodec>
+        <bitrate>448000</bitrate>
+        <language>eng</language>
+        <scantype>progressive</scantype>
+        <channels>6</channels>
+        <samplingrate>48000</samplingrate>
+        <default>False</default>
+        <forced>False</forced>
+      </audio>
+      <audio>
+        <codec>ac3</codec>
+        <micodec>ac3</micodec>
+        <bitrate>192000</bitrate>
+        <language>eng</language>
+        <scantype>progressive</scantype>
+        <channels>2</channels>
+        <samplingrate>48000</samplingrate>
+        <default>False</default>
+        <forced>False</forced>
+      </audio>
+      <subtitle>
+        <codec>PGSSUB</codec>
+        <micodec>PGSSUB</micodec>
+        <language>eng</language>
+        <scantype>progressive</scantype>
+        <default>False</default>
+        <forced>False</forced>
+      </subtitle>
+      <subtitle>
+        <codec>PGSSUB</codec>
+        <micodec>PGSSUB</micodec>
+        <language>fre</language>
+        <scantype>progressive</scantype>
+        <default>False</default>
+        <forced>False</forced>
+      </subtitle>
+      <subtitle>
+        <codec>PGSSUB</codec>
+        <micodec>PGSSUB</micodec>
+        <language>spa</language>
+        <scantype>progressive</scantype>
+        <default>False</default>
+        <forced>False</forced>
+      </subtitle>
     </streamdetails>
   </fileinfo>
 </movie>

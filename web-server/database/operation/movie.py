@@ -33,6 +33,7 @@ def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
             .filter(dm.Movie.id == movie_id)
             .options(sorm.joinedload(dm.Movie.video_files))
             .options(sorm.joinedload(dm.Movie.image_files))
+            .options(sorm.joinedload(dm.Movie.metadata_files))
             .options(sorm.joinedload(dm.Movie.shelf))
             .options(sorm.joinedload(dm.Movie.watch_count))
         )

@@ -249,7 +249,7 @@ def auth_required(router):
         if movie == None:
             return None
         movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
-        movie.tracks = json.loads(movie.video_files[0].ffprobe_parsed_json)
+        movie.tracks = json.loads(movie.video_files[0].ffprobe_pruned_json)
         return movie
 
     @router.post("/movie/watched",tags=['Movie'])
@@ -391,7 +391,7 @@ def auth_required(router):
         if not episode:
             return None
         episode.watched = db.op.get_show_episode_watched(ticket=auth_user.ticket,episode_id=episode_id)
-        episode.tracks = json.loads(episode.video_files[0].ffprobe_parsed_json)
+        episode.tracks = json.loads(episode.video_files[0].ffprobe_pruned_json)
         return episode
 
     @router.post("/show/season/episode/progress",tags=['Show'])
