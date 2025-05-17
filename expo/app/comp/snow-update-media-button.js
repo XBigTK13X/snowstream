@@ -50,9 +50,10 @@ export default function SnowUpdateMediaButton(props) {
             </Modal>
         )
     }
+    let title = props.kind ? `Update ${props.kind} Media` : 'Update Media'
     return (
         <SnowTextButton
-            title='Update Media'
+            title={title}
             onPress={() => {
                 setShowRequest(true)
             }} />

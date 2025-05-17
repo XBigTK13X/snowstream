@@ -61,7 +61,7 @@ export default function MovieDetailsPage() {
             (<C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />),
             (<C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />),
             (<C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />),
-            (<C.SnowUpdateMediaButton updateMediaJob={(metadataId) => {
+            (<C.SnowUpdateMediaButton kind="Movie" updateMediaJob={(metadataId) => {
                 apiClient.createJobUpdateMediaFiles('movie', movieId, metadataId)
             }} />)
         ]

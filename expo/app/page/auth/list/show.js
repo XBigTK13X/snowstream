@@ -18,6 +18,7 @@ export default function ShowListPage() {
     }
     return (
         <WatchableListPage
+            kind="Shelf"
             loadItems={loadItems}
             refreshList={refreshList}
             gotoItem={gotoItem}

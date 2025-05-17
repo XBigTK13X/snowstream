@@ -75,6 +75,7 @@ export function WatchableListPage(props) {
 
         buttons.push(
             <C.SnowUpdateMediaButton
+                kind={props.kind}
                 updateMediaJob={(metadataId) => { props.updateMediaJob(apiClient, shelfId, metadataId) }}
             />
         )

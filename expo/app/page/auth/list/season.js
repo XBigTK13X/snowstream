@@ -36,6 +36,7 @@ export default function SeasonListPage() {
 
     return (
         <WatchableListPage
+            kind="Show"
             getPageTitle={getPageTitle}
             loadItems={loadItems}
             refreshList={refreshList}

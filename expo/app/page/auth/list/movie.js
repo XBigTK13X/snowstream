@@ -20,6 +20,7 @@ export default function MovieListPage() {
     }
     return (
         <WatchableListPage
+            kind="Shelf"
             loadItems={loadItems}
             refreshList={refreshList}
             gotoItem={gotoItem}

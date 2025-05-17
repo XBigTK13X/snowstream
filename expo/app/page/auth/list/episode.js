@@ -30,6 +30,7 @@ export default function EpisodeListPage() {
     }
     return (
         <WatchableListPage
+            kind="Season"
             getPageTitle={getPageTitle}
             loadItems={loadItems}
             refreshList={refreshList}
