@@ -61,25 +61,6 @@ export default function EpisodeDetailsPage() {
             seasonOrder: episode.season.season_order_counter,
         }
         const seasonListPayload = { shelfId, showId, showName }
-        const buttons = [
-            <C.SnowTextButton
-                title="Play"
-                onPress={routes.func(routes.playMedia, {
-                    videoFileIndex: 0,
-                    audioTrack: audioTrack,
-                    subtitleTrack: subtitleTrack,
-                    episodeId: episodeId,
-                    shelfId: shelfId
-                })}
-            />,
-            <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />,
-            <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />,
-            <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />,
-            <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />,
-            <C.SnowUpdateMediaButton kind="Episode" updateMediaJob={(metadataId) => {
-                apiClient.createJobUpdateMediaFiles('episode', episodeId, metadataId)
-            }} />
-        ]
         return (
             <C.View>
                 <C.SnowText>
@@ -87,7 +68,31 @@ export default function EpisodeDetailsPage() {
                 </C.SnowText>
                 <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowText>Times Watched: {episode.watch_count ? episode.watch_count.amount : 0}</C.SnowText>
-                <C.SnowGrid items={buttons} itemsPerRow={3} />
+                <C.SnowGrid itemsPerRow={3}>
+                    <C.SnowTextButton
+                        title="Play"
+                        onPress={routes.func(routes.playMedia, {
+                            videoFileIndex: 0,
+                            audioTrack: audioTrack,
+                            subtitleTrack: subtitleTrack,
+                            episodeId: episodeId,
+                            shelfId: shelfId
+                        })}
+                    />,
+                    <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />,
+                    <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />,
+                    <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />,
+                    <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />,
+                    <C.SnowUpdateMediaButton kind="Episode" updateMediaJob={(details) => {
+                        apiClient.createJobUpdateMediaFiles({
+                            targetScope: 'episode',
+                            targetId: episodeId,
+                            metadataId: details.metadataId,
+                            updateMetadata: details.metadata,
+                            updateImages: details.images
+                        })
+                    }} />
+                </C.SnowGrid>
                 <C.SnowTrackSelector
                     tracks={episode.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}

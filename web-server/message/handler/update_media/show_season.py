@@ -42,12 +42,14 @@ class ShowSeason(base.BaseHandler):
         self.nfo.save_xml_as_nfo(nfo_path=self.season_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         self.db.op.update_metadata_file_content(self.season_nfo_file.id, xml_content=self.new_nfo_xml)
 
-    def schedule_subjobs(self):
+    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
         for episode in self.episodes:
             self.make_job(name='update_media_files',payload={
                 'metadata_id': self.metadata_id,
                 'target_scope': 'episode',
                 'target_id': episode.id,
                 'season_order': self.show_season.season_order_counter,
-                'episode_order': episode.episode_order_counter
+                'episode_order': episode.episode_order_counter,
+                'update_images': update_images,
+                'update_metadata': update_metadata
             })

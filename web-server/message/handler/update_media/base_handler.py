@@ -34,5 +34,5 @@ class BaseHandler:
     def download_images(self):
         pass
 
-    def schedule_subjobs(self):
+    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
         pass

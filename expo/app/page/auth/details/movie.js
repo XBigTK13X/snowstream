@@ -57,20 +57,25 @@ export default function MovieDetailsPage() {
             movieId: movieId,
             shelfId: shelfId
         }
-        const buttons = [
-            (<C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />),
-            (<C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />),
-            (<C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />),
-            (<C.SnowUpdateMediaButton kind="Movie" updateMediaJob={(metadataId) => {
-                apiClient.createJobUpdateMediaFiles('movie', movieId, metadataId)
-            }} />)
-        ]
         return (
             <C.View>
                 <C.SnowText>Title: {movie.name}</C.SnowText>
                 <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowText>Times Watched: {movie.watch_count ? movie.watch_count.amount : 0}</C.SnowText>
-                <C.SnowGrid items={buttons} />
+                <C.SnowGrid>
+                    <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />),
+                    <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />),
+                    <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />),
+                    <C.SnowUpdateMediaButton kind="Movie" updateMediaJob={(details) => {
+                        apiClient.createJobUpdateMediaFiles({
+                            targetScope: 'movie',
+                            targetId: movieId,
+                            metadataId: details.metadataId,
+                            updateMetadata: details.metadata,
+                            updateImages: details.images
+                        })
+                    }} />
+                </C.SnowGrid>
                 <C.SnowTrackSelector
                     tracks={movie.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}

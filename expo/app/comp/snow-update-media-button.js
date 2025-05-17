@@ -9,6 +9,7 @@ import { useSession } from '../auth-context'
 import SnowText from './snow-text'
 import SnowInput from './snow-input'
 import SnowLabel from './snow-label'
+import SnowGrid from './snow-grid'
 
 const styles = {
     prompt: {
@@ -30,22 +31,27 @@ export default function SnowUpdateMediaButton(props) {
     const onCancel = () => {
         setShowRequest(false)
     }
-    const onAccept = () => {
-        props.updateMediaJob(metadataId)
+    const onAccept = (metadata, images) => {
+        props.updateMediaJob({ metadataId, metadata, images })
         setShowRequest(false)
     }
     if (showRequest) {
+        let question = props.kind ? `Do you want to update this ${props.kind}?` : 'Do you want to update this item?'
         return (
             <Modal
                 onRequestClose={() => {
                     setShowRequest(false)
                 }}>
                 <View style={styles.prompt}>
-                    <SnowText>Do you want to update this item?</SnowText>
+                    <SnowText>{question}</SnowText>
                     <SnowLabel>Specify a metadata ID</SnowLabel>
                     <SnowInput onChangeText={(text) => { setMetadataId(text) }} value={metadataId} />
-                    <SnowTextButton title="Update" onPress={onAccept} />
-                    <SnowTextButton title="Cancel" onPress={onCancel} />
+                    <SnowGrid>
+                        <SnowTextButton title="Update Metadata" onPress={() => { onAccept(true, false) }} />
+                        <SnowTextButton title="Update Images" onPress={() => { onAccept(false, true) }} />
+                        <SnowTextButton title="Update Both" onPress={() => { onAccept(true, true) }} />
+                        <SnowTextButton title="Cancel" onPress={onCancel} />
+                    </SnowGrid>
                 </View>
             </Modal>
         )

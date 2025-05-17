@@ -33,11 +33,13 @@ class Show(base.BaseHandler):
         self.nfo.save_xml_as_nfo(nfo_path=self.show_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         self.db.op.update_metadata_file_content(self.show_nfo_file.id, xml_content=self.new_nfo_xml)
 
-    def schedule_subjobs(self):
+    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
         for season in self.show.seasons:
             self.make_job(name='update_media_files',payload={
                 'metadata_id': self.metadata_id,
                 'target_scope': 'season',
                 'target_id': season.id,
                 'season_order': season.season_order_counter,
+                'update_images': update_images,
+                'update_metadata': update_metadata
             })

@@ -18,6 +18,8 @@ def handle(job_id, message_payload):
     metadata_id = job_input['metadata_id']
     season_order = job_input['season_order'] if 'season_order' in job_input else None
     episode_order = job_input['episode_order'] if 'episode_order' in job_input else None
+    update_images = job_input['update_images'] if 'update_images' in job_input else False
+    update_metadata = job_input['update_metadata'] if 'update_metadata' in job_input else False
 
     handler = None
     if target == 'shelf':
@@ -48,12 +50,13 @@ def handle(job_id, message_payload):
 
     handler.read_remote_info()
 
-    handler.merge_remote_into_local()
+    if update_metadata:
+        handler.merge_remote_into_local()
+        handler.save_info_to_local()
 
-    handler.save_info_to_local()
+    if update_images:
+        handler.download_images()
 
-    handler.download_images()
-
-    handler.schedule_subjobs()
+    handler.schedule_subjobs(update_images=update_images,update_metadata=update_metadata)
 
     return True

@@ -67,23 +67,19 @@ export function WatchableListPage(props) {
             Grid = C.SnowThumbGrid
         }
 
-        let buttons = [
-            (<C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />)
-        ]
-
-
-
-        buttons.push(
-            <C.SnowUpdateMediaButton
-                kind={props.kind}
-                updateMediaJob={(metadataId) => { props.updateMediaJob(apiClient, shelfId, metadataId) }}
-            />
-        )
-
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
-                <C.SnowGrid items={buttons} />
+                <C.SnowGrid>
+                    <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
+                    <C.SnowUpdateMediaButton
+                        kind={props.kind}
+                        updateMediaJob={(details) => {
+                            details.shelfId = shelfId
+                            props.updateMediaJob(apiClient, details)
+                        }}
+                    />
+                </C.SnowGrid>
                 <Grid onPress={gotoItem} onLongPress={toggleWatchedItem} items={items} />
             </C.View >
         )

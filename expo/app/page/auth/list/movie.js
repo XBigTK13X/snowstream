@@ -15,8 +15,14 @@ export default function MovieListPage() {
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleMovieWatchStatus(itemId)
     }
-    const updateMediaJob = (apiClient, shelfId, metadataId) => {
-        apiClient.createJobUpdateMediaFiles('shelf', shelfId, metadataId)
+    const updateMediaJob = (apiClient, details) => {
+        apiClient.createJobUpdateMediaFiles({
+            targetScope: 'shelf',
+            targetId: details.shelfId,
+            metadataId: details.metadataId,
+            updateMetadata: details.metadata,
+            updateImages: details.images
+        })
     }
     return (
         <WatchableListPage

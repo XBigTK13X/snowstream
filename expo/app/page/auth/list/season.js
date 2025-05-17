@@ -30,8 +30,15 @@ export default function SeasonListPage() {
         return apiClient.toggleSeasonWatchStatus(itemId)
     }
 
-    const updateMediaJob = (apiClient, shelfId, metadataId) => {
-        apiClient.createJobUpdateMediaFiles('show', showId, metadataId)
+    const updateMediaJob = (apiClient, details) => {
+        apiClient.createJobUpdateMediaFiles({
+            targetScope: 'show',
+            targetId: showId,
+            metadataId: details.metadataId,
+            updateMetadata: details.metadata,
+            updateImages: details.images
+        })
+
     }
 
     return (

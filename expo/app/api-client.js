@@ -149,22 +149,28 @@ export class ApiClient {
         return this.post('/job', { name: 'read_media_files' })
     }
 
-    createJobUpdateMediaFiles(targetScope, targetId, metadataId, seasonOrder, episodeOrder) {
+    createJobUpdateMediaFiles(details) {
         let payload = { name: 'update_media_files' }
-        if (targetScope && targetId) {
+        if (details.targetScope && details.targetId) {
             payload.input = {
-                target_scope: targetScope,
-                target_id: targetId
+                target_scope: details.targetScope,
+                target_id: details.targetId
             }
         }
-        if (metadataId) {
-            payload.input.metadata_id = metadataId
+        if (details.metadataId) {
+            payload.input.metadata_id = details.metadataId
         }
-        if (seasonOrder) {
-            payload.input.season_order = seasonOrder
+        if (details.seasonOrder) {
+            payload.input.season_order = details.seasonOrder
         }
-        if (episodeOrder) {
-            payload.input.episode_order = episodeOrder
+        if (details.episodeOrder) {
+            payload.input.episode_order = details.episodeOrder
+        }
+        if (details.updateMetadata) {
+            payload.input.update_metadata = details.updateMetadata
+        }
+        if (details.updateImages) {
+            payload.input.update_images = details.updateImages
         }
         return this.post('/job', payload)
     }
