@@ -17,3 +17,5 @@ Abominable movie tvdb id
 
 Pokemon - To be a Master tvdb id
 428456
+
+TBAM is great because both the show, season, and episode NFOs are wrong. Also, all the posters and thumbs are also wrong.

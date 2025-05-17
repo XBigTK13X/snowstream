@@ -117,7 +117,7 @@ def auth_required(router):
             return None
         return db.op.upsert_shelf(shelf=shelf)
 
-    @router.post("/shelf/watched/toggle")
+    @router.post("/shelf/watched/toggle",tags=['Shelf'])
     def toggle_shelf_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_shelf_id: int=None,
@@ -303,7 +303,7 @@ def auth_required(router):
             only_watched=True if watched_status == 'Watched' else False
         )
 
-    @router.post("/show/watched/toggle")
+    @router.post("/show/watched/toggle",tags=['Show'])
     def toggle_show_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_id:int
@@ -336,7 +336,7 @@ def auth_required(router):
             only_watched=True if watched_status == 'Watched' else False
         )
 
-    @router.post("/show/season/watched/toggle")
+    @router.post("/show/season/watched/toggle",tags=['Show'])
     def toggle_show_season_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         season_id:int
@@ -366,7 +366,7 @@ def auth_required(router):
             only_watched=True if watched_status == 'Watched' else False
         )
 
-    @router.post("/show/season/episode/watched/toggle")
+    @router.post("/show/season/episode/watched/toggle",tags=['Show'])
     def toggle_show_episode_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         episode_id:int
@@ -402,13 +402,13 @@ def auth_required(router):
         return db.op.set_show_episode_watch_progress(ticket=auth_user.ticket,watch_progress=watch_progress)
 
 
-    @router.get('/continue/watching')
+    @router.get('/continue/watching',tags=['User'])
     def get_continue_watching_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         return db.op.get_continue_watching_list(ticket=auth_user.ticket)
 
-    @router.post("/transcode/session",tags=['Transcode'])
+    @router.post("/transcode/session",tags=['User'])
     def create_transcode_session(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         video_file_id:int=None,
