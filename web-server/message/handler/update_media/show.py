@@ -43,3 +43,8 @@ class Show(base.BaseHandler):
                 'update_images': update_images,
                 'update_metadata': update_metadata
             })
+
+    def download_images(self):
+        images = self.media_provider.get_show_images(metadata_id=self.metadata_id)
+        import pprint
+        pprint.pprint(images)

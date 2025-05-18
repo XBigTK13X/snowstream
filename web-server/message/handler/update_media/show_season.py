@@ -53,3 +53,8 @@ class ShowSeason(base.BaseHandler):
                 'update_images': update_images,
                 'update_metadata': update_metadata
             })
+
+    def download_images(self):
+        images = self.media_provider.get_season_images(metadata_id=self.metadata_id,season_order=self.season_order)
+        import pprint
+        pprint.pprint(images)

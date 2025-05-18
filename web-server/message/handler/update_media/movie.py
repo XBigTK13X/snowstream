@@ -50,3 +50,8 @@ class Movie(base.BaseHandler):
     def save_info_to_local(self):
         self.nfo.save_xml_as_nfo(nfo_path=self.movie_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         self.db.op.update_metadata_file_content(self.movie_nfo_file.id, xml_content=self.new_nfo_xml)
+
+    def download_images(self):
+        images = self.media_provider.get_movie_images(metadata_id=self.metadata_id)
+        import pprint
+        pprint.pprint(images)
