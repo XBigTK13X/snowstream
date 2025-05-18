@@ -30,7 +30,7 @@ def get_or_create_image_file(shelf_id: int, kind: str, local_path: str, web_path
     image_file = get_image_file_by_path(local_path=local_path)
     if not image_file:
         local_thumbnail_path = magick.create_thumbnail(local_path)
-        thumbnail_web_path = os.path.join(config.web_media_url,'/mnt/',local_thumbnail_path)
+        thumbnail_web_path = config.web_media_url + '/mnt/' + local_thumbnail_path
         return create_image_file(
             shelf_id=shelf_id, kind=kind, local_path=local_path, web_path=web_path, network_path=network_path, thumbnail_web_path=thumbnail_web_path
         )

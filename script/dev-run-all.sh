@@ -1,6 +1,6 @@
 #! /bin/bash
-mkdir -p .snowstream/log
 cd web-server
+mkdir -p .snowstream/log
 source venv/bin/activate
 echo "Quietly installing requirements"
 pip install -r requirements.txt > /dev/null 2>&1 || true

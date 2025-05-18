@@ -1,6 +1,6 @@
 #! /bin/bash
 script/dev-kill-all.sh
-find ./web-server/ -type d -name __pycache__ -exec rm -r {} \+
+#find ./web-server/ -type d -name __pycache__ -exec rm -r {} \+
 rm -rf ./logs/*
 script/db-refresh.sh
 sleep 4

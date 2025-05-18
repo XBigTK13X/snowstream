@@ -68,7 +68,7 @@ export default function EpisodeDetailsPage() {
                 </C.SnowText>
                 <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowText>Times Watched: {episode.watch_count ? episode.watch_count.amount : 0}</C.SnowText>
-                <C.SnowGrid itemsPerRow={3}>
+                <C.SnowGrid itemsPerRow={3} narrow>
                     <C.SnowTextButton
                         title="Play"
                         onPress={routes.func(routes.playMedia, {

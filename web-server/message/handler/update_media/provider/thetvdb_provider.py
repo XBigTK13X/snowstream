@@ -5,12 +5,9 @@ from db import db
 import json
 from log import log
 
-IMAGE_KINDS = {
-
-}
-
 # https://github.com/thetvdb/tvdb-v4-python
 # https://github.com/thetvdb/tvdb-v4-python/blob/main/tvdb_v4_official.py
+# https://thetvdb.github.io/v4-api
 class ThetvdbProvider(base.MediaProvider):
     def __init__(self):
         super().__init__("thetvdb")

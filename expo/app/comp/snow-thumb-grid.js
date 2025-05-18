@@ -6,7 +6,7 @@ export function SnowThumbGrid(props) {
     const renderItem = (item, itemIndex) => {
         let thumbUrl = null
         if (item.thumbnail_image) {
-            thumbUrl = item.thumbnail_image.web_path
+            thumbUrl = item.thumbnail_image.thumbnail_web_path
         }
 
         if (thumbUrl) {

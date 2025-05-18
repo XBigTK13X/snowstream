@@ -9,9 +9,16 @@ const styles = {
         justifyContent: 'center',
         width: '100%'
     },
+    narrowGrid: {
+        padding: 20,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        flex: 1
+    },
     item: {
         flexBasis: '20%'
-    }
+    },
 }
 
 if (Platform.OS === 'android') {
@@ -22,9 +29,13 @@ export function SnowGrid(props) {
     if (props.itemsPerRow) {
         itemStyle.push({ flexBasis: `${100 / props.itemsPerRow}%` })
     }
+    let gridStyle = [styles.grid]
+    if (props.narrow) {
+        gridStyle = [styles.narrowGrid]
+    }
     if (!props.items) {
         return (
-            <View style={styles.grid}>
+            <View style={gridStyle}>
                 {React.Children.map(props.children, (child, childIndex) => (
                     <View key={childIndex} style={itemStyle}>
                         {child}
@@ -40,7 +51,7 @@ export function SnowGrid(props) {
         renderItem = props.renderItem
     }
     return (
-        <View style={styles.grid}>
+        <View style={gridStyle}>
             {props.items.map((item, itemIndex) => {
                 return (
                     <View key={itemIndex} style={itemStyle}>

@@ -6,7 +6,7 @@ export function SnowPosterGrid(props) {
     const renderItem = (item, itemIndex) => {
         let posterUrl = null
         if (item.poster_image) {
-            posterUrl = item.poster_image.web_path
+            posterUrl = item.poster_image.thumbnail_web_path
         }
         let longPress = null
         if (props.onLongPress) {
