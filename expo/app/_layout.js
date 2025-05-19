@@ -4,10 +4,31 @@ import { SettingsProvider } from './settings-context'
 import { MessageDisplayProvider } from './message-context'
 import * as NavigationBar from 'expo-navigation-bar'
 
-const routes = require('./routes')
+const styles = {
+    default: {
+        backgroundColor: '#000000',
+    },
+    safeArea: {
+        margin: 10,
+        backgroundColor: '#000000',
+        flex: 1
+    },
+    header: {
+        marginBottom: 10,
+    },
+    footer: {
 
+    },
+    page: {
+        flex: 1
+    },
+    scroll: {
+        height: '65%',
+        width: '100%'
+    }
+}
 
-function Header(props) {
+function Header() {
     const { isAdmin, displayName } = C.useSession()
     const { routes } = C.useSettings()
 
@@ -28,54 +49,37 @@ function Header(props) {
         buttons.push({ title: 'Admin', route: routes.admin.dashboard })
     }
     return (
-        <C.View style={props.styles.header}>
+        <C.View style={styles.header}>
             <C.SnowGrid items={buttons} renderItem={renderItem}></C.SnowGrid>
         </C.View>
     )
 }
 
-function Footer(props) {
-    const { routes, config } = C.useSettings()
+function Footer() {
+    const { config } = C.useSettings()
     const { displayName } = C.useSession()
     let authedInfo = 'Not logged in.'
     if (displayName) {
         authedInfo = `Logged in as [${displayName}]`
     }
     return (
-        <>
+        <C.View style={styles.footer}>
             <C.Text>{'\n'}</C.Text>
             <C.SnowText>
                 Client v{config.clientVersion} talking to server at [{config.webApiUrl}] - {authedInfo}
             </C.SnowText>
-        </>
+        </C.View>
     )
 }
 
-const styles = {
-    default: {
-        backgroundColor: '#000000',
-    },
-    safeArea: {
-        padding: 10,
-        backgroundColor: '#000000',
-        height: C.getWindowHeight(),
-        width: C.getWindowWidth(),
-    },
-    header: {
-        marginBottom: 10,
-    },
-    page: {
-        height: C.getWindowHeight(),
-        width: C.getWindowWidth()
-    },
-    scroll: {
-        height: C.getWindowHeight() - 300,
-        width: C.getWindowWidth()
-    }
-}
-
+// style overrides
 if (C.Platform.OS === 'android') {
-    styles.header.marginBottom = 100
+    if (C.Platform.isTV) {
+
+    }
+    else {
+
+    }
 }
 
 // TODO Do I want always visible nav bars, or some kind of drawer?
@@ -109,7 +113,9 @@ export default function RootLayout() {
             return (
                 <SafeAreaProvider style={[styles.default, styles.page]}>
                     <SafeAreaView style={styles.page}>
-                        <C.TVFocusGuideView>{props.children}</C.TVFocusGuideView>
+                        <C.TVFocusGuideView style={styles.page}>
+                            {props.children}
+                        </C.TVFocusGuideView>
                     </SafeAreaView>
                 </SafeAreaProvider>
             )
@@ -127,12 +133,12 @@ export default function RootLayout() {
                 <SessionProvider>
                     <MessageDisplayProvider>
                         <C.View styles={styles.page}>
-                            <Header styles={styles} />
+                            <Header />
                             <MessageDisplay />
                             <C.ScrollView style={styles.scroll}>
-                                <C.Slot />
+                                <C.Slot style={styles.page} />
                             </C.ScrollView>
-                            <Footer styles={styles} />
+                            <Footer />
                         </C.View>
                     </MessageDisplayProvider>
                 </SessionProvider>

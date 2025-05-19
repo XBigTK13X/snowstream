@@ -7,8 +7,7 @@ import SnowText from './snow-text'
 
 const styles = {
     wrapper: {
-        height: 60,
-        width: 200,
+        flex: 1,
         margin: 10,
         padding: 10,
         paddingTop: 15,

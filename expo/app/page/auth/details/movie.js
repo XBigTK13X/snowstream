@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function MovieDetailsPage() {
-    const { isAdmin, apiClient } = C.useSession();
+    const { apiClient } = C.useSession();
     const { routes } = C.useSettings();
     const localParams = C.useLocalSearchParams();
     const [shelf, setShelf] = C.React.useState(null);
@@ -82,13 +82,12 @@ export default function MovieDetailsPage() {
                     audioTrack={audioTrack}
                     subtitleTrack={subtitleTrack}
                 />
-
             </C.View>
         )
     }
     return (
-        <C.Text>
+        <C.SnowText>
             Loading movie {movieId}.
-        </C.Text>
+        </C.SnowText>
     );
 }
