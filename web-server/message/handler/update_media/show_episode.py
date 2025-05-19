@@ -45,6 +45,9 @@ class ShowEpisode(base.BaseHandler):
         self.nfo.save_xml_as_nfo(nfo_path=self.episode_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         self.db.op.update_metadata_file_content(self.episode_nfo_file.id, xml_content=self.new_nfo_xml)
 
+    # Legacy images are
+    # episode-name.jpg
+    # metadata/episode-name.jpg
     def download_images(self):
         images = self.media_provider.get_episode_images(
             show_metadata_id=self.show_metadata_id,

@@ -54,7 +54,10 @@ class ShowSeason(base.BaseHandler):
                 'update_metadata': update_metadata
             })
 
+    # TODO Need to grab the season directory during initial scan.
+    # Use that to build these local paths
+    # Legacy images are
+    # poster.jpg
     def download_images(self):
         images = self.media_provider.get_season_images(metadata_id=self.metadata_id,season_order=self.season_order)
-        import pprint
-        pprint.pprint(images)
+        self.download_image(image_url=images['poster'],os.path.join())

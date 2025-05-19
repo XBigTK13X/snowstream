@@ -1,4 +1,6 @@
 import message.handler.update_media.base_handler as base
+import os
+import requests
 
 class Show(base.BaseHandler):
     def __init__(self,metadata_id:int,show_id:int):
@@ -44,7 +46,12 @@ class Show(base.BaseHandler):
                 'update_metadata': update_metadata
             })
 
+    # Legacy images are
+    # banner.jpg
+    # backdrop.jpg
+    # folder.jpeg
+    # logo.png
+    # landscape.jpg
     def download_images(self):
         images = self.media_provider.get_show_images(metadata_id=self.metadata_id)
-        import pprint
-        pprint.pprint(images)
+        self.download_image(image_url=images['poster'],local_path=os.path.join(self.show.directory,'poster.jpg'))
