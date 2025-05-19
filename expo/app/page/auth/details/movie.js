@@ -63,9 +63,9 @@ export default function MovieDetailsPage() {
                 <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowText>Times Watched: {movie.watch_count ? movie.watch_count.amount : 0}</C.SnowText>
                 <C.SnowGrid>
-                    <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />),
-                    <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />),
-                    <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />),
+                    <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />
+                    <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
+                    <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />
                     <C.SnowUpdateMediaButton kind="Movie" updateMediaJob={(details) => {
                         apiClient.createJobUpdateMediaFiles({
                             targetScope: 'movie',

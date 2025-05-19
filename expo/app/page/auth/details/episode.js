@@ -68,7 +68,7 @@ export default function EpisodeDetailsPage() {
                 </C.SnowText>
                 <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowText>Times Watched: {episode.watch_count ? episode.watch_count.amount : 0}</C.SnowText>
-                <C.SnowGrid itemsPerRow={3} narrow>
+                <C.SnowGrid itemsPerRow={3}>
                     <C.SnowTextButton
                         title="Play"
                         onPress={routes.func(routes.playMedia, {
@@ -78,11 +78,11 @@ export default function EpisodeDetailsPage() {
                             episodeId: episodeId,
                             shelfId: shelfId
                         })}
-                    />,
-                    <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />,
-                    <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />,
-                    <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />,
-                    <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />,
+                    />
+                    <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
+                    <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />
+                    <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />
+                    <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />
                     <C.SnowUpdateMediaButton kind="Episode" updateMediaJob={(details) => {
                         apiClient.createJobUpdateMediaFiles({
                             targetScope: 'episode',

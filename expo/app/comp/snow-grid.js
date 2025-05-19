@@ -9,19 +9,19 @@ const styles = {
         justifyContent: 'center',
         width: '100%'
     },
-    narrowGrid: {
-        padding: 20,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        flex: 1
-    },
     item: {
         flexBasis: '20%'
     },
 }
 
+// TV and Tablet overrides
 if (Platform.OS === 'android') {
+    if (C.Platform.isTV) {
+
+    }
+    else {
+
+    }
 }
 
 export function SnowGrid(props) {
@@ -30,17 +30,17 @@ export function SnowGrid(props) {
         itemStyle.push({ flexBasis: `${100 / props.itemsPerRow}%` })
     }
     let gridStyle = [styles.grid]
-    if (props.narrow) {
-        gridStyle = [styles.narrowGrid]
-    }
     if (!props.items) {
         return (
             <View style={gridStyle}>
-                {React.Children.map(props.children, (child, childIndex) => (
-                    <View key={childIndex} style={itemStyle}>
-                        {child}
-                    </View>
-                ))}
+                {
+                    React.Children.map(props.children, (child, childIndex) => {
+                        return (
+                            <View key={childIndex} style={itemStyle}>
+                                {child}
+                            </View>
+                        )
+                    })}
             </View>
         )
     }
