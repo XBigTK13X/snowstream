@@ -13,5 +13,5 @@ export default function AdminDashboardPage() {
         { title: 'Job List', route: routes.admin.jobList },
         { title: 'Run Job', route: routes.admin.jobRunner },
     ]
-    return <C.SnowGrid items={buttons} renderItem={renderItem}></C.SnowGrid>
+    return <C.SnowGrid items={buttons} renderItem={renderItem} itemsPerRow={3}></C.SnowGrid>
 }

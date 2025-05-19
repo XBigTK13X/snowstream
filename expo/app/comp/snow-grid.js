@@ -16,7 +16,7 @@ const styles = {
 
 // TV and Tablet overrides
 if (Platform.OS === 'android') {
-    if (C.Platform.isTV) {
+    if (Platform.isTV) {
 
     }
     else {

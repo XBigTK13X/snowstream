@@ -1,13 +1,13 @@
 import React from 'react'
-import { Dimensions, View } from 'react-native'
+import { View } from 'react-native'
 import Slider from '@react-native-community/slider';
 
 import util from '../util'
 import { useSettings } from '../settings-context'
 
-import SnowGrid from './snow-grid'
 import SnowTrackSelector from './snow-track-selector'
 import SnowText from './snow-text';
+import SnowTextButton from './snow-text-button'
 
 
 function Logs(props) {
