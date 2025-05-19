@@ -1,8 +1,6 @@
 import React from 'react'
-import { StyleSheet, Dimensions, Modal, TouchableOpacity, Platform, View } from 'react-native'
-import { useRouter } from 'expo-router'
+import { View } from 'react-native'
 import SnowText from './snow-text'
-import SnowGrid from './snow-grid'
 import SnowTextButton from './snow-text-button'
 
 const styles = {

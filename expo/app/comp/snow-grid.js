@@ -1,5 +1,5 @@
 import React from 'react'
-import { Platform, Dimensions, View } from 'react-native'
+import { Platform, View } from 'react-native'
 
 const styles = {
     grid: {

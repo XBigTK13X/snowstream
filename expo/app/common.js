@@ -67,7 +67,6 @@ export default {
     useSession,
     useSettings,
     util,
-    Dimensions,
     FlatList,
     Image,
     Link,

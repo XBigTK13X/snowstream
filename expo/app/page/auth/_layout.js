@@ -2,12 +2,13 @@ import C from '../../common'
 
 const styles = {
     fill: {
-        height: C.getWindowHeight()
+        flex: 1,
+        backgroundColor: 'black'
     }
 }
 
 export default function AuthPageLayout() {
-    const { session, isLoading, displayName } = C.useSession();
+    const { session, isLoading } = C.useSession();
     const { routes } = C.useSettings();
 
     if (isLoading) {
@@ -19,7 +20,7 @@ export default function AuthPageLayout() {
     }
 
     return (
-        <C.View>
+        <C.View style={styles.fill}>
             <C.Slot style={styles.fill} />
         </C.View>
     )

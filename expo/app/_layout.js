@@ -9,7 +9,7 @@ const styles = {
         backgroundColor: '#000000',
     },
     safeArea: {
-        margin: 10,
+        padding: 10,
         backgroundColor: '#000000',
         flex: 1
     },
