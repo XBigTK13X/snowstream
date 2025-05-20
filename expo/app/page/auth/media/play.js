@@ -11,6 +11,7 @@ const iptvUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=
 
 export default function PlayMediaPage() {
     const { apiClient } = C.useSession()
+    const { config } = C.useSettings()
     const localParams = C.useLocalSearchParams()
 
     const shelfId = localParams.shelfId
@@ -24,7 +25,7 @@ export default function PlayMediaPage() {
     const [videoUrl, setVideoUrl] = C.React.useState(null)
     const [transcode, setTranscode] = C.React.useState(false)
     const [transcodeReady, setTranscodeReady] = C.React.useState(false)
-    const [playbackFailed, setPlaybackFailed] = C.React.useState(false)
+    const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
@@ -122,19 +123,21 @@ export default function PlayMediaPage() {
     }
 
     const onError = (err) => {
-        //console.log({ err })
-        if (!transcode) {
+        if (!transcode && !streamableId) {
             setTranscode(true)
             setShelf(null)
         }
         else {
-            setPlaybackFailed(true)
+            setPlaybackFailed(err)
         }
     }
 
     if (playbackFailed) {
         return (
-            <C.SnowText>Unable to play the video.</C.SnowText>
+            <C.View>
+                <C.SnowText>Unable to play the video.</C.SnowText>
+                <C.SnowText>Error: {JSON.stringify(playbackFailed)}</C.SnowText>
+            </C.View>
         )
     }
 

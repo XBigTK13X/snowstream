@@ -73,7 +73,9 @@ export default function SnowVideoControls(props) {
 
                 <View style={styles.columns}>
                     <SnowTextButton shouldFocus={true} title="Resume" onPress={props.hideControls} />
-                    <SnowTextButton title="Logs" onPress={props.hideControls} />
+                    {
+                        //<SnowTextButton title="Logs" onPress={props.hideControls} />
+                    }
                     <SnowTextButton title="Stop" onPress={routes.funcBack()} />
                 </View>
 

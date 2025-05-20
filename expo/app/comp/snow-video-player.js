@@ -52,7 +52,10 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoUpdate = (info) => {
-        //console.log({ info })
+        if (config.debugVideoPlayer) {
+            console.log({ info })
+        }
+
         if (info && info.kind && info.kind === 'mpvevent') {
             let mpvEvent = info.libmpvEvent
             if (mpvEvent.property) {
@@ -78,7 +81,10 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoError = (err) => {
-        //console.log({ err })
+        if (config.debugVideoPlayer) {
+            console.log({ err })
+        }
+
         if (props.onError) {
             if (err && err.kind && err.kind == 'rnv') {
                 if (err.error.code === 4) {
@@ -132,6 +138,10 @@ export default function SnowVideoPlayer(props) {
 
     if (!props.videoUrl) {
         return null
+    }
+
+    if (config.debugVideoView) {
+        console.log(props.videoUrl)
     }
 
     return (

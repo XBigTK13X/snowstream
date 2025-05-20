@@ -33,7 +33,7 @@ export default function RnvVideoView(props) {
 
     if (!userPlayed) {
         return (
-            <View style={{ backgroundColor: 'black', height: props.windowHeight }}>
+            <View>
                 <SnowTextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
             </View>
         )
