@@ -8,11 +8,12 @@ import sqlalchemy.orm as sorm
 from settings import config
 import database.operation.show as db_show
 
-def create_show_season(show_id: int, season_order_counter: int):
+def create_show_season(show_id: int, season_order_counter: int, directory: str):
     with DbSession() as db:
         dbm = dm.ShowSeason()
         dbm.season_order_counter = season_order_counter
         dbm.show_id = show_id
+        dbm.directory = directory
         db.add(dbm)
         db.commit()
         db.refresh(dbm)
@@ -65,6 +66,7 @@ def get_show_season_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
         return results
 
 def get_show_season_list_by_show_id(ticket:dm.Ticket, show_id: int):
+    show = db_show.get_show_by_id(ticket=ticket,show_id=show_id)
     with DbSession() as db:
         query = (
             db.query(dm.ShowSeason)
@@ -82,6 +84,9 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket, show_id: int):
             if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
                 continue
             season = dm.set_primary_images(show_season)
+            if not season.poster_image:
+                season.poster_image = show.poster_image
+                season.thumbnail_image = show.thumbnail_image
             season.name = util.get_season_title(season)
             results.append(season)
         return results

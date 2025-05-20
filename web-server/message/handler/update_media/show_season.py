@@ -1,4 +1,5 @@
 import message.handler.update_media.base_handler as base
+import os
 
 class ShowSeason(base.BaseHandler):
     def __init__(self, metadata_id:int, show_season_id:int, season_order:int):
@@ -60,4 +61,4 @@ class ShowSeason(base.BaseHandler):
     # poster.jpg
     def download_images(self):
         images = self.media_provider.get_season_images(metadata_id=self.metadata_id,season_order=self.season_order)
-        self.download_image(image_url=images['poster'],os.path.join())
+        self.download_image(image_url=images['poster'],local_path=os.path.join(self.show_season.directory,'poster.jpg'))

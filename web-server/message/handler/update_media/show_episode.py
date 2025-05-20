@@ -1,4 +1,5 @@
 import message.handler.update_media.base_handler as base
+import os
 
 class ShowEpisode(base.BaseHandler):
     def __init__(self, metadata_id:int,show_episode_id:int,season_order:int,episode_order:int):
@@ -14,6 +15,7 @@ class ShowEpisode(base.BaseHandler):
             return None
         if not self.show_episode.metadata_files:
             return None
+        self.episode_video_file = self.show_episode.video_files[0]
         self.episode_nfo_file = self.show_episode.metadata_files[0]
         self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.episode_nfo_file.xml_content)
         return self.local_nfo_dict
@@ -54,5 +56,5 @@ class ShowEpisode(base.BaseHandler):
             season_order=self.season_order,
             episode_order=self.episode_order
         )
-        import pprint
-        pprint.pprint(images)
+        local_path = os.path.splitext(self.episode_video_file.local_path)[0]+".jpg"
+        self.download_image(image_url=images['screencap'],local_path=local_path)

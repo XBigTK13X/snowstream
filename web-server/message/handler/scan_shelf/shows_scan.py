@@ -88,11 +88,15 @@ def parse_show_info(file_path: str):
     location = Path(file_path).as_posix()
     matches = re.search(SHOW_EPISODE_REGEX, location)
     if matches != None:
-        return parse_episode_file_info(matches=matches)
+        info = parse_episode_file_info(matches=matches)
+        info['file_directory'] = os.path.dirname(file_path)
+        return info
 
     matches = re.search(SHOW_SEASON_REGEX, location)
     if matches != None:
-        return parse_season_file_info(matches=matches)
+        info = parse_season_file_info(matches=matches)
+        info['file_directory'] = os.path.dirname(file_path)
+        return info
 
     matches = re.search(SHOW_REGEX, location)
     if matches != None:
@@ -161,7 +165,7 @@ class ShowsScanHandler(base.BaseHandler):
             )
             if not season:
                 season = db.op.create_show_season(
-                    show_id=show.id, season_order_counter=info["season"]
+                    show_id=show.id, season_order_counter=info["season"], directory=info['file_directory']
                 )
             self.batch_lookup[show_slug][season_slug] = season
         season = self.batch_lookup[show_slug][season_slug]

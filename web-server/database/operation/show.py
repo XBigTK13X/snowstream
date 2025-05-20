@@ -36,6 +36,7 @@ def get_show_by_id(ticket:dm.Ticket,show_id: int):
             return None
         if not ticket.is_allowed(tag_provider=show.get_tag_ids):
             return None
+        show = dm.set_primary_images(show)
         return show
 
 def add_show_to_shelf(show_id: int, shelf_id: int):
