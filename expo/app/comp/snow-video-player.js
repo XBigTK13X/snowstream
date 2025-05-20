@@ -130,7 +130,7 @@ export default function SnowVideoPlayer(props) {
     }
 
 
-    if (!props.tracks) {
+    if (!props.videoUrl) {
         return null
     }
 

@@ -55,8 +55,8 @@ export default function PlayMediaPage() {
                         setTranscodeReady(true)
                     })
                 } else {
-                    setVideoUrl(videoFile.network_path)
                     setTracks(response.tracks.inspection.scored_tracks)
+                    setVideoUrl(videoFile.network_path)
                     setDurationSeconds(response.tracks.duration_seconds)
                     durationRef.current = response.tracks.duration_seconds
                 }
@@ -75,8 +75,8 @@ export default function PlayMediaPage() {
                         setTranscodeReady(true)
                     })
                 } else {
-                    setVideoUrl(videoFile.network_path)
                     setTracks(response.tracks.inspection.scored_tracks)
+                    setVideoUrl(videoFile.network_path)
                     setDurationSeconds(response.tracks.duration_seconds)
                     durationRef.current = response.tracks.duration_seconds
                 }
@@ -122,6 +122,7 @@ export default function PlayMediaPage() {
     }
 
     const onError = (err) => {
+        //console.log({ err })
         if (!transcode) {
             setTranscode(true)
             setShelf(null)

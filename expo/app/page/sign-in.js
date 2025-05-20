@@ -16,21 +16,15 @@ export default function SignInPage() {
     })
 
     function selectUser(user) {
-        console.log({ user })
         if (user.has_password) {
-            console.log("Setting user")
             setUser(user)
         }
         else {
-            console.log("Auto login")
             signIn(user.username, 'SNOWSTREAM_EMPTY')
                 .then(() => {
-                    console.log("Worked")
                     routes.replace(routes.landing)
                 })
                 .catch((err) => {
-                    console.log("Failed")
-                    console.log(err)
                     setErrors(err)
                 })
         }
