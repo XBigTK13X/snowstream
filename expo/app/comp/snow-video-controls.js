@@ -72,7 +72,7 @@ export default function SnowVideoControls(props) {
                 <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
 
                 <View style={styles.columns}>
-                    <SnowTextButton hasTVPreferredFocus={true} title="Resume" onPress={props.hideControls} />
+                    <SnowTextButton shouldFocus={true} title="Resume" onPress={props.hideControls} />
                     <SnowTextButton title="Logs" onPress={props.hideControls} />
                     <SnowTextButton title="Stop" onPress={routes.funcBack()} />
                 </View>

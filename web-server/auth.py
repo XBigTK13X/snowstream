@@ -93,7 +93,7 @@ def register(router):
         device_info: Annotated[str, Form()] = "swagger-ui"
     ):
         # FIXME Workaround Pydantic validation failures on empty passwords
-        if login_form.password == '_-_-_EMPTY_-_-_':
+        if login_form.password == 'SNOWSTREAM_EMPTY':
             login_form.password = ''
         user = authenticate_user(login_form.username, login_form.password)
         if not user:

@@ -80,7 +80,7 @@ export function WatchableListPage(props) {
                         }}
                     />
                 </C.SnowGrid>
-                <Grid onPress={gotoItem} onLongPress={toggleWatchedItem} items={items} />
+                <Grid shouldFocus onPress={gotoItem} onLongPress={toggleWatchedItem} items={items} />
             </C.View >
         )
     }

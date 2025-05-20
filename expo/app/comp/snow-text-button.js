@@ -39,6 +39,13 @@ if (Platform.OS === 'android') {
 
 export function SnowTextButton(props) {
     const [focused, setFocused] = React.useState(false)
+    const touchRef = React.useRef(null)
+
+    React.useEffect(() => {
+        if (props.shouldFocus) {
+            touchRef.current.focus()
+        }
+    }, [])
 
     const style = [styles.wrapper]
     if (props.selected) {
@@ -55,8 +62,10 @@ export function SnowTextButton(props) {
 
     return (
         <TouchableOpacity
+            ref={touchRef}
             activeOpacity={1.0}
             onPress={props.onPress}
+            hasTVPreferredFocus={props.shouldFocus}
             onLongPress={props.onLongPress}
             onFocus={() => { setFocused(true) }}
             onBlur={() => { setFocused(false) }}

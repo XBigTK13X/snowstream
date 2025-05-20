@@ -23,7 +23,7 @@ export default function ShelfListPage() {
             let destination = item
             return (
                 <C.SnowTextButton
-                    hasTVPreferredFocus={itemIndex === 0}
+                    shouldFocus={itemIndex === 0}
                     style={C.Styles.box}
                     title={destination.name}
                     onPress={routes.func(routes.admin.shelfEdit, { shelfId: destination.id })}

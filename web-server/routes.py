@@ -448,9 +448,17 @@ def no_auth_required(router):
     @router.get("/user/list",tags=['Unauthed'])
     def get_user_list():
         users = db.op.get_user_list()
+        results = []
+        admin = None
         for user in users:
             user.hashed_password = None
-        return users
+            if user.username == 'admin':
+                admin = user
+            else:
+                results.append(user)
+        results.append(admin)
+
+        return results
 
     @router.get("/streamable.m3u", response_class=PlainTextResponse,tags=['Unauthed Video'])
     def get_streamable_m3u():

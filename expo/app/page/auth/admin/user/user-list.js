@@ -17,7 +17,7 @@ export default function UserListPage() {
         const renderItem = (user, itemIndex) => {
             return (
                 <C.SnowTextButton
-                    hasTVPreferredFocus={itemIndex === 0}
+                    shouldFocus={itemIndex === 0}
                     style={C.Styles.box}
                     title={user.username || user.display_name}
                     onPress={routes.func(routes.admin.userEdit, { userId: user.id })}

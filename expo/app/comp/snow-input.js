@@ -9,7 +9,10 @@ export function SnowInput(props) {
             margin: 10,
             padding: 10
         }}
+        hasTVPreferredFocus={props.shouldFocus}
+        autoFocus={props.shouldFocus}
         onChangeText={props.onChangeText}
+        onSubmitEditing={props.onSubmit}
         value={props.value}
     />
 }

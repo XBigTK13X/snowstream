@@ -7,6 +7,7 @@ class User(BaseModel):
     display_name: str | None = None
     hashed_password: str | None = None
     raw_password: str | None = ''
+    has_password: bool | None = False
     enabled: bool | None = True
     permissions: str
     cduid: int | None = None

@@ -18,7 +18,7 @@ export default function StreamSourceDetailsPage() {
         const renderItem = (streamable, itemIndex) => {
             return (
                 <C.SnowTextButton
-                    hasTVPreferredFocus={itemIndex === 0}
+                    shouldFocus={itemIndex === 0}
                     key={streamable.id}
                     title={streamable.name}
                     onPress={routes.func(routes.playMedia, {

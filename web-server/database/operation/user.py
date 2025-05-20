@@ -9,6 +9,7 @@ import util
 def create_user(user: am.User):
     with DbSession() as db:
         model_dump = user.model_dump()
+        model_dump['has_password'] = model_dump['raw_password'] != ''
         model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
         del model_dump['raw_password']
         del model_dump['id']
@@ -35,14 +36,16 @@ def upsert_user(user: am.User):
         del model_dump['ticket']
         if user.raw_password != '':
             model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
-        else:        
+            model_dump['has_password'] = True
+        else:
             model_dump['hashed_password'] = old_hash
+            model_dump['has_password'] = False
         del model_dump['raw_password']
         existing = db.query(dm.User).filter(dm.User.id == existing.id).update(model_dump)
-        db.commit()        
+        db.commit()
         return existing
 
-def get_user_by_id(user_id:int):    
+def get_user_by_id(user_id:int):
     with DbSession() as db:
         query = db.query(dm.User)
         return query.filter(dm.User.id == user_id).first()
@@ -55,13 +58,13 @@ def get_user_by_name(username: str):
 
 def get_user_list():
     with DbSession() as db:
-        return db.query(dm.User).all()
+        return db.query(dm.User).order_by(dm.User.username).all()
 
 def delete_user_by_id(user_id:int):
     with DbSession() as db:
         deleted = db.query(dm.User).filter(dm.User.id == user_id).delete()
         db.commit()
-        return deleted    
+        return deleted
 
 def save_user_access(user_access:am.UserAccess):
     user_tags = []

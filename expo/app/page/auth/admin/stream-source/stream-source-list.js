@@ -18,7 +18,7 @@ export default function StreamSourceListPage() {
         const renderItem = (streamSource, itemIndex) => {
             return (
                 <C.SnowTextButton
-                    hasTVPreferredFocus={itemIndex === 0}
+                    shouldFocus={itemIndex === 0}
                     style={C.Styles.box}
                     title={streamSource.name}
                     onPress={routes.func(routes.admin.streamSourceEdit, {

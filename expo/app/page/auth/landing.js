@@ -37,7 +37,7 @@ export default function LandingPage(props) {
             if (destination.kind === 'continue') {
                 return (
                     <C.SnowTextButton
-                        hasTVPreferredFocus={itemIndex === 0}
+                        shouldFocus={itemIndex === 0}
                         title="Continue Watching"
                         onPress={routes.func(routes.continueWatching)}
                     />
@@ -46,7 +46,7 @@ export default function LandingPage(props) {
             else if (destination.kind && destination.kind === 'Movies') {
                 return (
                     <C.SnowTextButton
-                        hasTVPreferredFocus={itemIndex === 0}
+                        shouldFocus={itemIndex === 0}
                         title={destination.name}
                         onPress={routes.func(routes.movieList, { shelfId: destination.id })}
                         onLongPress={() => {
@@ -62,7 +62,7 @@ export default function LandingPage(props) {
             } else if (destination.kind && destination.kind === 'Shows') {
                 return (
                     <C.SnowTextButton
-                        hasTVPreferredFocus={itemIndex === 0}
+                        shouldFocus={itemIndex === 0}
                         title={destination.name}
                         onPress={routes.func(routes.showList, { shelfId: destination.id })}
                         onLongPress={() => {
@@ -78,7 +78,7 @@ export default function LandingPage(props) {
             } else {
                 return (
                     <C.SnowTextButton
-                        hasTVPreferredFocus={itemIndex === 0}
+                        shouldFocus={itemIndex === 0}
                         title={destination.name}
                         onPress={routes.func(routes.streamSourceDetails, {
                             streamSourceId: destination.id,

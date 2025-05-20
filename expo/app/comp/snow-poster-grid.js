@@ -18,6 +18,7 @@ export function SnowPosterGrid(props) {
         if (posterUrl) {
             return <SnowImageButton
                 wide={false}
+                shouldFocus={props.shouldFocus && itemIndex === 0}
                 imageUrl={posterUrl}
                 onPress={() => { props.onPress(item) }}
                 onLongPress={longPress}

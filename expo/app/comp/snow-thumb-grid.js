@@ -18,7 +18,7 @@ export function SnowThumbGrid(props) {
                 <View>
                     <SnowImageButton
                         wide={true}
-                        hasTVPreferredFocus={itemIndex === 0}
+                        shouldFocus={props.shouldFocus && itemIndex === 0}
                         imageUrl={thumbUrl}
                         title={item.name}
                         onPress={() => { props.onPress(item) }}

@@ -60,6 +60,14 @@ if (Platform.OS === 'android') {
 
 export function SnowImageButton(props) {
     const [focused, setFocused] = React.useState(false)
+    const touchRef = React.useRef(null)
+
+    React.useEffect(() => {
+        if (props.shouldFocus) {
+            touchRef.current.focus()
+        }
+    }, [])
+
     let fontStyle = [styles.text]
     if (props.title.length > 20) {
         fontStyle.push({ fontSize: 15 * mult })
@@ -83,12 +91,15 @@ export function SnowImageButton(props) {
 
     return (
         <TouchableOpacity
+            ref={touchRef}
             activeOpacity={1.0}
             onPress={props.onPress}
             onLongPress={props.onLongPress}
             onFocus={() => { setFocused(true) }}
             onBlur={() => { setFocused(false) }}
-            style={wrapperStyle}>
+            style={wrapperStyle}
+            hasTVPreferredFocus={props.shouldFocus}
+            autoFocus={props.shouldFocus}>
             <Image
                 style={imageStyle}
                 resizeMode="contain"

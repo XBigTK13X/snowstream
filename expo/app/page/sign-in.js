@@ -4,6 +4,8 @@ export default function SignInPage() {
     const { routes, config } = C.useSettings()
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
+    const [user, setUser] = C.React.useState(null)
+    const [password, setPassword] = C.React.useState(null)
 
     C.React.useEffect(() => {
         if (!users) {
@@ -13,8 +15,30 @@ export default function SignInPage() {
         }
     })
 
-    function clickSignIn(username, password) {
-        signIn(username, password)
+    function selectUser(user) {
+        console.log({ user })
+        if (user.has_password) {
+            console.log("Setting user")
+            setUser(user)
+        }
+        else {
+            console.log("Auto login")
+            signIn(user.username, 'SNOWSTREAM_EMPTY')
+                .then(() => {
+                    console.log("Worked")
+                    routes.replace(routes.landing)
+                })
+                .catch((err) => {
+                    console.log("Failed")
+                    console.log(err)
+                    setErrors(err)
+                })
+        }
+
+    }
+
+    function login() {
+        signIn(user.username, password)
             .then(() => {
                 routes.replace(routes.landing)
             })
@@ -23,14 +47,31 @@ export default function SignInPage() {
             })
     }
 
+    function cancel() {
+        setUser(null)
+    }
+
+    let passwordForm = null
+    if (users && user && user.has_password) {
+        passwordForm = (
+            <C.View>
+                <C.SnowText>Enter the password for {user.username}</C.SnowText>
+                <C.SnowLabel>Password</C.SnowLabel>
+                <C.SnowInput onSubmit={login} shouldFocus onChangeText={setPassword} value={password} />
+                <C.SnowGrid itemsPerRow={2} >
+                    <C.SnowTextButton title="Login" onPress={login} />
+                    <C.SnowTextButton title="Cancel" onPress={cancel} />
+                </C.SnowGrid>
+            </C.View>
+        )
+    }
+
     let userList = null
-    if (users) {
-        // TODO Don't hardcord the admin login
-        // TODO Allow text entry for both fields
+    if (users && !user) {
         let renderItem = (item) => {
             return <C.SnowTextButton
                 title={item.username}
-                onPress={() => { clickSignIn(item.username, item.username == 'admin' ? 'admin' : '_-_-_EMPTY_-_-_') }}
+                onPress={() => { selectUser(item) }}
             />
         }
         userList = (
@@ -41,7 +82,8 @@ export default function SignInPage() {
     return (
         <C.View>
             {userList}
-            <C.Text>{errors ? JSON.stringify(errors) : "Waiting on login"}</C.Text>
+            {passwordForm}
+            <C.SnowText>{errors ? JSON.stringify(errors) : ""}</C.SnowText>
         </C.View>
     )
 }
