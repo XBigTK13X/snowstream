@@ -81,7 +81,7 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-def get_episode_title(episode):
+def get_episode_slug(episode):
     return f'S{episode.season.season_order_counter:02} E{episode.episode_order_counter:03}'
 
 def get_season_title(season):

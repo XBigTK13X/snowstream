@@ -19,6 +19,7 @@ def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
             .options(sorm.joinedload(dm.ShowEpisode.season))
             .options(sorm.joinedload(dm.ShowEpisode.season.show))
             .options(sorm.joinedload(dm.ShowEpisode.tags))
+            .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
         )
         episodes = query.all()
         results = []
@@ -26,7 +27,7 @@ def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
             episode = dm.set_primary_images(episode)
-            episode.name = util.get_episode_title(episode)
+            episode.episode_slug = util.get_episode_slug(episode)
             results.append(episode)
         return results
 
@@ -40,6 +41,12 @@ def create_show_episode(show_season_id: int, episode_order_counter: int):
         db.refresh(dbm)
         return dbm
 
+def update_show_episode_name(show_episode_id:int,name:str):
+    with DbSession() as db:
+        episode = db.query(dm.ShowEpisode).filter(dm.ShowEpisode.id == show_episode_id).first()
+        episode.name = name
+        db.commit()
+        return episode
 
 def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
     show = db_show.get_show_by_id(ticket=ticket,show_id=show_id)
@@ -63,7 +70,7 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
             episode = dm.set_primary_images(episode)
-            episode.name = util.get_episode_title(episode)
+            episode.episode_slug = util.get_episode_slug(episode)
             results.append(episode)
         return results
 
@@ -89,7 +96,7 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
         episode.show = show
         episode.season.name = util.get_season_title(episode.season)
         episode = dm.set_primary_images(episode)
-        episode.name = util.get_episode_title(episode)
+        episode.episode_slug = util.get_episode_slug(episode)
         return episode
 
 
@@ -119,7 +126,7 @@ def get_show_episode_list_by_season(ticket:dm.Ticket,show_season_id: int):
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
                 continue
             episode = dm.set_primary_images(episode)
-            episode.name = util.get_episode_title(episode)
+            episode.episode_slug = util.get_episode_slug(episode)
             results.append(episode)
         return results
 

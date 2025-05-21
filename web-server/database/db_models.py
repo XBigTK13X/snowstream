@@ -411,6 +411,10 @@ class ShowSeasonMetadataFile(BaseModel):
     metadata_file: sorm.Mapped['MetadataFile'] = sorm.relationship(back_populates='show_season_metadata_file',overlaps="show_season,metadata_files")
 
 class ShowEpisode(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.episode_slug = ''
+
     __tablename__ = "show_episode"
     name = sa.Column(sa.Text)
     episode_order_counter = sa.Column(sa.Integer)

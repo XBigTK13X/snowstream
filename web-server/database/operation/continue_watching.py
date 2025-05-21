@@ -81,7 +81,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     next_episode.season = next_season
                     next_episode.show = show
                     next_episode.poster_image = show.poster_image
-                    next_episode.name = util.get_episode_title(next_episode)
+                    next_episode.episode_slug = util.get_episode_slug(next_episode)
                     if next_season.season_order_counter == 1:
                         if next_episode.episode_order_counter == 1:
                             new_shows.append(next_episode)

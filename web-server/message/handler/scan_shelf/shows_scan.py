@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 from db import db
 import os
+import nfo
 
 from enum import Flag, auto
 
@@ -227,6 +228,12 @@ class ShowsScanHandler(base.BaseHandler):
                         db.op.create_show_episode_metadata_file(
                             show_episode_id=episode.id, metadata_file_id=info["id"]
                         )
+                        metadata = nfo.nfo_path_to_dict(nfo_path=info['file_path'])
+                        if 'title' in metadata:
+                            db.op.update_show_episode_name(
+                                show_episode_id=episode.id,
+                                name=metadata['title']
+                            )
 
     def organize_images(self):
         progress_count = 0
