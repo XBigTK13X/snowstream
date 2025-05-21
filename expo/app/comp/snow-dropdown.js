@@ -9,7 +9,7 @@ export function SnowDropdown(props) {
         return <View>No options defined!</View>
     }
 
-    const [selectedIndex, setSelectedIndex] = React.useState(0)
+    const [selectedIndex, setSelectedIndex] = React.useState(props.selected)
 
     const choose = (chosenIndex) => {
         setSelectedIndex(chosenIndex)
