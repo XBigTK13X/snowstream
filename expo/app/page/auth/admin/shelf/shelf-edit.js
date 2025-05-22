@@ -1,8 +1,8 @@
 import C from '../../../../common'
 
 export default function ShelfEditPage() {
-    const { signOut, apiClient } = C.useSession()
-    const { routes, config } = C.useSettings()
+    const { apiClient } = C.useSession()
+    const { routes, } = C.useSettings()
     const [shelfName, setShelfName] = C.React.useState('')
     const [localPath, setLocalPath] = C.React.useState('')
     const [networkPath, setNetworkPath] = C.React.useState('')

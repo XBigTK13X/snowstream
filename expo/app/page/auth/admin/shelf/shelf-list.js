@@ -1,7 +1,7 @@
 import C from '../../../../common'
 
 export default function ShelfListPage() {
-    const { signOut, apiClient } = C.useSession()
+    const { apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
     const [shelves, setShelves] = C.React.useState(null)
     C.React.useEffect(() => {

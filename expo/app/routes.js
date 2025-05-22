@@ -61,4 +61,11 @@ routes.funcBack = () => {
     }
 }
 
+routes.reset = () => {
+    if (router.canDismiss()) {
+        router.dismissAll()
+    }
+    router.replace(routes.root);
+}
+
 module.exports = routes

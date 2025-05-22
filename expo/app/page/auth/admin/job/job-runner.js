@@ -1,9 +1,7 @@
 import C from '../../../../common'
 
 export default function ShelfEditPage() {
-    const { signOut, apiClient } = C.useSession()
-    const { routes, config } = C.useSettings()
-    const localParams = C.useLocalSearchParams()
+    const { apiClient } = C.useSession()
 
     const createJob = (kind) => {
         if (kind === 'refresh-streams') {

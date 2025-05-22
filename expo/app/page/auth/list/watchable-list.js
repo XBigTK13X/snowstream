@@ -17,7 +17,6 @@ export function WatchableListPage(props) {
             })
         }
         if (shelf && !items) {
-            console.log({ items, shelf })
             props.loadItems(apiClient, shelfId, currentStatus).then((response) => {
                 setItems(response)
                 if (response.length == 0) {

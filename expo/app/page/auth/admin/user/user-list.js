@@ -1,7 +1,7 @@
 import C from '../../../../common'
 
 export default function UserListPage() {
-    const { signOut, apiClient } = C.useSession()
+    const { apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
     const [users, setUsers] = C.React.useState(null)
 

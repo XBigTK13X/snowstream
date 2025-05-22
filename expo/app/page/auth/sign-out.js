@@ -9,7 +9,7 @@ export default function SignOutPage() {
         if (!signedOut) {
             signOut()
             setSignedOut(true)
-            routes.replace(routes.signIn);
+            routes.reset()
         }
     })
 

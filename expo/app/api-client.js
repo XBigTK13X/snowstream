@@ -4,14 +4,30 @@ import DeviceInfo from 'react-native-device-info';
 import { UAParser } from 'ua-parser-js'
 import { Platform } from 'react-native'
 
-
 export class ApiClient {
-    constructor(authToken, isAdmin) {
+    constructor(authToken, isAdmin, onApiError, onLogout) {
         this.authToken = authToken
         this.hasAdmin = isAdmin === 'true'
         this.baseURL = config.webApiUrl + '/api'
+        this.onApiError = onApiError
+        this.apiErrorSent = false
+        let self = this
 
-        this.createClient(this.authToken)
+        this.createClient(self.authToken)
+
+        this.handleError = (err) => {
+            if (err) {
+                if (err.response && err.response.status === 401) {
+                    onLogout()
+                }
+                if (err.code && err.code === 'ERR_NETWORK') {
+                    if (!self.apiErrorsent) {
+                        self.onApiError(err)
+                    }
+                    self.apiErrorSent = true
+                }
+            }
+        }
 
         this.get = async (url, params) => {
             let queryParams = null
@@ -24,11 +40,7 @@ export class ApiClient {
                     return response.data
                 })
                 .catch((err) => {
-                    //TODO Better central management off critical errors
-                    if (err && err.response && err.response.status === 401) {
-                        //localStorage.removeItem("snowstream-auth-token");
-                        this.authToken = null
-                    }
+                    this.handleError(err)
                 })
         }
 
@@ -39,11 +51,7 @@ export class ApiClient {
                     return response.data
                 })
                 .catch((err) => {
-                    //TODO Better central management off critical errors
-                    if (err && err.response && err.response.status === 401) {
-                        //localStorage.removeItem("snowstream-auth-token");
-                        this.authToken = null
-                    }
+                    this.handleError(err)
                 })
         }
 
@@ -54,11 +62,7 @@ export class ApiClient {
                     return response.data
                 })
                 .catch((err) => {
-                    //TODO Better central management off critical errors
-                    if (err && err.response && err.response.status === 401) {
-                        //localStorage.removeItem("snowstream-auth-token");
-                        this.authToken = null
-                    }
+                    this.handleError(err)
                 })
         }
     }
@@ -69,7 +73,7 @@ export class ApiClient {
             baseURL: this.baseURL,
         })
 
-        this.authToken = authToken //localStorage.getItem("snowstream-auth-token");
+        this.authToken = authToken
 
         if (this.authToken) {
             this.httpClient = axios.create({
@@ -132,9 +136,8 @@ export class ApiClient {
         })
     }
 
-    logout() {
-        //localStorage.removeItem("snowstream-auth-token");
-        this.authToken = null
+    heartbeat() {
+        return this.get('/heartbeat')
     }
 
     createJobStreamSourcesRefresh() {

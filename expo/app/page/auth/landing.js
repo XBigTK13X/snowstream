@@ -1,7 +1,7 @@
 import C from '../../common'
 
 export default function LandingPage(props) {
-    const { signOut, apiClient } = C.useSession()
+    const { apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
     const [shelves, setShelves] = C.React.useState(null)
     const [streamSources, setStreamSources] = C.React.useState(null)

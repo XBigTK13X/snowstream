@@ -1,8 +1,8 @@
 import C from '../../../../common'
 
 export default function StreamSourceEditPage() {
-    const { signOut, apiClient } = C.useSession()
-    const { routes, config } = C.useSettings()
+    const { apiClient } = C.useSession()
+    const { routes } = C.useSettings()
     const [streamSourceName, setStreamSourceName] = C.React.useState('')
     const [streamSourceKind, setStreamSourceKind] = C.React.useState('HdHomeRun')
     const [streamSourceKindIndex, setStreamSourceKindIndex] = C.React.useState(0)

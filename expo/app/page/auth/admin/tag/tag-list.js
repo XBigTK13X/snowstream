@@ -1,7 +1,7 @@
 import C from '../../../../common'
 
 export default function TagListPage() {
-    const { signOut, apiClient } = C.useSession()
+    const { apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
     const [tags, setTags] = C.React.useState(null)
     C.React.useEffect(() => {

@@ -1,8 +1,8 @@
 import C from '../../../../common'
 
 export default function UserEditPage() {
-    const { signOut, apiClient } = C.useSession()
-    const { routes, config } = C.useSettings()
+    const { apiClient } = C.useSession()
+    const { routes } = C.useSettings()
 
     const [userId, setUserId] = C.React.useState(null)
     const [userTags, setUserTags] = C.React.useState([])
