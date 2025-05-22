@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from fastapi.responses import PlainTextResponse
 from fastapi.responses import RedirectResponse
 
-from fastapi import Response
+from fastapi import Response, Request
 from typing import Annotated
 from fastapi import Security
 
@@ -486,6 +486,34 @@ def no_auth_required(router):
     @router.delete("/transcode/playlist",tags=['Unauthed Video'])
     def delete_transcode_session(transcode_session_id:int,tags=['Unauthed']):
         transcode.close(transcode_session_id=transcode_session_id)
+        return True
+
+    # https://github.com/Sonarr/Sonarr/blob/14e324ee30694ae017a39fd6f66392dc2d104617/src/NzbDrone.Core/Notifications/Webhook/WebhookBase.cs#L32
+    @router.post("/hook/sonarr", tags=['Unauthed'])
+    async def hook_sonarr(request:Request):
+        headers = dict(request.headers)
+        if not 'apikey' in headers or headers['apikey'] != 'scanner':
+            return False
+        body = await request.json()
+        import pprint
+        print("Header")
+        pprint.pprint(headers)
+        print("Body")
+        pprint.pprint(body)
+        return True
+
+    # https://github.com/Radarr/Radarr/blob/159f5df8cca6704fe88da42d2b20d1f39f0b9d59/src/NzbDrone.Core/Notifications/Webhook/WebhookBase.cs#L32
+    @router.post("/hook/radarr", tags=['Unauthed'])
+    async def hook_radarr(request:Request):
+        headers = dict(request.headers)
+        if not 'apikey' in headers or headers['apikey'] != 'scanner':
+            return False
+        body = await request.json()
+        import pprint
+        print("Header")
+        pprint.pprint(headers)
+        print("Body")
+        pprint.pprint(body)
         return True
 
     return router
