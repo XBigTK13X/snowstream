@@ -370,6 +370,10 @@ export class ApiClient {
         return this.get('/continue/watching')
     }
 
+    search(query) {
+        return this.get('/search', { query })
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

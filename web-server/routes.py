@@ -187,6 +187,13 @@ def auth_required(router):
             return None
         return db.op.save_user_access(user_access=user_access)
 
+    @router.get('/search', tags=['User'])
+    def perform_search(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        query:str
+    ):
+        return db.op.perform_search(ticket=auth_user.ticket,query=query)
+
     @router.get('/tag',tags=['Tag'])
     def get_user(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],

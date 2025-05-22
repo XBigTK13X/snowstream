@@ -27,6 +27,7 @@ let routes = {
     options: '/page/auth/options',
     playMedia: '/page/auth/media/play',
     seasonList: '/page/auth/list/season',
+    search: '/page/auth/search',
     showList: '/page/auth/list/show',
     signIn: '/page/sign-in',
     signOut: '/page/auth/sign-out',

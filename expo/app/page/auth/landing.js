@@ -20,75 +20,66 @@ export default function LandingPage(props) {
         }
     })
 
-    let destinations = [{ kind: 'continue' }]
+    let destinations = [
+        (<C.SnowTextButton
+            shouldFocus
+            title="Continue Watching"
+            onPress={routes.func(routes.continueWatching)}
+        />)]
 
     if (shelves) {
-        destinations = destinations.concat(shelves)
+        destinations = destinations.concat(shelves.map((shelf) => {
+            if (shelf.kind === 'Movies') {
+                return (
+                    <C.SnowTextButton
+                        title={shelf.name}
+                        onPress={routes.func(routes.movieList, { shelfId: shelf.id })}
+                        onLongPress={() => {
+                            apiClient.toggleMovieShelfWatchStatus(shelf.id).then((watched) => {
+                                apiClient.getShelfList().then((response) => {
+                                    setShelves(response)
+                                    setMessageDisplay(`Set shelf ${shelf.name} to ${watched ? 'watched' : 'unwatched'}.`)
+                                })
+                            })
+                        }}
+                    />
+                )
+            } else if (shelf.kind === 'Shows') {
+                return (
+                    <C.SnowTextButton
+                        title={shelf.name}
+                        onPress={routes.func(routes.showList, { shelfId: shelf.id })}
+                        onLongPress={() => {
+                            apiClient.toggleShowShelfWatchStatus(shelf.id).then((watched) => {
+                                apiClient.getShelfList().then((response) => {
+                                    setShelves(response)
+                                    setMessageDisplay(`Set shelf ${shelf.name} to ${watched ? 'watched' : 'unwatched'}`)
+                                })
+                            })
+                        }}
+                    />
+                )
+            }
+            return null
+        }))
     }
 
     if (streamSources) {
-        destinations = destinations.concat(streamSources)
+        destinations = destinations.concat(streamSources.map((streamSource) => {
+            return (<C.SnowTextButton
+                title={streamSource.name}
+                onPress={routes.func(routes.streamSourceDetails, {
+                    streamSourceId: streamSource.id,
+                })}
+            />)
+        }))
     }
 
+    destinations.push((<C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />))
+
     if (shelves || streamSources) {
-        const renderItem = (item, itemIndex) => {
-            let destination = item
-            markup = null
-            if (destination.kind === 'continue') {
-                return (
-                    <C.SnowTextButton
-                        shouldFocus={itemIndex === 0}
-                        title="Continue Watching"
-                        onPress={routes.func(routes.continueWatching)}
-                    />
-                )
-            }
-            else if (destination.kind && destination.kind === 'Movies') {
-                return (
-                    <C.SnowTextButton
-                        shouldFocus={itemIndex === 0}
-                        title={destination.name}
-                        onPress={routes.func(routes.movieList, { shelfId: destination.id })}
-                        onLongPress={() => {
-                            apiClient.toggleMovieShelfWatchStatus(destination.id).then((watched) => {
-                                apiClient.getShelfList().then((response) => {
-                                    setShelves(response)
-                                    setMessageDisplay(`Set shelf ${destination.name} to ${watched ? 'watched' : 'unwatched'}.`)
-                                })
-                            })
-                        }}
-                    />
-                )
-            } else if (destination.kind && destination.kind === 'Shows') {
-                return (
-                    <C.SnowTextButton
-                        shouldFocus={itemIndex === 0}
-                        title={destination.name}
-                        onPress={routes.func(routes.showList, { shelfId: destination.id })}
-                        onLongPress={() => {
-                            apiClient.toggleShowShelfWatchStatus(destination.id).then((watched) => {
-                                apiClient.getShelfList().then((response) => {
-                                    setShelves(response)
-                                    setMessageDisplay(`Set shelf ${destination.name} to ${watched ? 'watched' : 'unwatched'}`)
-                                })
-                            })
-                        }}
-                    />
-                )
-            } else {
-                return (
-                    <C.SnowTextButton
-                        shouldFocus={itemIndex === 0}
-                        title={destination.name}
-                        onPress={routes.func(routes.streamSourceDetails, {
-                            streamSourceId: destination.id,
-                        })}
-                    />
-                )
-            }
-        }
         return (
-            <C.SnowGrid items={destinations} renderItem={renderItem} />
+            <C.SnowGrid items={destinations} itemsPerRow={3} />
         )
     }
 
