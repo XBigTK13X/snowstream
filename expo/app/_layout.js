@@ -17,7 +17,6 @@ const styles = {
         marginBottom: 10,
     },
     footer: {
-
     },
     page: {
         flex: 1
@@ -55,6 +54,17 @@ function Header() {
     )
 }
 
+// style overrides
+if (C.Platform.OS === 'android') {
+    if (C.Platform.isTV) {
+
+    }
+    else {
+
+    }
+}
+
+
 function Footer() {
     const { config } = C.useSettings()
     const { displayName } = C.useSession()
@@ -72,17 +82,7 @@ function Footer() {
     )
 }
 
-// style overrides
-if (C.Platform.OS === 'android') {
-    if (C.Platform.isTV) {
 
-    }
-    else {
-
-    }
-}
-
-// TODO Do I want always visible nav bars, or some kind of drawer?
 function SafeAreaStub(props) {
     return <C.View style={styles.safeArea}>{props.children}</C.View>
 }
@@ -97,6 +97,7 @@ function MessageDisplay() {
 
 export default function RootLayout() {
     let PlatformWrapper = null
+    // SafeAreaProvider is not implemented for the web platform
     if (C.Platform.OS === 'web') {
         PlatformWrapper = (props) => {
             return (
@@ -126,6 +127,10 @@ export default function RootLayout() {
         NavigationBar.setVisibilityAsync('hidden')
     }
 
+    let scrollStyle = [styles.scroll]
+    if (C.Platform.OS === 'web') {
+        scrollStyle.push({ height: C.getWindowHeight() - 300 })
+    }
 
     return (
         <PlatformWrapper>
@@ -135,7 +140,7 @@ export default function RootLayout() {
                         <C.View styles={styles.page}>
                             <Header />
                             <MessageDisplay />
-                            <C.ScrollView style={styles.scroll}>
+                            <C.ScrollView style={scrollStyle}>
                                 <C.Slot style={styles.page} />
                             </C.ScrollView>
                             <Footer />
