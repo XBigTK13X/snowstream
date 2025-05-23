@@ -49,7 +49,7 @@ def add_show_to_shelf(show_id: int, shelf_id: int):
         db.refresh(dbm)
         return dbm
 
-def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
+def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return None
     with DbSession() as db:
@@ -59,6 +59,8 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
             .filter(dm.ShowShelf.shelf_id == shelf_id)
             .options(sorm.joinedload(dm.Show.shelf))
         )
+        if search_query:
+            query = query.filter(dm.Show.name.ilike(f'%{search_query}%'))
         if ticket.has_tag_restrictions():
             query = query.options(sorm.joinedload(dm.Show.tags))
         query = (
@@ -75,7 +77,9 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
         for show in shows:
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):
                 continue
-            results.append(dm.set_primary_images(show))
+            show = dm.set_primary_images(show)
+            show.kind = 'show'
+            results.append(show)
         return results
 
 def create_show_image_file(show_id: int, image_file_id: int):

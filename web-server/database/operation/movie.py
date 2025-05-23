@@ -54,7 +54,7 @@ def get_movie_by_name_and_year(name: str, release_year: int):
             .first()
         )
 
-def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
+def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
@@ -64,6 +64,8 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
             .filter(dm.MovieShelf.shelf_id == shelf_id)
             .options(sorm.joinedload(dm.Movie.shelf))
         )
+        if search_query:
+            query = query.filter(dm.Movie.name.ilike(f'%{search_query}%'))
         if ticket.has_tag_restrictions():
             query = query.options(sorm.joinedload(dm.Movie.tags))
         query = (
@@ -79,7 +81,9 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int):
         for movie in movies:
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
                 continue
-            results.append(dm.set_primary_images(movie))
+            movie = dm.set_primary_images(movie)
+            movie.kind = 'movie'
+            results.append(movie)
         return results
 
 def create_movie_video_file(movie_id: int, video_file_id: int):
