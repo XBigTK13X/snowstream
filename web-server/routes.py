@@ -432,6 +432,18 @@ def auth_required(router):
         )
         return transcode_session
 
+    @router.get("/playlist/list",tags=['Playlist'])
+    def get_playlist_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        return db.op.get_playlist_list(ticket=auth_user.ticket)
+
+    @router.get("/playlist",tags=['Playlist'])
+    def get_playlist_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        return db.op.get_playlist_list(ticket=auth_user.ticket)
+
     return router
 
 

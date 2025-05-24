@@ -26,6 +26,8 @@ let routes = {
     movieList: '/page/auth/list/movie',
     options: '/page/auth/options',
     playMedia: '/page/auth/media/play',
+    playlistDetails: '/page/auth/details/playlist',
+    playlistList: '/page/auth/list/playlist',
     seasonList: '/page/auth/list/season',
     search: '/page/auth/search',
     showList: '/page/auth/list/show',

@@ -77,6 +77,8 @@ export default function LandingPage(props) {
 
     destinations.push((<C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />))
 
+    destinations.push((<C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />))
+
     if (shelves || streamSources) {
         return (
             <C.SnowGrid items={destinations} itemsPerRow={3} />

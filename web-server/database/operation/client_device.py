@@ -51,6 +51,8 @@ def get_client_device_user_by_cduid(cduid:int):
 def get_ticket_by_cduid(cduid:int):
     ticket = dm.Ticket()
     ticket.client = get_client_device_user_by_cduid(cduid=cduid)
+    if not ticket.client:
+        return None
     ticket.cduid = ticket.client.id
     isolation = ticket.client.isolation_mode
     # Default isolation mode is Loud

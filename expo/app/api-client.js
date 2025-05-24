@@ -375,6 +375,10 @@ export class ApiClient {
         return this.get('/search', { query })
     }
 
+    getPlaylistList() {
+        return this.get('/playlist/list')
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

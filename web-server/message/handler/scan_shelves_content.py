@@ -6,9 +6,15 @@ import message.handler.scan_shelf.shows_scan as ss
 
 shelf_handlers = {"Movies": sm.MoviesScanHandler, "Shows": ss.ShowsScanHandler}
 
+from message.handler.job_media_scope import JobMediaScope
 
 def handle(job_id, message_payload):
     log.info(f"[WORKER] Handling a scan_shelves_content job")
+
+    scope = None
+    if message_payload and 'input' in message_payload and message_payload['input'] != None:
+        scope = JobMediaScope(message_payload['input'])
+
     shelves = db.op.get_shelf_list()
     results = {}
     handlers = []

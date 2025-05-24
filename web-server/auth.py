@@ -56,6 +56,10 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": authenticate_value},
     )
+    expired_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Login has expired"
+    )
     try:
         payload = jwt.decode(
             token, config.jwt_secret_hex, algorithms=[config.jwt_algorithm]
@@ -73,6 +77,8 @@ async def get_current_user(
         raise credentials_exception
     user.cduid = token_data.client_device_user_id
     user.ticket = db.op.get_ticket_by_cduid(cduid=user.cduid)
+    if not user.ticket:
+        raise expired_exception
     # Don't bother checking permissions for the admin user
     if user.username == "admin":
         return user
