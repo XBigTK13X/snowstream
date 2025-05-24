@@ -15,7 +15,7 @@ export default function ShowListPage() {
     }
     const updateMediaJob = (apiClient, details) => {
         apiClient.createJobUpdateMediaFiles({
-            targetScope: 'shelf',
+            targetKind: 'shelf',
             targetId: details.shelfId,
             metadataId: details.metadataId,
             updateMetadata: details.metadata,

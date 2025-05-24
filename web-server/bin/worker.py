@@ -21,6 +21,8 @@ def start():
     import message.handler.read_media_files
     import message.handler.update_media_files
 
+    from message.handler.job_media_scope import JobMediaScope
+
     handlers = {
         "stream_sources_refresh": message.handler.stream_sources_refresh,
         "scan_shelves_content": message.handler.scan_shelves_content,
@@ -49,8 +51,10 @@ def start():
                     # Dont' want cold kill and restart like the API because it could ruin a job run
                     if config.hot_reload_message_handlers == 'yes':
                         importlib.reload(handlers[kind])
-
-                    if handlers[kind].handle(job_id, payload):
+                    scope = None
+                    if 'input' in payload and payload['input'] != None:
+                        scope = JobMediaScope(payload['input'])
+                    if handlers[kind].handle(job_id=job_id, scope=scope):
                         db.op.update_job(job_id=job_id, status="complete")
                     else:
                         db.op.update_job(job_id=job_id, status="failed")

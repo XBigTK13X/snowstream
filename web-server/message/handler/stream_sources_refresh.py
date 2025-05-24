@@ -74,7 +74,7 @@ def generate_streamable_epg():
     return True
 
 
-def handle(job_id, message_payload):
+def handle(job_id, scope):
     log.info(f"[WORKER] Handling a stream_sources_refresh job")
     log.info("Removing existing streamable schedule info")
     db.sql.truncate("streamable_schedule")
@@ -82,7 +82,6 @@ def handle(job_id, message_payload):
     refresh_results = {}
     for stream_source in stream_sources:
         # TODO Purge all program data that ended at least five minutes ago
-        # TODO Most of the backend is dumb pipes, but these handlers could use some unit tests
         log.info("Refreshing stream source " + stream_source.kind)
         handler = source_handlers[stream_source.kind](stream_source)
 

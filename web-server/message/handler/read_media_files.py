@@ -3,7 +3,7 @@ from db import db
 import api_models as am
 import nfo
 
-def handle(job_id, message_payload):
+def handle(job_id, scope):
     log.info(f"[WORKER] Handling a read_media_files job")
     shelves = db.op.get_shelf_list()
     results = {}

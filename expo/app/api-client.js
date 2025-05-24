@@ -141,23 +141,11 @@ export class ApiClient {
         return this.get('/heartbeat')
     }
 
-    createJobStreamSourcesRefresh() {
-        return this.post('/job', { name: 'stream_sources_refresh' })
-    }
-
-    createJobShelvesScan() {
-        return this.post('/job', { name: 'scan_shelves_content' })
-    }
-
-    createJobReadMediaFiles() {
-        return this.post('/job', { name: 'read_media_files' })
-    }
-
-    createJobUpdateMediaFiles(details) {
-        let payload = { name: 'update_media_files' }
-        if (details.targetScope && details.targetId) {
+    createScopedJob(name, details) {
+        payload = { name }
+        if (details.targetKind && details.targetId) {
             payload.input = {
-                target_scope: details.targetScope,
+                target_kind: details.targetKind,
                 target_id: details.targetId
             }
         }
@@ -177,6 +165,22 @@ export class ApiClient {
             payload.input.update_images = details.updateImages
         }
         return this.post('/job', payload)
+    }
+
+    createJobStreamSourcesRefresh(details) {
+        return this.createScopedJob('stream_sources_refresh', details)
+    }
+
+    createJobShelvesScan(details) {
+        return this.createScopedJob('scan_shelves_content', details)
+    }
+
+    createJobReadMediaFiles(details) {
+        return this.createScopedJob('read_media_files', details)
+    }
+
+    createJobUpdateMediaFiles(details) {
+        return this.createScopedJob('update_media_files', details)
     }
 
     createStreamSource(payload) {

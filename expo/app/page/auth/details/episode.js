@@ -85,7 +85,7 @@ export default function EpisodeDetailsPage() {
                     <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />
                     <C.SnowUpdateMediaButton kind="Episode" updateMediaJob={(details) => {
                         apiClient.createJobUpdateMediaFiles({
-                            targetScope: 'episode',
+                            targetKind: 'episode',
                             targetId: episodeId,
                             metadataId: details.metadataId,
                             updateMetadata: details.metadata,

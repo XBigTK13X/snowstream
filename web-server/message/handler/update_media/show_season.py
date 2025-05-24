@@ -48,7 +48,7 @@ class ShowSeason(base.BaseHandler):
         for episode in self.episodes:
             self.make_job(name='update_media_files',payload={
                 'metadata_id': self.metadata_id,
-                'target_scope': 'episode',
+                'target_kind': 'episode',
                 'target_id': episode.id,
                 'season_order': self.show_season.season_order_counter,
                 'episode_order': episode.episode_order_counter,

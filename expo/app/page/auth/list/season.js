@@ -32,7 +32,7 @@ export default function SeasonListPage() {
 
     const updateMediaJob = (apiClient, details) => {
         apiClient.createJobUpdateMediaFiles({
-            targetScope: 'show',
+            targetKind: 'show',
             targetId: showId,
             metadataId: details.metadataId,
             updateMetadata: details.metadata,

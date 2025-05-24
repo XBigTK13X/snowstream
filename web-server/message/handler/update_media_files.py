@@ -9,12 +9,10 @@ import message.handler.update_media.show as update_show
 import message.handler.update_media.show_season as update_season
 import message.handler.update_media.show_episode as update_episode
 
-from message.handler.job_media_scope import JobMediaScope
 
 # TODO Use a similar scope limiter on the scan files jobs
-def handle(job_id, message_payload):
+def handle(job_id, scope):
     log.info(f"[WORKER] Handling an update_media_files job")
-    scope = JobMediaScope(message_payload['input'])
 
     handler = None
     if scope.is_shelf():

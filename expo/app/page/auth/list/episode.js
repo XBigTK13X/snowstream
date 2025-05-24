@@ -27,7 +27,7 @@ export default function EpisodeListPage() {
     }
     const updateMediaJob = (apiClient, details) => {
         apiClient.createJobUpdateMediaFiles({
-            targetScope: 'season',
+            targetKind: 'season',
             targetId: seasonId,
             metadataId: details.metadataId,
             seasonOrder,
