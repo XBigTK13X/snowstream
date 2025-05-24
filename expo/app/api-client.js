@@ -142,7 +142,7 @@ export class ApiClient {
     }
 
     createScopedJob(name, details) {
-        payload = { name }
+        let payload = { name }
         if (details.targetKind && details.targetId) {
             payload.input = {
                 target_kind: details.targetKind,

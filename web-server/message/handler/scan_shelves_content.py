@@ -19,7 +19,6 @@ def handle(job_id, scope):
     for kind in file_kinds:
         shelf_files[kind] = []
     for shelf in shelves:
-        # TODO Unit tests for file name parsing
         log.info(f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
         handler = shelf_handlers[shelf.kind](job_id=job_id, shelf=shelf)
 

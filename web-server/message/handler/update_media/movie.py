@@ -4,7 +4,7 @@ class Movie(base.BaseHandler):
     def __init__(self,scope):
         super().__init__("Movie")
         self.log.info(f"Updating media for movie {scope.target_id}")
-        self.movie_id = scope.taget_id
+        self.movie_id = scope.target_id
         self.metadata_id = scope.metadata_id
 
     def read_local_info(self):
