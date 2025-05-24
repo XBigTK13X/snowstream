@@ -67,12 +67,11 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None)
             query
             .options(sorm.joinedload(dm.Show.image_files))
             .options(sorm.joinedload(dm.Show.metadata_files))
-        )
-        shows = (
-            query
             .order_by(dm.Show.name)
-            .all()
         )
+        if search_query:
+            query = query.limit(config.search_results_per_shelf_limit)
+        shows = query.all()
         results = []
         for show in shows:
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):

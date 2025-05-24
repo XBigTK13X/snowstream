@@ -16,12 +16,13 @@ export class ApiClient {
         this.createClient(self.authToken)
 
         this.handleError = (err) => {
+            console.log(err)
             if (err) {
                 if (err.response && err.response.status === 401) {
                     onLogout()
                 }
                 if (err.code && err.code === 'ERR_NETWORK') {
-                    if (!self.apiErrorsent) {
+                    if (!self.apiErrorSent) {
                         self.onApiError(err)
                     }
                     self.apiErrorSent = true

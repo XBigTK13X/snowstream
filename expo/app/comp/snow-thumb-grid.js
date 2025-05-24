@@ -1,6 +1,7 @@
 import { View } from 'react-native'
 import SnowGrid from './snow-grid'
 import SnowImageButton from './snow-image-button'
+import SnowLabel from './snow-label'
 
 export function SnowThumbGrid(props) {
     const renderItem = (item, itemIndex) => {
@@ -31,6 +32,7 @@ export function SnowThumbGrid(props) {
     }
     return (
         <View>
+            {props.title ? <SnowLabel>{props.title} ({props.items.length})</SnowLabel> : null}
             <SnowGrid wide={true} items={props.items} renderItem={renderItem} />
         </View>
     )

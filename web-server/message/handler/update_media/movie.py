@@ -53,5 +53,3 @@ class Movie(base.BaseHandler):
 
     def download_images(self):
         images = self.media_provider.get_movie_images(metadata_id=self.metadata_id)
-        import pprint
-        pprint.pprint(images)

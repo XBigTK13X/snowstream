@@ -9,18 +9,26 @@ from settings import config
 import database.operation.show as db_show
 import database.operation.show_season as db_season
 
-def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
+def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int,search_query:str=None):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
         query = (
             db.query(dm.ShowEpisode)
-            .filter(dm.ShowEpisode.season.show.shelf.id == shelf_id)
-            .options(sorm.joinedload(dm.ShowEpisode.season))
-            .options(sorm.joinedload(dm.ShowEpisode.season.show))
+            .join(dm.ShowEpisode.season)
+            .join(dm.ShowSeason.show)
+            .join(dm.Show.shelf)
+            .options(
+                sorm.contains_eager(dm.ShowEpisode.season)
+                .contains_eager(dm.ShowSeason.show)
+                .contains_eager(dm.Show.shelf)
+            )
+            .filter(dm.Shelf.id == shelf_id)
             .options(sorm.joinedload(dm.ShowEpisode.tags))
             .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
         )
+        if search_query:
+            query = query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
         episodes = query.all()
         results = []
         for episode in episodes:
@@ -28,6 +36,7 @@ def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
                 continue
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)
+            episode.kind = 'episode'
             results.append(episode)
         return results
 

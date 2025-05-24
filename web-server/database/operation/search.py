@@ -21,12 +21,15 @@ def perform_search(ticket:dm.Ticket,query:str):
         result['episodes'] = []
         for shelf in shelves:
             if shelf.kind == 'Movies':
-                movies = db_movie.get_movie_list_by_shelf(ticket=ticket,shelf_id=shelf.id,search_query=query)
+                movies = db_movie.get_movie_list_by_shelf(ticket=ticket, shelf_id=shelf.id, search_query=query)
                 if movies:
                     result['movies'] += movies
             elif shelf.kind == 'Shows':
-                shows = db_show.get_show_list_by_shelf(ticket=ticket,shelf_id=shelf.id,search_query=query)
+                shows = db_show.get_show_list_by_shelf(ticket=ticket, shelf_id=shelf.id, search_query=query)
                 if shows:
                     result['shows'] += shows
+                episodes = db_episode.get_show_episode_list_by_shelf(ticket=ticket, shelf_id=shelf.id, search_query=query)
+                if episodes:
+                    result['episodes'] += episodes
 
     return result

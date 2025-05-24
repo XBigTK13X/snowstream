@@ -1,8 +1,12 @@
 import { Platform, View } from 'react-native'
 import SnowGrid from './snow-grid'
 import SnowImageButton from './snow-image-button'
+import SnowLabel from './snow-label'
 
 export function SnowPosterGrid(props) {
+    if (!props.items || !props.items.length) {
+        return null
+    }
     const renderItem = (item, itemIndex) => {
         let posterUrl = null
         if (item.poster_image) {
@@ -28,6 +32,7 @@ export function SnowPosterGrid(props) {
     }
     return (
         <View>
+            {props.title ? <SnowLabel>{props.title} ({props.items.length})</SnowLabel> : null}
             <SnowGrid items={props.items} renderItem={renderItem} />
         </View>
     )

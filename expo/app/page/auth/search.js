@@ -14,10 +14,6 @@ export default function SearchPage() {
         })
     }
 
-    let movieGrid = null
-    let showGrid = null
-    let episodeGrid = null
-
     const pressItem = (item) => {
         if (item.kind === 'movie') {
             routes.goto(routes.movieDetails, {
@@ -25,41 +21,42 @@ export default function SearchPage() {
                 movieId: item.id
             })
         }
-        if (item.kind === 'show') {
+        else if (item.kind === 'show') {
             routes.goto(routes.seasonList, {
                 shelfId: item.shelf.id,
                 showId: item.id,
                 showName: item.name
             })
         }
-        if (item.kind === 'episode') {
+        else if (item.kind === 'episode') {
             let destination = {
-                shelfId: item.show.shelf.id,
-                showId: item.show.id,
+                shelfId: item.season.show.shelf.id,
+                showId: item.season.show.id,
                 seasonId: item.season.id,
                 episodeId: item.id,
-                showName: item.show.name,
+                showName: item.season.show.name,
                 seasonOrder: item.season.season_order_counter
             }
             routes.goto(routes.episodeDetails, destination)
         }
     }
 
+    let grids = null
     if (searchResults) {
-        if (searchResults.movies && searchResults.movies.length) {
-            movieGrid = <C.SnowPosterGrid items={searchResults.movies} onPress={pressItem} />
-        }
-        if (searchResults.shows && searchResults.shows.length) {
-            showGrid = <C.SnowPosterGrid items={searchResults.shows} onPress={pressItem} />
-        }
+        grids = (
+            <C.View>
+                <C.SnowPosterGrid title="Movies" items={searchResults.movies} onPress={pressItem} />
+                <C.SnowPosterGrid title="Shows" items={searchResults.shows} onPress={pressItem} />
+                <C.SnowThumbGrid title="Episodes" items={searchResults.episodes} onPress={pressItem} />
+            </C.View>
+        )
     }
 
     return (
         <C.View>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput value={queryText} onChangeText={setQueryText} onSubmit={executeQuery} />
-            {movieGrid}
-            {showGrid}
+            {grids}
         </C.View>
     )
 }

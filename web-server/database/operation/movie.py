@@ -72,6 +72,8 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
             query.filter(dm.MovieShelf.shelf_id == shelf_id)
             .order_by(dm.Movie.name)
         )
+        if search_query:
+            query = query.limit(config.search_results_per_shelf_limit)
         movies = query.all()
         # TODO
         # It would be more performant to do this filtering in the database.

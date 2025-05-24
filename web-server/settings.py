@@ -45,6 +45,7 @@ class Config:
         self.thumbnail_dir = ".snowstream/thumbnail"
         self.thumbnail_dimensions = "340x500"
         self.ffprobe_dir = ".snowstream/ffprobe"
+        self.search_results_per_shelf_limit = 25
 
         self.refresh_postgres_url()
 
