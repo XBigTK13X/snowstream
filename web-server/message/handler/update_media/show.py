@@ -1,12 +1,12 @@
 import message.handler.update_media.base_handler as base
 import os
-import requests
 
 class Show(base.BaseHandler):
-    def __init__(self,metadata_id:int,show_id:int):
+    def __init__(self,scope):
         super().__init__("Show")
-        self.show_id = show_id
-        self.metadata_id = metadata_id
+        self.log.info(f"Updating media for show {scope.target_id}")
+        self.show_id = scope.target_id
+        self.metadata_id = scope.metadata_id
 
     def read_local_info(self):
         self.show = self.db.op.get_show_by_id(ticket=self.ticket,show_id=self.show_id)

@@ -1,10 +1,11 @@
 import message.handler.update_media.base_handler as base
 
 class Movie(base.BaseHandler):
-    def __init__(self,metadata_id:int,movie_id:int):
+    def __init__(self,scope):
         super().__init__("Movie")
-        self.movie_id = movie_id
-        self.metadata_id = metadata_id
+        self.log.info(f"Updating media for movie {scope.target_id}")
+        self.movie_id = scope.taget_id
+        self.metadata_id = scope.metadata_id
 
     def read_local_info(self):
         self.movie = self.db.op.get_movie_by_id(ticket=self.ticket,movie_id=self.movie_id)

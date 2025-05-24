@@ -15,6 +15,7 @@ class BaseHandler:
         self.db = db
         self.nfo = nfo
         self.ticket = db.model.Ticket()
+        self.log = log
 
     def make_job(self, name:str, payload:dict):
         job = self.db.op.create_job(kind=name)

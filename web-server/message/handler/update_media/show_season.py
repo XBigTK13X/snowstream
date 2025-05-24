@@ -2,11 +2,12 @@ import message.handler.update_media.base_handler as base
 import os
 
 class ShowSeason(base.BaseHandler):
-    def __init__(self, metadata_id:int, show_season_id:int, season_order:int):
+    def __init__(self, scope):
         super().__init__("ShowSeason")
-        self.show_season_id = show_season_id
-        self.metadata_id = metadata_id
-        self.season_order = season_order
+        self.log.info(f"Updating media for season {scope.target_id}")
+        self.show_season_id = scope.target_id
+        self.metadata_id = scope.metadata_id
+        self.season_order = scope.season_order
 
     def read_local_info(self):
         self.show_season = self.db.op.get_show_season_by_id(ticket=self.ticket,season_id=self.show_season_id)

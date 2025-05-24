@@ -9,38 +9,29 @@ import message.handler.update_media.show as update_show
 import message.handler.update_media.show_season as update_season
 import message.handler.update_media.show_episode as update_episode
 
+from message.handler.job_media_scope import JobMediaScope
+
 # TODO Use a similar scope limiter on the scan files jobs
 def handle(job_id, message_payload):
     log.info(f"[WORKER] Handling an update_media_files job")
-    job_input = message_payload['input']
-    target = job_input['target_scope']
-    target_id = job_input['target_id']
-    metadata_id = job_input['metadata_id']
-    season_order = job_input['season_order'] if 'season_order' in job_input else None
-    episode_order = job_input['episode_order'] if 'episode_order' in job_input else None
-    update_images = job_input['update_images'] if 'update_images' in job_input else False
-    update_metadata = job_input['update_metadata'] if 'update_metadata' in job_input else False
+    scope = JobMediaScope(message_payload['input'])
 
     handler = None
-    if target == 'shelf':
-        log.info(f"Updating media for shelf {target_id}")
+    if scope.is_shelf():
+        log.info(f"Not yet implemeneted - Updating media for shelf {scope.target_id}")
         # TODO This may need to be a bit different
         # Loop through the entries on the shelf
         # If image/meta missing, then make a query and fill in
-    elif target == 'movie':
-        log.info(f"Updating media for movie {target_id}")
-        handler = update_movie.Movie(metadata_id=metadata_id,movie_id=target_id)
-    elif target == 'show':
-        log.info(f"Updating media for show {target_id}")
-        handler = update_show.Show(metadata_id=metadata_id,show_id=target_id)
-    elif target == 'season':
-        log.info(f"Updating media for season {target_id}")
-        handler = update_season.ShowSeason(metadata_id=metadata_id,show_season_id=target_id,season_order=season_order)
-    elif target == 'episode':
-        log.info(f"Updating media for episode {target_id}")
-        handler = update_episode.ShowEpisode(metadata_id=metadata_id,show_episode_id=target_id,season_order=season_order,episode_order=episode_order)
+    elif scope.is_movie():
+        handler = update_movie.Movie(scope=scope)
+    elif scope.is_show():
+        handler = update_show.Show(scope=scope)
+    elif scope.is_season():
+        handler = update_season.ShowSeason(scope=scope)
+    elif scope.is_episode():
+        handler = update_episode.ShowEpisode(scope=scope)
     else:
-        log.info(f"Unhandled target of kind {target}")
+        log.info(f"Unhandled target of kind {scope.target}")
         return False
 
     if handler == None:
@@ -50,13 +41,13 @@ def handle(job_id, message_payload):
 
     handler.read_remote_info()
 
-    if update_metadata:
+    if scope.update_metadata:
         handler.merge_remote_into_local()
         handler.save_info_to_local()
 
-    if update_images:
+    if scope.update_images:
         handler.download_images()
 
-    handler.schedule_subjobs(update_images=update_images,update_metadata=update_metadata)
+    handler.schedule_subjobs(update_images=scope.update_images,update_metadata=scope.update_metadata)
 
     return True
