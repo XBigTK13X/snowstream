@@ -51,8 +51,18 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoUpdate = (info) => {
+        console.log({ info })
         if (config.debugVideoPlayer) {
             console.log({ info })
+        }
+
+        if (info && info.kind && info.kind === 'rnvevent') {
+            if (info.data && info.data.currentTime) {
+                setProgressSeconds(info.data.currentTime)
+                if (props.onProgress) {
+                    props.onProgress(info.data.currentTime)
+                }
+            }
         }
 
         if (info && info.kind && info.kind === 'mpvevent') {
@@ -65,8 +75,8 @@ export default function SnowVideoPlayer(props) {
                     }
                 }
                 if (mpvEvent.property === 'eof-reached') {
-                    if (props.onProgress) {
-                        props.onProgress(props.durationSeconds)
+                    if (props.onComplete) {
+                        props.onComplete()
                     }
                 }
             }
@@ -105,6 +115,7 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onSeek = (progressPercent) => {
+        console.log({ progressPercent })
         const progressSeconds = (progressPercent / 100) * props.durationSeconds
         if (props.onSeek) {
             props.onSeek(progressSeconds)

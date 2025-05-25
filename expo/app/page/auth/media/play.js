@@ -97,19 +97,22 @@ export default function PlayMediaPage() {
     }
 
     const onSeek = (seekedToSeconds) => {
-        onProgress(seekedToSeconds)
+        console.log({ seekedToSeconds })
+        return onProgress(seekedToSeconds)
     }
 
     const onProgress = (progressSeconds) => {
         const duration = durationRef.current
+        console.log({ duration })
         if (duration > 0) {
             if (movie) {
-                apiClient.setMovieWatchProgress(movieId, progressSeconds, duration)
+                return apiClient.setMovieWatchProgress(movieId, progressSeconds, duration)
             }
             if (episode) {
-                apiClient.setEpisodeWatchProgress(episodeId, progressSeconds, duration)
+                return apiClient.setEpisodeWatchProgress(episodeId, progressSeconds, duration)
             }
         }
+        return new Promise((resolve) => { resolve() })
     }
 
     const onError = (err) => {
@@ -120,6 +123,12 @@ export default function PlayMediaPage() {
         else {
             setPlaybackFailed(err)
         }
+    }
+
+    const onComplete = () => {
+        onProgress().then(() => {
+            console.log("Queue up the next")
+        })
     }
 
     if (playbackFailed) {
@@ -143,6 +152,7 @@ export default function PlayMediaPage() {
                 selectTrack={selectTrack}
                 onSeek={onSeek}
                 onProgress={onProgress}
+                onComplete={onComplete}
                 durationSeconds={durationSeconds}
             />
         )

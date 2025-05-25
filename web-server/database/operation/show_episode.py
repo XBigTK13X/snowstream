@@ -368,7 +368,7 @@ def make_show_episode_watch_count(cduid:int,show_episode_id:int):
     return dbm
 
 def increase_show_episode_watch_count(ticket:dm.Ticket,show_episode_id:int):
-    episode = get_show_episode_by_id(ticket=ticket,show_episode_id=show_episode_id)
+    episode = get_show_episode_by_id(ticket=ticket,episode_id=show_episode_id)
     if not episode:
         return False
     with DbSession() as db:

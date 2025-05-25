@@ -54,6 +54,7 @@ export default function RnvVideoView(props) {
             paused={!props.isPlaying}
             muted={!props.isPlaying}
             onError={onError}
+            onProgress={(data) => { props.onUpdate({ eventKind: 'rnvevent', data: data }) }}
             selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
             selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
         />

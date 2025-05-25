@@ -44,12 +44,6 @@ const styles = {
     }
 }
 
-const buttonStyles = {
-    wrapper: styles.column,
-    container: styles.column,
-    button: styles.column
-}
-
 export default function SnowVideoControls(props) {
 
     const { routes } = useSettings()

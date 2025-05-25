@@ -56,6 +56,8 @@ def add_show_to_shelf(show_id: int, shelf_id: int):
         return dbm
 
 def get_show_list_by_tag_id(ticket:dm.Ticket, tag_id:int):
+    if not ticket.is_allowed(tag_id=tag_id):
+        return None
     with DbSession() as db:
         shows = (
             db.query(dm.Show)
