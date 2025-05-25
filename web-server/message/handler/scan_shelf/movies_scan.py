@@ -1,8 +1,9 @@
-from log import log
-import message.handler.scan_shelf.base_handler as base
-from pathlib import Path
 import re
+import os
+from log import log
+from pathlib import Path
 from db import db
+import message.handler.scan_shelf.base_handler as base
 
 MOVIE_ASSETS_REGEX = re.compile(
     r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<asset_name>.*)",
@@ -25,15 +26,20 @@ MOVIE_EXTRAS_VIDEO_FILE_REGEX = re.compile(
 
 def parse_movie_assets_info(matches):
     result = {}
+    result["directory"] = Path(
+        os.path.join(matches.group("directory"), matches.group("movie_folder_name") + f" ({matches.group('movie_folder_year')})/")
+    ).as_posix()
     result["movie_name"] = matches.group("movie_folder_name")
     result["movie_year"] = matches.group("movie_folder_year")
     result["asset_name"] = matches.group("asset_name")
     return result
 
 
-# TODO This is wrong, check to see the extras asset format on disk
 def parse_movie_extras_assets_info(matches):
     result = {}
+    result["directory"] = Path(
+        os.path.join(matches.group("directory"), matches.group("movie_folder_name") + f" ({matches.group('movie_folder_year')})/")
+    ).as_posix()
     result["movie_name"] = matches.group("movie_folder_name")
     result["movie_year"] = matches.group("movie_folder_year")
     result["asset_name"] = matches.group("asset_name")
@@ -42,6 +48,9 @@ def parse_movie_extras_assets_info(matches):
 
 def parse_movie_video_file_info(matches):
     result = {}
+    result["directory"] = Path(
+        os.path.join(matches.group("directory"), matches.group("movie_folder_name") + f" ({matches.group('movie_folder_year')})/")
+    ).as_posix()
     result["movie_name"] = matches.group("movie_file_name")
     result["movie_year"] = matches.group("movie_file_year")
     result["movie_quality"] = matches.group("quality")
@@ -50,13 +59,15 @@ def parse_movie_video_file_info(matches):
 
 def parse_movie_extras_video_file_info(matches):
     result = {}
+    result["directory"] = Path(
+        os.path.join(matches.group("directory"), matches.group("movie_folder_name") + f" ({matches.group('movie_folder_year')})/")
+    ).as_posix()
     result["movie_name"] = matches.group("movie_folder_name")
     result["movie_year"] = matches.group("movie_folder_year")
     result["extra_name"] = matches.group("extra_name")
     return result
 
 
-# TODO get info from files without a quality/version designation
 def parse_movie_info(file_path):
     location = Path(file_path).as_posix()
     matches = re.search(MOVIE_EXTRAS_VIDEO_FILE_REGEX, location)
@@ -99,12 +110,13 @@ def identify_movie_file_kind(extension_kind: str, info: dict, file_path: str):
 
 
 class MoviesScanHandler(base.BaseHandler):
-    def __init__(self, job_id, shelf):
+    def __init__(self, job_id, shelf, target_directory=None):
         super().__init__(
             job_id=job_id,
             shelf=shelf,
             identifier=identify_movie_file_kind,
             parser=parse_movie_info,
+            target_directory=target_directory
         )
 
     def get_or_create_movie(self, info):
@@ -115,7 +127,7 @@ class MoviesScanHandler(base.BaseHandler):
             )
             if not movie:
                 movie = db.op.create_movie(
-                    name=info["movie_name"], release_year=info["movie_year"]
+                    name=info["movie_name"], release_year=info["movie_year"], directory=info['directory']
                 )
                 db.op.add_movie_to_shelf(shelf_id=self.shelf.id, movie_id=movie.id)
             self.batch_lookup[movie_slug] = movie

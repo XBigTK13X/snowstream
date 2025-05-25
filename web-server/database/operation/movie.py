@@ -6,11 +6,12 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 from settings import config
 
-def create_movie(name: str, release_year: int):
+def create_movie(name: str, release_year: int, directory: str):
     with DbSession() as db:
         dbm = dm.Movie()
         dbm.name = name
         dbm.release_year = release_year
+        dbm.directory = directory
         db.add(dbm)
         db.commit()
         db.refresh(dbm)
@@ -75,10 +76,6 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
         if search_query:
             query = query.limit(config.search_results_per_shelf_limit)
         movies = query.all()
-        # TODO
-        # It would be more performant to do this filtering in the database.
-        # But I like how simple this code is.
-        # I will revisit if it actually becomes a performance bottleneck
         results = []
         for movie in movies:
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):

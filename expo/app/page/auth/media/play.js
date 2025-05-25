@@ -1,14 +1,5 @@
 import C from '../../../common'
 
-// TODO Remove this debugging stuff once all the video players are functional
-let devVideoUrl = null
-const mkvUrl = "http://192.168.101.10:8000/mnt/m-media/movie/a/Ocean's Eleven (2001)/Ocean's Eleven (2001) WEBDL-480p.mkv"
-const frigateUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=68'
-const hdHomeRunUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=1'
-const hdHomeRunUrlTrans = 'http://192.168.101.10:8000/api/streamable/transcode?streamable_id=1'
-const iptvUrl = 'http://192.168.101.10:8000/api/streamable/direct?streamable_id=124'
-//devVideoUrl = frigateUrl
-
 export default function PlayMediaPage() {
     const { apiClient } = C.useSession()
     const { config } = C.useSettings()
@@ -90,7 +81,6 @@ export default function PlayMediaPage() {
                         setVideoUrl(transcodeSession.transcode_url)
                     })
                 } else {
-                    // TODO ffprobe the streamable before handing it back to the client
                     setVideoUrl(response.url)
                 }
             })
@@ -144,7 +134,7 @@ export default function PlayMediaPage() {
     if (videoUrl) {
         return (
             <C.SnowVideoPlayer
-                videoUrl={devVideoUrl ? devVideoUrl : videoUrl}
+                videoUrl={videoUrl}
                 isTranscode={transcodeReady}
                 onError={onError}
                 tracks={tracks}

@@ -92,7 +92,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
                                 resolve(loginResponse.authToken)
                             })
                             .catch((err) => {
-                                //TODO Better central management off critical errors
                                 console.log({ err })
                                 apiClient.debug()
                             })

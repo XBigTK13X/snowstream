@@ -22,7 +22,6 @@ source_handlers = {
 def generate_streamable_m3u():
     log.info("Generating streamable M3U content")
     stream_sources = db.op.get_stream_source_list(streamables=True)
-    # TODO put a TTL in cache_text, derived property on the object to see if expired
 
     m3u = "#EXTM3U"
     stream_count = 0
@@ -81,7 +80,6 @@ def handle(job_id, scope):
     stream_sources = db.op.get_stream_source_list(streamables=True)
     refresh_results = {}
     for stream_source in stream_sources:
-        # TODO Purge all program data that ended at least five minutes ago
         log.info("Refreshing stream source " + stream_source.kind)
         handler = source_handlers[stream_source.kind](stream_source)
 

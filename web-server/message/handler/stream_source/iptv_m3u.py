@@ -22,7 +22,6 @@ class IptvM3u(base.BaseHandler):
         stream = {}
         for line in self.cached_data.split("\n"):
             if line[0] == "#":
-                # TODO Handle the first line properly and #EXTGRP lines
                 if "#EXTINF" in line:
                     stream["name"] = line.split('tvg-name="')[1].split('"')[0]
             else:

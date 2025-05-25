@@ -6,7 +6,6 @@ from typing import List
 # Reminder -> back_populates is necessary to avoid a bunch of warnings and subtle bugs
 from database.sql_alchemy import BaseModel
 
-# TODO Might be more efficient to do this DB side
 def set_primary_images(model):
     model.thumbnail_image = None
     model.poster_image = None
@@ -293,6 +292,7 @@ class Movie(BaseModel):
     __tablename__ = "movie"
     name = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
+    directory = sa.Column(sa.Text)
     tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="movie_tag",back_populates="movies")
     video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="movie_video_file",back_populates="movie",overlaps="movie_video_file")
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="movie_image_file",back_populates="movie",overlaps="movie_image_file")

@@ -4,6 +4,9 @@ import React from 'react'
 import { Platform, Image, TouchableOpacity, Pressable, View } from 'react-native';
 import SnowText from './snow-text'
 
+const missingPosterImage = require('../../assets/images/app/missing-poster.jpeg')
+const missingScreencapImage = require('../../assets/images/app/missing-screencap.jpeg')
+
 
 const mult = 0.8
 
@@ -89,6 +92,15 @@ export function SnowImageButton(props) {
         imageStyle.push(styles.imageWide)
     }
 
+    let imageSource = { uri: props.imageUrl }
+    if (!props.imageUrl) {
+        if (props.wide) {
+            imageSource = missingScreencapImage
+        } else {
+            imageSource = missingPosterImage
+        }
+    }
+
     return (
         <TouchableOpacity
             ref={touchRef}
@@ -103,7 +115,7 @@ export function SnowImageButton(props) {
             <Image
                 style={imageStyle}
                 resizeMode="contain"
-                source={{ uri: props.imageUrl }} />
+                source={imageSource} />
             <SnowText style={fontStyle}>{props.title}</SnowText>
         </TouchableOpacity>
     )

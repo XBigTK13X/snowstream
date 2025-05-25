@@ -23,6 +23,7 @@ export function ContinueWatchingListPage(props) {
     const shelfId = localParams.shelfId
     const [tabIndex, setTabIndex] = C.React.useState(0)
     const [tabItems, setTabItems] = C.React.useState([])
+    const [resultsEmpty, setResultsEmpty] = C.React.useState(false)
     C.React.useEffect(() => {
         if (!continueWatchingList) {
             apiClient.getContinueWatchingList().then((response) => {
@@ -31,11 +32,20 @@ export function ContinueWatchingListPage(props) {
                     setTabItems(response[0].items)
                     setTabIndex(0)
                 } else {
-                    // TODO - Say nothing to continue watching
+                    setResultsEmpty(true)
                 }
             })
         }
     })
+
+    if (resultsEmpty) {
+        return (
+            <C.SnowText>
+                Snowstream didn't find anything new to watch.
+            </C.SnowText>
+        )
+    }
+
     const pressItem = (item) => {
         if (item.kind === 'movie') {
             routes.goto(routes.movieDetails, {

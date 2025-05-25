@@ -91,9 +91,6 @@ def get_ticket_by_cduid(cduid:int):
                 )
                 .all()
             )
-            # TODO I think there needs to be a read group and write group
-            # On read, you will care about any device that watched
-            # On write, you will want to delete all the other watched entries depending on the isolation mode
             ticket.watch_group = [xx.id for xx in watch_group]
             ticket.watch_group.insert(0,ticket.cduid)
             return ticket

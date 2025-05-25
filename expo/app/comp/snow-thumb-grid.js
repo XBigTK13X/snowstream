@@ -10,25 +10,23 @@ export function SnowThumbGrid(props) {
             thumbUrl = item.thumbnail_image.thumbnail_web_path
         }
 
-        if (thumbUrl) {
-            let title = null
-            if (props.itemTitle) {
-                title = <Text style={{ textAlign: 'center' }}>{props.itemTitle(item)}</Text>
-            }
-            return (
-                <View>
-                    <SnowImageButton
-                        wide={true}
-                        shouldFocus={props.shouldFocus && itemIndex === 0}
-                        imageUrl={thumbUrl}
-                        title={item.name}
-                        onPress={() => { props.onPress(item) }}
-                        onLongPress={() => { props.onLongPress(item) }}
-                    />
-                    {title}
-                </View>
-            )
+        let title = null
+        if (props.itemTitle) {
+            title = <Text style={{ textAlign: 'center' }}>{props.itemTitle(item)}</Text>
         }
+        return (
+            <View>
+                <SnowImageButton
+                    wide={true}
+                    shouldFocus={props.shouldFocus && itemIndex === 0}
+                    imageUrl={thumbUrl}
+                    title={item.name}
+                    onPress={() => { props.onPress(item) }}
+                    onLongPress={() => { props.onLongPress(item) }}
+                />
+                {title}
+            </View>
+        )
     }
     return (
         <View>

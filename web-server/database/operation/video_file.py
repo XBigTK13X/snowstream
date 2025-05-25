@@ -29,8 +29,6 @@ def get_video_file_by_path(local_path: str):
 def get_or_create_video_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str):
     video_file = get_video_file_by_path(local_path=local_path)
     if not video_file:
-        #TODO This needs to upsert ffprobe changes if the file exists
-        # Or maybe that will be a update job instead of scan?
         ffprobe = json.dumps(ffmpeg.ffprobe_media(local_path)['parsed'])
         return create_video_file(
             shelf_id=shelf_id, kind=kind, local_path=local_path,

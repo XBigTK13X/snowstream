@@ -22,7 +22,6 @@ export default function StreamSourceEditPage() {
                 setStreamSourceUsername(streamSource.username || '')
                 setStreamSourcePassword(streamSource.password || '')
                 setStreamSourceId(streamSource.id)
-                //TODO setup network paths
             })
         }
     })

@@ -108,7 +108,6 @@ export class ApiClient {
             if (Platform.OS === 'web') {
                 getDeviceId = () => {
                     return new Promise(resolve => {
-                        // TODO Generate a unique ID in localstorage for the device
                         const uaParser = new UAParser()
                         const result = uaParser.getResult()
                         const deviceId = `${result.os}${result.version ? ' ' + result.version : ''} ${result.browser.name} ${result.browser.major}`
@@ -143,26 +142,28 @@ export class ApiClient {
 
     createScopedJob(name, details) {
         let payload = { name }
-        if (details.targetKind && details.targetId) {
-            payload.input = {
-                target_kind: details.targetKind,
-                target_id: details.targetId
+        if (details) {
+            if (details.targetKind && details.targetId) {
+                payload.input = {
+                    target_kind: details.targetKind,
+                    target_id: details.targetId
+                }
             }
-        }
-        if (details.metadataId) {
-            payload.input.metadata_id = details.metadataId
-        }
-        if (details.seasonOrder) {
-            payload.input.season_order = details.seasonOrder
-        }
-        if (details.episodeOrder) {
-            payload.input.episode_order = details.episodeOrder
-        }
-        if (details.updateMetadata) {
-            payload.input.update_metadata = details.updateMetadata
-        }
-        if (details.updateImages) {
-            payload.input.update_images = details.updateImages
+            if (details.metadataId) {
+                payload.input.metadata_id = details.metadataId
+            }
+            if (details.seasonOrder) {
+                payload.input.season_order = details.seasonOrder
+            }
+            if (details.episodeOrder) {
+                payload.input.episode_order = details.episodeOrder
+            }
+            if (details.updateMetadata) {
+                payload.input.update_metadata = details.updateMetadata
+            }
+            if (details.updateImages) {
+                payload.input.update_images = details.updateImages
+            }
         }
         return this.post('/job', payload)
     }

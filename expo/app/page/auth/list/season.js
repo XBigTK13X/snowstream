@@ -29,7 +29,12 @@ export default function SeasonListPage() {
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleSeasonWatchStatus(itemId)
     }
-
+    const scanContentsJob = (apiClient, shelfId) => {
+        return apiClient.createJobShelvesScan({
+            targetKind: 'show',
+            targetId: showId
+        })
+    }
     const updateMediaJob = (apiClient, details) => {
         apiClient.createJobUpdateMediaFiles({
             targetKind: 'show',
@@ -49,6 +54,7 @@ export default function SeasonListPage() {
             refreshList={refreshList}
             gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
+            scanContentsJob={scanContentsJob}
             updateMediaJob={updateMediaJob}
         />
     )

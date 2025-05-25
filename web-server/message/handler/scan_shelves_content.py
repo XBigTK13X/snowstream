@@ -4,23 +4,46 @@ from db import db
 import message.handler.scan_shelf.movies_scan as sm
 import message.handler.scan_shelf.shows_scan as ss
 
-shelf_handlers = {"Movies": sm.MoviesScanHandler, "Shows": ss.ShowsScanHandler}
-
 from message.handler.job_media_scope import JobMediaScope
 
-def handle(job_id, scope):
+shelf_handlers = {"Movies": sm.MoviesScanHandler, "Shows": ss.ShowsScanHandler}
+
+def handle(job_id, scope:JobMediaScope):
     log.info(f"[WORKER] Handling a scan_shelves_content job")
 
-    shelves = db.op.get_shelf_list()
+    shelves = []
+    target_directory = None
+    ticket = db.model.Ticket()
+    if scope == None or scope.is_unscoped():
+            shelves = db.op.get_shelf_list()
+    else:
+        if scope.is_shelf():
+            shelves = [db.op.get_shelf_by_id(shelf_id=scope.target_id)]
+        elif scope.is_movie():
+            movie = db.op.get_movie_by_id(ticket=ticket,movie_id=scope.target_id)
+            target_directory = movie.directory
+            shelves = [movie.shelf]
+        elif scope.is_show():
+            show = db.op.get_show_by_id(ticket=ticket, show_id=scope.target_id)
+            target_directory = show.directory
+            shelves = [show.shelf]
+        elif scope.is_season():
+            show_season = db.op.get_show_season_by_id(ticket=ticket, season_id=scope.target_id)
+            target_directory = show_season.directory
+            shelves = [show_season.show.shelf]
+        elif scope.is_episode():
+            show_episode = db.op.get_show_episode_by_id(ticket=ticket, episode_id=scope.target_id)
+            target_directory = show_episode.season.directory
+            shelves = [show_episode.season.show.shelf]
+
+    import pprint
+    pprint.pprint(shelves)
+
     results = {}
     handlers = []
-    file_kinds = ['metadata','video','image']
-    shelf_files = {}
-    for kind in file_kinds:
-        shelf_files[kind] = []
     for shelf in shelves:
         log.info(f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
-        handler = shelf_handlers[shelf.kind](job_id=job_id, shelf=shelf)
+        handler = shelf_handlers[shelf.kind](job_id=job_id, shelf=shelf, target_directory=target_directory)
 
         if not handler.get_files_in_directory():
             results[shelf.name] = False
@@ -34,9 +57,6 @@ def handle(job_id, scope):
         if not handler.ingest_metadata():
             results[shelf.name] = False
             continue
-        shelf_files['metadata'] += handler.get_files_lookup()['metadata']
-        shelf_files['image'] += handler.get_files_lookup()['image']
-        shelf_files['video'] += handler.get_files_lookup()['video']
         handlers.append(handler)
         results[shelf.name] = True
 
@@ -53,10 +73,5 @@ def handle(job_id, scope):
         handler.organize_metadata()
         handler.organize_images()
         handler.organize_videos()
-
-    log.info("Purging file records from the database if a file no longer exists on disk.")
-    log.info(f'Purged {db.op.purge_missing_video_file_records(shelf_files["video"])} video files')
-    log.info(f'Purged {db.op.purge_missing_image_file_records(shelf_files["image"])} image files')
-    log.info(f'Purged {db.op.purge_missing_metadata_file_records(shelf_files["metadata"])} metadata files')
 
     return True

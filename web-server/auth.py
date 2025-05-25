@@ -18,7 +18,6 @@ from db import db
 # https://casbin.org/docs/how-it-works/
 # https://github.com/pycasbin/sqlalchemy-adapter
 # https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/
-# TODO Remove hard coded scopes
 auth_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/login"
 )

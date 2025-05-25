@@ -10,20 +10,16 @@ import message.handler.update_media.show_season as update_season
 import message.handler.update_media.show_episode as update_episode
 
 
-# TODO Use a similar scope limiter on the scan files jobs
 def handle(job_id, scope):
     log.info(f"[WORKER] Handling an update_media_files job")
 
-    if scope.is_unscoped():
+    if not scope or scope.is_unscoped():
         log.info("update_media_files must be scoped when run")
         return False
 
     handler = None
     if scope.is_shelf():
         log.info(f"Not yet implemented - Updating media for shelf {scope.target_id}")
-        # TODO This may need to be a bit different
-        # Loop through the entries on the shelf
-        # If image/meta missing, then make a query and fill in
     elif scope.is_movie():
         handler = update_movie.Movie(scope=scope)
     elif scope.is_show():

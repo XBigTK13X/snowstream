@@ -70,8 +70,11 @@ export function WatchableListPage(props) {
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
-                <C.SnowGrid itemsPerRow={isAdmin ? 2 : 1}>
+                <C.SnowGrid itemsPerRow={isAdmin ? 3 : 1}>
                     <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
+                    <C.SnowTextButton title={`Scan ${props.kind}`} onPress={() => {
+                        props.scanContentsJob(apiClient, shelfId)
+                    }} />
                     <C.SnowUpdateMediaButton
                         kind={props.kind}
                         updateMediaJob={(details) => {

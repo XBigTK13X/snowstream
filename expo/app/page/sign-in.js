@@ -5,7 +5,7 @@ export default function SignInPage() {
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
-    const [password, setPassword] = C.React.useState(null)
+    const [password, setPassword] = C.React.useState("")
 
     C.React.useEffect(() => {
         if (!users) {

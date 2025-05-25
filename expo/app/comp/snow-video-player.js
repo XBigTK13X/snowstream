@@ -3,7 +3,6 @@ import { StyleSheet, Dimensions, Modal, TouchableOpacity, Platform, View } from 
 import { useRouter } from 'expo-router'
 import { useSettings } from '../settings-context'
 import SnowVideoControls from './snow-video-controls'
-// TODO Move this into the render method to ensure accurate dimensions
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
 

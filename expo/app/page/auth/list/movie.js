@@ -15,8 +15,14 @@ export default function MovieListPage() {
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleMovieWatchStatus(itemId)
     }
+    const scanContentsJob = (apiClient, shelfId) => {
+        return apiClient.createJobShelvesScan({
+            targetKind: 'shelf',
+            targetId: shelfId
+        })
+    }
     const updateMediaJob = (apiClient, details) => {
-        apiClient.createJobUpdateMediaFiles({
+        return apiClient.createJobUpdateMediaFiles({
             targetKind: 'shelf',
             targetId: details.shelfId,
             metadataId: details.metadataId,
@@ -31,6 +37,7 @@ export default function MovieListPage() {
             refreshList={refreshList}
             gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
+            scanContentsJob={scanContentsJob}
             updateMediaJob={updateMediaJob}
         />
     )

@@ -487,7 +487,6 @@ def no_auth_required(router):
     def get_streamable_epg():
         return db.op.get_cached_text_by_key(key=cache.key.STREAMABLE_EPG)
 
-    # TODO It would be neat if I had a little placeholder video here to let the video player show that the stream is getting ready
     @router.get("/transcode/playlist.m3u8",tags=['Unauthed Video'])
     @router.head("/transcode/playlist.m3u8",tags=['Unauthed Video'])
     def get_transcode_playlist(transcode_session_id:int):

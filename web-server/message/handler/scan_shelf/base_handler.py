@@ -5,8 +5,6 @@ mimetypes.init()
 from typing import Callable
 from settings import config
 from db import db
-import ffmpeg
-import json
 
 def get_file_kind(file_path):
     if file_path.endswith(".nfo"):
@@ -32,6 +30,7 @@ class BaseHandler:
         shelf,
         identifier: Callable[[dict], str],
         parser: Callable[[str], dict],
+        target_directory: str=None
     ):
         self.job_id = job_id
         self.shelf = shelf
@@ -44,11 +43,13 @@ class BaseHandler:
         self.batch_lookup = {}
         self.file_kind_identifier = identifier
         self.file_info_parser = parser
+        self.target_directory = target_directory
 
     def get_files_in_directory(self):
-        log.info(f"Scanning directory [{self.shelf.local_path}]")
+        scan_directory = self.shelf.local_path if self.target_directory == None else self.target_directory
+        log.info(f"Scanning directory [{scan_directory}]")
         file_count = 0
-        for root, dirs, files in os.walk(self.shelf.local_path, followlinks=True):
+        for root, dirs, files in os.walk(scan_directory, followlinks=True):
             for shelf_file in files:
                 file_path = os.path.join(root, shelf_file)
                 file_count += 1

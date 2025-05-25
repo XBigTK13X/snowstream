@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -Eeo pipefail
-# TODO swap to -Eeuo pipefail above (after handling all potentially-unset variables)
 
 PATH=/usr/lib/postgresql/15/bin:$PATH
 

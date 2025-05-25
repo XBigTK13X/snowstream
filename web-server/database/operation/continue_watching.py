@@ -10,7 +10,6 @@ import database.operation.show_episode as db_episode
 def get_continue_watching_list(ticket:dm.Ticket):
     with DbSession() as db:
         results = []
-        # TODO Improve this by joining the data db-side
         movies_in_progress = (
             db.query(dm.WatchProgress)
             .filter(
@@ -92,8 +91,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
                             new_seasons.append(next_episode)
                         else:
                             next_episodes.append(next_episode)
-        # TODO Figure out a strategy for recommending special episodes
-        # Often in between seasons, but labelled as season 0
         if next_episodes and len(next_episodes) > 0:
             results.append({
                 'kind': 'next_episodes',

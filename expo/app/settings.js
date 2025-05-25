@@ -1,5 +1,3 @@
-//TODO Figure out how to handle populating these values at prod runtime
-
 class Config {
     constructor() {
         //Prod

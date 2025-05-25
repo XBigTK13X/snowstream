@@ -67,9 +67,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 api_router = APIRouter(prefix="/api")
 
-# TODO Could probably use a static route and get rid of nginx now that transcoding is handled via the API
-# But there are still web_path exposed through it for direct streaming
-
 if not os.environ.get("SNOWSTREAM_WEB_API_URL"):
     @app.get("/", response_class=RedirectResponse, include_in_schema=False)
     def serve_web_app():

@@ -5,7 +5,6 @@ import util
 import copy
 import os
 
-# TODO Should be way to specify not burning in subtitles and passing them through to the client
 def transcode_command(input_url:str, stream_port:int, audio_track_index:int, subtitle_track_index:int):
     streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream'
     command =  f'ffmpeg  -i "{input_url}"'

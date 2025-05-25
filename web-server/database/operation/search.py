@@ -11,8 +11,6 @@ import database.operation.show as db_show
 import database.operation.show_episode as db_episode
 
 def perform_search(ticket:dm.Ticket,query:str):
-    # TODO Actually search for things like movies, shows, episodes, streamables
-
     result = {}
     with DbSession() as db:
         shelves = db_shelf.get_shelf_list(ticket=ticket)

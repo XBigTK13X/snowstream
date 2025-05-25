@@ -56,8 +56,6 @@ class ShowSeason(base.BaseHandler):
                 'update_metadata': update_metadata
             })
 
-    # TODO Need to grab the season directory during initial scan.
-    # Use that to build these local paths
     # Legacy images are
     # poster.jpg
     def download_images(self):

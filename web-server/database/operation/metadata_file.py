@@ -30,8 +30,6 @@ def get_metadata_file_by_path(local_path: str):
 def get_or_create_metadata_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str):
     metadata_file = get_metadata_file_by_path(local_path=local_path)
     if not metadata_file:
-        #TODO This needs to upsert xml content changes
-        # Or maybe do that on update jobs instead of scans?
         with open(local_path) as read_handle:
             return create_metadata_file(
                 shelf_id=shelf_id, kind=kind, local_path=local_path, web_path=web_path, network_path=network_path,xml_content=read_handle.read()
