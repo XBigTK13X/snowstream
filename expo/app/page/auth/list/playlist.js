@@ -17,14 +17,10 @@ export default function PlaylistListPage() {
         return <C.Text>Loading playlist list.</C.Text>
     }
 
-    const gotoItem = (item) => {
-        routes.func(routes.playlistDetails, {
+    return <C.SnowGrid items={playlistList} renderItem={(item) => {
+        return <C.SnowTextButton title={item.name} onPress={routes.func(routes.playlistDetails, {
             tagId: item.id,
             tagName: item.name
-        })
-    }
-
-    return <C.SnowGrid items={playlistList} renderItem={(item) => {
-        return <C.SnowTextButton title={item.name} onPress={gotoItem} />
+        })} />
     }} />
 }

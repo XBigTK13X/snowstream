@@ -204,6 +204,13 @@ class ShowsScanHandler(base.BaseHandler):
                     db.op.create_show_metadata_file(
                         show_id=show.id, metadata_file_id=info["id"]
                     )
+                    if not show.release_year:
+                        show_nfo = nfo.nfo_path_to_dict(info['file_path'])
+                        if 'year' in show_nfo:
+                            show = db.op.update_show_release_year(
+                                show_id=show.id,
+                                release_year=int(show_nfo['year'])
+                            )
             elif info["asset_scope"] == AssetScope.SEASON:
                 if not db.op.get_show_season_metadata_file(
                     show_season_id=season.id, metadata_file_id=info["id"]

@@ -384,6 +384,10 @@ export class ApiClient {
         return this.get('/playlist/list')
     }
 
+    getPlaylist(tagId) {
+        return this.get('/playlist', { tag_id: tagId })
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

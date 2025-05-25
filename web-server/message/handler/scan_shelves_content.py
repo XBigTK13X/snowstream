@@ -36,9 +36,6 @@ def handle(job_id, scope:JobMediaScope):
             target_directory = show_episode.season.directory
             shelves = [show_episode.season.show.shelf]
 
-    import pprint
-    pprint.pprint(shelves)
-
     results = {}
     handlers = []
     for shelf in shelves:

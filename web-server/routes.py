@@ -1,13 +1,7 @@
-from log import log
-from fastapi import HTTPException
 from fastapi.responses import PlainTextResponse
-from fastapi.responses import RedirectResponse
-
 from fastapi import Response, Request
 from typing import Annotated
 from fastapi import Security
-
-
 import api_models as am
 from db import db
 import message.write
@@ -16,16 +10,19 @@ import auth
 from auth import get_current_user
 from transcode import transcode
 from settings import config
-import ffmpeg
 import json
-
 
 def register(router):
     router = no_auth_required(router)
     return auth_required(router)
 
-
 def auth_required(router):
+    @router.get("/auth/check",tags=['User'])
+    def auth_check(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        return True
+
     @router.get("/stream/source/list",tags=['Stream Source'])
     def get_stream_source_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -227,11 +224,19 @@ def auth_required(router):
             return None
         return db.delete_tag_by_id(tag_id=tag_id)
 
-    @router.get("/auth/check",tags=['User'])
-    def auth_check(
+    @router.get("/playlist/list",tags=['Tag'])
+    def get_playlist_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        return True
+        return db.op.get_playlist_list(ticket=auth_user.ticket)
+
+    @router.get("/playlist",tags=['Tag'])
+    def get_playlist_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        tag_id: int
+    ):
+        return db.op.get_playlist_by_tag_id(ticket=auth_user.ticket,tag_id=tag_id)
+
 
     @router.get("/movie/list",tags=['Movie'])
     def get_movie_list(
@@ -431,18 +436,6 @@ def auth_required(router):
             subtitle_track_index=subtitle_track_index
         )
         return transcode_session
-
-    @router.get("/playlist/list",tags=['Playlist'])
-    def get_playlist_list(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
-    ):
-        return db.op.get_playlist_list(ticket=auth_user.ticket)
-
-    @router.get("/playlist",tags=['Playlist'])
-    def get_playlist_list(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
-    ):
-        return db.op.get_playlist_list(ticket=auth_user.ticket)
 
     return router
 

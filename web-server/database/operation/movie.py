@@ -55,6 +55,24 @@ def get_movie_by_name_and_year(name: str, release_year: int):
             .first()
         )
 
+def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
+    if not ticket.is_allowed(tag_id=tag_id):
+        return None
+    with DbSession() as db:
+        movies = (
+            db.query(dm.Movie)
+            .join(dm.MovieShelf)
+            .options(sorm.joinedload(dm.Movie.shelf))
+            .options(sorm.joinedload(dm.Movie.tags))
+            .order_by(dm.Movie.release_year)
+            .all()
+        )
+        results = []
+        for movie in movies:
+            if tag_id in movie.get_tag_ids():
+                results.append(dm.set_primary_images(movie))
+        return results
+
 def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return []

@@ -17,6 +17,12 @@ def create_show(name: str, directory: str):
         db.refresh(dbm)
         return dbm
 
+def update_show_release_year(show_id:int, release_year:int):
+    with DbSession() as db:
+        show = db.query(dm.Show).filter(dm.Show.id == show_id).first()
+        show.release_year = release_year
+        db.commit()
+        return show
 
 def get_show_by_name(name: str):
     with DbSession() as db:
@@ -48,6 +54,21 @@ def add_show_to_shelf(show_id: int, shelf_id: int):
         db.commit()
         db.refresh(dbm)
         return dbm
+
+def get_show_list_by_tag_id(ticket:dm.Ticket, tag_id:int):
+    with DbSession() as db:
+        shows = (
+            db.query(dm.Show)
+            .options(sorm.joinedload(dm.Show.shelf))
+            .options(sorm.joinedload(dm.Show.tags))
+            .options(sorm.joinedload(dm.Show.metadata_files))
+            .all()
+        )
+        results = []
+        for show in shows:
+            if tag_id in show.get_tag_ids():
+                results.append(dm.set_primary_images(show))
+        return results
 
 def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None):
     if not ticket.is_allowed(shelf_id=shelf_id):
