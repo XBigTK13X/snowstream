@@ -127,3 +127,9 @@ class WatchProgress(BaseModel):
     streamable_id: int  | None = None
     duration_seconds: float | None = None
     played_seconds: float | None  = None
+
+class QueueRequest(BaseModel):
+    show_id:int | None = None
+    show_season_id:int | None = None
+    tag_id: int | None = None
+    shuffle: bool | None = False

@@ -31,10 +31,15 @@ export function SnowGrid(props) {
     }
     let gridStyle = [styles.grid]
     if (!props.items) {
+        // Without this, if a ternary `{x?x:null}` nullable component will leave a gap in the grid
+        const children = React.Children.toArray(props.children).filter(child => child !== null)
+        if (!children || !children.length) {
+            return null
+        }
         return (
             <View style={gridStyle}>
                 {
-                    React.Children.map(props.children, (child, childIndex) => {
+                    children.map((child, childIndex) => {
                         return (
                             <View key={childIndex} style={itemStyle}>
                                 {child}

@@ -43,7 +43,14 @@ export default function SeasonListPage() {
             updateMetadata: details.metadata,
             updateImages: details.images
         })
+    }
 
+    const watchAll = (apiClient) => {
+        return apiClient.getPlayingQueue({ show_id: showId })
+    }
+
+    const shuffleAll = (apiClient) => {
+        return apiClient.getPlayingQueue({ show_id: showId, shuffle: true })
     }
 
     return (
@@ -56,6 +63,8 @@ export default function SeasonListPage() {
             toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
             updateMediaJob={updateMediaJob}
+            watchAll={watchAll}
+            shuffleAll={shuffleAll}
         />
     )
 }

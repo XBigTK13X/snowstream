@@ -62,6 +62,18 @@ export function WatchableListPage(props) {
             })
         }
 
+        const watchAll = () => {
+            props.watchAll(apiClient).then(response => {
+                console.log({ response })
+            })
+        }
+
+        const shuffleAll = () => {
+            props.shuffleAll(apiClient).then(response => {
+                console.log({ response })
+            })
+        }
+
         let Grid = C.SnowPosterGrid
         if (props.gridKind == 'thumb') {
             Grid = C.SnowThumbGrid
@@ -72,6 +84,8 @@ export function WatchableListPage(props) {
                 <C.SnowText>{pageTitle}</C.SnowText>
                 <C.SnowGrid itemsPerRow={isAdmin ? 3 : 1}>
                     <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
+                    {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
+                    {props.shuffleAll ? <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} /> : null}
                     <C.SnowTextButton title={`Scan ${props.kind}`} onPress={() => {
                         props.scanContentsJob(apiClient, shelfId)
                     }} />

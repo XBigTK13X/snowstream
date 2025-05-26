@@ -388,6 +388,11 @@ export class ApiClient {
         return this.get('/playlist', { tag_id: tagId })
     }
 
+    getPlayingQueue(details) {
+        console.log({ details })
+        return this.get('/playing/queue', details)
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }
