@@ -2,7 +2,7 @@ import C from '../../../common'
 
 export default function PlayMediaPage() {
     const { apiClient } = C.useSession()
-    const { config } = C.useSettings()
+    const { routes } = C.useSettings()
     const localParams = C.useLocalSearchParams()
 
     const shelfId = localParams.shelfId
@@ -21,6 +21,7 @@ export default function PlayMediaPage() {
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const [tracks, setTracks] = C.React.useState(null)
+    const [shuffleIndex, setShuffleIndex] = C.React.useState(null)
     const videoFileIndex = 0
 
     const durationRef = C.React.useRef(durationSeconds)
@@ -125,7 +126,7 @@ export default function PlayMediaPage() {
 
     const onComplete = () => {
         onProgress().then(() => {
-            console.log("Queue up the next")
+            routes.back()
         })
     }
 

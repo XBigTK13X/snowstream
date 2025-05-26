@@ -335,6 +335,16 @@ class MovieVideoFile(BaseModel):
     video_file_id = sa.Column(sa.Integer, sa.ForeignKey("video_file.id"))
     video_file: sorm.Mapped['VideoFile'] = sorm.relationship(back_populates="movie_video_file",overlaps="movie,video_files")
 
+class PlayingQueue(BaseModel):
+    __tablename__ = "playing_queue"
+    client_device_user_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("client_device_user.id"),
+        nullable=False
+    )
+    client_device_user: sorm.Mapped["ClientDeviceUser"] = sorm.relationship()
+    source = sa.Column(sa.Text)
+    content = sa.Column(sa.Text)
+    progress = sa.Column(sa.Integer)
 
 class Show(BaseModel):
     __tablename__ = "show"
@@ -492,7 +502,6 @@ class StreamableChannel(BaseModel):
     schedules: sorm.Mapped[List["StreamableSchedule"]] = sorm.relationship(
         cascade="delete", passive_deletes=True
     )
-
 
 class StreamableSchedule(BaseModel):
     __tablename__ = "streamable_schedule"

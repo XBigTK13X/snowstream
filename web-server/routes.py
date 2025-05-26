@@ -437,6 +437,16 @@ def auth_required(router):
         )
         return transcode_session
 
+    @router.get("/queue",tags=['User'])
+    def get_playing_queue(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        show_id:int=None,
+        show_season_id:int=None,
+        tag_id:int=None,
+        shuffle:bool=False
+    ):
+
+
     return router
 
 
