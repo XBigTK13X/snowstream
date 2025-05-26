@@ -345,6 +345,7 @@ class PlayingQueue(BaseModel):
     source = sa.Column(sa.Text)
     content = sa.Column(sa.Text)
     progress = sa.Column(sa.Integer)
+    length = sa.Column(sa.Integer)
 
 class Show(BaseModel):
     __tablename__ = "show"

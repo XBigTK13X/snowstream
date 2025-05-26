@@ -55,6 +55,8 @@ export default function SnowVideoPlayer(props) {
             console.log({ info })
         }
 
+        console.log({ info })
+
         if (info && info.kind && info.kind === 'rnvevent') {
             if (info.data && info.data.currentTime) {
                 setProgressSeconds(info.data.currentTime)
@@ -73,7 +75,7 @@ export default function SnowVideoPlayer(props) {
                         props.onProgress(mpvEvent.value)
                     }
                 }
-                if (mpvEvent.property === 'eof-reached') {
+                if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
                     if (props.onComplete) {
                         props.onComplete()
                     }
@@ -100,10 +102,12 @@ export default function SnowVideoPlayer(props) {
                 }
                 else {
                     console.log("Unhandled error kind")
+                    console.log({ err })
                 }
             }
             else {
                 console.log("Unhandled error source")
+                console.log({ err })
             }
         }
     }

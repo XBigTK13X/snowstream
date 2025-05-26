@@ -389,8 +389,26 @@ export class ApiClient {
     }
 
     getPlayingQueue(details) {
-        console.log({ details })
-        return this.get('/playing/queue', details)
+        if (details.showId) {
+            return this.get(`/playing/queue?show_id=${details.showId}&shuffle=${!!details.shuffle}`)
+        }
+        else if (details.seasonId) {
+            return this.get(`/playing/queue?show_season_id=${details.seasonId}&shuffle=${!!details.shuffle}`)
+        }
+        else if (details.tagId) {
+            return this.get(`/playing/queue?tag_id=${details.tagId}&shuffle=${!!details.shuffle}`)
+        }
+        else if (details.source) {
+            return this.get(`/playing/queue?source=${details.source}`)
+        }
+        else {
+            console.log("Unhandled playing queue")
+            console.log({ details })
+        }
+    }
+
+    updatePlayingQueue(source, progress) {
+        return this.post(`/playing/queue?source=${source}&progress=${progress}`)
     }
 
     debug() {

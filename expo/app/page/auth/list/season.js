@@ -46,11 +46,11 @@ export default function SeasonListPage() {
     }
 
     const watchAll = (apiClient) => {
-        return apiClient.getPlayingQueue({ show_id: showId })
+        return apiClient.getPlayingQueue({ showId: showId })
     }
 
     const shuffleAll = (apiClient) => {
-        return apiClient.getPlayingQueue({ show_id: showId, shuffle: true })
+        return apiClient.getPlayingQueue({ showId: showId, shuffle: true })
     }
 
     return (

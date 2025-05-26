@@ -32,7 +32,8 @@ def upgrade() -> None:
         ),
         sa.Column('source', sa.Text),
         sa.Column('content', sa.Text),
-        sa.Column('progress', sa.Integer)
+        sa.Column('progress', sa.Integer),
+        sa.Column('length', sa.Integer)
     )
 
     op.create_unique_constraint(

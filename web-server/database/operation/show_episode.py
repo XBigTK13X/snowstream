@@ -69,8 +69,7 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
         query = (
             db.query(dm.ShowEpisode)
             .filter(dm.ShowEpisode.show_season_id.in_(season_ids))
-            .options(sorm.joinedload(dm.ShowEpisode.season))
-            .options(sorm.joinedload(dm.ShowEpisode.season.show))
+            .options(sorm.joinedload(dm.ShowEpisode.season).joinedload(dm.ShowSeason.show))
             .options(sorm.joinedload(dm.ShowEpisode.tags))
         )
         episodes = query.all()
@@ -335,6 +334,10 @@ def get_show_episode_watched(ticket:dm.Ticket,episode_id:int):
         return False if watched == None else True
 
 def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
+    if not watch_progress.played_seconds:
+        return False
+    if not watch_progress.duration_seconds:
+        return False
     episode = get_show_episode_by_id(ticket=ticket,episode_id=watch_progress.show_episode_id)
     if not episode:
         return False

@@ -6,13 +6,16 @@ export default function PlayMediaPage() {
     const localParams = C.useLocalSearchParams()
 
     const shelfId = localParams.shelfId
-    const movieId = localParams.movieId
-    const episodeId = localParams.episodeId
     const streamableId = localParams.streamableId
+
+    const [episodeId, setEpisodeId] = C.React.useState(localParams.episodeId)
+    const [movieId, setMovieId] = C.React.useState(localParams.movieId)
+    const [playingQueueSource, setPlayingQueueSource] = C.React.useState(localParams.playingQueueSource)
 
     const [shelf, setShelf] = C.React.useState(null)
     const [movie, setMovie] = C.React.useState(null)
     const [episode, setEpisode] = C.React.useState(null)
+    const [playingQueue, setPlayingQueue] = C.React.useState(null)
     const [videoUrl, setVideoUrl] = C.React.useState(null)
     const [transcode, setTranscode] = C.React.useState(false)
     const [transcodeReady, setTranscodeReady] = C.React.useState(false)
@@ -21,10 +24,41 @@ export default function PlayMediaPage() {
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const [tracks, setTracks] = C.React.useState(null)
-    const [shuffleIndex, setShuffleIndex] = C.React.useState(null)
     const videoFileIndex = 0
 
     const durationRef = C.React.useRef(durationSeconds)
+
+    const loadVideoFile = (videoHolder) => {
+        const videoFile = videoHolder.video_files[videoFileIndex]
+        if (transcode) {
+            apiClient.createVideoFileTranscodeSession(videoFile.id, audioTrackIndex, subtitleTrackIndex).then((transcodeSession) => {
+                setVideoUrl(transcodeSession.transcode_url)
+                setTranscodeReady(true)
+            })
+        } else {
+            setTracks(videoHolder.tracks.inspection.scored_tracks)
+            setVideoUrl(videoFile.network_path)
+            setDurationSeconds(videoHolder.tracks.duration_seconds)
+            durationRef.current = videoHolder.tracks.duration_seconds
+        }
+    }
+
+    const loadMovie = (loadMovieId) => {
+        apiClient.getMovie(loadMovieId).then((response) => {
+            setMovie(response)
+            setMovieId(loadMovieId)
+            loadVideoFile(response)
+        })
+    }
+
+    const loadEpisode = (loadEpisodeId) => {
+        apiClient.getEpisode(loadEpisodeId).then((response) => {
+            setEpisode(response)
+            setEpisodeId(loadEpisodeId)
+            loadVideoFile(response)
+        })
+    }
+
 
     C.React.useEffect(() => {
         if (!shelf) {
@@ -35,45 +69,16 @@ export default function PlayMediaPage() {
                 setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
             }
         }
-        if (!shelf && movieId) {
+        if (shelfId && !self) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
             })
-            apiClient.getMovie(movieId).then((response) => {
-                setMovie(response)
-                const videoFile = response.video_files[videoFileIndex]
-                if (transcode) {
-                    apiClient.createVideoFileTranscodeSession(videoFile.id, audioTrackIndex, subtitleTrackIndex).then((transcodeSession) => {
-                        setVideoUrl(transcodeSession.transcode_url)
-                        setTranscodeReady(true)
-                    })
-                } else {
-                    setTracks(response.tracks.inspection.scored_tracks)
-                    setVideoUrl(videoFile.network_path)
-                    setDurationSeconds(response.tracks.duration_seconds)
-                    durationRef.current = response.tracks.duration_seconds
-                }
-            })
-        }
-        if (!shelf && episodeId) {
-            apiClient.getShelf(shelfId).then((response) => {
-                setShelf(response)
-            })
-            apiClient.getEpisode(episodeId).then((response) => {
-                setEpisode(response)
-                const videoFile = response.video_files[videoFileIndex]
-                if (transcode) {
-                    apiClient.createVideoFileTranscodeSession(videoFile.id, audioTrackIndex, subtitleTrackIndex).then((transcodeSession) => {
-                        setVideoUrl(transcodeSession.transcode_url)
-                        setTranscodeReady(true)
-                    })
-                } else {
-                    setTracks(response.tracks.inspection.scored_tracks)
-                    setVideoUrl(videoFile.network_path)
-                    setDurationSeconds(response.tracks.duration_seconds)
-                    durationRef.current = response.tracks.duration_seconds
-                }
-            })
+            if (movieId) {
+                loadMovie(movieId)
+            }
+            if (episodeId) {
+                loadEpisode(episodeId)
+            }
         }
         if (!videoUrl && streamableId) {
             apiClient.getStreamable(streamableId).then((response) => {
@@ -83,6 +88,24 @@ export default function PlayMediaPage() {
                     })
                 } else {
                     setVideoUrl(response.url)
+                }
+            })
+        }
+        if (!videoUrl && playingQueueSource) {
+            console.log({ playingQueueSource })
+            apiClient.getPlayingQueue({ source: playingQueueSource }).then(response => {
+                setPlayingQueue(response)
+                let entry = response.content[response.progress]
+                console.log({ entry })
+                if (entry.kind === 'movie') {
+                    loadMovie(entry.id)
+                }
+                else if (entry.kind === 'episode') {
+                    loadEpisode(entry.id)
+                }
+                else {
+                    console.log("Unhandled playing queue entry")
+                    console.log({ entry })
                 }
             })
         }
@@ -102,13 +125,15 @@ export default function PlayMediaPage() {
     }
 
     const onProgress = (progressSeconds) => {
-        const duration = durationRef.current
-        if (duration > 0) {
-            if (movie) {
-                return apiClient.setMovieWatchProgress(movieId, progressSeconds, duration)
-            }
-            if (episode) {
-                return apiClient.setEpisodeWatchProgress(episodeId, progressSeconds, duration)
+        if (!playingQueueSource) {
+            const duration = durationRef.current
+            if (duration > 0 && progressSeconds > 0) {
+                if (movie) {
+                    return apiClient.setMovieWatchProgress(movieId, progressSeconds, duration)
+                }
+                if (episode) {
+                    return apiClient.setEpisodeWatchProgress(episodeId, progressSeconds, duration)
+                }
             }
         }
         return new Promise((resolve) => { resolve() })
@@ -126,7 +151,16 @@ export default function PlayMediaPage() {
 
     const onComplete = () => {
         onProgress().then(() => {
-            routes.back()
+            console.log({ playingQueue })
+            if (playingQueue) {
+                apiClient.updatePlayingQueue(source = playingQueue.source, progress = playingQueue.progress + 1)
+                    .then((response) => {
+                        setPlayingQueueSource(response.source)
+                        setVideoUrl(null)
+                    })
+            } else {
+                routes.back()
+            }
         })
     }
 

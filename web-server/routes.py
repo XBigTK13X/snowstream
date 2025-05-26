@@ -440,15 +440,28 @@ def auth_required(router):
     @router.get("/playing/queue",tags=['User'])
     def get_playing_queue(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        queue_request: am.QueueRequest
+        show_id:int=None,
+        show_season_id:int=None,
+        tag_id:int=None,
+        shuffle:bool=False,
+        source:str=None
     ):
         return db.op.get_playing_queue(
             ticket=auth_user.ticket,
-            show_id=queue_request.show_id,
-            show_season_id=queue_request.show_season_id,
-            tag_id=queue_request.tag_id,
-            shuffle=queue_request.shuffle
+            show_id=show_id,
+            show_season_id=show_season_id,
+            tag_id=tag_id,
+            shuffle=shuffle,
+            source=source
         )
+
+    @router.post('/playing/queue',tags=['User'])
+    def update_playing_queue(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        source:str,
+        progress:int
+    ):
+        return db.op.update_playing_queue(ticket=auth_user.ticket,source=source,progress=progress)
 
     return router
 
