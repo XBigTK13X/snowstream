@@ -97,13 +97,11 @@ export default function PlayMediaPage() {
     }
 
     const onSeek = (seekedToSeconds) => {
-        console.log({ seekedToSeconds })
         return onProgress(seekedToSeconds)
     }
 
     const onProgress = (progressSeconds) => {
         const duration = durationRef.current
-        console.log({ duration })
         if (duration > 0) {
             if (movie) {
                 return apiClient.setMovieWatchProgress(movieId, progressSeconds, duration)

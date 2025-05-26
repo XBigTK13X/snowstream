@@ -51,7 +51,6 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onVideoUpdate = (info) => {
-        console.log({ info })
         if (config.debugVideoPlayer) {
             console.log({ info })
         }
@@ -115,7 +114,6 @@ export default function SnowVideoPlayer(props) {
     }
 
     const onSeek = (progressPercent) => {
-        console.log({ progressPercent })
         const progressSeconds = (progressPercent / 100) * props.durationSeconds
         if (props.onSeek) {
             props.onSeek(progressSeconds)

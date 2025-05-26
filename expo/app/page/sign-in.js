@@ -45,6 +45,7 @@ export default function SignInPage() {
         setUser(null)
     }
 
+
     let passwordForm = null
     if (users && user && user.has_password) {
         passwordForm = (
