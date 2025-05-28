@@ -1,3 +1,4 @@
+import random
 import database.db_models as dm
 import api_models as am
 from database.sql_alchemy import DbSession
@@ -88,25 +89,32 @@ def get_playing_queue(
         queue_content = ''
         if show_id:
             episodes = db_episode.get_show_episode_list_by_show(ticket=ticket, show_id=show_id)
-            episodes = sorted([xx for xx in episodes if xx.season.season_order_counter > 0],key=lambda xx: [xx.season.season_order_counter,xx.episode_order_counter])
+            episodes = [xx for xx in episodes if xx.season.season_order_counter > 0]
+            if shuffle:
+                random.shuffle(episodes)
+            else:
+                episodes = sorted(episodes,key=lambda xx: [xx.season.season_order_counter,xx.episode_order_counter])
             length = len(episodes)
             queue_content = ','.join([f'episode-{xx.id}' for xx in episodes])
         elif show_season_id:
             episodes = db_episode.get_show_episode_list_by_season(ticket=ticket, show_season_id=show_season_id)
+            if shuffle:
+                random.shuffle(episodes)
             length = len(episodes)
             queue_content = ','.join([f'episode-{xx.id}' for xx in episodes])
         elif tag_id:
             playlist = db_playlist.get_playlist_by_tag_id(ticket=ticket,tag_id=tag_id)
-            queue_content = []
+            queue_entries = []
             for entry in playlist:
                 if entry.kind == 'movie':
-                    queue_content += f'movie-{entry.id}'
-                    length += 1
+                    queue_entries += entry
                 elif entry.kind == 'show':
                     episodes = db_episode.get_show_episode_list_by_show(ticket=ticket, show_id=show_id)
-                    length += len(episodes)
-                    queue_content += [f'episode-{xx.id}' for xx in episodes]
-            queue_content = ','.join(queue_content)
+                    queue_entries += [xx for xx in episodes if xx.season.season_order_counter > 0]
+            if shuffle:
+                random.shuffle(queue_entries)
+            queue_content += []
+            queue_content = ','.join(f'episode-{xx.id}' if xx.kind == 'episode' else f'movie-{xx.id}' for xx in queue_entries)
         playing_queue = create_playing_queue(ticket=ticket,source=source,length=length,content=queue_content)
         playing_queue.content = split_content(playing_queue.content)
         return playing_queue

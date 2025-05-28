@@ -41,6 +41,13 @@ export default function EpisodeListPage() {
             updateImages: details.images
         })
     }
+    const watchAll = (apiClient) => {
+        return apiClient.getPlayingQueue({ seasonId })
+    }
+
+    const shuffleAll = (apiClient) => {
+        return apiClient.getPlayingQueue({ seasonId, shuffle: true })
+    }
     return (
         <WatchableListPage
             kind="Season"
@@ -52,6 +59,8 @@ export default function EpisodeListPage() {
             gridKind="thumb"
             scanContentsJob={scanContentsJob}
             updateMediaJob={updateMediaJob}
+            watchAll={watchAll}
+            shuffleAll={shuffleAll}
         />
     )
 }
