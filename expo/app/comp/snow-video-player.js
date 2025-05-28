@@ -37,6 +37,7 @@ export default function SnowVideoPlayer(props) {
     const [SubMenu, setSubMenu] = React.useState(null)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
     const [seekToSeconds, setSeekToSeconds] = React.useState(0)
+    const [completeOnResume, setCompleteOnResume] = React.useState(false)
     const router = useRouter()
 
 
@@ -48,14 +49,17 @@ export default function SnowVideoPlayer(props) {
     const hideControls = () => {
         setControlsVisible(false)
         setIsPlaying(true)
+        if (completeOnResume) {
+            if (props.onComplete) {
+                props.onComplete()
+            }
+        }
     }
 
     const onVideoUpdate = (info) => {
         if (config.debugVideoPlayer) {
             console.log({ info })
         }
-
-        console.log({ info })
 
         if (info && info.kind && info.kind === 'rnvevent') {
             if (info.data && info.data.currentTime) {
@@ -119,8 +123,13 @@ export default function SnowVideoPlayer(props) {
 
     const onSeek = (progressPercent) => {
         const progressSeconds = (progressPercent / 100) * props.durationSeconds
-        if (props.onSeek) {
-            props.onSeek(progressSeconds)
+        if (progressPercent >= 100) {
+            setCompleteOnResume(true)
+        } else {
+            setCompleteOnResume(false)
+            if (props.onSeek) {
+                props.onSeek(progressSeconds)
+            }
         }
         setSeekToSeconds(progressSeconds)
     }
@@ -189,6 +198,7 @@ export default function SnowVideoPlayer(props) {
             >
                 <View style={styles.videoControls}>
                     <SnowVideoControls
+                        videoTitle={props.videoTitle}
                         hideControls={hideControls}
                         selectTrack={props.selectTrack}
                         audioTrack={props.audioIndex}

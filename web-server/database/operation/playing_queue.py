@@ -34,7 +34,7 @@ def delete_playing_queue(ticket:dm.Ticket,playing_queue_id:int):
 
 def update_playing_queue(ticket:dm.Ticket, source:str, progress:int):
     with DbSession() as db:
-        existing = db.query(dm.StreamSource).filter(
+        existing = db.query(dm.PlayingQueue).filter(
             dm.PlayingQueue.client_device_user_id == ticket.cduid,
             dm.PlayingQueue.source == source
         ).first()

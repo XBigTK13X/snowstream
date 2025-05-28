@@ -24,6 +24,7 @@ export default function PlayMediaPage() {
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const [tracks, setTracks] = C.React.useState(null)
+    const [videoTitle, setVideoTitle] = C.React.useState("")
     const videoFileIndex = 0
 
     const durationRef = C.React.useRef(durationSeconds)
@@ -48,6 +49,11 @@ export default function PlayMediaPage() {
             setMovie(response)
             setMovieId(loadMovieId)
             loadVideoFile(response)
+            let title = response.name
+            if (playingQueue) {
+                title = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${title}`
+            }
+            setVideoTitle(title)
         })
     }
 
@@ -56,6 +62,11 @@ export default function PlayMediaPage() {
             setEpisode(response)
             setEpisodeId(loadEpisodeId)
             loadVideoFile(response)
+            let title = `${response.show.name} - ${response.episode_slug} - ${response.name}`
+            if (playingQueue) {
+                title = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${title}`
+            }
+            setVideoTitle(title)
         })
     }
 
@@ -89,19 +100,24 @@ export default function PlayMediaPage() {
                 } else {
                     setVideoUrl(response.url)
                 }
+                setVideoTitle(response.name)
             })
         }
         if (!videoUrl && playingQueueSource) {
-            console.log({ playingQueueSource })
             apiClient.getPlayingQueue({ source: playingQueueSource }).then(response => {
                 setPlayingQueue(response)
                 let entry = response.content[response.progress]
-                console.log({ entry })
                 if (entry.kind === 'movie') {
                     loadMovie(entry.id)
+                    if (props.onProgress) {
+                        props.onProgress(0, 0)
+                    }
                 }
                 else if (entry.kind === 'episode') {
                     loadEpisode(entry.id)
+                    if (props.onProgress) {
+                        props.onProgress(0, 0)
+                    }
                 }
                 else {
                     console.log("Unhandled playing queue entry")
@@ -150,13 +166,15 @@ export default function PlayMediaPage() {
     }
 
     const onComplete = () => {
-        onProgress().then(() => {
-            console.log({ playingQueue })
+        const duration = durationRef.current
+        onProgress(duration).then(() => {
             if (playingQueue) {
-                apiClient.updatePlayingQueue(source = playingQueue.source, progress = playingQueue.progress + 1)
+                return apiClient.updatePlayingQueue(
+                    source = playingQueue.source,
+                    progress = playingQueue.progress + 1
+                )
                     .then((response) => {
-                        setPlayingQueueSource(response.source)
-                        setVideoUrl(null)
+                        routes.replace(routes.playMedia, { playingQueueSource })
                     })
             } else {
                 routes.back()
@@ -176,6 +194,7 @@ export default function PlayMediaPage() {
     if (videoUrl) {
         return (
             <C.SnowVideoPlayer
+                videoTitle={videoTitle}
                 videoUrl={videoUrl}
                 isTranscode={transcodeReady}
                 onError={onError}

@@ -54,6 +54,7 @@ export default function SnowVideoControls(props) {
     return (
         (
             <View style={styles.rows}>
+                <SnowText>{props.videoTitle}</SnowText>
                 <Slider
                     style={styles.row}
                     minimumValue={0}
