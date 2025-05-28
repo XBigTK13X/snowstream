@@ -163,11 +163,20 @@ export default function PlayMediaPage() {
         const duration = durationRef.current
         onProgress(duration).then(() => {
             if (playingQueue) {
+                let currentItem = playingQueue.content[playingQueue.progress]
                 return apiClient.updatePlayingQueue(
                     source = playingQueue.source,
                     progress = playingQueue.progress + 1
                 )
-                    .then((response) => {
+                    .then(() => {
+                        if (currentItem.kind == 'e') {
+                            return apiClient.increaseShowEpisodeWatchCount(currentItem.id)
+                        }
+                        else if (currentItem.kind == 'm') {
+                            return apiClient.increaseMovieWatchCount(currentItem.id)
+                        }
+                    })
+                    .then(() => {
                         routes.replace(routes.playMedia, { playingQueueSource })
                     })
             } else {

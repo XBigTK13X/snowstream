@@ -291,6 +291,13 @@ def auth_required(router):
         )
         return not is_watched
 
+    @router.post("/movie/watch_count",tags=['Movie'])
+    def increase_movie_watch_count(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        movie_id:int
+    ):
+        return db.op.increase_movie_watch_count(ticket=auth_user.ticket, movie_id=movie_id)
+
     @router.post("/movie/progress",tags=['Movie'])
     def set_movie_watch_progress(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -393,6 +400,13 @@ def auth_required(router):
             is_watched=not is_watched
         )
         return not is_watched
+
+    @router.post("/show/season/epoisode/watch_count",tags=['Show'])
+    def increase_show_episode_watch_count(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        show_episode_id:int
+    ):
+        return db.op.increase_show_episode_watch_count(ticket=auth_user.ticket,show_episode_id=show_episode_id)
 
     @router.get("/show/season/episode",tags=['Show'])
     def get_show_episode_details(

@@ -411,6 +411,14 @@ export class ApiClient {
         return this.post(`/playing/queue?source=${source}&progress=${progress}`)
     }
 
+    increaseShowEpisodeWatchCount(episodeId) {
+        return this.post(`/show/season/epoisode/watch_count?show_episode_id=${episodeId}`)
+    }
+
+    increaseMovieWatchCount(movieId) {
+        return this.post(`/movie/watch_count?movie_id=${movieId}`)
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

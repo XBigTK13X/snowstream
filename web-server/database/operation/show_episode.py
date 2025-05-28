@@ -71,6 +71,7 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
             .filter(dm.ShowEpisode.show_season_id.in_(season_ids))
             .options(sorm.joinedload(dm.ShowEpisode.season).joinedload(dm.ShowSeason.show))
             .options(sorm.joinedload(dm.ShowEpisode.tags))
+            .options(sorm.joinedload(dm.ShowEpisode.watch_count))
         )
         episodes = query.all()
         results = []
@@ -80,6 +81,9 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)
             episode.kind = 'episode'
+            if not episode.watch_count:
+                episode.watch_count = dm.WatchCount()
+                episode.watch_count.amount = 0
             results.append(episode)
         results = sorted(results,key=lambda xx:[xx.season.season_order_counter, xx.episode_order_counter])
         return results

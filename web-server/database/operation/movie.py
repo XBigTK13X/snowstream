@@ -44,7 +44,11 @@ def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
             return None
         if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
             return None
-        return dm.set_primary_images(movie)
+        movie = dm.set_primary_images(movie)
+        if not movie.watch_count:
+            movie.watch_count = dm.WatchCount()
+            movie.watch_count.amount = 0
+        return
 
 def get_movie_by_name_and_year(name: str, release_year: int):
     with DbSession() as db:
