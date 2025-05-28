@@ -88,6 +88,7 @@ def get_playing_queue(
         queue_content = ''
         if show_id:
             episodes = db_episode.get_show_episode_list_by_show(ticket=ticket, show_id=show_id)
+            episodes = sorted([xx for xx in episodes if xx.season.season_order_counter > 0],key=lambda xx: [xx.season.season_order_counter,xx.episode_order_counter])
             length = len(episodes)
             queue_content = ','.join([f'episode-{xx.id}' for xx in episodes])
         elif show_season_id:
