@@ -107,17 +107,12 @@ export default function PlayMediaPage() {
             apiClient.getPlayingQueue({ source: playingQueueSource }).then(response => {
                 setPlayingQueue(response)
                 let entry = response.content[response.progress]
+                console.log({ entry })
                 if (entry.kind === 'movie') {
                     loadMovie(entry.id)
-                    if (props.onProgress) {
-                        props.onProgress(0, 0)
-                    }
                 }
                 else if (entry.kind === 'episode') {
                     loadEpisode(entry.id)
-                    if (props.onProgress) {
-                        props.onProgress(0, 0)
-                    }
                 }
                 else {
                     console.log("Unhandled playing queue entry")

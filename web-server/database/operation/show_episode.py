@@ -79,6 +79,7 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
                 continue
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)
+            episode.kind = 'episode'
             results.append(episode)
         return results
 

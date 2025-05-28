@@ -21,16 +21,29 @@ export default function PlaylistDetailsPage() {
         return <C.Text>Loading playlist {tagName}.</C.Text>
     }
 
-    gotoItem = (item) => { }
+    const watchAll = () => {
+        return apiClient
+            .getPlayingQueue({ tagId })
+            .then(response => {
+                routes.goto(routes.playMedia, { playingQueueSource: response.source })
+            })
+    }
 
-    shuffle = () => {
-
+    const shuffleAll = () => {
+        return apiClient
+            .getPlayingQueue({ tagId, shuffle: true })
+            .then(response => {
+                routes.goto(routes.playMedia, { playingQueueSource: response.source })
+            })
     }
 
     return (
         <C.View>
-            <C.SnowTextButton title="Shuffle" onPress={shuffle} />
-            <C.SnowPosterGrid items={playlistItems} onPress={gotoItem} />
+            <C.SnowGrid>
+                <C.SnowTextButton title="Watch All" onPress={watchAll} />
+                <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
+            </C.SnowGrid>
+            <C.SnowPosterGrid items={playlistItems} />
         </C.View>
     )
 }

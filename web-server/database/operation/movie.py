@@ -70,7 +70,9 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
         results = []
         for movie in movies:
             if tag_id in movie.get_tag_ids():
-                results.append(dm.set_primary_images(movie))
+                movie = dm.set_primary_images(movie)
+                movie.kind = 'movie'
+                results.append(movie)
         return results
 
 def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None):

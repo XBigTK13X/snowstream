@@ -25,7 +25,7 @@ def create_playing_queue(ticket:dm.Ticket, source:str, length:int, content:str):
         db.refresh(dbm)
         return dbm
 
-def delete_playing_queue(ticket:dm.Ticket,playing_queue_id:int):
+def delete_playing_queue(playing_queue_id:int):
     with DbSession() as db:
         db.query(dm.PlayingQueue).filter(
             dm.PlayingQueue.id == playing_queue_id
@@ -49,11 +49,13 @@ def split_content(csv_content):
     entries = csv_content.split(',')
     results = []
     for entry in entries:
+        log.info(entry)
         parts = entry.split('-')
-        results.append({
-            'kind': parts[0],
-            'id': int(parts[1])
-        })
+        if len(parts) == 2:
+            results.append({
+                'kind': parts[0],
+                'id': int(parts[1])
+            })
     return results
 
 def get_playing_queue(
@@ -107,14 +109,18 @@ def get_playing_queue(
             queue_entries = []
             for entry in playlist:
                 if entry.kind == 'movie':
-                    queue_entries += entry
+                    queue_entries.append(entry)
                 elif entry.kind == 'show':
-                    episodes = db_episode.get_show_episode_list_by_show(ticket=ticket, show_id=show_id)
-                    queue_entries += [xx for xx in episodes if xx.season.season_order_counter > 0]
+                    episodes = db_episode.get_show_episode_list_by_show(ticket=ticket, show_id=entry.id)
+                    queue_entries = queue_entries + [xx for xx in episodes if xx.season.season_order_counter > 0]
             if shuffle:
                 random.shuffle(queue_entries)
-            queue_content += []
-            queue_content = ','.join(f'episode-{xx.id}' if xx.kind == 'episode' else f'movie-{xx.id}' for xx in queue_entries)
-        playing_queue = create_playing_queue(ticket=ticket,source=source,length=length,content=queue_content)
+            queue_content = ','.join([f'episode-{xx.id}' if xx.kind == 'episode' else f'movie-{xx.id}' for xx in queue_entries])
+        playing_queue = create_playing_queue(
+            ticket=ticket,
+            source=source,
+            length=length,
+            content=queue_content
+        )
         playing_queue.content = split_content(playing_queue.content)
         return playing_queue
