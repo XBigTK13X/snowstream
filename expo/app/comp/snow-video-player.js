@@ -62,10 +62,17 @@ export default function SnowVideoPlayer(props) {
         }
 
         if (info && info.kind && info.kind === 'rnvevent') {
-            if (info.data && info.data.currentTime) {
-                setProgressSeconds(info.data.currentTime)
-                if (props.onProgress) {
-                    props.onProgress(info.data.currentTime)
+            if (info.data) {
+                if (info.data.currentTime) {
+                    setProgressSeconds(info.data.currentTime)
+                    if (props.onProgress) {
+                        props.onProgress(info.data.currentTime)
+                    }
+                }
+                if (info.data.playbackFinished) {
+                    if (props.onComplete) {
+                        props.onComplete()
+                    }
                 }
             }
         }
@@ -132,6 +139,7 @@ export default function SnowVideoPlayer(props) {
             }
         }
         setSeekToSeconds(progressSeconds)
+        setProgressSeconds(progressSeconds)
     }
 
     let controlToggleButton = null

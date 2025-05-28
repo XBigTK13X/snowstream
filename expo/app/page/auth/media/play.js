@@ -107,11 +107,10 @@ export default function PlayMediaPage() {
             apiClient.getPlayingQueue({ source: playingQueueSource }).then(response => {
                 setPlayingQueue(response)
                 let entry = response.content[response.progress]
-                console.log({ entry })
-                if (entry.kind === 'movie') {
+                if (entry.kind === 'm') {
                     loadMovie(entry.id)
                 }
-                else if (entry.kind === 'episode') {
+                else if (entry.kind === 'e') {
                     loadEpisode(entry.id)
                 }
                 else {

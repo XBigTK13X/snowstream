@@ -81,6 +81,7 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
             episode.episode_slug = util.get_episode_slug(episode)
             episode.kind = 'episode'
             results.append(episode)
+        results = sorted(results,key=lambda xx:[xx.season.season_order_counter, xx.episode_order_counter])
         return results
 
 def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):

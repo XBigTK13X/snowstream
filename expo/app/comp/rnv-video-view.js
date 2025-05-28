@@ -8,6 +8,7 @@ export default function RnvVideoView(props) {
     const videoRef = React.useRef(null);
     const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
+    const [seekSeconds, setSeekSeconds] = React.useState(0)
 
     // Workaround for web not allowing videos to autoplay
     const userClickedPlay = () => {
@@ -28,6 +29,15 @@ export default function RnvVideoView(props) {
                 setRequestTranscode(true)
                 onError({ message: 'web video player cannot select tracks', error: { code: 4 } })
             }
+        }
+    })
+
+    React.useEffect(() => {
+        if (props.seekToSeconds !== seekSeconds) {
+            if (videoRef && videoRef.current) {
+                videoRef.current.seek(props.seekToSeconds)
+            }
+            setSeekSeconds(props.seekToSeconds)
         }
     })
 
@@ -53,8 +63,9 @@ export default function RnvVideoView(props) {
             ref={videoRef}
             paused={!props.isPlaying}
             muted={!props.isPlaying}
+            onEnd={() => { props.onUpdate({ kind: 'rnvevent', data: { playbackFinished: true } }) }}
             onError={onError}
-            onProgress={(data) => { props.onUpdate({ eventKind: 'rnvevent', data: data }) }}
+            onProgress={(data) => { props.onUpdate({ kind: 'rnvevent', data: data }) }}
             selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
             selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
         />
