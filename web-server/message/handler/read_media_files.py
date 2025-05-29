@@ -6,10 +6,7 @@ import nfo
 def handle(job_id, scope):
     log.info(f"[WORKER] Handling a read_media_files job")
     shelves = db.op.get_shelf_list()
-    results = {}
-    handlers = []
     defined_tag_ids = {}
-    printed = False
     for shelf in shelves:
         log.info(f"Reading media for shelf [{shelf.name}->{shelf.kind}]")
         metadata_files = db.op.get_metadata_file_list()

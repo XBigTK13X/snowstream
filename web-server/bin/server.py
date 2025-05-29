@@ -26,13 +26,13 @@ if os.environ.get("SNOWSTREAM_WEB_API_URL"):
                 file_path = os.path.join(root, f)
                 log.info(f"Found frontend file to token swap [{file_path}]")
                 js_content = ""
-                with open(file_path, "r") as read_pointer:
-                    js_content = read_pointer.read()
+                with open(file_path, "r") as read_handle:
+                    js_content = read_handle.read()
                 js_content = js_content.replace(
                     "SNOWSTREAM_WEB_API_URL", f'"{config.web_api_url}"'
                 )
-                with open(file_path, "w") as write_pointer:
-                    write_pointer.write(js_content)
+                with open(file_path, "w") as write_handle:
+                    write_handle.write(js_content)
 
 app = FastAPI(
     title="snowstream",
@@ -77,9 +77,3 @@ auth.register(router=api_router)
 routes.register(router=api_router)
 
 app.include_router(api_router)
-
-# Default route - Serve the web client if nothing else matched
-
-@app.get("/{full_path:path}", response_class=RedirectResponse, include_in_schema=False)
-def capture_routes(request: Request, full_path: str):
-    return "/"
