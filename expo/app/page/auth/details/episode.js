@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function EpisodeDetailsPage() {
-    const { isAdmin, apiClient } = C.useSession()
+    const { apiClient } = C.useSession()
     const { routes } = C.useSettings()
     const localParams = C.useLocalSearchParams()
     const [shelf, setShelf] = C.React.useState(null)
@@ -22,8 +22,6 @@ export default function EpisodeDetailsPage() {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
             })
-        }
-        if (!episode) {
             apiClient.getEpisode(episodeId).then((response) => {
                 setEpisode(response)
                 setVideoFile(response.video_files[0])
@@ -83,6 +81,12 @@ export default function EpisodeDetailsPage() {
                     <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />
                     <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />
                     <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />
+                    <C.SnowTextButton adminOnly title="Rescan Episode" onPress={() => {
+                        return apiClient.createJobShelvesScan({
+                            targetKind: 'episode',
+                            targetId: episodeId
+                        })
+                    }} />
                     <C.SnowUpdateMediaButton kind="Episode" updateMediaJob={(details) => {
                         apiClient.createJobUpdateMediaFiles({
                             targetKind: 'episode',

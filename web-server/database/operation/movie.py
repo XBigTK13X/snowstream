@@ -48,7 +48,7 @@ def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
         if not movie.watch_count:
             movie.watch_count = dm.WatchCount()
             movie.watch_count.amount = 0
-        return
+        return movie
 
 def get_movie_by_name_and_year(name: str, release_year: int):
     with DbSession() as db:

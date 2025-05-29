@@ -46,25 +46,6 @@ export function ContinueWatchingListPage(props) {
         )
     }
 
-    const pressItem = (item) => {
-        if (item.kind === 'movie') {
-            routes.goto(routes.movieDetails, {
-                shelfId: item.shelf.id,
-                movieId: item.id
-            })
-        }
-        if (item.kind === 'episode') {
-            let destination = {
-                shelfId: item.show.shelf.id,
-                showId: item.show.id,
-                seasonId: item.season.id,
-                episodeId: item.id,
-                showName: item.show.name,
-                seasonOrder: item.season.season_order_counter
-            }
-            routes.goto(routes.episodeDetails, destination)
-        }
-    }
     const loadTab = (tabEntry, tabIndex) => {
         setTabIndex(tabIndex)
         setTabItems(tabEntry.items)
@@ -86,7 +67,7 @@ export function ContinueWatchingListPage(props) {
                 <C.View style={styles.columns}>
                     {tabButtons}
                 </C.View>
-                <C.SnowPosterGrid items={tabItems} onPress={pressItem} />
+                <C.SnowPosterGrid items={tabItems} />
             </C.View>
         )
     }

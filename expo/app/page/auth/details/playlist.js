@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function PlaylistDetailsPage() {
-    const { isAdmin, apiClient } = C.useSession()
+    const { apiClient } = C.useSession()
     const { routes } = C.useSettings()
     const localParams = C.useLocalSearchParams()
 

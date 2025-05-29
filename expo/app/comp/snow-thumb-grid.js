@@ -2,8 +2,10 @@ import { View } from 'react-native'
 import SnowGrid from './snow-grid'
 import SnowImageButton from './snow-image-button'
 import SnowLabel from './snow-label'
+import { useSettings } from '../settings-context'
 
 export function SnowThumbGrid(props) {
+    const { routes } = useSettings()
     const renderItem = (item, itemIndex) => {
         let thumbUrl = null
         if (item.thumbnail_image) {
@@ -21,7 +23,7 @@ export function SnowThumbGrid(props) {
                     shouldFocus={props.shouldFocus && itemIndex === 0}
                     imageUrl={thumbUrl}
                     title={item.name}
-                    onPress={() => { props.onPress(item) }}
+                    onPress={() => { routes.gotoItem(item) }}
                     onLongPress={() => { props.onLongPress(item) }}
                 />
                 {title}

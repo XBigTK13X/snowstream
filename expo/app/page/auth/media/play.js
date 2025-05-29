@@ -80,7 +80,7 @@ export default function PlayMediaPage() {
                 setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
             }
         }
-        if (shelfId && !self) {
+        if (shelfId && !shelf) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
             })
@@ -103,7 +103,7 @@ export default function PlayMediaPage() {
                 setVideoTitle(response.name)
             })
         }
-        if (!videoUrl && playingQueueSource) {
+        if (!playingQueue && playingQueueSource) {
             apiClient.getPlayingQueue({ source: playingQueueSource }).then(response => {
                 setPlayingQueue(response)
                 let entry = response.content[response.progress]

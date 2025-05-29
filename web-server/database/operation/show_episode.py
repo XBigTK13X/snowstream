@@ -97,7 +97,11 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
             .options(sorm.joinedload(dm.ShowEpisode.image_files))
             .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
             .options(sorm.joinedload(dm.ShowEpisode.tags))
-            .options(sorm.joinedload(dm.ShowEpisode.season))
+            .options(
+                sorm.joinedload(dm.ShowEpisode.season)
+                .joinedload(dm.ShowSeason.show)
+                .joinedload(dm.Show.shelf)
+            )
             .options(sorm.joinedload(dm.ShowEpisode.watch_count))
         )
         episode = query.first()
@@ -132,6 +136,10 @@ def get_show_episode_list_by_season(ticket:dm.Ticket,show_season_id: int):
         query = (
             db.query(dm.ShowEpisode)
             .filter(dm.ShowEpisode.show_season_id == show_season_id)
+            .options(
+                sorm.joinedload(dm.ShowEpisode.season)
+                .joinedload(dm.ShowSeason.show)
+                .joinedload(dm.Show.shelf))
             .order_by(dm.ShowEpisode.episode_order_counter)
         )
         episodes = query.all()
@@ -141,6 +149,7 @@ def get_show_episode_list_by_season(ticket:dm.Ticket,show_season_id: int):
                 continue
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)
+            episode.kind = 'episode'
             results.append(episode)
         return results
 

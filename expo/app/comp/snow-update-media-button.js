@@ -22,7 +22,7 @@ const styles = {
 }
 
 export default function SnowUpdateMediaButton(props) {
-    const { isAdmin, apiClient } = useSession();
+    const { isAdmin } = useSession();
     if (!isAdmin) {
         return null
     }

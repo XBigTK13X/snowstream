@@ -18,8 +18,6 @@ export default function MovieDetailsPage() {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
             })
-        }
-        if (!movie) {
             apiClient.getMovie(movieId).then((response) => {
                 setMovie(response)
                 setVideoFile(response.video_files[0])
@@ -66,6 +64,12 @@ export default function MovieDetailsPage() {
                     <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />
                     <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
                     <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />
+                    <C.SnowTextButton adminOnly title="Rescan Movie" onPress={() => {
+                        return apiClient.createJobShelvesScan({
+                            targetKind: 'movie',
+                            targetId: movieId
+                        })
+                    }} />
                     <C.SnowUpdateMediaButton kind="Movie" updateMediaJob={(details) => {
                         apiClient.createJobUpdateMediaFiles({
                             targetKind: 'movie',

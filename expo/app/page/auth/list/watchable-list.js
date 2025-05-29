@@ -86,7 +86,7 @@ export function WatchableListPage(props) {
                     <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
                     {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
                     {props.shuffleAll ? <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} /> : null}
-                    <C.SnowTextButton title={`Scan ${props.kind}`} onPress={() => {
+                    <C.SnowTextButton adminOnly title={`Scan ${props.kind}`} onPress={() => {
                         props.scanContentsJob(apiClient, shelfId)
                     }} />
                     <C.SnowUpdateMediaButton

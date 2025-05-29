@@ -3,6 +3,7 @@ import React from 'react'
 
 import { Platform, Image, TouchableOpacity, Pressable, View } from 'react-native';
 import SnowText from './snow-text'
+import { useSession } from '../auth-context'
 
 
 const styles = {
@@ -38,6 +39,12 @@ if (Platform.OS === 'android') {
 }
 
 export function SnowTextButton(props) {
+    const { isAdmin } = useSession()
+
+    if (!isAdmin && props.adminOnly) {
+        return null
+    }
+
     const [focused, setFocused] = React.useState(false)
     const touchRef = React.useRef(null)
 
