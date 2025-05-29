@@ -294,6 +294,7 @@ class Movie(BaseModel):
     name = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
     directory = sa.Column(sa.Text)
+    remote_id = sa.Column(sa.Integer)
     tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="movie_tag",back_populates="movies")
     video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="movie_video_file",back_populates="movie",overlaps="movie_video_file")
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="movie_image_file",back_populates="movie",overlaps="movie_image_file")
@@ -355,6 +356,7 @@ class Show(BaseModel):
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
+    remote_id = sa.Column(sa.Integer)
     shelf: sorm.Mapped["Shelf"] = sorm.relationship(secondary="show_shelf",back_populates="shows")
     seasons: sorm.Mapped[List["ShowSeason"]] = sorm.relationship(back_populates='show')
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_image_file",back_populates="show",overlaps="show_image_file")
@@ -512,7 +514,7 @@ class Streamable(BaseModel):
     def _ids(self):
         return [xx.id for xx in self.tags]
 
-class StreamSourceTag(BaseModel):
+class StreamableTag(BaseModel):
     __tablename__ = 'streamable_tag'
     streamable_id = sa.Column(sa.Integer, sa.ForeignKey("streamable.id"))
     tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))

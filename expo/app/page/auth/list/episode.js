@@ -50,6 +50,7 @@ export default function EpisodeListPage() {
     }
     return (
         <WatchableListPage
+            getRemoteId={(item) => { return item.season.show.remote_id }}
             kind="Season"
             getPageTitle={getPageTitle}
             loadItems={loadItems}

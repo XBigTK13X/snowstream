@@ -4,6 +4,7 @@ from log import log
 from pathlib import Path
 from db import db
 import message.handler.scan_shelf.base_handler as base
+import nfo
 
 MOVIE_ASSETS_REGEX = re.compile(
     r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<asset_name>.*)",
@@ -161,6 +162,10 @@ class MoviesScanHandler(base.BaseHandler):
                 db.op.create_movie_metadata_file(
                     movie_id=movie.id, metadata_file_id=info["id"]
                 )
+                movie_nfo = nfo.nfo_path_to_dict(info['file_path'])
+                if 'tvdbid' in movie_nfo:
+                    movie = db.op.update_movie_remote_id(movie_id=movie.id, remote_id=int(movie_nfo['tvdbid']))
+
 
     def organize_videos(self):
         progress_count = 0

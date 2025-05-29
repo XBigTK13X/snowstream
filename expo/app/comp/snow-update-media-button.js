@@ -27,7 +27,7 @@ export default function SnowUpdateMediaButton(props) {
         return null
     }
     const [showRequest, setShowRequest] = React.useState(false)
-    const [metadataId, setMetadataId] = React.useState('')
+    const [metadataId, setMetadataId] = React.useState(props.remoteId ? props.remoteId : '')
     const onCancel = () => {
         setShowRequest(false)
     }

@@ -70,15 +70,17 @@ export default function MovieDetailsPage() {
                             targetId: movieId
                         })
                     }} />
-                    <C.SnowUpdateMediaButton kind="Movie" updateMediaJob={(details) => {
-                        apiClient.createJobUpdateMediaFiles({
-                            targetKind: 'movie',
-                            targetId: movieId,
-                            metadataId: details.metadataId,
-                            updateMetadata: details.metadata,
-                            updateImages: details.images
-                        })
-                    }} />
+                    <C.SnowUpdateMediaButton
+                        remoteId={movie.remote_id ? movie.remote_id : ''}
+                        kind="Movie" updateMediaJob={(details) => {
+                            apiClient.createJobUpdateMediaFiles({
+                                targetKind: 'movie',
+                                targetId: movieId,
+                                metadataId: details.metadataId,
+                                updateMetadata: details.metadata,
+                                updateImages: details.images
+                            })
+                        }} />
                 </C.SnowGrid>
                 <C.SnowTrackSelector
                     tracks={movie.tracks.inspection.scored_tracks}

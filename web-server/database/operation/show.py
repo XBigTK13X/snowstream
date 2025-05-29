@@ -24,6 +24,13 @@ def update_show_release_year(show_id:int, release_year:int):
         db.commit()
         return show
 
+def update_show_remote_id(show_id:int, remote_id:int):
+    with DbSession() as db:
+        show = db.query(dm.Show).filter(dm.Show.id == show_id).first()
+        show.remote_id = remote_id
+        db.commit()
+        return show
+
 def get_show_by_name(name: str):
     with DbSession() as db:
         return db.query(dm.Show).filter(dm.Show.name == name).first()

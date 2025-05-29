@@ -36,7 +36,6 @@ export default function ShowListPage() {
             gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
-            updateMediaJob={updateMediaJob}
         />
     )
 }

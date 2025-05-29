@@ -17,6 +17,13 @@ def create_movie(name: str, release_year: int, directory: str):
         db.refresh(dbm)
         return dbm
 
+def update_movie_remote_id(movie_id:int, remote_id:int):
+    with DbSession() as db:
+        movie = db.query(dm.Movie).filter(dm.Movie.id == movie_id).first()
+        movie.remote_id = remote_id
+        db.commit()
+        return movie
+
 def add_movie_to_shelf(movie_id: int, shelf_id: int):
     with DbSession() as db:
         dbm = dm.MovieShelf()

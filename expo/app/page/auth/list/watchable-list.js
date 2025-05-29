@@ -79,6 +79,11 @@ export function WatchableListPage(props) {
             Grid = C.SnowThumbGrid
         }
 
+        let remoteId = null
+        if (props.getRemoteId && items) {
+            remoteId = props.getRemoteId(items[0])
+        }
+
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
@@ -89,13 +94,15 @@ export function WatchableListPage(props) {
                     <C.SnowAdminButton title={`Scan ${props.kind}`} onPress={() => {
                         props.scanContentsJob(apiClient, shelfId)
                     }} />
-                    <C.SnowUpdateMediaButton
-                        kind={props.kind}
-                        updateMediaJob={(details) => {
-                            details.shelfId = shelfId
-                            props.updateMediaJob(apiClient, details)
-                        }}
-                    />
+                    {props.updateMediaJob ?
+                        <C.SnowUpdateMediaButton
+                            kind={props.kind}
+                            remoteId={remoteId}
+                            updateMediaJob={(details) => {
+                                details.shelfId = shelfId
+                                props.updateMediaJob(apiClient, details)
+                            }}
+                        /> : null}
                 </C.SnowGrid>
                 <Grid shouldFocus onPress={gotoItem} onLongPress={toggleWatchedItem} items={items} />
             </C.View >

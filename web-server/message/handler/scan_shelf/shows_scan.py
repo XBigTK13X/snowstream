@@ -153,32 +153,32 @@ class ShowsScanHandler(base.BaseHandler):
                     name=info["show_name"], directory=info["directory"]
                 )
                 db.op.add_show_to_shelf(shelf_id=self.shelf.id, show_id=show.id)
-            self.batch_lookup[show_slug] = {"show": show}
-        show = self.batch_lookup[show_slug]["show"]
-        return show_slug, show
+            self.batch_lookup[show_slug] = {"show_id": show.id}
+        show_id = self.batch_lookup[show_slug]["show_id"]
+        return show_slug, show_id
 
-    def get_or_create_season(self, show_slug, show, info):
+    def get_or_create_season(self, show_slug, show_id, info):
         season_slug = f'season-{info["season"]}'
         if not season_slug in self.batch_lookup[show_slug]:
             season = db.op.get_show_season_by_show_and_order(
-                show_id=show.id, season_order_counter=info["season"]
+                show_id=show_id, season_order_counter=info["season"]
             )
             if not season:
                 season = db.op.create_show_season(
-                    show_id=show.id, season_order_counter=info["season"], directory=info['file_directory']
+                    show_id=show_id, season_order_counter=info["season"], directory=info['file_directory']
                 )
-            self.batch_lookup[show_slug][season_slug] = season
-        season = self.batch_lookup[show_slug][season_slug]
-        return season_slug, season
+            self.batch_lookup[show_slug][season_slug] = season.id
+        season_id = self.batch_lookup[show_slug][season_slug]
+        return season_slug, season_id
 
-    def get_or_create_episode(self, season, episode_order_counter):
+    def get_or_create_episode(self, season_id, episode_order_counter):
         episode = db.op.get_show_episode_by_season_order(
-            show_season_id=season.id,
+            show_season_id=season_id,
             episode_order_counter=episode_order_counter,
         )
         if not episode:
             episode = db.op.create_show_episode(
-                show_season_id=season.id,
+                show_season_id=season_id,
                 episode_order_counter=episode_order_counter,
             )
         return episode
@@ -189,34 +189,39 @@ class ShowsScanHandler(base.BaseHandler):
             progress_count += 1
             if progress_count % 500 == 0:
                 log.info(f'Organize show metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
-            show_slug, show = self.get_or_create_show(info=info)
+            show_slug, show_id = self.get_or_create_show(info=info)
             season_slug = None
-            season = None
+            season_id = None
+            show_nfo = None
             if info["asset_scope"] in AssetScope.HAS_SEASON:
-                season_slug, season = self.get_or_create_season(
-                    show_slug=show_slug, show=show, info=info
+                season_slug, season_id = self.get_or_create_season(
+                    show_slug=show_slug, show_id=show_id, info=info
                 )
 
             if info["asset_scope"] == AssetScope.SHOW:
                 if not db.op.get_show_metadata_file(
-                    show_id=show.id, metadata_file_id=info["id"]
+                    show_id=show_id, metadata_file_id=info["id"]
                 ):
                     db.op.create_show_metadata_file(
-                        show_id=show.id, metadata_file_id=info["id"]
+                        show_id=show_id, metadata_file_id=info["id"]
                     )
-                    if not show.release_year:
-                        show_nfo = nfo.nfo_path_to_dict(info['file_path'])
-                        if 'year' in show_nfo:
-                            show = db.op.update_show_release_year(
-                                show_id=show.id,
-                                release_year=int(show_nfo['year'])
-                            )
+                    show_nfo = nfo.nfo_path_to_dict(info['file_path'])
+                    if 'year' in show_nfo:
+                        show = db.op.update_show_release_year(
+                            show_id=show_id,
+                            release_year=int(show_nfo['year'])
+                        )
+                    if 'tvdbid' in show_nfo:
+                        show = db.op.update_show_remote_id(
+                            show_id=show_id,
+                            remote_id=int(show_nfo['tvdbid'])
+                        )
             elif info["asset_scope"] == AssetScope.SEASON:
                 if not db.op.get_show_season_metadata_file(
-                    show_season_id=season.id, metadata_file_id=info["id"]
+                    show_season_id=season_id, metadata_file_id=info["id"]
                 ):
                     db.op.create_show_season_metadata_file(
-                        show_season_id=season.id, metadata_file_id=info["id"]
+                        show_season_id=season_id, metadata_file_id=info["id"]
                     )
             else:
                 episode_end = (
@@ -226,7 +231,7 @@ class ShowsScanHandler(base.BaseHandler):
                 )
                 for episode_order_counter in range(info["episode_start"], episode_end):
                     episode = self.get_or_create_episode(
-                        season=season, episode_order_counter=episode_order_counter
+                        season_id=season_id, episode_order_counter=episode_order_counter
                     )
                     if not db.op.get_show_episode_metadata_file(
                         show_episode_id=episode.id, metadata_file_id=info["id"]
@@ -247,26 +252,26 @@ class ShowsScanHandler(base.BaseHandler):
             progress_count += 1
             if progress_count % 500 == 0:
                 log.info(f'Organize show image {progress_count} out of {len(self.file_info_lookup["image"])}')
-            show_slug, show = self.get_or_create_show(info=info)
+            show_slug, show_id = self.get_or_create_show(info=info)
             season_slug = None
-            season = None
+            season_id = None
             if info["asset_scope"] in AssetScope.HAS_SEASON:
-                season_slug, season = self.get_or_create_season(
-                    show_slug=show_slug, show=show, info=info
+                season_slug, season_id = self.get_or_create_season(
+                    show_slug=show_slug, show_id=show_id, info=info
                 )
             if info["asset_scope"] == AssetScope.SHOW:
                 if not db.op.get_show_image_file(
-                    show_id=show.id, image_file_id=info["id"]
+                    show_id=show_id, image_file_id=info["id"]
                 ):
                     db.op.create_show_image_file(
-                        show_id=show.id, image_file_id=info["id"]
+                        show_id=show_id, image_file_id=info["id"]
                     )
             elif info["asset_scope"] == AssetScope.SEASON:
                 if not db.op.get_show_season_image_file(
-                    show_season_id=season.id, image_file_id=info["id"]
+                    show_season_id=season_id, image_file_id=info["id"]
                 ):
                     db.op.create_show_season_image_file(
-                        show_season_id=season.id, image_file_id=info["id"]
+                        show_season_id=season_id, image_file_id=info["id"]
                     )
             else:
                 episode_end = (
@@ -276,7 +281,7 @@ class ShowsScanHandler(base.BaseHandler):
                 )
                 for episode_order_counter in range(info["episode_start"], episode_end):
                     episode = self.get_or_create_episode(
-                        season=season, episode_order_counter=episode_order_counter
+                        season_id=season_id, episode_order_counter=episode_order_counter
                     )
                     image_file_association = db.op.get_show_episode_image_file(
                         show_episode_id=episode.id, image_file_id=info["id"]
@@ -292,9 +297,9 @@ class ShowsScanHandler(base.BaseHandler):
             progress_count += 1
             if progress_count % 500 == 0:
                 log.info(f'Organize show video {progress_count} out of {len(self.file_info_lookup["video"])}')
-            show_slug, show = self.get_or_create_show(info=info)
-            season_slug, season = self.get_or_create_season(
-                show_slug=show_slug, show=show, info=info
+            show_slug, show_id = self.get_or_create_show(info=info)
+            season_slug, season_id = self.get_or_create_season(
+                show_slug=show_slug, show_id=show_id, info=info
             )
             episode_end = (
                 info["episode_start"] + 1
@@ -303,7 +308,7 @@ class ShowsScanHandler(base.BaseHandler):
             )
             for episode_order_counter in range(info["episode_start"], episode_end):
                 episode = self.get_or_create_episode(
-                    season=season, episode_order_counter=episode_order_counter
+                    season_id=season_id, episode_order_counter=episode_order_counter
                 )
                 video_file_association = db.op.get_show_episode_video_file(
                     show_episode_id=episode.id, video_file_id=info["id"]

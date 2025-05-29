@@ -1,4 +1,5 @@
 import message.handler.update_media.base_handler as base
+import os
 
 class Movie(base.BaseHandler):
     def __init__(self,scope):
@@ -52,5 +53,11 @@ class Movie(base.BaseHandler):
         self.nfo.save_xml_as_nfo(nfo_path=self.movie_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         self.db.op.update_metadata_file_content(self.movie_nfo_file.id, xml_content=self.new_nfo_xml)
 
+    # Legacy images
+    # backgroup.jpg
+    # logo.png
+    # folder.jpg
     def download_images(self):
         images = self.media_provider.get_movie_images(metadata_id=self.metadata_id)
+        local_path = os.path.join(self.movie.directory,'folder.jpg')
+        self.download_image(image_url=images['poster'],local_path=local_path)

@@ -87,15 +87,18 @@ export default function EpisodeDetailsPage() {
                             targetId: episodeId
                         })
                     }} />
-                    <C.SnowUpdateMediaButton kind="Episode" updateMediaJob={(details) => {
-                        apiClient.createJobUpdateMediaFiles({
-                            targetKind: 'episode',
-                            targetId: episodeId,
-                            metadataId: details.metadataId,
-                            updateMetadata: details.metadata,
-                            updateImages: details.images
-                        })
-                    }} />
+                    <C.SnowUpdateMediaButton
+                        remoteId={episode.show.remote_id ? episode.show.remote_id : ''}
+                        kind="Episode"
+                        updateMediaJob={(details) => {
+                            apiClient.createJobUpdateMediaFiles({
+                                targetKind: 'episode',
+                                targetId: episodeId,
+                                metadataId: details.metadataId,
+                                updateMetadata: details.metadata,
+                                updateImages: details.images
+                            })
+                        }} />
                 </C.SnowGrid>
                 <C.SnowTrackSelector
                     tracks={episode.tracks.inspection.scored_tracks}

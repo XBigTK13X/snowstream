@@ -38,7 +38,6 @@ export default function MovieListPage() {
             gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
-            updateMediaJob={updateMediaJob}
         />
     )
 }
