@@ -15,8 +15,8 @@ class Config {
             this.webApiUrl = 'http://192.168.101.10:8000'
         }
 
-        this.clientVersion = '0.5.7'
-        this.clientBuildDate = 'November 12, 2024'
+        self.clientVersion = "0.9.2"
+        self.clientBuildDate = "May 29, 2025"
         this.useNullVideoView = false
         this.debugVideoView = false
         console.log('[DEBUG] Using the web api URL: ' + this.webApiUrl)

@@ -36,7 +36,7 @@ if os.environ.get("SNOWSTREAM_WEB_API_URL"):
 
 app = FastAPI(
     title="snowstream",
-    version="1.0.3",
+    version=f"{config.server_version}",
     swagger_ui_parameters={
         "syntaxHighlight": False,
         "operationsSorter": "alpha",

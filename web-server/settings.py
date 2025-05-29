@@ -4,8 +4,8 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "0.5.7"
-        self.server_build_date = "October 24, 2024"
+        self.server_version = "0.9.2"
+        self.server_build_date = "May 29, 2025"
 
         self.cached_text_ttl_seconds = 60 * 60 * 24 # One day
         self.ffprobe_dir = ".snowstream/ffprobe"
