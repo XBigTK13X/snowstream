@@ -47,8 +47,14 @@ def upsert_user(user: am.User):
 
 def get_user_by_id(user_id:int):
     with DbSession() as db:
-        query = db.query(dm.User)
-        return query.filter(dm.User.id == user_id).first()
+        return (
+            db.query(dm.User)
+            .filter(dm.User.id == user_id)
+            .options(sorm.joinedload(dm.User.access_tags))
+            .options(sorm.joinedload(dm.User.access_shelves))
+            .options(sorm.joinedload(dm.User.access_stream_sources))
+            .first()
+        )
 
 def get_user_by_name(username: str):
     with DbSession() as db:

@@ -81,7 +81,7 @@ export default function EpisodeDetailsPage() {
                     <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />
                     <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />
                     <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />
-                    <C.SnowTextButton isAdmin={isAdmin} adminOnly title="Rescan Episode" onPress={() => {
+                    <C.SnowAdminButton title="Rescan Episode" onPress={() => {
                         return apiClient.createJobShelvesScan({
                             targetKind: 'episode',
                             targetId: episodeId

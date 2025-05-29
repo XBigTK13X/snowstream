@@ -52,9 +52,9 @@ update_info(
 update_info(
     input_path=CLIENT_SETTINGS_PATH,
     version_needle='clientVersion',
-    version_replacement=f'        self.clientVersion = "{build_version}"\n',
+    version_replacement=f'        this.clientVersion = "{build_version}"\n',
     build_needle='clientBuildDate',
-    build_replacement=f'        self.clientBuildDate = "{build_date}"\n'
+    build_replacement=f'        this.clientBuildDate = "{build_date}"\n'
 )
 
 update_info(

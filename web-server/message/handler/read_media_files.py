@@ -15,7 +15,7 @@ def handle(job_id, scope):
             if not 'tag' in nfo_content:
                 continue
             for tag_name in nfo_content['tag']:
-                if not ':' in tag_name:
+                if not ':' in tag_name or 'Source:' in tag_name:
                     continue
                 if not tag_name in defined_tag_ids:
                     tag = db.op.get_tag_by_name(tag_name)
