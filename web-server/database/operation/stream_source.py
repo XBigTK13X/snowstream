@@ -17,20 +17,36 @@ def create_stream_source(stream_source: am.StreamSource):
 
 def get_stream_source_list(ticket:dm.Ticket=None,streamables:bool=False):
     with DbSession() as db:
-        query = db.query(dm.StreamSource)
-        if ticket != None and ticket.stream_source_ids != None:
+        query = (
+            db.query(dm.StreamSource)
+        )
+        if ticket.has_stream_source_restrictions():
             query = query.filter(dm.StreamSource.id.in_(ticket.stream_source_ids))
+        if ticket.has_tag_restrictions():
+            query = query.options(sorm.joinedload(dm.StreamSource.tags))
         if streamables:
             query = query.options(
-                sorm.joinedload(dm.StreamSource.streamables)                
+                sorm.joinedload(dm.StreamSource.streamables)
             )
-        return query.all()
+        stream_sources = query.all()
+        results = []
+        for stream_source in stream_sources:
+            if not ticket.is_allowed(tag_provider=stream_source.get_tag_ids):
+                continue
+            results.append(stream_source)
+        return results
 
-def get_stream_source(stream_source_id: int):
+def get_stream_source_by_id(ticket:dm.Ticket,stream_source_id: int):
     with DbSession() as db:
-        return db.query(dm.StreamSource).options(
-            sorm.joinedload(dm.StreamSource.streamables)
-        ).filter(dm.StreamSource.id == stream_source_id).first()
+        stream_source = (
+            db.query(dm.StreamSource)
+            .options(sorm.joinedload(dm.StreamSource.streamables))
+            .options(sorm.joinedload(dm.StreamSource.tags))
+            .filter(dm.StreamSource.id == stream_source_id).first()
+        )
+        if not ticket.is_allowed(tag_provider=stream_source.get_tag_ids):
+            return None
+        return stream_source
 
 def get_stream_source_by_url(url: str):
     with DbSession() as db:
@@ -41,10 +57,10 @@ def upsert_stream_source(stream_source: am.StreamSource):
     if stream_source.id:
         existing_stream_source = get_stream_source_by_url(url=stream_source.url)
     if not existing_stream_source:
-        return create_stream_source(stream_source)    
+        return create_stream_source(stream_source)
     with DbSession() as db:
         existing_stream_source = db.query(dm.StreamSource).filter(dm.StreamSource.id == stream_source.id).update(stream_source.model_dump())
-        db.commit()        
+        db.commit()
         return existing_stream_source
 
 

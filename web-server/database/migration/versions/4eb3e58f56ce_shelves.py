@@ -206,6 +206,36 @@ def upgrade() -> None:
         ["show_episode_id", "video_file_id"],
     )
 
+    op.create_table(
+        "stream_source_tag",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("created_at", sa.DateTime, nullable=False),
+        sa.Column("updated_at", sa.DateTime, nullable=False),
+        sa.Column("tag_id", sa.Integer, sa.ForeignKey("tag.id"), nullable=False),
+        sa.Column("stream_source_id", sa.Integer, sa.ForeignKey("stream_source.id"), nullable=False),
+    )
+
+
+    op.create_unique_constraint(
+        "unique_stream_source_tag",
+        "stream_source_tag",
+        ["stream_source_id", "tag_id"],
+    )
+
+    op.create_table(
+        "streamable_tag",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("created_at", sa.DateTime, nullable=False),
+        sa.Column("updated_at", sa.DateTime, nullable=False),
+        sa.Column("tag_id", sa.Integer, sa.ForeignKey("tag.id"), nullable=False),
+        sa.Column("streamable_id", sa.Integer, sa.ForeignKey("streamable.id"), nullable=False),
+    )
+
+    op.create_unique_constraint(
+        "unique_streamable_tag",
+        "streamable_tag",
+        ["streamable_id", "tag_id"],
+    )
 
 def downgrade() -> None:
     op.drop_table("movie_video_file")

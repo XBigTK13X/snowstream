@@ -13,7 +13,11 @@ export default function PlaylistListPage() {
         }
     })
     if (!playlistList) {
-        return <C.Text>Loading playlist list.</C.Text>
+        return <C.SnowText>Loading playlist list.</C.SnowText>
+    }
+
+    if (!playlistList.length) {
+        return < C.SnowText > No playlists found.</C.SnowText >
     }
 
     return <C.SnowGrid items={playlistList} renderItem={(item) => {

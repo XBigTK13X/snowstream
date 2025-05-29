@@ -9,23 +9,37 @@ from settings import config
 import database.operation.show as db_show
 import database.operation.show_season as db_season
 
+SeasonTags = sorm.aliased(dm.Tag)
+
+
 def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int,search_query:str=None):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
         query = (
             db.query(dm.ShowEpisode)
+            .options(sorm.joinedload(dm.ShowEpisode.tags.of_type(dm.ShowEpisodeTagAlias)))
             .join(dm.ShowEpisode.season)
             .join(dm.ShowSeason.show)
             .join(dm.Show.shelf)
+            .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
+            .join(dm.ShowSeason.tags.of_type(dm.ShowSeasonTagAlias))
+            .join(dm.Show.tags.of_type(dm.ShowTagAlias))
             .options(
                 sorm.contains_eager(dm.ShowEpisode.season)
                 .contains_eager(dm.ShowSeason.show)
                 .contains_eager(dm.Show.shelf)
             )
+            .options(
+                sorm.contains_eager(dm.ShowEpisode.season)
+                .contains_eager(dm.ShowSeason.tags.of_type(dm.ShowSeasonTagAlias))
+            )
+            .options(
+                sorm.contains_eager(dm.ShowEpisode.season)
+                .contains_eager(dm.ShowSeason.show)
+                .contains_eager(dm.Show.tags.of_type(dm.ShowTagAlias))
+            )
             .filter(dm.Shelf.id == shelf_id)
-            .options(sorm.joinedload(dm.ShowEpisode.tags))
-            .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
         )
         if search_query:
             query = query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)

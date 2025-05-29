@@ -59,7 +59,7 @@ def auth_required(router):
     ):
         if not auth_user.ticket.is_allowed(stream_source_id=stream_source_id):
             return None
-        return db.op.get_stream_source(stream_source_id=stream_source_id)
+        return db.op.get_stream_source_by_id(ticket=auth_user.ticket,stream_source_id=stream_source_id)
 
     @router.get("/streamable",tags=['Stream Source'])
     def get_streamable(

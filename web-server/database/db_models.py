@@ -1,6 +1,5 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
-from sqlalchemy.ext.hybrid import hybrid_method
 from typing import List
 
 # Reminder -> back_populates is necessary to avoid a bunch of warnings and subtle bugs
@@ -229,6 +228,8 @@ class Tag(BaseModel):
     shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary="show_tag",back_populates="tags")
     show_seasons: sorm.Mapped[List["ShowSeason"]] = sorm.relationship(secondary="show_season_tag",back_populates="tags")
     show_episodes: sorm.Mapped[List["ShowEpisode"]] = sorm.relationship(secondary="show_episode_tag",back_populates="tags")
+    stream_sources: sorm.Mapped[List["StreamSource"]] = sorm.relationship(secondary="stream_source_tag",back_populates="tags")
+    streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(secondary="streamable_tag",back_populates="tags")
 
 class ImageFile(BaseModel):
     __tablename__ = "image_file"
@@ -301,6 +302,8 @@ class Movie(BaseModel):
     watch_count: sorm.Mapped['WatchCount'] = sorm.relationship(overlaps="movie")
 
     def get_tag_ids(self):
+        if not self.tags:
+            return []
         return [xx.id for xx in self.tags]
 
 class MovieShelf(BaseModel):
@@ -359,6 +362,8 @@ class Show(BaseModel):
     tags: sorm.Mapped[List['Tag']] = sorm.relationship(secondary="show_tag",back_populates="shows")
 
     def get_tag_ids(self):
+        if not self.tags:
+            return []
         return [xx.id for xx in self.tags]
 
 class ShowShelf(BaseModel):
@@ -370,7 +375,6 @@ class ShowTag(BaseModel):
     __tablename__ = "show_tag"
     show_id = sa.Column(sa.Integer, sa.ForeignKey("show.id"))
     tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
-
 
 class ShowImageFile(BaseModel):
     __tablename__ = "show_image_file"
@@ -408,7 +412,6 @@ class ShowSeasonTag(BaseModel):
     show_season_id = sa.Column(sa.Integer, sa.ForeignKey("show_season.id"))
     tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
 
-
 class ShowSeasonImageFile(BaseModel):
     __tablename__ = "show_season_image_file"
     show_season_id = sa.Column(sa.Integer, sa.ForeignKey("show_season.id"))
@@ -435,15 +438,17 @@ class ShowEpisode(BaseModel):
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_episode_image_file",back_populates="show_episode",overlaps="show_episode_image_file")
     metadata_files: sorm.Mapped[List["MetadataFile"]] = sorm.relationship(secondary="show_episode_metadata_file",back_populates="show_episode",overlaps="show_episode_metadata_file")
     season: sorm.Mapped["ShowSeason"] = sorm.relationship(back_populates="episodes")
-    tags: sorm.Mapped["Tag"] = sorm.relationship(secondary="show_episode_tag",back_populates="show_episodes")
+    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="show_episode_tag",back_populates="show_episodes")
     watch_count: sorm.Mapped['WatchCount'] = sorm.relationship(overlaps="show_episode")
 
     def get_tag_ids(self):
         tag_ids = []
-        if self.show:
-            tag_ids += self.show.get_tag_ids()
-        if self.season:
+        if self.season.show and self.season.show.tags:
+            tag_ids += self.season.show.get_tag_ids()
+        if self.season and self.season.tags:
             tag_ids += self.season.get_tag_ids()
+        if not self.tags:
+            return tag_ids
         return [xx.id for xx in self.tags] + tag_ids
 
 class ShowEpisodeTag(BaseModel):
@@ -472,15 +477,6 @@ class ShowEpisodeVideoFile(BaseModel):
     video_file: sorm.Mapped['VideoFile'] = sorm.relationship(back_populates="show_episode_video_file",overlaps="video_files,show_episode")
 
 
-class Streamable(BaseModel):
-    __tablename__ = "streamable"
-    url = sa.Column(sa.Text)
-    name = sa.Column(sa.Text)
-    stream_source_id: sorm.Mapped[int] = sorm.mapped_column(
-        sa.ForeignKey("stream_source.id")
-    )
-    stream_source: sorm.Mapped["StreamSource"] = sorm.relationship(back_populates="streamables")
-
 class StreamSource(BaseModel):
     __tablename__ = "stream_source"
     kind = sa.Column(sa.Text)
@@ -491,6 +487,35 @@ class StreamSource(BaseModel):
     streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(
         cascade="delete",passive_deletes=True
     )
+    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="stream_source_tag",back_populates="stream_sources")
+
+    def get_tag_ids(self):
+        if not self.tags:
+            return []
+        return [xx.id for xx in self.tags]
+
+class StreamSourceTag(BaseModel):
+    __tablename__ = 'stream_source_tag'
+    stream_source_id = sa.Column(sa.Integer, sa.ForeignKey("stream_source.id"))
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
+
+class Streamable(BaseModel):
+    __tablename__ = "streamable"
+    url = sa.Column(sa.Text)
+    name = sa.Column(sa.Text)
+    stream_source_id: sorm.Mapped[int] = sorm.mapped_column(
+        sa.ForeignKey("stream_source.id")
+    )
+    stream_source: sorm.Mapped["StreamSource"] = sorm.relationship(back_populates="streamables")
+    tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="streamable_tag",back_populates="streamables")
+
+    def _ids(self):
+        return [xx.id for xx in self.tags]
+
+class StreamSourceTag(BaseModel):
+    __tablename__ = 'streamable_tag'
+    streamable_id = sa.Column(sa.Integer, sa.ForeignKey("streamable.id"))
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
 
 class StreamableChannel(BaseModel):
     __tablename__ = "streamable_channel"
@@ -514,3 +539,9 @@ class StreamableSchedule(BaseModel):
         sa.ForeignKey("streamable_channel.id")
     )
     channel: sorm.Mapped["StreamableChannel"] = sorm.relationship(back_populates="schedules")
+
+# For whatever reason, aliased cannot be called until after ALL models are defined
+# Otherwise you get a bunch of "model cannot map X to Y" errors
+ShowTagAlias = sorm.aliased(Tag)
+ShowSeasonTagAlias = sorm.aliased(Tag)
+ShowEpisodeTagAlias = sorm.aliased(Tag)

@@ -58,10 +58,10 @@ export default function UserEditPage() {
     let existingUserControls = null
     if (userId) {
         existingUserControls = (
-            <C.View>
+            <C.SnowGrid itemsPerRow={2}>
                 <C.SnowTextButton title="User Details" onPress={routes.func(routes.admin.userEdit, { userId: userId })} />
                 <C.SnowTextButton title="User Access" onPress={routes.func(routes.admin.userAccess, { userId: userId })} />
-            </C.View>
+            </C.SnowGrid>
         )
     }
 
