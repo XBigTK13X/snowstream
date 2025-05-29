@@ -26,6 +26,7 @@ import { useSession } from './auth-context'
 import { useSettings } from './settings-context'
 import { useMessageDisplay } from './message-context'
 
+import SnowAdminButton from './comp/snow-admin-button'
 import SnowImageButton from './comp/snow-image-button'
 import SnowDropdown from './comp/snow-dropdown'
 import SnowGrid from './comp/snow-grid'
@@ -77,6 +78,7 @@ export default {
     Redirect,
     ScrollView,
     Slot,
+    SnowAdminButton,
     SnowDropdown,
     SnowGrid,
     SnowImageButton,

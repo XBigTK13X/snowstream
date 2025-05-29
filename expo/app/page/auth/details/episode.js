@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function EpisodeDetailsPage() {
-    const { apiClient } = C.useSession()
+    const { isAdmin, apiClient } = C.useSession()
     const { routes } = C.useSettings()
     const localParams = C.useLocalSearchParams()
     const [shelf, setShelf] = C.React.useState(null)
@@ -81,7 +81,7 @@ export default function EpisodeDetailsPage() {
                     <C.SnowTextButton title={episode.season.name} onPress={routes.func(routes.episodeList, episodeListPayload)} />
                     <C.SnowTextButton title={episode.show.name} onPress={routes.func(routes.seasonList, seasonListPayload)} />
                     <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.showList, { shelfId: shelf.id })} />
-                    <C.SnowTextButton adminOnly title="Rescan Episode" onPress={() => {
+                    <C.SnowTextButton isAdmin={isAdmin} adminOnly title="Rescan Episode" onPress={() => {
                         return apiClient.createJobShelvesScan({
                             targetKind: 'episode',
                             targetId: episodeId

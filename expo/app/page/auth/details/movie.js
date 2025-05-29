@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function MovieDetailsPage() {
-    const { apiClient } = C.useSession();
+    const { isAdmin, apiClient } = C.useSession();
     const { routes } = C.useSettings();
     const localParams = C.useLocalSearchParams();
     const [shelf, setShelf] = C.React.useState(null);
@@ -64,7 +64,7 @@ export default function MovieDetailsPage() {
                     <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, payload)} />
                     <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
                     <C.SnowTextButton title={shelf.name} onPress={routes.func(routes.movieList, { shelfId: shelf.id })} />
-                    <C.SnowTextButton adminOnly title="Rescan Movie" onPress={() => {
+                    <C.SnowAdminButton title="Rescan Movie" onPress={() => {
                         return apiClient.createJobShelvesScan({
                             targetKind: 'movie',
                             targetId: movieId

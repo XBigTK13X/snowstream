@@ -45,9 +45,5 @@ export default function ShelfListPage() {
         )
     }
 
-    return (
-        <C.SnowText>
-            Loading content from [{config.webApiUrl}] v{config.clientVersion}
-        </C.SnowText>
-    )
+    return null
 }
