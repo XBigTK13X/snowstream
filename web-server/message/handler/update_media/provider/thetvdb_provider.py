@@ -163,6 +163,40 @@ class ThetvdbProvider(base.MediaProvider):
             'screencap': screencap
         }
 
+    def identify(self, kind:str, query:str, year:int=None):
+        cache_key = f'tvdb-identify-{kind}-{query}'
+        if year:
+            cache_key = f'tvdb-identify-{kind}-{kind}-{query}'
+        cached_result = db.op.get_cached_text_by_key(cache_key)
+        if cached_result:
+            log.info(f"{kind} result for {query} is fresh, return cached result [{cache_key}]")
+            return json.loads(cached_result)
+        tvdb_type = 'movie'
+        if kind == 'Show':
+            tvdb_type = 'series'
+        api_results = None
+        if year:
+            api_results = self.tvdb_client.search(
+                query=query,
+                type=tvdb_type,
+                year=year
+            )
+        else:
+            api_results = self.tvdb_client.search(
+                query=query,
+                type=tvdb_type
+            )
+        results = []
+        for result in api_results:
+            results.append({
+                'tvdbid': int(result['tvdb_id']),
+                'year': int(result['year']),
+                'poster_url': result['thumbnail'],
+                'overview': result['overview']
+            })
+        db.op.upsert_cached_text(key=cache_key, data=json.dumps(results))
+        return results
+
 ARTWORK_TYPES_RAW = [
 {'height': 140,
   'id': 1,

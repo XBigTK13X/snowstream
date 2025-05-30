@@ -26,3 +26,6 @@ class MediaProvider:
 
     def get_episode_images(self, metadata_id:int, season_order:int, episode_order:int):
         pass
+
+    def identify(self, kind:str, query:str, year:int=None):
+        pass

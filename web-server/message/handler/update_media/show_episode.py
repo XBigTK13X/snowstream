@@ -59,3 +59,12 @@ class ShowEpisode(base.BaseHandler):
         )
         local_path = os.path.splitext(self.episode_video_file.local_path)[0]+".jpg"
         self.download_image(image_url=images['screencap'],local_path=local_path)
+
+    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
+        if not self.is_subjob:
+            self.make_job(name='scan_shelves_content',payload={
+                    'metadata_id': self.metadata_id,
+                    'target_kind': 'episode',
+                    'target_id': self.show_episode_id,
+                    'is_subjob': True
+                })

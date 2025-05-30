@@ -1,4 +1,5 @@
 import xmltodict
+import os
 
 def nfo_path_to_dict(nfo_path:str):
     with open(nfo_path,'r',encoding="utf-8") as read_handle:
@@ -21,6 +22,9 @@ def save_dict_as_nfo(nfo_path:str, nfo_dict:dict):
 def save_xml_as_nfo(nfo_path: str, nfo_xml: str):
     with open(nfo_path,'w',encoding='utf-8') as write_handle:
         write_handle.write(nfo_xml)
+
+def video_path_to_nfo_path(video_path:str):
+    return os.path.splitext(video_path)[0]+".nfo"
 
 def movie_to_xml(
     title:str,
@@ -76,6 +80,9 @@ def show_episode_to_xml(
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)
 
+def season_directory_to_nfo_path(season_directory:str):
+    return os.path.join(season_directory,'season.nfo')
+
 def show_season_to_xml(
     title: str,
     year: int,
@@ -98,6 +105,9 @@ def show_season_to_xml(
         nfo_dict['season']['tag'] = tags
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)
+
+def show_directory_to_nfo_path(show_directory):
+    return os.path.join(show_directory,'tvshow.nfo')
 
 def show_to_xml(
     title:str,

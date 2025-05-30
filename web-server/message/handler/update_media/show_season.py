@@ -8,6 +8,7 @@ class ShowSeason(base.BaseHandler):
         self.show_season_id = scope.target_id
         self.metadata_id = scope.metadata_id
         self.season_order = scope.season_order
+        self.is_subjob = scope.is_subjob
 
     def read_local_info(self):
         self.show_season = self.db.op.get_show_season_by_id(ticket=self.ticket,season_id=self.show_season_id)
@@ -44,6 +45,12 @@ class ShowSeason(base.BaseHandler):
         self.nfo.save_xml_as_nfo(nfo_path=self.season_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         self.db.op.update_metadata_file_content(self.season_nfo_file.id, xml_content=self.new_nfo_xml)
 
+    # Legacy images are
+    # poster.jpg
+    def download_images(self):
+        images = self.media_provider.get_season_images(metadata_id=self.metadata_id,season_order=self.season_order)
+        self.download_image(image_url=images['poster'],local_path=os.path.join(self.show_season.directory,'poster.jpg'))
+
     def schedule_subjobs(self,update_images:bool,update_metadata:bool):
         for episode in self.episodes:
             self.make_job(name='update_media_files',payload={
@@ -53,11 +60,13 @@ class ShowSeason(base.BaseHandler):
                 'season_order': self.show_season.season_order_counter,
                 'episode_order': episode.episode_order_counter,
                 'update_images': update_images,
-                'update_metadata': update_metadata
+                'update_metadata': update_metadata,
+                'is_subjob': True
             })
-
-    # Legacy images are
-    # poster.jpg
-    def download_images(self):
-        images = self.media_provider.get_season_images(metadata_id=self.metadata_id,season_order=self.season_order)
-        self.download_image(image_url=images['poster'],local_path=os.path.join(self.show_season.directory,'poster.jpg'))
+        if not self.is_subjob:
+            self.make_job(name='scan_shelves_content',payload={
+                    'metadata_id': self.metadata_id,
+                    'target_kind': 'season',
+                    'target_id': self.show_season_id,
+                    'is_subjob': True
+                })

@@ -35,17 +35,6 @@ class Show(base.BaseHandler):
         self.nfo.save_xml_as_nfo(nfo_path=self.show_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         self.db.op.update_metadata_file_content(self.show_nfo_file.id, xml_content=self.new_nfo_xml)
 
-    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
-        for season in self.show.seasons:
-            self.make_job(name='update_media_files',payload={
-                'metadata_id': self.metadata_id,
-                'target_kind': 'season',
-                'target_id': season.id,
-                'season_order': season.season_order_counter,
-                'update_images': update_images,
-                'update_metadata': update_metadata
-            })
-
     # Legacy images are
     # banner.jpg
     # backdrop.jpg
@@ -55,3 +44,21 @@ class Show(base.BaseHandler):
     def download_images(self):
         images = self.media_provider.get_show_images(metadata_id=self.metadata_id)
         self.download_image(image_url=images['poster'],local_path=os.path.join(self.show.directory,'poster.jpg'))
+
+    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
+        for season in self.show.seasons:
+            self.make_job(name='update_media_files',payload={
+                'metadata_id': self.metadata_id,
+                'target_kind': 'season',
+                'target_id': season.id,
+                'season_order': season.season_order_counter,
+                'update_images': update_images,
+                'update_metadata': update_metadata,
+                'is_subjob': True
+            })
+        self.make_job(name='scan_shelves_content',payload={
+            'metadata_id': self.metadata_id,
+            'target_kind': 'show',
+            'target_id': self.show_id,
+            'is_subjob': True
+        })

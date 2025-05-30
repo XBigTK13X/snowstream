@@ -17,6 +17,10 @@ def handle(job_id, scope):
         log.info("update_media_files must be scoped when run")
         return False
 
+    if not scope.metadata_id:
+        log.info("update_media_files must be scopred with a metadata_id")
+        return False
+
     handler = None
     if scope.is_shelf():
         log.info(f"Not yet implemented - Updating media for shelf {scope.target_id}")

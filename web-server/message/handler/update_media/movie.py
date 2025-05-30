@@ -61,3 +61,11 @@ class Movie(base.BaseHandler):
         images = self.media_provider.get_movie_images(metadata_id=self.metadata_id)
         local_path = os.path.join(self.movie.directory,'folder.jpg')
         self.download_image(image_url=images['poster'],local_path=local_path)
+
+    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
+        self.make_job(name='scan_shelves_content',payload={
+        'metadata_id': self.metadata_id,
+        'target_kind': 'movie',
+        'target_id': self.movie_id,
+        'is_subjob': True
+    })
