@@ -72,7 +72,7 @@ export function SnowImageButton(props) {
     }, [])
 
     let fontStyle = [styles.text]
-    if (props.title.length > 20) {
+    if (props.title && props.title.length > 20) {
         fontStyle.push({ fontSize: 15 * mult })
     }
 

@@ -4,6 +4,7 @@ import json
 import util
 import copy
 import os
+import datetime
 
 def transcode_command(input_url:str, stream_port:int, audio_track_index:int, subtitle_track_index:int):
     streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream'
@@ -213,3 +214,10 @@ def inspect_media(media_path:str, ffprobe:dict):
         result['scored_tracks']['subtitle'] = sorted(result['scored_tracks']['subtitle'],key=lambda xx:xx['score'])
 
     return result
+
+def extract_screencap(video_path:str, duration_seconds:int, output_path:str):
+    seconds = config.ffmpeg_screencap_percent_location * duration_seconds
+    timestamp = f'{datetime.timedelta(seconds=seconds)}'
+    command = f'ffmpeg -ss {timestamp} -i "{video_path}" -frames:v 1 -q:v 2 "{output_path}"'
+    util.run_cli(command,raw_output=True)
+    return output_path

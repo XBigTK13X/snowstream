@@ -62,6 +62,8 @@ class Show(MediaUpdater):
     # landscape.jpg
     def download_images(self):
         images = self.media_provider.get_show_images(metadata_id=self.metadata_id)
+        if not images:
+            return False
         local_path = os.path.join(self.show.directory,'poster.jpg')
         if self.download_image(image_url=images['poster'],local_path=local_path):
             if not self.db.op.get_image_file_by_path(local_path=local_path):

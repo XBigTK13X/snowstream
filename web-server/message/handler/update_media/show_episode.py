@@ -1,5 +1,8 @@
 from message.handler.update_media.media_updater import MediaUpdater
 import os
+import ffmpeg
+import magick
+import json
 
 class ShowEpisode(MediaUpdater):
     def __init__(self, scope):
@@ -79,14 +82,23 @@ class ShowEpisode(MediaUpdater):
             episode_order=self.episode_order
         )
         local_path = os.path.splitext(self.episode_video_file.local_path)[0]+".jpg"
-        if self.download_image(image_url=images['screencap'],local_path=local_path):
-            if not self.db.op.get_image_file_by_path(local_path=local_path):
-                image_file = self.db.op.create_image_file(
-                    shelf_id=self.show_episode.season.show.shelf.id,
-                    kind='episode_poster',
-                    local_path=local_path
+        if not images or not self.download_image(image_url=images['screencap'],local_path=local_path):
+            if not os.path.exists(local_path):
+                ffprobe = json.loads(self.show_episode.video_files[0].ffprobe_pruned_json)
+                ffmpeg.extract_screencap(
+                    video_path=self.show_episode.video_files[0].local_path,
+                    duration_seconds=ffprobe['duration_seconds'],
+                    output_path=local_path
                 )
-                self.db.op.create_show_episode_image_file(
-                    show_episode_id=self.show_episode.id,
-                    image_file_id=image_file.id
-                )
+                self.log.info(f"Took a screencap from {self.show_episode.name} to {local_path}")
+                magick.create_thumbnail(local_path=local_path,force_overwrite=True)
+        if not self.db.op.get_image_file_by_path(local_path=local_path):
+            image_file = self.db.op.create_image_file(
+                shelf_id=self.show_episode.season.show.shelf.id,
+                kind='episode_poster',
+                local_path=local_path
+            )
+            self.db.op.create_show_episode_image_file(
+                show_episode_id=self.show_episode.id,
+                image_file_id=image_file.id
+            )

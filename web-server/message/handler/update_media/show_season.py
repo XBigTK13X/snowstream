@@ -69,6 +69,8 @@ class ShowSeason(MediaUpdater):
     def download_images(self):
         images = self.media_provider.get_season_images(metadata_id=self.metadata_id,season_order=self.season_order)
         local_path = os.path.join(self.show_season.directory,'poster.jpg')
+        if not images:
+            return False
         if self.download_image(image_url=images['poster'],local_path=local_path):
             if not self.db.op.get_image_file_by_path(local_path=local_path):
                 image_file = self.db.op.create_image_file(

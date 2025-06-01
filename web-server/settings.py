@@ -8,6 +8,7 @@ class Config:
         self.server_build_date = "May 29, 2025"
 
         self.cached_text_ttl_seconds = 60 * 60 * 24 # One day
+        self.ffmpeg_screencap_percent_location = 0.15
         self.ffprobe_dir = ".snowstream/ffprobe"
         self.frontend_url = "http://localhost:3000"
         self.jwt_algorithm = "HS256"
