@@ -1,9 +1,9 @@
-import message.handler.stream_source.base_handler as base
+from message.handler.stream_source.stream_source_importer import StreamSourceImporter
 from db import db
 import cloudscraper
 from log import log
 
-class IptvM3u(base.BaseHandler):
+class IptvM3u(StreamSourceImporter):
     def __init__(self, stream_source):
         super().__init__("IPTV M3U", stream_source)
 

@@ -5,7 +5,7 @@ from enum import Flag, auto
 from log import log
 from pathlib import Path
 from db import db
-import message.handler.scan_shelf.base_handler as base
+from message.handler.scan_shelf.shelf_scanner import ShelfScanner
 
 class AssetScope(Flag):
     EPISODE = auto()
@@ -134,7 +134,7 @@ def identify_show_file_kind(extension_kind: str, info: dict, file_path: str):
     return None
 
 
-class ShowsScanHandler(base.BaseHandler):
+class ShowsScanHandler(ShelfScanner):
     def __init__(self, job_id, shelf, target_directory=None):
         super().__init__(
             job_id=job_id,

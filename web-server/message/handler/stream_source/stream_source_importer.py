@@ -2,7 +2,7 @@ from db import db
 from log import log
 
 
-class BaseHandler:
+class StreamSourceImporter:
     def __init__(self, kind, stream_source):
         self.kind = kind
         self.stream_source = stream_source

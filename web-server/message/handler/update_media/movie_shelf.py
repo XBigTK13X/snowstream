@@ -1,5 +1,5 @@
-import message.handler.update_media.base_handler as base
+from message.handler.update_media.media_updater import MediaUpdater
 
-class MovieShelf(base.BaseHandler):
+class MovieShelf(MediaUpdater):
     def __init__(self):
         super().__init__("MovieShelf")

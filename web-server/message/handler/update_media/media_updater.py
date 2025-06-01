@@ -11,7 +11,7 @@ class FileStub:
         self.local_path = None
         self.id = None
 
-class BaseHandler:
+class MediaUpdater:
     def __init__(self, kind):
         self.kind = kind
         self.media_provider = thetvdb.ThetvdbProvider()

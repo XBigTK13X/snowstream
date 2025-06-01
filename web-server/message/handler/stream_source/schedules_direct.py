@@ -1,4 +1,4 @@
-import message.handler.stream_source.base_handler as base
+from message.handler.stream_source.stream_source_importer import StreamSourceImporter
 
 from db import db
 import requests
@@ -29,7 +29,7 @@ def batches(it, size):
     return chunks
 
 
-class SchedulesDirect(base.BaseHandler):
+class SchedulesDirect(StreamSourceImporter):
     def __init__(self, stream_source):
         super().__init__("Schedules Direct", stream_source)
         self.api_url = "https://json.schedulesdirect.org/20141201"

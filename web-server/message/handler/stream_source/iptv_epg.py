@@ -1,4 +1,4 @@
-import message.handler.stream_source.base_handler as base
+from message.handler.stream_source.stream_source_importer import StreamSourceImporter
 from db import db
 import cloudscraper
 from log import log
@@ -9,7 +9,7 @@ from datetime import datetime
 EPG_DATE_TIME_FORMAT = "%Y%m%d%H%M%S %z"
 
 
-class IptvEpg(base.BaseHandler):
+class IptvEpg(StreamSourceImporter):
     def __init__(self, stream_source):
         super().__init__("IPTV EPG", stream_source)
 

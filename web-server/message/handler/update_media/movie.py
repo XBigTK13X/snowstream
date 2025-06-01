@@ -1,8 +1,8 @@
-import message.handler.update_media.base_handler as base
+from message.handler.update_media.media_updater import MediaUpdater
 from message.handler.child_job import create_child_job
 import os
 
-class Movie(base.BaseHandler):
+class Movie(MediaUpdater):
     def __init__(self,scope):
         super().__init__("Movie")
         self.log.info(f"Updating media for movie {scope.target_id}")

@@ -23,7 +23,7 @@ def get_file_kind(file_path):
     return "unhandled"
 
 
-class BaseHandler:
+class ShelfScanner:
     def __init__(
         self,
         job_id,

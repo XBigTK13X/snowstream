@@ -1,4 +1,4 @@
-import message.handler.stream_source.base_handler as base
+from message.handler.stream_source.stream_source_importer import StreamSourceImporter
 import requests
 from db import db
 import json
@@ -13,7 +13,7 @@ from log import log
 # http://hdhomerun.local/lineup.m3u
 
 
-class HdHomeRun(base.BaseHandler):
+class HdHomeRun(StreamSourceImporter):
     def __init__(self, stream_source):
         super().__init__("HDHomeRun", stream_source)
 
