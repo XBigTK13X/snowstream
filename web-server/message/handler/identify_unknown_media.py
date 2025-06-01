@@ -45,7 +45,7 @@ def handle(job_id, scope:JobMediaScope):
             if len(identities) > 0:
                 identity = identities[0]
                 log.info(f"Identified {movie.directory} as {identity['name']} [{identity['tvdbid']}]")
-                db.op.update_movie_remote_id(movie_id=movie.id,remote_id=identity['tvdbid'])
+                db.op.update_movie_remote_metadata_id(movie_id=movie.id,remote_metadata_id=identity['tvdbid'])
                 create_child_job(name="update_media_files",payload={
                     'metadata_id': identity['tvdbid'],
                     'target_kind': 'movie',
@@ -59,13 +59,13 @@ def handle(job_id, scope:JobMediaScope):
 
     if len(shows) > 0:
         log.info(f"Identifying {len(shows)} unknown shows")
-        for shows in shows:
+        for show in shows:
             log.info(f"Searching media provider for show {show.directory}")
             identities = media_provider.identify(kind='Show',query=show.name,year=show.release_year)
             if len(identities) > 0:
                 identity = identities[0]
                 log.info(f"Identified {show.directory} as {identity['name']} [{identity['tvdbid']}]")
-                db.op.update_show_remote_id(show_id=show.id,remote_id=identity['tvdbid'])
+                db.op.update_show_remote_metadata_id(show_id=show.id,remote_metadata_id=identity['tvdbid'])
                 db.op.update_show_release_year(show_id=show.id, release_year=identity['year'])
                 create_child_job(name="update_media_files",payload={
                     'metadata_id': identity['tvdbid'],

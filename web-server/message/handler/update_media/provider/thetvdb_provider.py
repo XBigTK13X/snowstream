@@ -119,7 +119,7 @@ class ThetvdbProvider(base.MediaProvider):
 
     def get_episode_images(self, show_metadata_id:int, season_order:int, episode_order:int):
         episode_info = self.get_episode_info(show_metadata_id=show_metadata_id, season_order=season_order, episode_order=episode_order)
-        if not 'image' in episode_info:
+        if not 'image' in episode_info or not episode_info['image']:
             return None
         if not 'https://artworks.thetvdb.com/' in episode_info['image']:
             episode_info['image'] = 'https://artworks.thetvdb.com'+episode_info['image']

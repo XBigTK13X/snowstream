@@ -71,7 +71,7 @@ export default function MovieDetailsPage() {
                         })
                     }} />
                     <C.SnowUpdateMediaButton
-                        remoteId={movie.remote_id ? movie.remote_id : ''}
+                        remoteId={movie.remote_metadata_id ? movie.remote_metadata_id : ''}
                         kind="Movie" updateMediaJob={(details) => {
                             apiClient.createJobUpdateMediaFiles({
                                 targetKind: 'movie',

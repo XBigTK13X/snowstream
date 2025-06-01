@@ -17,10 +17,11 @@ def create_movie(name: str, release_year: int, directory: str):
         db.refresh(dbm)
         return dbm
 
-def update_movie_remote_id(movie_id:int, remote_id:int):
+def update_movie_remote_metadata_id(movie_id:int, remote_metadata_id:int):
     with DbSession() as db:
         movie = db.query(dm.Movie).filter(dm.Movie.id == movie_id).first()
-        movie.remote_id = remote_id
+        movie.remote_metadata_id = remote_metadata_id
+        movie.remote_metadata_source = 'thetvdb'
         db.commit()
         return movie
 
@@ -400,7 +401,7 @@ def get_unknown_movie_list(shelf_id:int=None):
         )
         if shelf_id:
             query = query.join(dm.MovieShelf).filter(dm.MovieShelf.shelf_id == shelf_id)
-        query = query.filter(dm.Movie.remote_id == None)
+        query = query.filter(dm.Movie.remote_metadata_id == None)
         movies = query.all()
         results = []
         for movie in movies:

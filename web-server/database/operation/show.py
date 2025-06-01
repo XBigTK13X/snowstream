@@ -24,10 +24,11 @@ def update_show_release_year(show_id:int, release_year:int):
         db.commit()
         return show
 
-def update_show_remote_id(show_id:int, remote_id:int):
+def update_show_remote_metadata_id(show_id:int, remote_metadata_id:int):
     with DbSession() as db:
         show = db.query(dm.Show).filter(dm.Show.id == show_id).first()
-        show.remote_id = remote_id
+        show.remote_metadata_id = remote_metadata_id
+        show.remote_metadata_source = 'thetvdb'
         db.commit()
         return show
 
@@ -302,7 +303,7 @@ def get_unknown_show_list(shelf_id:int=None):
         )
         if shelf_id:
             query = query.join(dm.ShowShelf).filter(dm.ShowShelf.shelf_id == shelf_id)
-        query = query.filter(dm.Show.remote_id == None)
+        query = query.filter(dm.Show.remote_metadata_id == None)
         shows = query.all()
         results = []
         for show in shows:

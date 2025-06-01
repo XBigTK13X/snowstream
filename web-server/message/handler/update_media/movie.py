@@ -21,7 +21,6 @@ class Movie(MediaUpdater):
             self.movie_nfo_file = self.FileStub()
             self.movie_nfo_file.local_path = local_path
             self.local_nfo_dict = {}
-
         return self.local_nfo_dict
 
     def read_remote_info(self):
@@ -62,7 +61,8 @@ class Movie(MediaUpdater):
                 shelf_id=self.movie.shelf.id,
                 kind='movie_main_feature_info',
                 local_path=self.movie_nfo_file.local_path,
-                xml_content=self.new_nfo_xml)
+                xml_content=self.new_nfo_xml
+            )
             self.db.op.create_movie_metadata_file(movie_id=self.movie.id,metadata_file_id=self.movie_nfo_file.id)
 
     # Legacy images
@@ -72,19 +72,11 @@ class Movie(MediaUpdater):
     def download_images(self):
         images = self.media_provider.get_movie_images(metadata_id=self.metadata_id)
         local_path = os.path.join(self.movie.directory,'folder.jpg')
-        self.download_image(image_url=images['poster'],local_path=local_path)
-        if not self.db.op.get_image_file_by_path(local_path=local_path):
-            image_file = self.db.op.create_image_file(
-                shelf_id=self.movie.shelf.id,
-                kind='movie_main_feature_poster',
-                local_path=local_path
-            )
-            self.db.op.create_movie_image_file(movie_id=self.movie.id,image_file_id=image_file.id)
-
-    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
-        create_child_job(name='scan_shelves_content',payload={
-            'metadata_id': self.metadata_id,
-            'target_kind': 'movie',
-            'target_id': self.movie_id,
-            'is_subjob': True
-        })
+        if self.download_image(image_url=images['poster'],local_path=local_path):
+            if not self.db.op.get_image_file_by_path(local_path=local_path):
+                image_file = self.db.op.create_image_file(
+                    shelf_id=self.movie.shelf.id,
+                    kind='movie_main_feature_poster',
+                    local_path=local_path
+                )
+                self.db.op.create_movie_image_file(movie_id=self.movie.id,image_file_id=image_file.id)

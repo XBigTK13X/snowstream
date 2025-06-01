@@ -164,7 +164,7 @@ class MoviesScanHandler(ShelfScanner):
                 )
                 movie_nfo = nfo.nfo_path_to_dict(info['file_path'])
                 if 'tvdbid' in movie_nfo:
-                    movie = db.op.update_movie_remote_id(movie_id=movie.id, remote_id=int(movie_nfo['tvdbid']))
+                    movie = db.op.update_movie_remote_metadata_id(movie_id=movie.id, remote_metadata_id=int(movie_nfo['tvdbid']))
 
 
     def organize_videos(self):

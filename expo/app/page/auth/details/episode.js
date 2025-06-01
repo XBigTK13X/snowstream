@@ -88,7 +88,7 @@ export default function EpisodeDetailsPage() {
                         })
                     }} />
                     <C.SnowUpdateMediaButton
-                        remoteId={episode.show.remote_id ? episode.show.remote_id : ''}
+                        remoteId={episode.show.remote_metadata_id ? episode.show.remote_metadata_id : ''}
                         kind="Episode"
                         updateMediaJob={(details) => {
                             apiClient.createJobUpdateMediaFiles({

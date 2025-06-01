@@ -212,9 +212,9 @@ class ShowsScanHandler(ShelfScanner):
                             release_year=int(show_nfo['year'])
                         )
                     if 'tvdbid' in show_nfo:
-                        show = db.op.update_show_remote_id(
+                        show = db.op.update_show_remote_metadata_id(
                             show_id=show_id,
-                            remote_id=int(show_nfo['tvdbid'])
+                            remote_metadata_id=int(show_nfo['tvdbid'])
                         )
             elif info["asset_scope"] == AssetScope.SEASON:
                 if not db.op.get_show_season_metadata_file(

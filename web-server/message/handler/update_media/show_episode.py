@@ -1,5 +1,4 @@
 from message.handler.update_media.media_updater import MediaUpdater
-from message.handler.child_job import create_child_job
 import os
 
 class ShowEpisode(MediaUpdater):
@@ -15,11 +14,15 @@ class ShowEpisode(MediaUpdater):
         self.show_episode = self.db.op.get_show_episode_by_id(ticket=self.ticket,episode_id=self.show_episode_id)
         if not self.show_episode:
             return None
-        if not self.show_episode.metadata_files:
-            return None
         self.episode_video_file = self.show_episode.video_files[0]
-        self.episode_nfo_file = self.show_episode.metadata_files[0]
-        self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.episode_nfo_file.xml_content)
+        if len(self.show_episode.metadata_files) > 0:
+            self.episode_nfo_file = self.show_episode.metadata_files[0]
+            self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.episode_nfo_file.xml_content)
+        else:
+            local_path = self.nfo.video_path_to_nfo_path(video_path=self.episode_video_file.local_path)
+            self.episode_nfo_file = self.FileStub()
+            self.episode_nfo_file.local_path = local_path
+            self.local_nfo_dict = {}
         return self.local_nfo_dict
 
     def read_remote_info(self):
@@ -47,7 +50,24 @@ class ShowEpisode(MediaUpdater):
 
     def save_info_to_local(self):
         self.nfo.save_xml_as_nfo(nfo_path=self.episode_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
-        self.db.op.update_metadata_file_content(self.episode_nfo_file.id, xml_content=self.new_nfo_xml)
+        if self.episode_nfo_file.id:
+            self.db.op.update_metadata_file_content(self.episode_nfo_file.id, xml_content=self.new_nfo_xml)
+        else:
+            self.episode_nfo_file = self.db.op.create_metadata_file(
+                shelf_id=self.show_episode.season.show.shelf.id,
+                kind="episode_info",
+                local_path=self.episode_nfo_file.local_path,
+                xml_content=self.new_nfo_xml
+            )
+            self.db.op.create_show_episode_metadata_file(
+                show_episode_id=self.show_episode.id,
+                metadata_file_id=self.episode_nfo_file.id
+            )
+        if 'name' in self.tvdb_info:
+            self.db.op.update_show_episode_name(
+                show_episode_id=self.show_episode.id,
+                name=self.tvdb_info['name']
+            )
 
     # Legacy images are
     # episode-name.jpg
@@ -59,13 +79,14 @@ class ShowEpisode(MediaUpdater):
             episode_order=self.episode_order
         )
         local_path = os.path.splitext(self.episode_video_file.local_path)[0]+".jpg"
-        self.download_image(image_url=images['screencap'],local_path=local_path)
-
-    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
-        if not self.is_subjob:
-            create_child_job(name='scan_shelves_content',payload={
-                    'metadata_id': self.metadata_id,
-                    'target_kind': 'episode',
-                    'target_id': self.show_episode_id,
-                    'is_subjob': True
-                })
+        if self.download_image(image_url=images['screencap'],local_path=local_path):
+            if not self.db.op.get_image_file_by_path(local_path=local_path):
+                image_file = self.db.op.create_image_file(
+                    shelf_id=self.show_episode.season.show.shelf.id,
+                    kind='episode_poster',
+                    local_path=local_path
+                )
+                self.db.op.create_show_episode_image_file(
+                    show_episode_id=self.show_episode.id,
+                    image_file_id=image_file.id
+                )

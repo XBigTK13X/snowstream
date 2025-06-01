@@ -56,7 +56,7 @@ export default function SeasonListPage() {
     return (
         <WatchableListPage
             getRemoteId={(item) => {
-                return item.show.remote_id
+                return item.show.remote_metadata_id
             }}
             kind="Show"
             getPageTitle={getPageTitle}

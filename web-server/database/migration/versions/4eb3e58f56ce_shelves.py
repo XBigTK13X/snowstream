@@ -69,7 +69,8 @@ def upgrade() -> None:
         sa.Column("name", sa.Text, nullable=False),
         sa.Column("release_year", sa.Integer),
         sa.Column("directory", sa.Text, nullable=True),
-        sa.Column("remote_id", sa.Integer, nullable=True),
+        sa.Column("remote_metadata_id", sa.Integer, nullable=True),
+        sa.Column("remote_metadata_source", sa.Text, nullable=True),
     )
 
     op.create_table(
@@ -117,7 +118,8 @@ def upgrade() -> None:
         sa.Column("name", sa.Text, nullable=False),
         sa.Column("release_year", sa.Integer),
         sa.Column("directory", sa.Text, nullable=False),
-        sa.Column("remote_id", sa.Integer, nullable=True),
+        sa.Column("remote_metadata_id", sa.Integer, nullable=True),
+        sa.Column("remote_metadata_source", sa.Text, nullable=True),
     )
 
     op.create_table(
