@@ -54,6 +54,10 @@ def handle(job_id, scope:JobMediaScope):
         if not handler.ingest_metadata():
             results[shelf.name] = False
             continue
+        if handler.file_info_lookup and "subtitle" in handler.file_info_lookup and len(handler.file_info_lookup['subtitle']) > 0:
+            log.info(f"Found {len(handler.file_info_lookup['subtitle'])} dangling subtitle files")
+            for subtitle_path in handler.file_info_lookup['subtitle']:
+                log.info(subtitle_path)
         handlers.append(handler)
         results[shelf.name] = True
 

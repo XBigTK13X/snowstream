@@ -295,14 +295,17 @@ def get_show_watched(ticket:dm.Ticket,show_id:int):
 
 def get_unknown_show_list(shelf_id:int=None):
     with DbSession() as db:
+        query = (
+            db.query(dm.Show)
+            .options(sorm.joinedload(dm.Show.image_files))
+            .options(sorm.joinedload(dm.Show.metadata_files))
+        )
         if shelf_id:
-            return (
-                db.query(dm.Show)
-                .join(dm.ShowShelf)
-                .filter(
-                    dm.Show.remote_id == None,
-                    dm.ShowShelf.shelf_id == shelf_id
-                )
-                .all()
-            )
-        return db.query(dm.Show).filter(dm.Show.remote_id == None).all()
+            query = query.join(dm.ShowShelf).filter(dm.ShowShelf.shelf_id == shelf_id)
+        query = query.filter(dm.Show.remote_id == None)
+        shows = query.all()
+        results = []
+        for show in shows:
+            if not show.image_files or not show.metadata_files:
+                results.append(show)
+        return results

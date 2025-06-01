@@ -393,14 +393,17 @@ def reset_movie_watch_count(ticket:dm.Ticket,movie_id:int):
 
 def get_unknown_movie_list(shelf_id:int=None):
     with DbSession() as db:
+        query = (
+            db.query(dm.Movie)
+            .options(sorm.joinedload(dm.Movie.image_files))
+            .options(sorm.joinedload(dm.Movie.metadata_files))
+        )
         if shelf_id:
-            return (
-                db.query(dm.Movie)
-                .join(dm.MovieShelf)
-                .filter(
-                    dm.Movie.remote_id == None,
-                    dm.MovieShelf.shelf_id == shelf_id
-                )
-                .all()
-            )
-        return db.query(dm.Movie).filter(dm.Movie.remote_id == None).all()
+            query = query.join(dm.MovieShelf).filter(dm.MovieShelf.shelf_id == shelf_id)
+        query = query.filter(dm.Movie.remote_id == None)
+        movies = query.all()
+        results = []
+        for movie in movies:
+            if not movie.image_files or not movie.metadata_files:
+                results.append(movie)
+        return results

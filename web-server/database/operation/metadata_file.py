@@ -4,9 +4,17 @@ from database.sql_alchemy import DbSession
 from log import log
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
+import database.operation.shelf as db_shelf
+from settings import config
 
 
-def create_metadata_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str,xml_content:str):
+def create_metadata_file(shelf_id: int, kind: str, local_path: str, xml_content:str):
+    network_path = ''
+    shelf = db_shelf.get_shelf_by_id(shelf_id=shelf_id)
+    network_path = ''
+    if shelf.network_path:
+        network_path = local_path.replace(shelf.local_path,shelf.network_path)
+    web_path = config.web_media_url + local_path
     with DbSession() as db:
         dbm = dm.MetadataFile()
         dbm.local_path = local_path
@@ -27,12 +35,15 @@ def get_metadata_file_by_path(local_path: str):
             db.query(dm.MetadataFile).filter(dm.MetadataFile.local_path == local_path).first()
         )
 
-def get_or_create_metadata_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str):
+def get_or_create_metadata_file(shelf_id: int, kind: str, local_path: str):
     metadata_file = get_metadata_file_by_path(local_path=local_path)
     if not metadata_file:
         with open(local_path) as read_handle:
             return create_metadata_file(
-                shelf_id=shelf_id, kind=kind, local_path=local_path, web_path=web_path, network_path=network_path,xml_content=read_handle.read()
+                shelf_id=shelf_id,
+                kind=kind,
+                local_path=local_path,
+                xml_content=read_handle.read()
             )
     return metadata_file
 

@@ -10,6 +10,9 @@ def get_file_kind(file_path):
     if file_path.endswith(".nfo"):
         return "metadata"
 
+    if file_path.endswith(".srt") or file_path.endswith(".ass") or file_path.endswith(".ssa"):
+        return "subtitle"
+
     mime = mimetypes.guess_type(file_path)[0]
 
     if mime != None:
@@ -34,11 +37,12 @@ class ShelfScanner:
     ):
         self.job_id = job_id
         self.shelf = shelf
-        self.file_lookup = {"video": [], "image": [], "metadata": [], "unhandled": []}
+        self.file_lookup = {"video": [], "image": [], "metadata": [], "subtitle": [], "unhandled": []}
         self.file_info_lookup = {
             "video": [],
             "image": [],
             "metadata": [],
+            "subtitle": []
         }
         self.batch_lookup = {}
         self.file_kind_identifier = identifier
@@ -93,11 +97,7 @@ class ShelfScanner:
             if progress_count % 500 == 0:
                 log.info(f'Ingesting item {progress_count} out of {len(items)}')
             local_path = info['file_path']
-            web_path = config.web_media_url + local_path
-            network_path = ""
             creator = None
-            if self.shelf.network_path:
-                network_path = local_path.replace(self.shelf.local_path,self.shelf.network_path)
             if kind == 'video':
                 creator = db.op.get_or_create_video_file
             if kind == 'image':
@@ -107,9 +107,7 @@ class ShelfScanner:
             dbm = creator(
                 shelf_id=self.shelf.id,
                 kind=info["kind"],
-                local_path=local_path,
-                web_path=web_path,
-                network_path=network_path
+                local_path=local_path
             )
             info["id"] = dbm.id
         self.file_info_lookup[kind] = items

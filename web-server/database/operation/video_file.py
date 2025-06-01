@@ -6,8 +6,15 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 import json
 import ffmpeg
+import database.operation.shelf as db_shelf
+from settings import config
 
-def create_video_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str, ffprobe_pruned_json: str):
+def create_video_file(shelf_id: int, kind: str, local_path: str, ffprobe_pruned_json: str):
+    shelf = db_shelf.get_shelf_by_id(shelf_id=shelf_id)
+    network_path = ''
+    if shelf.network_path:
+        network_path = local_path.replace(shelf.local_path,shelf.network_path)
+    web_path = config.web_media_url + local_path
     with DbSession() as db:
         dbm = dm.VideoFile()
         dbm.local_path = local_path
@@ -26,13 +33,15 @@ def get_video_file_by_path(local_path: str):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.local_path == local_path).first()
 
-def get_or_create_video_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str):
+def get_or_create_video_file(shelf_id: int, kind: str, local_path: str):
     video_file = get_video_file_by_path(local_path=local_path)
     if not video_file:
         ffprobe = json.dumps(ffmpeg.ffprobe_media(local_path)['parsed'])
         return create_video_file(
-            shelf_id=shelf_id, kind=kind, local_path=local_path,
-            web_path=web_path, network_path=network_path,ffprobe_pruned_json=ffprobe
+            shelf_id=shelf_id,
+            kind=kind,
+            local_path=local_path,
+            ffprobe_pruned_json=ffprobe
         )
     return video_file
 

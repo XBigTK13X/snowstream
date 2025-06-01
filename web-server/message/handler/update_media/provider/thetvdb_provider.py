@@ -193,7 +193,7 @@ class ThetvdbProvider(base.MediaProvider):
                 'tvdbid': int(result['tvdb_id']),
                 'year': int(result['year']),
                 'poster_url': result['thumbnail'],
-                'overview': result['overview']
+                'overview': result['overview'] if 'overview' in result else None
             })
         db.op.upsert_cached_text(key=cache_key, data=json.dumps(results))
         return results

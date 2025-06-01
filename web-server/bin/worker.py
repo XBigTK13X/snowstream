@@ -1,4 +1,3 @@
-import importlib
 from settings import config
 
 from log import log
@@ -9,33 +8,36 @@ max_failures = config.rabbit_max_failures
 delay_seconds = config.rabbit_delay_seconds
 
 
+import traceback
+
+import json
+import message.read
+import message.handler.identify_unknown_media
+import message.handler.read_media_files
+import message.handler.scan_shelves_content
+import message.handler.stream_sources_refresh
+import message.handler.update_media_files
+
+from message.handler.job_media_scope import JobMediaScope
+
+handlers = {
+        'identify_unknown_media': message.handler.identify_unknown_media,
+        'read_media_files': message.handler.read_media_files,
+        'update_media_files': message.handler.update_media_files,
+        "scan_shelves_content": message.handler.scan_shelves_content,
+        "stream_sources_refresh": message.handler.stream_sources_refresh,
+    }
+
 def start():
     global max_failures
     global delay_seconds
-    import traceback
-
-    import json
-    import message.read
-    import message.handler.stream_sources_refresh
-    import message.handler.scan_shelves_content
-    import message.handler.read_media_files
-    import message.handler.update_media_files
-
-    from message.handler.job_media_scope import JobMediaScope
-
-    handlers = {
-        "stream_sources_refresh": message.handler.stream_sources_refresh,
-        "scan_shelves_content": message.handler.scan_shelves_content,
-        'read_media_files': message.handler.read_media_files,
-        'update_media_files': message.handler.update_media_files
-    }
+    global handlers
 
     def callback(channel, method, properties, body):
         global max_failures
         global delay_seconds
-        log.info(
-            f"Message received {body}. {message.read.count()} messages remain in queue."
-        )
+        log.info('')
+        log.info(f"Message received {body}. {message.read.count()} messages remain in queue.")
         payload = json.loads(body)
         job_id = payload["job_id"]
         if "kind" in payload:
@@ -47,10 +49,6 @@ def start():
             try:
                 kind = payload["kind"]
                 if kind in handlers:
-                    # Reload the latest handler code before processing a message
-                    # Dont' want cold kill and restart like the API because it could ruin a job run
-                    if config.hot_reload_message_handlers == 'yes':
-                        importlib.reload(handlers[kind])
                     scope = None
                     if 'input' in payload and payload['input'] != None:
                         scope = JobMediaScope(payload['input'])

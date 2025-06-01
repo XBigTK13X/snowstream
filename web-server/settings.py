@@ -10,7 +10,6 @@ class Config:
         self.cached_text_ttl_seconds = 60 * 60 * 24 # One day
         self.ffprobe_dir = ".snowstream/ffprobe"
         self.frontend_url = "http://localhost:3000"
-        self.hot_reload_message_handlers = "yes"
         self.jwt_algorithm = "HS256"
         self.jwt_expire_unit = "days"
         self.jwt_expire_value = 30

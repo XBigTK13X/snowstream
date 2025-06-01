@@ -1,14 +1,17 @@
 import database.db_models as dm
-import api_models as am
 from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
 import magick
 from settings import config
-import os
+import database.operation.shelf as db_shelf
 
-def create_image_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str,thumbnail_web_path: str):
+def create_image_file(shelf_id: int, kind: str, local_path: str):
+    local_thumbnail_path = magick.create_thumbnail(local_path)
+    thumbnail_web_path = config.web_media_url + '/mnt/' + local_thumbnail_path
+    shelf = db_shelf.get_shelf_by_id(shelf_id=shelf_id)
+    network_path = ''
+    if shelf.network_path:
+        network_path = local_path.replace(shelf.local_path,shelf.network_path)
+    web_path = config.web_media_url + local_path
     with DbSession() as db:
         dbm = dm.ImageFile()
         dbm.local_path = local_path
@@ -26,13 +29,13 @@ def get_image_file_by_path(local_path: str):
     with DbSession() as db:
         return db.query(dm.ImageFile).filter(dm.ImageFile.local_path == local_path).first()
 
-def get_or_create_image_file(shelf_id: int, kind: str, local_path: str, web_path: str, network_path: str):
+def get_or_create_image_file(shelf_id: int, kind: str, local_path: str):
     image_file = get_image_file_by_path(local_path=local_path)
     if not image_file:
-        local_thumbnail_path = magick.create_thumbnail(local_path)
-        thumbnail_web_path = config.web_media_url + '/mnt/' + local_thumbnail_path
         return create_image_file(
-            shelf_id=shelf_id, kind=kind, local_path=local_path, web_path=web_path, network_path=network_path, thumbnail_web_path=thumbnail_web_path
+            shelf_id=shelf_id,
+            kind=kind,
+            local_path=local_path
         )
     return image_file
 

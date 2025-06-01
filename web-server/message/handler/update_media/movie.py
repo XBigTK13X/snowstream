@@ -25,9 +25,7 @@ class Movie(MediaUpdater):
         return self.local_nfo_dict
 
     def read_remote_info(self):
-        self.tvdb_info = self.media_provider.get_movie_info(
-            metadata_id=self.metadata_id
-        )
+        self.tvdb_info = self.media_provider.get_movie_info(metadata_id=self.metadata_id)
         return self.tvdb_info
 
     def merge_remote_into_local(self):
@@ -64,8 +62,6 @@ class Movie(MediaUpdater):
                 shelf_id=self.movie.shelf.id,
                 kind='movie_main_feature_info',
                 local_path=self.movie_nfo_file.local_path,
-                web_path = self.config.web_media_url + self.movie_nfo_file.local_path,
-                network_path="",
                 xml_content=self.new_nfo_xml)
             self.db.op.create_movie_metadata_file(movie_id=self.movie.id,metadata_file_id=self.movie_nfo_file.id)
 
@@ -77,6 +73,13 @@ class Movie(MediaUpdater):
         images = self.media_provider.get_movie_images(metadata_id=self.metadata_id)
         local_path = os.path.join(self.movie.directory,'folder.jpg')
         self.download_image(image_url=images['poster'],local_path=local_path)
+        if not self.db.op.get_image_file_by_path(local_path=local_path):
+            image_file = self.db.op.create_image_file(
+                shelf_id=self.movie.shelf.id,
+                kind='movie_main_feature_poster',
+                local_path=local_path
+            )
+            self.db.op.create_movie_image_file(movie_id=self.movie.id,image_file_id=image_file.id)
 
     def schedule_subjobs(self,update_images:bool,update_metadata:bool):
         create_child_job(name='scan_shelves_content',payload={

@@ -1,10 +1,6 @@
 from log import log
-from db import db
-import api_models as am
 
-import message.handler.update_media.movie_shelf as update_movie_shelf
 import message.handler.update_media.movie as update_movie
-import message.handler.update_media.show_shelf as update_show_shelf
 import message.handler.update_media.show as update_show
 import message.handler.update_media.show_season as update_season
 import message.handler.update_media.show_episode as update_episode
@@ -18,12 +14,17 @@ def handle(job_id, scope):
         return False
 
     if not scope.metadata_id:
-        log.info("update_media_files must be scopred with a metadata_id")
+        log.info("update_media_files must be scoped with a metadata_id")
+        return False
+
+    if not scope.update_metadata and not scope.update_images:
+        log.info("update_media_files requires either update_images or update_metadata")
         return False
 
     handler = None
     if scope.is_shelf():
-        log.info(f"Not yet implemented - Updating media for shelf {scope.target_id}")
+        log.info(f"Updating the media of an entire shelf is not supported. Run an identify job instead")
+        return False
     elif scope.is_movie():
         handler = update_movie.Movie(scope=scope)
     elif scope.is_show():
@@ -34,9 +35,6 @@ def handle(job_id, scope):
         handler = update_episode.ShowEpisode(scope=scope)
     else:
         log.info(f"Unhandled target of kind {scope.target}")
-        return False
-
-    if handler == None:
         return False
 
     handler.read_local_info()
