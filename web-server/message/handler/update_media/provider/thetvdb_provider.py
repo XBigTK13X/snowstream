@@ -189,6 +189,7 @@ class ThetvdbProvider(base.MediaProvider):
         results = []
         for result in api_results:
             results.append({
+                'name': result['name'],
                 'tvdbid': int(result['tvdb_id']),
                 'year': int(result['year']),
                 'poster_url': result['thumbnail'],

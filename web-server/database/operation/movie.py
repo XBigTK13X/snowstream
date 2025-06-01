@@ -390,3 +390,17 @@ def reset_movie_watch_count(ticket:dm.Ticket,movie_id:int):
         )
         db.commit()
         return True
+
+def get_unknown_movie_list(shelf_id:int=None):
+    with DbSession() as db:
+        if shelf_id:
+            return (
+                db.query(dm.Movie)
+                .join(dm.MovieShelf)
+                .filter(
+                    dm.Movie.remote_id == None,
+                    dm.MovieShelf.shelf_id == shelf_id
+                )
+                .all()
+            )
+        return db.query(dm.Movie).filter(dm.Movie.remote_id == None).all()

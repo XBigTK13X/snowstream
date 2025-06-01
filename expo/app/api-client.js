@@ -184,6 +184,10 @@ export class ApiClient {
         return this.createScopedJob('update_media_files', details)
     }
 
+    createJobIdentifyUnknownMedia(details) {
+        return this.createScopedJob('identify_unknown_media', details)
+    }
+
     createStreamSource(payload) {
         return this.post('/stream/source', {
             url: payload.url,

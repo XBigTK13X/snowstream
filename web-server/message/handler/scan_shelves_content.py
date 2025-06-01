@@ -15,7 +15,7 @@ def handle(job_id, scope:JobMediaScope):
     target_directory = None
     ticket = db.model.Ticket()
     if scope == None or scope.is_unscoped():
-            shelves = db.op.get_shelf_list()
+        shelves = db.op.get_shelf_list()
     else:
         if scope.is_shelf():
             shelves = [db.op.get_shelf_by_id(shelf_id=scope.target_id)]
@@ -62,7 +62,7 @@ def handle(job_id, scope:JobMediaScope):
         if not val:
             return False
 
-    log.info("File imports successful. Building the library.")
+    log.info("Finished walking the files on disk for shelves. Add found files to database.")
     for handler in handlers:
         log.info(
             f"Organizing [{handler.shelf.name} -> {handler.shelf.kind}] files into the library"

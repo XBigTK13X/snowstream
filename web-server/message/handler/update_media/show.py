@@ -1,5 +1,6 @@
 import message.handler.update_media.base_handler as base
-import os
+from message.handler.child_job import create_child_job
+mport os
 
 class Show(base.BaseHandler):
     def __init__(self,scope):
@@ -47,7 +48,7 @@ class Show(base.BaseHandler):
 
     def schedule_subjobs(self,update_images:bool,update_metadata:bool):
         for season in self.show.seasons:
-            self.make_job(name='update_media_files',payload={
+            create_child_job(name='update_media_files',payload={
                 'metadata_id': self.metadata_id,
                 'target_kind': 'season',
                 'target_id': season.id,
@@ -56,7 +57,7 @@ class Show(base.BaseHandler):
                 'update_metadata': update_metadata,
                 'is_subjob': True
             })
-        self.make_job(name='scan_shelves_content',payload={
+        create_child_job(name='scan_shelves_content',payload={
             'metadata_id': self.metadata_id,
             'target_kind': 'show',
             'target_id': self.show_id,

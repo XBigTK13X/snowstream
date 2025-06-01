@@ -1,12 +1,15 @@
 from db import db
 from log import log
-from settings import config
 import nfo
-import os
 import message.handler.update_media.provider.thetvdb_provider as thetvdb
-import message.write
 import requests
 import magick
+from settings import config
+
+class FileStub:
+    def __init__(self):
+        self.local_path = None
+        self.id = None
 
 class BaseHandler:
     def __init__(self, kind):
@@ -16,10 +19,8 @@ class BaseHandler:
         self.nfo = nfo
         self.ticket = db.model.Ticket()
         self.log = log
-
-    def make_job(self, name:str, payload:dict):
-        job = self.db.op.create_job(kind=name)
-        message.write.send(job_id=job.id, kind=name, input=payload)
+        self.config = config
+        self.FileStub = FileStub
 
     def download_image(self,image_url,local_path):
         if not image_url:

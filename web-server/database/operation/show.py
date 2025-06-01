@@ -292,3 +292,17 @@ def get_show_watched(ticket:dm.Ticket,show_id:int):
             dm.Watched.show_episode_id == None
         ).first()
         return False if watched == None else True
+
+def get_unknown_show_list(shelf_id:int=None):
+    with DbSession() as db:
+        if shelf_id:
+            return (
+                db.query(dm.Show)
+                .join(dm.ShowShelf)
+                .filter(
+                    dm.Show.remote_id == None,
+                    dm.ShowShelf.shelf_id == shelf_id
+                )
+                .all()
+            )
+        return db.query(dm.Show).filter(dm.Show.remote_id == None).all()

@@ -16,13 +16,17 @@ export default function ShelfEditPage() {
         if (kind === 'update-media') {
             apiClient.createJobUpdateMediaFiles()
         }
+        if (kind === 'identify-media') {
+            apiClient.createJobIdentifyUnknownMedia()
+        }
     }
 
     const buttons = [
         { name: 'Scan Shelves', kind: 'scan-shelves' }, ,
         { name: 'Refresh Streamables', kind: 'refresh-streams' },
         { name: 'Read Media Files', kind: 'read-media' },
-        { name: 'Update Media Files', kind: 'update-media' }
+        { name: 'Update Media Files', kind: 'update-media' },
+        { name: 'Identify Unknown Media', kind: 'identify-media' }
     ]
 
     const renderItem = (item) => {

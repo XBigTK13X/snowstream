@@ -1,4 +1,5 @@
 import message.handler.update_media.base_handler as base
+from message.handler.child_job import create_child_job
 import os
 
 class Movie(base.BaseHandler):
@@ -12,10 +13,15 @@ class Movie(base.BaseHandler):
         self.movie = self.db.op.get_movie_by_id(ticket=self.ticket,movie_id=self.movie_id)
         if not self.movie:
             return None
-        if not self.movie.metadata_files:
-            return None
-        self.movie_nfo_file = self.movie.metadata_files[0]
-        self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.movie_nfo_file.xml_content)
+        if len(self.movie.metadata_files) > 0:
+            self.movie_nfo_file = self.movie.metadata_files[0]
+            self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.movie_nfo_file.xml_content)
+        else:
+            local_path = self.nfo.video_path_to_nfo_path(video_path=self.movie.video_files[0].local_path)
+            self.movie_nfo_file = self.FileStub()
+            self.movie_nfo_file.local_path = local_path
+            self.local_nfo_dict = {}
+
         return self.local_nfo_dict
 
     def read_remote_info(self):
@@ -51,7 +57,17 @@ class Movie(base.BaseHandler):
 
     def save_info_to_local(self):
         self.nfo.save_xml_as_nfo(nfo_path=self.movie_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
-        self.db.op.update_metadata_file_content(self.movie_nfo_file.id, xml_content=self.new_nfo_xml)
+        if self.movie_nfo_file.id:
+            self.db.op.update_metadata_file_content(self.movie_nfo_file.id, xml_content=self.new_nfo_xml)
+        else:
+            self.movie_nfo_file = self.db.op.create_metadata_file(
+                shelf_id=self.movie.shelf.id,
+                kind='movie_main_feature_info',
+                local_path=self.movie_nfo_file.local_path,
+                web_path = self.config.web_media_url + self.movie_nfo_file.local_path,
+                network_path="",
+                xml_content=self.new_nfo_xml)
+            self.db.op.create_movie_metadata_file(movie_id=self.movie.id,metadata_file_id=self.movie_nfo_file.id)
 
     # Legacy images
     # backgroup.jpg
@@ -63,9 +79,9 @@ class Movie(base.BaseHandler):
         self.download_image(image_url=images['poster'],local_path=local_path)
 
     def schedule_subjobs(self,update_images:bool,update_metadata:bool):
-        self.make_job(name='scan_shelves_content',payload={
-        'metadata_id': self.metadata_id,
-        'target_kind': 'movie',
-        'target_id': self.movie_id,
-        'is_subjob': True
-    })
+        create_child_job(name='scan_shelves_content',payload={
+            'metadata_id': self.metadata_id,
+            'target_kind': 'movie',
+            'target_id': self.movie_id,
+            'is_subjob': True
+        })
