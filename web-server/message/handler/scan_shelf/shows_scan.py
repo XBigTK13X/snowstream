@@ -15,16 +15,28 @@ class AssetScope(Flag):
 
 
 SHOW_REGEX = re.compile(
-    r"(?P<directory>.*)\/(?P<show_name>[^\/]*)\/(?P<asset_name>.*)", re.IGNORECASE
+    r"(?P<directory>.*)\/"
+    r"(?P<show_name>[^\/]*)\/(?P<asset_name>.*)",
+    re.IGNORECASE
 )
 
 SHOW_SEASON_REGEX = re.compile(
-    r"(?P<directory>.*?)(?P<show_name>[^\/]*?)\/(Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/(?P<asset_name>.*)",
+    r"(?P<directory>.*?)"
+    r"(?P<show_name>[^\/]*?)\/"
+    r"(Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/"
+    r"(?P<asset_name>.*)",
     re.IGNORECASE,
 )
 
 SHOW_EPISODE_REGEX = re.compile(
-    r"(?P<directory>.*?)(?P<show_name>[^\/]*?)\/(Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/(?P<metadata>metadata\/)?S(?P<season_start>\d{0,5})E(?P<episode_start>\d{1,6})(-S(?P<season_end>\d{1,6})E(?P<episode_end>\d{0,5}))*",
+    r"(?P<directory>.*?)"
+    r"(?P<show_name>[^\/]*?)\/"
+    r"(Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/"
+    r"(?P<metadata>metadata\/)?"
+    r"S(?P<season_start>\d{0,5})E(?P<episode_start>\d{1,6})"
+    r"(-(S(?P<season_end>\d{1,6}))?E(?P<episode_end>\d{0,5}))?"
+    r"( - (?P<title>.*)?)?"
+    r"\.(?P<format>[a-zA-Z0-9]{3,6})",
     re.IGNORECASE,
 )
 
@@ -80,6 +92,7 @@ def parse_episode_file_info(matches):
     result["directory"] = Path(
         os.path.join(matches.group("directory"), matches.group("show_name") + "/")
     ).as_posix()
+    result['title'] = matches.group('title')
     return result
 
 
@@ -171,7 +184,12 @@ class ShowsScanHandler(ShelfScanner):
         season_id = self.batch_lookup[show_slug][season_slug]
         return season_slug, season_id
 
-    def get_or_create_episode(self, season_id, episode_order_counter):
+    def get_or_create_episode(
+        self,
+        season_id:int,
+        episode_order_counter:int,
+        episode_end_order_counter:int=None,
+        episode_title:str=None):
         episode = db.op.get_show_episode_by_season_order(
             show_season_id=season_id,
             episode_order_counter=episode_order_counter,
@@ -180,8 +198,21 @@ class ShowsScanHandler(ShelfScanner):
             episode = db.op.create_show_episode(
                 show_season_id=season_id,
                 episode_order_counter=episode_order_counter,
+                episode_end_order_counter=episode_end_order_counter,
+                name=episode_title
             )
         return episode
+
+    def get_episode_from_info(self,season_id:int,info:dict):
+        episode_end = None
+        if 'episode_end' in info and info['episode_end']:
+            episode_end = info['episode_end']
+        return self.get_or_create_episode(
+            season_id=season_id,
+            episode_order_counter=info['episode_start'],
+            episode_end_order_counter=episode_end,
+            episode_title=info['title']
+        )
 
     def organize_metadata(self):
         progress_count = 0
@@ -224,27 +255,19 @@ class ShowsScanHandler(ShelfScanner):
                         show_season_id=season_id, metadata_file_id=info["id"]
                     )
             else:
-                episode_end = (
-                    info["episode_start"] + 1
-                    if info["episode_end"] == None
-                    else info["episode_end"]
-                )
-                for episode_order_counter in range(info["episode_start"], episode_end):
-                    episode = self.get_or_create_episode(
-                        season_id=season_id, episode_order_counter=episode_order_counter
-                    )
-                    if not db.op.get_show_episode_metadata_file(
+                episode = self.get_episode_from_info(season_id=season_id,info=info)
+                if not db.op.get_show_episode_metadata_file(
+                    show_episode_id=episode.id, metadata_file_id=info["id"]
+                ):
+                    db.op.create_show_episode_metadata_file(
                         show_episode_id=episode.id, metadata_file_id=info["id"]
-                    ):
-                        db.op.create_show_episode_metadata_file(
-                            show_episode_id=episode.id, metadata_file_id=info["id"]
+                    )
+                    metadata = nfo.nfo_path_to_dict(nfo_path=info['file_path'])
+                    if 'title' in metadata:
+                        db.op.update_show_episode_name(
+                            show_episode_id=episode.id,
+                            name=metadata['title']
                         )
-                        metadata = nfo.nfo_path_to_dict(nfo_path=info['file_path'])
-                        if 'title' in metadata:
-                            db.op.update_show_episode_name(
-                                show_episode_id=episode.id,
-                                name=metadata['title']
-                            )
 
     def organize_images(self):
         progress_count = 0
@@ -274,22 +297,14 @@ class ShowsScanHandler(ShelfScanner):
                         show_season_id=season_id, image_file_id=info["id"]
                     )
             else:
-                episode_end = (
-                    info["episode_start"] + 1
-                    if info["episode_end"] == None
-                    else info["episode_end"]
+                episode = self.get_episode_from_info(season_id=season_id,info=info)
+                image_file_association = db.op.get_show_episode_image_file(
+                    show_episode_id=episode.id, image_file_id=info["id"]
                 )
-                for episode_order_counter in range(info["episode_start"], episode_end):
-                    episode = self.get_or_create_episode(
-                        season_id=season_id, episode_order_counter=episode_order_counter
-                    )
-                    image_file_association = db.op.get_show_episode_image_file(
+                if not image_file_association:
+                    db.op.create_show_episode_image_file(
                         show_episode_id=episode.id, image_file_id=info["id"]
                     )
-                    if not image_file_association:
-                        db.op.create_show_episode_image_file(
-                            show_episode_id=episode.id, image_file_id=info["id"]
-                        )
 
     def organize_videos(self):
         progress_count = 0
@@ -301,19 +316,11 @@ class ShowsScanHandler(ShelfScanner):
             season_slug, season_id = self.get_or_create_season(
                 show_slug=show_slug, show_id=show_id, info=info
             )
-            episode_end = (
-                info["episode_start"] + 1
-                if info["episode_end"] == None
-                else info["episode_end"]
+            episode = self.get_episode_from_info(season_id=season_id,info=info)
+            video_file_association = db.op.get_show_episode_video_file(
+                show_episode_id=episode.id, video_file_id=info["id"]
             )
-            for episode_order_counter in range(info["episode_start"], episode_end):
-                episode = self.get_or_create_episode(
-                    season_id=season_id, episode_order_counter=episode_order_counter
-                )
-                video_file_association = db.op.get_show_episode_video_file(
+            if not video_file_association:
+                db.op.create_show_episode_video_file(
                     show_episode_id=episode.id, video_file_id=info["id"]
                 )
-                if not video_file_association:
-                    db.op.create_show_episode_video_file(
-                        show_episode_id=episode.id, video_file_id=info["id"]
-                    )

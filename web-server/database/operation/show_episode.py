@@ -54,11 +54,17 @@ def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int,search_query:st
             results.append(episode)
         return results
 
-def create_show_episode(show_season_id: int, episode_order_counter: int):
+def create_show_episode(
+    show_season_id: int,
+    episode_order_counter: int,
+    episode_end_order_counter: int = None,
+    name:str=None):
     with DbSession() as db:
         dbm = dm.ShowEpisode()
         dbm.episode_order_counter = episode_order_counter
+        dbm.episode_end_order_counter = episode_end_order_counter
         dbm.show_season_id = show_season_id
+        dbm.name = name
         db.add(dbm)
         db.commit()
         db.refresh(dbm)

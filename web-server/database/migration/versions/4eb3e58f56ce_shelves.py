@@ -177,6 +177,7 @@ def upgrade() -> None:
         ),
         sa.Column("name", sa.Text, nullable=True),
         sa.Column("episode_order_counter", sa.Integer, nullable=False),
+        sa.Column("episode_end_order_counter", sa.Integer,nullable=True)
     )
 
     op.create_table(

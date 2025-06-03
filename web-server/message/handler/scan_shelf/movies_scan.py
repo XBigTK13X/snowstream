@@ -7,20 +7,28 @@ from message.handler.scan_shelf.shelf_scanner import ShelfScanner
 import nfo
 
 MOVIE_ASSETS_REGEX = re.compile(
-    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<asset_name>.*)",
+    r"(?P<directory>.*?)"
+    r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
+    r"(?P<asset_name>.*)",
     re.IGNORECASE,
 )
 MOVIE_EXTRAS_ASSETS_REGEX = re.compile(
-    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<subdirectory>Extras)\/(?P<asset_name>.*)",
+    r"(?P<directory>.*?)"
+    r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
+    r"(?P<subdirectory>Extras)\/(?P<asset_name>.*)",
     re.IGNORECASE,
 )
 
 MOVIE_VIDEO_FILE_REGEX = re.compile(
-    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<movie_file_name>.*?)\s\((?P<movie_file_year>\d{4,5})\)\s(?P<quality>.*)?\..*",
+    r"(?P<directory>.*?)"
+    r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
+    r"(?P<movie_file_name>.*?)\s\((?P<movie_file_year>\d{4,5})\)\s(?P<quality>.*)?\..*",
     re.IGNORECASE,
 )
 MOVIE_EXTRAS_VIDEO_FILE_REGEX = re.compile(
-    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/(?P<subdirectory>Extras)\/(?P<extra_name>.*)\..*",
+    r"(?P<directory>.*?)"
+    r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
+    r"(?P<subdirectory>Extras)\/(?P<extra_name>.*)\..*",
     re.IGNORECASE,
 )
 

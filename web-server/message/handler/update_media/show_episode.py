@@ -29,25 +29,40 @@ class ShowEpisode(MediaUpdater):
         return self.local_nfo_dict
 
     def read_remote_info(self):
-        self.tvdb_info = self.media_provider.get_episode_info(
-            show_metadata_id=self.show_metadata_id,
-            season_order=self.season_order,
-            episode_order=self.episode_order
-        )
+        if self.show_episode.episode_end_order_counter:
+            self.tvdb_info = []
+            for ii in range(self.show_episode.episode_order_counter,self.show_episode.episode_end_order_counter+1):
+                info = self.media_provider.get_episode_info(
+                    show_metadata_id=self.show_metadata_id,
+                    season_order=self.season_order,
+                    episode_order=ii
+                )
+                self.tvdb_info.append(info)
+        else:
+            info = self.media_provider.get_episode_info(
+                show_metadata_id=self.show_metadata_id,
+                season_order=self.season_order,
+                episode_order=self.episode_order
+            )
+            self.tvdb_info = [info]
         return self.tvdb_info
 
     def merge_remote_into_local(self):
         tags = None
         if self.local_nfo_dict and 'tag' in self.local_nfo_dict:
             tags = [xx for xx in self.local_nfo_dict['tag'] if ':' in xx]
+        overview = self.tvdb_info[0]['overview']
+        if len(self.tvdb_info) > 1:
+            overview = ' '.join([f'[Episode {xx['number']}] {xx['overview']}' for xx in self.tvdb_info])
         self.new_nfo_xml = self.nfo.show_episode_to_xml(
-            season=self.tvdb_info['seasonNumber'],
-            episode=self.tvdb_info['number'],
-            title=self.tvdb_info['name'],
-            plot=self.tvdb_info['overview'],
-            tvdbid=self.tvdb_info['id'],
-            aired=self.tvdb_info['aired'],
-            year=self.tvdb_info['year'],
+            season=self.tvdb_info[0]['seasonNumber'],
+            episode=self.tvdb_info[0]['number'],
+            title=self.tvdb_info[0]['name'],
+            plot=overview,
+            tvdbid=self.tvdb_info[0]['id'],
+            aired=self.tvdb_info[0]['aired'],
+            year=self.tvdb_info[0]['year'],
+            end_episode=self.show_episode.episode_end_order_counter,
             tags=tags
         )
 
@@ -66,10 +81,16 @@ class ShowEpisode(MediaUpdater):
                 show_episode_id=self.show_episode.id,
                 metadata_file_id=self.episode_nfo_file.id
             )
-        if 'name' in self.tvdb_info:
+        title = None
+        if len(self.tvdb_info) > 1:
+            title = ' + '.join(xx['name'] for xx in self.tvdb_info if 'name' in xx)
+        else:
+            if 'name' in self.tvdb_info[0]:
+                title = self.tvdb_info[0]['name']
+        if title:
             self.db.op.update_show_episode_name(
                 show_episode_id=self.show_episode.id,
-                name=self.tvdb_info['name']
+                name=title
             )
 
     # Legacy images are

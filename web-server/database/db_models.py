@@ -8,15 +8,17 @@ from database.sql_alchemy import BaseModel
 def set_primary_images(model):
     model.thumbnail_image = None
     model.poster_image = None
+    thumb_is_meta = False
+    poster_is_meta = False
     for image_file in model.image_files:
-        if model.poster_image and model.thumbnail_image:
-            return model
-        if not model.poster_image:
+        if not model.poster_image or poster_is_meta:
             if 'poster' in image_file.kind:
                 model.poster_image = image_file
-        if not model.thumbnail_image:
+                poster_is_meta = '/metadata/' in image_file.local_path
+        if not model.thumbnail_image or thumb_is_meta:
             if 'thumbnail' in image_file.kind:
                 model.thumbnail_image = image_file
+                thumb_is_meta = '/metadata/' in image_file.local_path
     return model
 
 class User(BaseModel):
@@ -437,6 +439,7 @@ class ShowEpisode(BaseModel):
     __tablename__ = "show_episode"
     name = sa.Column(sa.Text)
     episode_order_counter = sa.Column(sa.Integer)
+    episode_end_order_counter = sa.Column(sa.Integer)
     show_season_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("show_season.id"))
     video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="show_episode_video_file",back_populates="show_episode",overlaps="show_episode_video_file")
     image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="show_episode_image_file",back_populates="show_episode",overlaps="show_episode_image_file")

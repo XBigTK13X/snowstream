@@ -61,6 +61,7 @@ def show_episode_to_xml(
     tvdbid:int,
     aired:str,
     year:int,
+    end_episode:int=None,
     tags:list[str]=None,
 ):
     nfo_dict = {
@@ -74,6 +75,9 @@ def show_episode_to_xml(
             'year': year
         }
     }
+
+    if end_episode:
+        nfo_dict['episodedetails']['episodenumberend'] = end_episode
 
     if tags:
         nfo_dict['episodedetails']['tag'] = tags

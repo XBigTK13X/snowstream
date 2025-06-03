@@ -95,6 +95,7 @@ export default function EpisodeDetailsPage() {
                                 targetKind: 'episode',
                                 targetId: episodeId,
                                 metadataId: details.metadataId,
+                                seasonOrder: seasonOrder,
                                 updateMetadata: details.metadata,
                                 updateImages: details.images
                             })
