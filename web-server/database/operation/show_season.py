@@ -87,7 +87,7 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket, show_id: int):
             season = dm.set_primary_images(show_season)
             if not season.poster_image:
                 season.poster_image = show.poster_image
-                season.thumbnail_image = show.thumbnail_image
+                season.screencap_image = show.screencap_image
             season.name = util.get_season_title(season)
             results.append(season)
         return results

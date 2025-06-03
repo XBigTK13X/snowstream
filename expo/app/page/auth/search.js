@@ -20,7 +20,7 @@ export default function SearchPage() {
             <C.View>
                 <C.SnowPosterGrid title="Movies" items={searchResults.movies} />
                 <C.SnowPosterGrid title="Shows" items={searchResults.shows} />
-                <C.SnowThumbGrid title="Episodes" items={searchResults.episodes} />
+                <C.SnowScreencapGrid title="Episodes" items={searchResults.episodes} />
             </C.View>
         )
     }

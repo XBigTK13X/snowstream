@@ -6,19 +6,19 @@ from typing import List
 from database.sql_alchemy import BaseModel
 
 def set_primary_images(model):
-    model.thumbnail_image = None
+    model.screencap_image = None
     model.poster_image = None
-    thumb_is_meta = False
+    screencap_is_meta = False
     poster_is_meta = False
     for image_file in model.image_files:
         if not model.poster_image or poster_is_meta:
             if 'poster' in image_file.kind:
                 model.poster_image = image_file
                 poster_is_meta = '/metadata/' in image_file.local_path
-        if not model.thumbnail_image or thumb_is_meta:
-            if 'thumbnail' in image_file.kind:
-                model.thumbnail_image = image_file
-                thumb_is_meta = '/metadata/' in image_file.local_path
+        if not model.screencap_image or screencap_is_meta:
+            if 'screencap' in image_file.kind:
+                model.screencap_image = image_file
+                screencap_is_meta = '/metadata/' in image_file.local_path
     return model
 
 class User(BaseModel):

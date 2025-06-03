@@ -4,12 +4,12 @@ import SnowImageButton from './snow-image-button'
 import SnowLabel from './snow-label'
 import { useSettings } from '../settings-context'
 
-export function SnowThumbGrid(props) {
+export function SnowScreencapGrid(props) {
     const { routes } = useSettings()
     const renderItem = (item, itemIndex) => {
-        let thumbUrl = null
-        if (item.thumbnail_image) {
-            thumbUrl = item.thumbnail_image.thumbnail_web_path
+        let thumbnailUrl = null
+        if (item.screencap_image) {
+            thumbnailUrl = item.screencap_image.thumbnail_web_path
         }
 
         let title = null
@@ -21,7 +21,7 @@ export function SnowThumbGrid(props) {
                 <SnowImageButton
                     wide={true}
                     shouldFocus={props.shouldFocus && itemIndex === 0}
-                    imageUrl={thumbUrl}
+                    imageUrl={thumbnailUrl}
                     title={item.name}
                     onPress={() => { routes.gotoItem(item) }}
                     onLongPress={() => { props.onLongPress(item) }}
@@ -38,4 +38,4 @@ export function SnowThumbGrid(props) {
     )
 }
 
-export default SnowThumbGrid
+export default SnowScreencapGrid

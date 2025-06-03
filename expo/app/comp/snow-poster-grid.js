@@ -10,9 +10,9 @@ export function SnowPosterGrid(props) {
         return null
     }
     const renderItem = (item, itemIndex) => {
-        let posterUrl = null
+        let thumbnailUrl = null
         if (item.poster_image) {
-            posterUrl = item.poster_image.thumbnail_web_path
+            thumbnailUrl = item.poster_image.thumbnail_web_path
         }
         let longPress = null
         if (props.onLongPress) {
@@ -24,7 +24,7 @@ export function SnowPosterGrid(props) {
         return <SnowImageButton
             wide={false}
             shouldFocus={props.shouldFocus && itemIndex === 0}
-            imageUrl={posterUrl}
+            imageUrl={thumbnailUrl}
             onPress={() => { props.onPress ? props.onPress(item) : routes.gotoItem(item) }}
             onLongPress={longPress}
             title={item.name}

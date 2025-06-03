@@ -116,7 +116,7 @@ class ShowEpisode(MediaUpdater):
         if not self.db.op.get_image_file_by_path(local_path=local_path):
             image_file = self.db.op.create_image_file(
                 shelf_id=self.show_episode.season.show.shelf.id,
-                kind='episode_poster',
+                kind='episode_screencap',
                 local_path=local_path
             )
             self.db.op.create_show_episode_image_file(

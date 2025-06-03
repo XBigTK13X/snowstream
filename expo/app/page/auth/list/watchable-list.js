@@ -75,8 +75,8 @@ export function WatchableListPage(props) {
         }
 
         let Grid = C.SnowPosterGrid
-        if (props.gridKind == 'thumb') {
-            Grid = C.SnowThumbGrid
+        if (props.gridKind == 'screencap') {
+            Grid = C.SnowScreencapGrid
         }
 
         let remoteId = null

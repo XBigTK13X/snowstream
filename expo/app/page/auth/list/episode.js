@@ -57,7 +57,7 @@ export default function EpisodeListPage() {
             refreshList={refreshList}
             gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
-            gridKind="thumb"
+            gridKind="screencap"
             scanContentsJob={scanContentsJob}
             updateMediaJob={updateMediaJob}
             watchAll={watchAll}

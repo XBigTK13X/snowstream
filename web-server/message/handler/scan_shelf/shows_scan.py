@@ -131,7 +131,7 @@ def identify_show_file_kind(extension_kind: str, info: dict, file_path: str):
                 image_kind = "backdrop"
         if "episode_start" in info:
             if image_kind == None:
-                image_kind = 'thumbnail'
+                image_kind = 'screencap'
             return f"episode_{image_kind}"
         if "season" in info:
             if image_kind == None:

@@ -34,7 +34,7 @@ import SnowInput from './comp/snow-input'
 import SnowLabel from './comp/snow-label'
 import SnowPosterGrid from './comp/snow-poster-grid'
 import SnowText from './comp/snow-text'
-import SnowThumbGrid from './comp/snow-thumb-grid'
+import SnowScreencapGrid from './comp/snow-screencap-grid'
 import SnowVideoPlayer from './comp/snow-video-player'
 import SnowVideoControls from './comp/snow-video-controls'
 import SnowTrackSelector from './comp/snow-track-selector'
@@ -87,7 +87,7 @@ export default {
     SnowPosterGrid,
     SnowText,
     SnowTextButton,
-    SnowThumbGrid,
+    SnowScreencapGrid,
     SnowTrackSelector,
     SnowUpdateMediaButton,
     SnowVideoControls,
