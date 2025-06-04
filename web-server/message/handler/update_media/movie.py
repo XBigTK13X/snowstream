@@ -69,6 +69,7 @@ class Movie(MediaUpdater):
     # backgroup.jpg
     # logo.png
     # folder.jpg
+    # video_file_name.jpg
     def download_images(self):
         images = self.media_provider.get_movie_images(metadata_id=self.metadata_id)
         if not images:

@@ -6,8 +6,6 @@ from db import db
 from message.handler.scan_shelf.shelf_scanner import ShelfScanner
 import nfo
 
-# These can be debugged with print(PATTERN_NAME.pattern) to get a pastable regex
-
 MOVIE_ASSETS_REGEX = re.compile(
     r"(?P<directory>.*?)"
     r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
@@ -79,14 +77,19 @@ def parse_movie_extras_video_file_info(matches):
     result["extra_name"] = matches.group("extra_name")
     return result
 
+image_formats = ['']
+
+def is_image(file_path):
+    ff = file_path.lower()
+    return '.jpg' in ff or '.png' in ff or '.bmp' in ff or '.jpeg' in ff
 
 def parse_movie_info(file_path):
     location = Path(file_path).as_posix()
     matches = re.search(MOVIE_EXTRAS_VIDEO_FILE_REGEX, location)
-    if matches != None:
+    if matches != None and not is_image(file_path):
         return parse_movie_extras_video_file_info(matches=matches)
     matches = re.search(MOVIE_VIDEO_FILE_REGEX, location)
-    if matches != None:
+    if matches != None and not is_image(file_path):
         return parse_movie_video_file_info(matches=matches)
     matches = re.search(MOVIE_EXTRAS_ASSETS_REGEX, location)
     if matches != None:
@@ -98,6 +101,7 @@ def parse_movie_info(file_path):
 
 
 def identify_movie_file_kind(extension_kind: str, info: dict, file_path: str):
+    log.info(file_path)
     if extension_kind == "metadata":
         return (
             "movie_main_feature_info"
@@ -108,11 +112,11 @@ def identify_movie_file_kind(extension_kind: str, info: dict, file_path: str):
         image_kind = "unknown"
         if "poster" in info["asset_name"] or "folder" in info["asset_name"]:
             image_kind = "poster"
-        if "banner" in info["asset_name"]:
+        elif "banner" in info["asset_name"]:
             image_kind = "banner"
-        if "backdrop" in info["asset_name"]:
+        elif "backdrop" in info["asset_name"]:
             image_kind = "backdrop"
-        if "logo" in info["asset_name"]:
+        elif "logo" in info["asset_name"]:
             image_kind = "logo"
         movie_kind = "movie_main_feature" if not "extra_name" in info else "movie_extra"
         return f"{movie_kind}_{image_kind}"

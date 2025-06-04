@@ -1,5 +1,15 @@
 import message.handler.scan_shelf.shows_scan as shows
 
+def test_copy_paste_regex():
+    print('')
+    print('Show')
+    print(shows.SHOW_REGEX.pattern)
+    print('Season')
+    print(shows.SHOW_SEASON_REGEX.pattern)
+    print('Episode')
+    print(shows.SHOW_EPISODE_REGEX.pattern)
+    assert True
+
 def test_show():
     file_path = '/mnt/j-media/tv/anime/precure/Delicious Party♡Pretty Cure/folder.jpg'
     info = shows.parse_show_info(file_path)

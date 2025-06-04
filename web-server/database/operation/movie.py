@@ -95,6 +95,7 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
             db.query(dm.Movie)
             .join(dm.MovieShelf)
             .filter(dm.MovieShelf.shelf_id == shelf_id)
+            .options(sorm.joinedload(dm.Movie.image_files))
             .options(sorm.joinedload(dm.Movie.shelf))
         )
         if search_query:
