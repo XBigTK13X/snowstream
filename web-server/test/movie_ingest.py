@@ -17,3 +17,8 @@ def test_movie_multiformat():
     info = movies.parse_movie_info(file_path)
     assert info != None
     assert info['movie_name'] == 'Love Comes Softly'
+
+def test_movie_extras():
+    file_path = "/mnt/m-media/movie/dreamworks/Over the Hedge (2006)/Extras/Hammy's Boomerand Adventure.mkv"
+    info = movies.parse_movie_info(file_path)
+    assert info != None
