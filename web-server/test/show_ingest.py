@@ -26,3 +26,8 @@ def test_multipart_episode():
     assert info['episode_start'] == 1
     assert info['episode_end'] == 2
     assert info['title'] == "Festival of the Festering Moon + Simon's Big Score"
+
+def test_multiformat_episode():
+    file_path = '/mnt/j-media/tv/cartoon/f/Futurama/Season 2/S02E001 - A Flight to Remember - [Raw].mkv'
+    info = shows.parse_show_info(file_path)
+    assert info != None
