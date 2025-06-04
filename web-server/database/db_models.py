@@ -222,6 +222,8 @@ class Job(BaseModel):
     kind = sa.Column(sa.Text)
     message = sa.Column(sa.Text)
     status = sa.Column(sa.Text)
+    logs_json = sa.Column(sa.Text)
+    input_json = sa.Column(sa.Text)
 
 class Tag(BaseModel):
     __tablename__ = "tag"

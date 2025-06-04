@@ -11,11 +11,16 @@ class Config:
         self.ffmpeg_screencap_percent_location = 0.15
         self.ffprobe_dir = ".snowstream/ffprobe"
         self.frontend_url = "http://localhost:3000"
+        self.is_deployed_environment = None
         self.jwt_algorithm = "HS256"
         self.jwt_expire_unit = "days"
         self.jwt_expire_value = 30
         self.jwt_secret_hex = "0" * 32
         self.log_file_path = ".snowstream/log/snowstream.log"
+        self.tail_log_paths = [
+            '.snowstream/log/worker.log',
+            '.snowstream/log/server.log'
+        ]
         self.log_level = "INFO"
         self.postgres_database = "snowstream"
         self.postgres_host = "localhost"
@@ -63,6 +68,14 @@ for key, val in vars(config).items():
         setattr(config, key, env_var_value)
         if "POSTGRES" in env_var_key:
             config.refresh_postgres_url()
+
+if config.is_deployed_environment:
+    config.tail_log_paths = [
+        '/app/logs/web-server-out.log',
+        '/app/logs/web-server-err.log',
+        '/app/logs/worker-out.log',
+        '/app/logs/worker-err.log'
+    ]
 
 if not config.web_media_url or 'SNOWSTREAM_WEB_MEDIA_URL' in config.web_media_url:
     print("SNOWSTREAM_WEB_MEDIA_URL environment variable must be set.")

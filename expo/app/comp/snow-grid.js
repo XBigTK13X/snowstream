@@ -49,7 +49,7 @@ export function SnowGrid(props) {
             </View>
         )
     }
-    let renderItem = (item) => {
+    let renderItem = (item, itemIndex) => {
         return item
     }
     if (props.renderItem) {

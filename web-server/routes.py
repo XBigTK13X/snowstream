@@ -1,3 +1,4 @@
+from log import log
 from fastapi.responses import PlainTextResponse
 from fastapi import Response, Request
 from typing import Annotated
@@ -73,7 +74,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         jobRequest: am.JobRequest,
     ):
-        job = db.op.create_job(kind=jobRequest.name)
+        job = db.op.create_job(kind=jobRequest.name,input=jobRequest.input)
         message.write.send(job_id=job.id, kind=jobRequest.name, input=jobRequest.input)
         return job
 
@@ -84,11 +85,26 @@ def auth_required(router):
     ):
         return db.op.get_job_by_id(job_id=job_id)
 
-    @router.get("/job/list",tags=['Job'])
+    @router.get("/job/list", tags=['Job'])
     def get_job_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         return db.op.get_job_list()
+
+    @router.get('/log/list', tags=['Job'])
+    def get_log_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        return config.tail_log_paths
+
+    @router.get('/log', tags=['Job'])
+    def get_log(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        log_index: int
+    ):
+        log_path = config.tail_log_paths[log_index]
+        with open(log_path,'r') as read_handle:
+            return read_handle.read()
 
     @router.get("/shelf/list",tags=['Shelf'])
     def get_shelf_list(
@@ -539,32 +555,51 @@ def no_auth_required(router):
         transcode.close(transcode_session_id=transcode_session_id)
         return True
 
-    # https://github.com/Sonarr/Sonarr/blob/14e324ee30694ae017a39fd6f66392dc2d104617/src/NzbDrone.Core/Notifications/Webhook/WebhookBase.cs#L32
-    @router.post("/hook/sonarr", tags=['Unauthed'])
-    async def hook_sonarr(request:Request):
+    async def webhook(kind:str, request:Request):
         headers = dict(request.headers)
         if not 'apikey' in headers or headers['apikey'] != 'scanner':
             return False
         body = await request.json()
-        import pprint
-        print("Header")
-        pprint.pprint(headers)
-        print("Body")
-        pprint.pprint(body)
+        if 'destinationPath' in body:
+            # TODO get show by dest path. This handler doesn't actually work yet
+            # Example
+            # body['destinationPath'] = /shows/anime/s/<show>/Season 2
+            # body['episodes'][0]['episodeNumber'] = XX
+            # body['episodes'][0]['seasonNumber'] = YY
+            # body['series']['tvdbId] = ZZZZZ
+            # body['series']['path'] = /shows/anime/s/<show>
+
+            if kind == 'show':
+                job = {
+                    'name': 'scan_shelves_content'
+                }
+                show = None # db.op.get_show_by_directory
+                input={
+                    'targetId': None
+                }
+                job = db.op.create_job(kind='scan_shelves_content',)
+                message.write.send(job_id=job.id, kind='scan_shelves_content', input=input)
+            elif kind == 'movie':
+                pass
+            else:
+                log.info(f"Unhandled webhook kind [{kind}]")
+        else:
+            log.info("Unable to process sonarr hook")
+            import pprint
+            print("Header")
+            pprint.pprint(headers)
+            print("Body")
+            pprint.pprint(body)
         return True
+
+    # https://github.com/Sonarr/Sonarr/blob/14e324ee30694ae017a39fd6f66392dc2d104617/src/NzbDrone.Core/Notifications/Webhook/WebhookBase.cs#L32
+    @router.post("/hook/sonarr", tags=['Unauthed'])
+    async def hook_sonarr(request:Request):
+        return await webhook(kind='show', request=request)
 
     # https://github.com/Radarr/Radarr/blob/159f5df8cca6704fe88da42d2b20d1f39f0b9d59/src/NzbDrone.Core/Notifications/Webhook/WebhookBase.cs#L32
     @router.post("/hook/radarr", tags=['Unauthed'])
     async def hook_radarr(request:Request):
-        headers = dict(request.headers)
-        if not 'apikey' in headers or headers['apikey'] != 'scanner':
-            return False
-        body = await request.json()
-        import pprint
-        print("Header")
-        pprint.pprint(headers)
-        print("Body")
-        pprint.pprint(body)
-        return True
+        return await webhook(kind='movie', request=request)
 
     return router

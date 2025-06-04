@@ -188,6 +188,22 @@ export class ApiClient {
         return this.createScopedJob('identify_unknown_media', details)
     }
 
+    getJobList() {
+        return this.get('/job/list')
+    }
+
+    getJob(jobId) {
+        return this.get(`/job?job_id=${jobId}`)
+    }
+
+    getLogPaths() {
+        return this.get('/log/list')
+    }
+
+    getLog(logIndex) {
+        return this.get(`/log?log_index=${logIndex}`)
+    }
+
     createStreamSource(payload) {
         return this.post('/stream/source', {
             url: payload.url,

@@ -1,9 +1,31 @@
 import C from '../../../../common'
 
-export default function ShelfEditPage() {
+export default function JobListPage() {
+    const { apiClient } = C.useSession()
+    const { routes, config } = C.useSettings()
+    const [jobs, setJobs] = C.React.useState(null)
+    C.React.useEffect(() => {
+        if (!jobs) {
+            apiClient.getJobList().then((response) => {
+                setJobs(response)
+            })
+        }
+    })
+
+    if (!!jobs) {
+        return <C.SnowGrid itemsPerRow={2} items={jobs} renderItem={(job) => {
+            const title = `${job.id}) ${job.kind} - ${job.status} - ${job.message.substring(0, 25)}`
+            return (
+                <C.SnowTextButton
+                    title={title}
+                    onPress={routes.func(routes.admin.jobDetails, { jobId: job.id })}
+                />
+            )
+        }}></C.SnowGrid>
+    }
     return (
         <C.View >
-            <C.SnowText>TODO Show some jobs here</C.SnowText>
+            <C.SnowText>Loading jobs</C.SnowText>
         </C.View >
     )
 }

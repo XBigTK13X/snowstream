@@ -42,6 +42,8 @@ def upgrade() -> None:
         sa.Column("kind", sa.Text, nullable=False),
         sa.Column("message", sa.Text),
         sa.Column("status", sa.Text),
+        sa.Column("logs_json", sa.Text),
+        sa.Column("input_json", sa.Text)
     )
 
     op.create_table(

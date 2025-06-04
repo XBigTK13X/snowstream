@@ -1,4 +1,3 @@
-from log import log
 from db import db
 
 import message.handler.scan_shelf.movies_scan as sm
@@ -8,8 +7,8 @@ from message.handler.job_media_scope import JobMediaScope
 
 shelf_handlers = {"Movies": sm.MoviesScanHandler, "Shows": ss.ShowsScanHandler}
 
-def handle(job_id, scope:JobMediaScope):
-    log.info(f"[WORKER] Handling a scan_shelves_content job")
+def handle(job_id:int, scope:JobMediaScope):
+    db.op.update_job(job_id=job_id,message=f"[WORKER] Handling a scan_shelves_content job")
 
     shelves = []
     target_directory = None
@@ -39,7 +38,7 @@ def handle(job_id, scope:JobMediaScope):
     results = {}
     handlers = []
     for shelf in shelves:
-        log.info(f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
+        db.op.update_job(job_id=job_id,message=f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
         handler = shelf_handlers[shelf.kind](job_id=job_id, shelf=shelf, target_directory=target_directory)
 
         if not handler.get_files_in_directory():
@@ -57,16 +56,14 @@ def handle(job_id, scope:JobMediaScope):
         handlers.append(handler)
         results[shelf.name] = True
 
-    log.info("Checking if all scan_shelves_content job tasks were successful")
+    db.op.update_job(job_id=job_id,message="Checking if all scan_shelves_content job tasks were successful")
     for key, val in results.items():
         if not val:
             return False
 
-    log.info("Finished walking the files on disk for shelves. Add found files to database.")
+    db.op.update_job(job_id=job_id,message="Finished walking the files on disk for shelves. Add found files to database.")
     for handler in handlers:
-        log.info(
-            f"Organizing [{handler.shelf.name} -> {handler.shelf.kind}] files into the library"
-        )
+        db.op.update_job(job_id=job_id,message=f"Organizing [{handler.shelf.name} -> {handler.shelf.kind}] files into the library")
         handler.organize_metadata()
         handler.organize_images()
         handler.organize_videos()

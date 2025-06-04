@@ -37,14 +37,14 @@ def start():
         global max_failures
         global delay_seconds
         log.info('')
-        log.info(f"Message received {body}. {message.read.count()} messages remain in queue.")
         payload = json.loads(body)
         job_id = payload["job_id"]
+        db.op.update_job(job_id=job_id,message=f"Message received {body}. {message.read.count()} messages remain in queue.")
         if "kind" in payload:
             db.op.update_job(
                 job_id=job_id,
-                status="running",
                 message="A worker is processing the job.",
+                status="running"
             )
             try:
                 kind = payload["kind"]
@@ -59,20 +59,20 @@ def start():
                 else:
                     db.op.update_job(
                         job_id=job_id,
-                        status="ignored",
                         message=f"No registered handler for kind [{payload['kind']}]",
+                        status="ignored"
                     )
             except Exception as e:
                 db.op.update_job(
                     job_id=job_id,
-                    status="failed",
                     message=f"{e}\n {traceback.format_exc()}",
+                    status="failed",
                 )
         else:
             db.op.update_job(
                 job_id=job_id,
-                status="ignored",
                 message=f"No handler provided for {payload['handler']}",
+                status="ignored",
             )
         channel.basic_ack(delivery_tag=method.delivery_tag)
         max_failures = 4

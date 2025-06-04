@@ -6,8 +6,10 @@ let routes = {
     root: '/',
     admin: {
         dashboard: '/page/auth/admin/dashboard',
+        jobDetails: '/page/auth/admin/job/job-details',
         jobList: '/page/auth/admin/job/job-list',
         jobRunner: '/page/auth/admin/job/job-runner',
+        logViewer: '/page/auth/admin/job/log-viewer',
         shelfEdit: '/page/auth/admin/shelf/shelf-edit',
         shelfList: '/page/auth/admin/shelf/shelf-list',
         streamSourceEdit: '/page/auth/admin/stream-source/stream-source-edit',
