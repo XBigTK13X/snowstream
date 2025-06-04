@@ -13,6 +13,7 @@ class AssetScope(Flag):
     SHOW = auto()
     HAS_SEASON = EPISODE | SEASON
 
+# These can be debugged with print(PATTERN_NAME.pattern) to get a pastable regex
 
 SHOW_REGEX = re.compile(
     r"(?P<directory>.*)\/"

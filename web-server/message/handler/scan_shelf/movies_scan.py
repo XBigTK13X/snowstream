@@ -6,30 +6,33 @@ from db import db
 from message.handler.scan_shelf.shelf_scanner import ShelfScanner
 import nfo
 
+# These can be debugged with print(PATTERN_NAME.pattern) to get a pastable regex
+
 MOVIE_ASSETS_REGEX = re.compile(
     r"(?P<directory>.*?)"
     r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
     r"(?P<asset_name>.*)",
-    re.IGNORECASE,
+    re.IGNORECASE
 )
 MOVIE_EXTRAS_ASSETS_REGEX = re.compile(
     r"(?P<directory>.*?)"
     r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
     r"(?P<subdirectory>Extras)\/(?P<asset_name>.*)",
-    re.IGNORECASE,
+    re.IGNORECASE
 )
 
 MOVIE_VIDEO_FILE_REGEX = re.compile(
     r"(?P<directory>.*?)"
     r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
-    r"(?P<movie_file_name>.*?)\s\((?P<movie_file_year>\d{4,5})\)\s(?P<quality>.*)?\..*",
-    re.IGNORECASE,
+    r"(?P<movie_file_name>.*?)\s\((?P<movie_file_year>\d{4,5})\)"
+    r"(\s-\s(?P<version>\[.*\]))?(\s(?P<quality>[^\.]*))?.(?P<format>[a-zA-Z0-9]*)",
+    re.IGNORECASE
 )
 MOVIE_EXTRAS_VIDEO_FILE_REGEX = re.compile(
     r"(?P<directory>.*?)"
     r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
     r"(?P<subdirectory>Extras)\/(?P<extra_name>.*)\..*",
-    re.IGNORECASE,
+    re.IGNORECASE
 )
 
 
