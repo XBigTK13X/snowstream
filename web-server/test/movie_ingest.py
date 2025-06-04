@@ -11,3 +11,9 @@ def test_movie_metadata():
     info = movies.parse_movie_info(file_path)
     assert info != None
     assert info['movie_name'] == 'Abominable'
+
+def test_movie_multiformat():
+    file_path = 'Love Comes Softly (2003) - [Dvd-Fullscreen] Remux-480p.mkv'
+    info = movies.parse_movie_info(file_path)
+    assert info != None
+    assert info['movie_name'] == 'Love Comes Softly'
