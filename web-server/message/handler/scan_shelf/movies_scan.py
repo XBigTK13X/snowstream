@@ -7,15 +7,16 @@ from message.handler.scan_shelf.shelf_scanner import ShelfScanner
 import nfo
 
 MOVIE_ASSETS_REGEX = re.compile(
-    r"(?P<directory>.*?)"
-    r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
-    r"(?P<asset_name>.*)",
+    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)"
+    r"\s\((?P<movie_folder_year>\d{4,5})\)\/"
+    r"(?P<asset_name>[^\.].*)",
     re.IGNORECASE
 )
 MOVIE_EXTRAS_ASSETS_REGEX = re.compile(
-    r"(?P<directory>.*?)"
-    r"(?P<movie_folder_name>[^\/]*?)\s\((?P<movie_folder_year>\d{4,5})\)\/"
-    r"(?P<subdirectory>Extras)\/(?P<asset_name>.*)",
+    r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)"
+    r"\s\((?P<movie_folder_year>\d{4,5})\)\/"
+    r"(?P<subdirectory>Extras)\/"
+    r"(?P<asset_name>[^\.].*)",
     re.IGNORECASE
 )
 
@@ -61,8 +62,8 @@ def parse_movie_video_file_info(matches):
     result["directory"] = Path(
         os.path.join(matches.group("directory"), matches.group("movie_folder_name") + f" ({matches.group('movie_folder_year')})/")
     ).as_posix()
-    result["movie_name"] = matches.group("movie_file_name")
-    result["movie_year"] = matches.group("movie_file_year")
+    result["movie_name"] = matches.group("movie_folder_name")
+    result["movie_year"] = matches.group("movie_folder_year")
     result["movie_quality"] = matches.group("quality")
     return result
 

@@ -27,9 +27,6 @@ def test_movie_metadata():
 def test_movie_multiformat():
     file_path = '/mnt/m-media/movie/love/Love Comes Softly (2003)/Love Comes Softly (2003) - [Dvd-Fullscreen] Remux-480p.mkv'
     info = movies.parse_movie_info(file_path)
-    import pprint
-    print("info")
-    pprint.pprint(info)
     assert info != None
     assert info['movie_name'] == 'Love Comes Softly'
 
@@ -56,5 +53,11 @@ def test_video_and_image_have_the_same_movie():
     video_file_path = '/mnt/m-media/movie/dreamworks/How to Train Your Dragon - Homecoming (2019)/How to Train Your Dragon Homecoming (2019) WEBDL-1080p.mkv'
     image_file_path = '/mnt/m-media/movie/dreamworks/How to Train Your Dragon - Homecoming (2019)/folder.jpg'
     video_info = movies.parse_movie_info(video_file_path)
+    video_identity = movies.identify_movie_file_kind(extension_kind='video',info=video_info,file_path=video_file_path)
     image_info = movies.parse_movie_info(image_file_path)
+    image_identity = movies.identify_movie_file_kind(extension_kind='image',info=image_info,file_path=image_file_path)
+    assert video_info != None
+    assert video_identity != None
+    assert image_info != None
+    assert image_identity != None
     assert video_info['movie_name'] == image_info['movie_name']
