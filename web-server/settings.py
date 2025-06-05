@@ -38,6 +38,7 @@ class Config:
         self.supervisor_password = "snowstream"
         self.supervisor_url = "http://localhost:9065"
         self.supervisor_username = "snowstream"
+        self.themoviedb_api_key = None
         self.thetvdb_api_key = None
         self.thumbnail_dimensions = "340x500"
         self.thumbnail_dir = ".snowstream/thumbnail"
