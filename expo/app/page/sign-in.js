@@ -52,7 +52,7 @@ export default function SignInPage() {
             <C.View>
                 <C.SnowText>Enter the password for {user.username}</C.SnowText>
                 <C.SnowLabel>Password</C.SnowLabel>
-                <C.SnowInput onSubmit={login} shouldFocus onChangeText={setPassword} value={password} />
+                <C.SnowInput secureTextEntry onSubmit={login} shouldFocus onChangeText={setPassword} value={password} />
                 <C.SnowGrid itemsPerRow={2} >
                     <C.SnowTextButton title="Login" onPress={login} />
                     <C.SnowTextButton title="Cancel" onPress={cancel} />
