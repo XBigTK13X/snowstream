@@ -4,7 +4,7 @@ import os
 
 class Movie(MediaUpdater):
     def __init__(self,scope):
-        super().__init__("Movie")
+        super().__init__("Movie",scope)
         self.log.info(f"Updating media for movie {scope.target_id}")
         self.movie_id = scope.target_id
         self.metadata_id = scope.metadata_id
@@ -24,31 +24,22 @@ class Movie(MediaUpdater):
         return self.local_nfo_dict
 
     def read_remote_info(self):
-        self.tvdb_info = self.media_provider.get_movie_info(metadata_id=self.metadata_id)
-        return self.tvdb_info
+        self.metadata = self.media_provider.get_movie_info(metadata_id=self.metadata_id)
+        self.metadata = self.media_provider.to_snowstream(metadata=self.metadata)
+        return self.metadata
 
     def merge_remote_into_local(self):
         tags = None
         if self.local_nfo_dict and 'tag' in self.local_nfo_dict:
             tags = [xx for xx in self.local_nfo_dict['tag'] if ':' in xx]
-        tagline = None
-        plot = None
-        release_date = None
-        if 'tvdb_translation' in self.tvdb_info:
-            if 'tagline' in self.tvdb_info['tvdb_translation']:
-                tagline = self.tvdb_info['tvdb_translation']['tagline']
-            if 'overview' in self.tvdb_info['tvdb_translation']:
-                plot = self.tvdb_info['tvdb_translation']['overview']
-        if 'tvdb_extended' in self.tvdb_info:
-            if 'first_release' in self.tvdb_info['tvdb_extended']:
-                release_date = self.tvdb_info['tvdb_extended']['first_release']['date']
         self.new_nfo_xml = self.nfo.movie_to_xml(
-            title=self.tvdb_info['name'],
-            tagline=tagline,
-            plot=plot,
-            release_date=release_date,
-            year=self.tvdb_info['year'],
-            tvdbid=self.tvdb_info['id'],
+            title=self.metadata['name'],
+            tagline=self.metadata['tagline'],
+            plot=self.metadata['plot'],
+            release_date=self.metadata['release_date'],
+            year=self.metadata['year'],
+            tvdbid=self.metadata['tvdbid'],
+            tmdbid=self.metadata['tmdbid']
             tags=tags
         )
 

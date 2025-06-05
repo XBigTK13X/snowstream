@@ -29,3 +29,16 @@ class MediaProvider:
 
     def identify(self, kind:str, query:str, year:int=None):
         pass
+
+    def to_snowstream_movie(self, metadata:dict):
+        return metadata
+
+    def to_snowstream_episodes(self, metadata:list[dict]):
+        return metadata
+
+    def to_snowstream_season(self, metadata:dict):
+        return metadata
+
+    def to_snowstream_show(self, metadata:dict):
+        return metadata
+

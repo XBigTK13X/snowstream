@@ -4,7 +4,7 @@ import os
 
 class ShowSeason(MediaUpdater):
     def __init__(self, scope):
-        super().__init__("ShowSeason")
+        super().__init__("ShowSeason",scope)
         self.log.info(f"Updating media for season {scope.target_id}")
         self.show_season_id = scope.target_id
         self.metadata_id = scope.metadata_id
@@ -29,22 +29,21 @@ class ShowSeason(MediaUpdater):
         return self.local_nfo_dict
 
     def read_remote_info(self):
-        self.tvdb_info = self.media_provider.get_season_info(show_metadata_id=self.metadata_id, season_order=self.season_order)
-        return self.tvdb_info
+        self.metadata = self.media_provider.get_season_info(show_metadata_id=self.metadata_id, season_order=self.season_order)
+        self.metadata = self.metadata.to_snowstream_season(self.metadata)
+        return self.metadata
 
     def merge_remote_into_local(self):
         tags = None
         if self.local_nfo_dict and 'tag' in self.local_nfo_dict:
             tags = [xx for xx in self.local_nfo_dict['tag'] if ':' in xx]
-        release_date = None
-        if 'episodes' in self.tvdb_info and len(self.tvdb_info['episodes']) > 0:
-            release_date = self.tvdb_info['episodes'][0]['aired']
         self.new_nfo_xml = self.nfo.show_season_to_xml(
             title = self.show_season.name,
-            year = self.tvdb_info['details']['year'],
-            release_date=release_date,
+            year = self.metadata['year'],
+            release_date=self.metadata['release_date'],
             season_order=self.season_order,
-            tvdbid=self.tvdb_info['id'],
+            tvdbid=self.metadata['tvdbid'],
+            tmdbid=self.metadata['tmdbid'],
             tags=tags
         )
 

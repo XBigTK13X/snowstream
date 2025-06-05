@@ -26,13 +26,20 @@ def save_xml_as_nfo(nfo_path: str, nfo_xml: str):
 def video_path_to_nfo_path(video_path:str):
     return os.path.splitext(video_path)[0]+".nfo"
 
+def season_directory_to_nfo_path(season_directory:str):
+    return os.path.join(season_directory,'season.nfo')
+
+def show_directory_to_nfo_path(show_directory):
+    return os.path.join(show_directory,'tvshow.nfo')
+
 def movie_to_xml(
     title:str,
-    tagline:str,
     plot:str,
     release_date:str,
     year:int,
-    tvdbid:int,
+    tagline:str=None,
+    tvdbid:int=None,
+    tmdbid:int=None,
     tags:list[str]=None
 ):
     nfo_dict = {
@@ -40,13 +47,18 @@ def movie_to_xml(
             'title': title,
             'plot': plot,
             'releasedate': release_date,
-            'year': year,
-            'tvdbid': tvdbid
+            'year': year
         }
     }
 
     if tagline:
         nfo_dict['movie']['tagline'] = tagline
+
+    if tvdbid:
+        nfo_dict['movie']['tvdbid'] = tvdbid
+
+    if tmdbid:
+        nfo_dict['movie']['tmdbid'] = tmdbid
 
     if tags:
         nfo_dict['movie']['tag'] = tags
@@ -58,10 +70,11 @@ def show_episode_to_xml(
     episode:int,
     title:str,
     plot:str,
-    tvdbid:int,
     aired:str,
     year:int,
     end_episode:int=None,
+    tvdbid:int=None,
+    tmdbid:int=None,
     tags:list[str]=None,
 ):
     nfo_dict = {
@@ -70,7 +83,6 @@ def show_episode_to_xml(
             'episode': episode,
             'title': title,
             'plot': plot,
-            'tvdbid': tvdbid,
             'aired': aired,
             'year': year
         }
@@ -79,20 +91,24 @@ def show_episode_to_xml(
     if end_episode:
         nfo_dict['episodedetails']['episodenumberend'] = end_episode
 
+    if tvdbid:
+        nfo_dict['episodedetails']['tvdbid'] = tvdbid
+
+    if tmdbid:
+        nfo_dict['episodedetails']['tmdbid'] = tmdbid
+
     if tags:
         nfo_dict['episodedetails']['tag'] = tags
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)
-
-def season_directory_to_nfo_path(season_directory:str):
-    return os.path.join(season_directory,'season.nfo')
 
 def show_season_to_xml(
     title: str,
     year: int,
     release_date: str,
     season_order: int,
-    tvdbid: int,
+    tvdbid: int=None,
+    tmdbid: int=None,
     tags: list[str]=None
 ):
     nfo_dict = {
@@ -100,25 +116,28 @@ def show_season_to_xml(
             'title': title,
             'year': year,
             'releasedate': release_date,
-            'seasonnumber': season_order,
-            'tvdbid': tvdbid
+            'seasonnumber': season_order
         }
     }
+
+    if tvdbid:
+        nfo_dict['season']['tvdbid'] = tvdbid
+
+    if tmdbid:
+        nfo_dict['season']['tmdbid'] = tmdbid
 
     if tags:
         nfo_dict['season']['tag'] = tags
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)
 
-def show_directory_to_nfo_path(show_directory):
-    return os.path.join(show_directory,'tvshow.nfo')
-
 def show_to_xml(
     title:str,
-    tvdbid:int,
     plot:str,
     year:int,
     release_date:str,
+    tvdbid:int=None,
+    tmdbid:int=None,
     tags:list[str]=None
 ):
     nfo_dict = {
@@ -126,10 +145,16 @@ def show_to_xml(
             'title': title,
             'year': year,
             'plot': plot,
-            'releasedate': release_date,
-            'tvdbid': tvdbid
+            'releasedate': release_date
         }
     }
+
+    if tvdbid:
+        nfo_dict['tvshow']['tvdbid'] = tvdbid
+
+    if tmdbid:
+        nfo_dict['tvshow']['tmdbid'] = tmdbid
+
 
     if tags:
         nfo_dict['tvshow']['tag'] = tags

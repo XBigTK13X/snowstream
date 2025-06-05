@@ -17,11 +17,11 @@ def create_movie(name: str, release_year: int, directory: str):
         db.refresh(dbm)
         return dbm
 
-def update_movie_remote_metadata_id(movie_id:int, remote_metadata_id:int):
+def update_movie_remote_metadata_id(movie_id:int, remote_metadata_id:int, remote_metadata_source:str='themoviedb'):
     with DbSession() as db:
         movie = db.query(dm.Movie).filter(dm.Movie.id == movie_id).first()
         movie.remote_metadata_id = remote_metadata_id
-        movie.remote_metadata_source = 'thetvdb'
+        movie.remote_metadata_source = remote_metadata_source
         db.commit()
         return movie
 

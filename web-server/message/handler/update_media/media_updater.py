@@ -1,7 +1,8 @@
 from db import db
 from log import log
 import nfo
-import message.handler.update_media.provider.thetvdb_provider as thetvdb
+from message.handler.update_media.provider.thetvdb_provider import ThetvdbProvider
+from message.handler.update_media.provider.themoviedb_provider import ThemoviedbProvider
 import requests
 import magick
 from settings import config
@@ -12,9 +13,9 @@ class FileStub:
         self.id = None
 
 class MediaUpdater:
-    def __init__(self, kind):
+    def __init__(self, kind, scope):
         self.kind = kind
-        self.media_provider = thetvdb.ThetvdbProvider()
+        self.media_provider = scope.get_media_provider()
         self.db = db
         self.nfo = nfo
         self.ticket = db.model.Ticket()

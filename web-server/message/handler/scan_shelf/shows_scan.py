@@ -237,14 +237,23 @@ class ShowsScanHandler(ShelfScanner):
                     )
                     show_nfo = nfo.nfo_path_to_dict(info['file_path'])
                     if 'year' in show_nfo:
-                        show = db.op.update_show_release_year(
+                        db.op.update_show_release_year(
                             show_id=show_id,
                             release_year=int(show_nfo['year'])
                         )
+                    remote_id = None
+                    remote_source = None
+                    if 'tmdbid' in show_nfo:
+                        remote_id = int(show_nfo['tmdbid'])
+                        remote_source = 'themoviedb'
                     if 'tvdbid' in show_nfo:
-                        show = db.op.update_show_remote_metadata_id(
+                        remote_id = int(show_nfo['tvdbid'])
+                        remote_source = 'thetvdb'
+                    if remote_id != None:
+                        db.op.update_show_remote_metadata_id(
                             show_id=show_id,
-                            remote_metadata_id=int(show_nfo['tvdbid'])
+                            remote_metadata_id=remote_id,
+                            remote_metadata_source=remote_source
                         )
             elif info["asset_scope"] == AssetScope.SEASON:
                 if not db.op.get_show_season_metadata_file(

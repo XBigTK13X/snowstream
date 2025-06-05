@@ -4,7 +4,7 @@ import os
 
 class Show(MediaUpdater):
     def __init__(self,scope):
-        super().__init__("Show")
+        super().__init__("Show",scope)
         self.log.info(f"Updating media for show {scope.target_id}")
         self.show_id = scope.target_id
         self.metadata_id = scope.metadata_id
@@ -25,19 +25,21 @@ class Show(MediaUpdater):
         return self.local_nfo_dict
 
     def read_remote_info(self):
-        self.tvdb_info = self.media_provider.get_show_info(metadata_id=self.metadata_id)
-        return self.tvdb_info
+        self.metadata = self.media_provider.get_show_info(metadata_id=self.metadata_id)
+        self.metadata = self.media_provider.to_snowstream_show(metadata=self.metadata)
+        return self.metadata
 
     def merge_remote_into_local(self):
         tags = None
         if self.local_nfo_dict and 'tag' in self.local_nfo_dict:
             tags = [xx for xx in self.local_nfo_dict['tag'] if ':' in xx]
         self.new_nfo_xml = self.nfo.show_to_xml(
-            title = self.tvdb_info['tvdb_translation']['name'],
-            year = self.tvdb_info['year'],
-            release_date=self.tvdb_info['firstAired'],
-            plot=self.tvdb_info['tvdb_translation']['overview'],
-            tvdbid=self.tvdb_info['id'],
+            title=self.metadata['name'],
+            year=self.metadata['year'],
+            release_date=self.metadata['release_date'],
+            plot=self.metadata['overview'],
+            tvdbid=self.metadata['tvdbid'],
+            tmdbid=self.metadata['tmdbid'],
             tags=tags
         )
 

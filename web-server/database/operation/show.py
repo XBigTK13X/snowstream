@@ -24,11 +24,11 @@ def update_show_release_year(show_id:int, release_year:int):
         db.commit()
         return show
 
-def update_show_remote_metadata_id(show_id:int, remote_metadata_id:int):
+def update_show_remote_metadata_id(show_id:int, remote_metadata_id:int, remote_metadata_source:str='thetvdb'):
     with DbSession() as db:
         show = db.query(dm.Show).filter(dm.Show.id == show_id).first()
         show.remote_metadata_id = remote_metadata_id
-        show.remote_metadata_source = 'thetvdb'
+        show.remote_metadata_source = remote_metadata_source
         db.commit()
         return show
 
