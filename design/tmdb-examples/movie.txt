@@ -1,0 +1,43 @@
+Movies(results=[PartialMovie(id=431580,
+                             poster_path='/llhj3xtNes2Ri4d9HqtleKo1CfL.jpg',
+                             adult=False,
+                             overview='A group of misfits encounter a young '
+                                      'Yeti named Everest, and they set off to '
+                                      'reunite the magical creature with his '
+                                      'family on the mountain of his namesake.',
+                             release_date=datetime.date(2019, 9, 27),
+                             genre_ids=[10751, 16, 12, 35],
+                             original_title='Abominable',
+                             original_language='en',
+                             title='Abominable',
+                             backdrop_path='/tLCDKsXo6D84IVFanoElosSEKdp.jpg',
+                             popularity=6.0,
+                             vote_count=2089,
+                             video=False,
+                             vote_average=7.461,
+                             media_type=<MediaType.movie: 'movie'>),
+                PartialMovie(id=446894,
+                             poster_path='/zfaiO7QgpcvR8XDOMokWLRfKeTE.jpg',
+                             adult=False,
+                             overview='A bright young yeti finds something he '
+                                      "thought didn't exist—a human. News of "
+                                      'this “smallfoot” throws the simple yeti '
+                                      'community into an uproar over what else '
+                                      'might be out there in the big world '
+                                      'beyond their snowy village.',
+                             release_date=datetime.date(2018, 9, 28),
+                             genre_ids=[10751, 16, 12, 14, 35],
+                             original_title='Smallfoot',
+                             original_language='en',
+                             title='Smallfoot',
+                             backdrop_path='/zIVHIKljz7pFB8Es9U2n8xaUvDm.jpg',
+                             popularity=4.2214,
+                             vote_count=1548,
+                             video=False,
+                             vote_average=6.8,
+                             media_type=<MediaType.movie: 'movie'>)],
+       id=None,
+       page=1,
+       dates=None,
+       total_pages=1,
+       total_results=2)

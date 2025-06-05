@@ -1,5 +1,5 @@
 import message.handler.update_media.provider.media_provider as base
-import tvdb_v4_official
+from themoviedb import TMDb
 from settings import config
 from db import db
 import json
@@ -10,7 +10,7 @@ from log import log
 class ThetvdbProvider(base.MediaProvider):
     def __init__(self):
         super().__init__("thetvdb")
-        self.tvdb_client = tvdb_v4_official.TVDB(config.thetvdb_api_key)
+        self.tvdb_client = TMDb(key=config.themoviedb_api_key, language="EN", region="US")
         self.artwork_kinds = {}
         for artwork_type in ARTWORK_TYPES_RAW:
             slug = f"{artwork_type['recordType']}-{artwork_type['name']}".lower()
