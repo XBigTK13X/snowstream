@@ -166,7 +166,7 @@ class ThetvdbProvider(base.MediaProvider):
     def identify(self, kind:str, query:str, year:int=None):
         cache_key = f'tvdb-identify-{kind}-{query}'
         if year:
-            cache_key = f'tvdb-identify-{kind}-{kind}-{query}'
+            cache_key = f'tvdb-identify-{kind}-{year}-{query}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             log.info(f"{kind} result for {query} is fresh, return cached result [{cache_key}]")

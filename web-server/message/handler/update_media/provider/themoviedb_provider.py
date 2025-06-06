@@ -1,5 +1,6 @@
 import message.handler.update_media.provider.media_provider as base
 from themoviedb import TMDb
+from themoviedb import utils as tmdb_utils
 from settings import config
 from db import db
 import json
@@ -7,61 +8,64 @@ from log import log
 
 # https://developer.themoviedb.org/docs/getting-started
 # https://github.com/leandcesar/themoviedb
-class ThetvdbProvider(base.MediaProvider):
+# https://github.com/leandcesar/themoviedb/tree/master/themoviedb/routes_sync
+# https://github.com/leandcesar/themoviedb/tree/master/themoviedb/schemas
+class ThemoviedbProvider(base.MediaProvider):
     def __init__(self):
-        super().__init__("thetvdb")
-        self.tvdb_client = TMDb(key=config.themoviedb_api_key, language="EN", region="US")
-        self.artwork_kinds = {}
-        for artwork_type in ARTWORK_TYPES_RAW:
-            slug = f"{artwork_type['recordType']}-{artwork_type['name']}".lower()
-            self.artwork_kinds[artwork_type['id']] = slug
-            self.artwork_kinds[str(artwork_type['id'])] = slug
+        super().__init__("themoviedb")
+        self.tmdb_client = TMDb(key=config.themoviedb_api_key, language="EN", region="US")
 
     def get_movie_info(self, metadata_id:int):
-        cache_key = f'tvdb-movie-{metadata_id}'
+        cache_key = f'tmdb-movie-{metadata_id}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             log.info(f"Movie result for {metadata_id} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
-        log.info(f"Movie result for {metadata_id} is stale, read from tvdb")
-        movie = self.tvdb_client.get_movie(id=metadata_id)
-        movie['tvdb_translation'] = self.tvdb_client.get_movie_translation(id=metadata_id,lang='eng')
-        movie['tvdb_extended'] = self.tvdb_client.get_movie_extended(id=metadata_id)
+        log.info(f"Movie result for {metadata_id} is stale, read from tmdb")
+        details = self.tmdb_client.movie(movie_id=metadata_id).details()
+        movie = tmdb_utils.as_dict(details)
+        movie['poster_url'] = details.poster_url()
+
         db.op.upsert_cached_text(key=cache_key,data=json.dumps(movie))
         return movie
 
     def get_movie_images(self, metadata_id:int):
         movie_info = self.get_movie_info(metadata_id=metadata_id)
-        if not 'tvdb_extended' in movie_info and not 'artworks' in movie_info['tvdb_extended']:
+        if not movie_info['poster_url']:
             return None
-        return self.filter_images(movie_info['tvdb_extended']['artworks'])
+        return {
+            'poster': movie_info['poster_url']
+        }
 
     def get_show_info(self, metadata_id:int):
-        cache_key = f'tvdb-show-{metadata_id}'
+        cache_key = f'tmdb-show-{metadata_id}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             log.info(f"Show result for {metadata_id} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
-        log.info(f"Show result for {metadata_id} is stale, read from tvdb")
-        show = self.tvdb_client.get_series(id=metadata_id)
-        show['tvdb_extended'] = self.tvdb_client.get_series_extended(id=metadata_id)
-        show['tvdb_translation'] = self.tvdb_client.get_series_translation(id=metadata_id,lang='eng')
+
+        log.info(f"Show result for {metadata_id} is stale, read from tmdb")
+        details = self.tmdb_client.tv(tv_id=metadata_id).details()
+        show = tmdb_utils.as_dict(details)
+        show['poster_url'] = details.poster_url()
         db.op.upsert_cached_text(key=cache_key,data=json.dumps(show))
         return show
 
     def get_show_images(self, metadata_id:int):
         show_info = self.get_show_info(metadata_id=metadata_id)
-        if not 'tvdb_extended' in show_info and not 'artworks' in show_info['tvdb_extended']:
+        if not show_info['poster_url']:
             return None
-        return self.filter_images(show_info['tvdb_extended']['artworks'])
+        return {
+            'poster': show_info['poster_url']
+        }
 
     def get_season_info(self, show_metadata_id:int, season_order:int):
-        cache_key = f'tvdb-show-{show_metadata_id}-season-{season_order}'
+        cache_key = f'tmdb-show-{show_metadata_id}-season-{season_order}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             log.info(f"Season result for {show_metadata_id} {season_order} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
-        log.info(f"Season result for {show_metadata_id} {season_order} is stale, read from tvdb [{cache_key}]")
+        log.info(f"Season result for {show_metadata_id} {season_order} is stale, read from tmdb [{cache_key}]")
         show = self.get_show_info(metadata_id=show_metadata_id)
         season = [xx for xx in show['tvdb_extended']['seasons'] if int(xx['number']) == int(season_order)][0]
         season['details'] = self.tvdb_client.get_season(id=season['id'])
@@ -77,14 +81,14 @@ class ThetvdbProvider(base.MediaProvider):
         return self.filter_images(season_info['extended']['artwork'])
 
     def get_show_episodes(self, metadata_id: int):
-        cache_key = f'tvdb-show-{metadata_id}-episodes'
+        cache_key = f'tmdb-show-{metadata_id}-episodes'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             log.info(f"Show episodes result for {metadata_id} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)['episodes']
         currentPage = 0
         api_results = None
-        log.info(f"Show episodes result for {metadata_id} is stale, read from tvdb [{cache_key}]")
+        log.info(f"Show episodes result for {metadata_id} is stale, read from tmdb [{cache_key}]")
         while True:
             current_results = self.tvdb_client.get_series_episodes(
                 id=metadata_id,
@@ -126,76 +130,47 @@ class ThetvdbProvider(base.MediaProvider):
             'screencap': episode_info['image']
         }
 
-    def filter_images(self, images):
-        poster = None
-        poster_score = -1
-        banner = None
-        banner_score = -1
-        screencap = None
-        screencap_score = -1
-        for image in images:
-            if image['score'] < 100000:
-                image['score'] = 100000
-            kind = self.artwork_kinds[image['type']]
-            # A lot of tvdb scores start at 100000
-            # We tend to want to ignore foreign language images
-            if 'language' in image:
-                if image['language'] == 'eng':
-                    image['score'] += 1000
-                elif image['language'] == None:
-                    image['score'] += 100
-            if 'includesText' in image and image['includesText'] == True:
-                image['score'] += 2000
-
-            if 'poster' in kind and image['score'] > poster_score:
-                poster_score = image['score']
-                poster = image['image']
-            elif 'banner' in kind and image['score'] > banner_score:
-                banner_score = image['score']
-                banner = image['image']
-            elif 'screen' in kind and image['score'] > screencap_score:
-                screencap_score = image['score']
-                screencap = image['image']
-        return {
-            'poster': poster,
-            'banner': banner,
-            'screencap': screencap
-        }
-
     def identify(self, kind:str, query:str, year:int=None):
-        cache_key = f'tvdb-identify-{kind}-{query}'
+        cache_key = f'tmdb-identify-{kind}-{query}'
         if year:
-            cache_key = f'tvdb-identify-{kind}-{kind}-{query}'
+            cache_key = f'tmdb-identify-{kind}-{year}-{query}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             log.info(f"{kind} result for {query} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
-        tvdb_type = 'movie'
+
+        results = []
         if kind == 'Show':
-            tvdb_type = 'series'
-        api_results = None
-        if year:
-            api_results = self.tvdb_client.search(
+            api_result = self.tmdb_client.search().tv(
                 query=query,
-                type=tvdb_type,
+                first_air_date_year=year
+            )
+            for show in api_result.results:
+                results.append({
+                    'tvdbid': None,
+                    'remote_id': show.id,
+                    'remote_source': 'themoviedb',
+                    'name': show.name,
+                    'year': show.year,
+                    'poster_url': show.poster_url(),
+                    'overview': show.overview
+                })
+        else:
+            api_result = self.tmdb_client.search().movies(
+                query=query,
                 year=year
             )
-        else:
-            api_results = self.tvdb_client.search(
-                query=query,
-                type=tvdb_type
-            )
-        results = []
-        for result in api_results:
-            results.append({
-                'name': result['name'],
-                'remote_id': int(result['tvdb_id']),
-                'remote_id_source': 'thetvdb',
-                'tmdbid': None,
-                'year': int(result['year']),
-                'poster_url': result['thumbnail'],
-                'overview': result['overview'] if 'overview' in result else None
-            })
+            for movie in api_result.results:
+                results.append({
+                    'name': movie.title,
+                    'remote_id': movie.id,
+                    'remote_source': 'themoviedb',
+                    'tvdbid': None,
+                    'year': movie.year,
+                    'poster_url': movie.poster_url(),
+                    'overview': movie.overview
+                })
+
         db.op.upsert_cached_text(key=cache_key, data=json.dumps(results))
         return results
 
