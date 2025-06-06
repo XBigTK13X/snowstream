@@ -37,6 +37,10 @@ class ShowSeason(MediaUpdater):
         tags = None
         if self.local_nfo_dict and 'tag' in self.local_nfo_dict:
             tags = [xx for xx in self.local_nfo_dict['tag'] if ':' in xx]
+        if 'tmdbid' in self.local_nfo_dict and not self.metadata['tmdbid']:
+            self.metadata['tmdbid'] = self.local_nfo_dict['tmdbid']
+        if 'tvdbid' in self.local_nfo_dict and not self.metadata['tvdbid']:
+            self.metadata['tvdbid'] = self.local_nfo_dict['tvdbid']
         self.new_nfo_xml = self.nfo.show_season_to_xml(
             title = self.show_season.name,
             year = self.metadata['year'],
@@ -66,7 +70,10 @@ class ShowSeason(MediaUpdater):
     # Legacy images are
     # poster.jpg
     def download_images(self):
-        images = self.media_provider.get_season_images(metadata_id=self.metadata_id,season_order=self.season_order)
+        images = self.media_provider.get_season_images(
+            show_metadata_id=self.metadata_id,
+            season_order=self.season_order
+        )
         local_path = os.path.join(self.show_season.directory,'poster.jpg')
         if not images:
             return False

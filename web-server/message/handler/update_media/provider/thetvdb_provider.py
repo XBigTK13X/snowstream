@@ -71,24 +71,24 @@ class ThetvdbProvider(base.MediaProvider):
         db.op.upsert_cached_text(key=cache_key, data=json.dumps(season))
         return season
 
-    def get_season_images(self, metadata_id:int, season_order:int):
-        season_info = self.get_season_info(show_metadata_id=metadata_id,season_order=season_order)
+    def get_season_images(self, show_metadata_id:int, season_order:int):
+        season_info = self.get_season_info(show_metadata_id=show_metadata_id,season_order=season_order)
         if not 'extended' in season_info and not 'artwork' in season_info['extended']:
             return None
         return self.filter_images(season_info['extended']['artwork'])
 
-    def get_show_episodes(self, metadata_id: int):
-        cache_key = f'tvdb-show-{metadata_id}-episodes'
+    def get_show_episodes(self, show_metadata_id: int):
+        cache_key = f'tvdb-show-{show_metadata_id}-episodes'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
-            log.info(f"Show episodes result for {metadata_id} is fresh, return cached result [{cache_key}]")
+            log.info(f"Show episodes result for {show_metadata_id} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)['episodes']
         currentPage = 0
         api_results = None
-        log.info(f"Show episodes result for {metadata_id} is stale, read from tvdb [{cache_key}]")
+        log.info(f"Show episodes result for {show_metadata_id} is stale, read from tvdb [{cache_key}]")
         while True:
             current_results = self.tvdb_client.get_series_episodes(
-                id=metadata_id,
+                id=show_metadata_id,
                 season_type='default',
                 lang='eng',
                 page=currentPage
@@ -109,7 +109,7 @@ class ThetvdbProvider(base.MediaProvider):
         return api_results['episodes']
 
     def get_episode_info(self, show_metadata_id:int, season_order:int, episode_order:int):
-        episodes = self.get_show_episodes(metadata_id=show_metadata_id)
+        episodes = self.get_show_episodes(show_metadata_id=show_metadata_id)
         if not episodes:
             return None
         for episode in episodes:

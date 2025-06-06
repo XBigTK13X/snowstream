@@ -38,4 +38,39 @@ def test_get_show():
     images = provider.get_show_images(metadata_id=82728)
     pprint.pprint(images)
 
-test_get_show()
+def test_get_season():
+    provider = ThemoviedbProvider()
+    season = provider.get_season_info(show_metadata_id=82728,season_order=2)
+    pprint.pprint(season)
+    images = provider.get_season_images(show_metadata_id=82728,season_order=2)
+    pprint.pprint(images)
+
+def test_get_episode():
+    provider = ThemoviedbProvider()
+    season = provider.get_episode_info(show_metadata_id=82728,season_order=2,episode_order=10)
+    pprint.pprint(season)
+    images = provider.get_episode_images(show_metadata_id=82728,season_order=2,episode_order=10)
+    pprint.pprint(images)
+
+def test_to_snowstream_movie():
+    provider = ThemoviedbProvider()
+    movie = provider.get_movie_info(metadata_id=431580)
+    nfo_dict = provider.to_snowstream_movie(movie)
+    import pprint
+    pprint.pprint(nfo_dict)
+
+def test_to_snowstream_show():
+    provider = ThemoviedbProvider()
+    show = provider.get_show_info(metadata_id=82728)
+    nfo_dict = provider.to_snowstream_show(show)
+    import pprint
+    pprint.pprint(nfo_dict)
+
+def test_to_snowstream_show():
+    provider = ThemoviedbProvider()
+    show = provider.get_season_info(show_metadata_id=82728,season_order=2)
+    nfo_dict = provider.to_snowstream_show(show)
+    import pprint
+    pprint.pprint(nfo_dict)
+
+test_to_snowstream_show()

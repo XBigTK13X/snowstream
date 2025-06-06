@@ -15,16 +15,16 @@ class MediaProvider:
     def get_show_images(self, metadata_id:int):
         pass
 
-    def get_season_info(self, metadata_id:int, season_order:int):
+    def get_season_info(self, show_metadata_id:int, season_order:int):
         pass
 
-    def get_season_images(self, metadata_id:int, season_order:int):
+    def get_season_images(self, show_metadata_id:int, season_order:int):
         pass
 
-    def get_episode_info(self, metadata_id:int, season_order:int, episode_order:int):
+    def get_episode_info(self, show_metadata_id:int, season_order:int, episode_order:int):
         pass
 
-    def get_episode_images(self, metadata_id:int, season_order:int, episode_order:int):
+    def get_episode_images(self, show_metadata_id:int, season_order:int, episode_order:int):
         pass
 
     def identify(self, kind:str, query:str, year:int=None):
