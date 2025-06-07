@@ -8,13 +8,23 @@ import json
 import ffmpeg
 import database.operation.shelf as db_shelf
 from settings import config
+import os
 
-def create_video_file(shelf_id: int, kind: str, local_path: str, ffprobe_pruned_json: str):
+def create_video_file(
+    shelf_id: int,
+    kind: str,
+    local_path: str,
+    ffprobe_pruned_json: str
+    ):
     shelf = db_shelf.get_shelf_by_id(shelf_id=shelf_id)
     network_path = ''
     if shelf.network_path:
         network_path = local_path.replace(shelf.local_path,shelf.network_path)
     web_path = config.web_media_url + local_path
+    version = None
+    file_name = os.path.basename(local_path)
+    if '[' in file_name and ']' in file_name:
+        version = file_name.split('[')[-1].split(']')[0]
     with DbSession() as db:
         dbm = dm.VideoFile()
         dbm.local_path = local_path
@@ -23,6 +33,7 @@ def create_video_file(shelf_id: int, kind: str, local_path: str, ffprobe_pruned_
         dbm.kind = kind
         dbm.shelf_id = shelf_id
         dbm.ffprobe_pruned_json = ffprobe_pruned_json
+        dbm.version = version
         db.add(dbm)
         db.commit()
         db.refresh(dbm)

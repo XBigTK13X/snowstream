@@ -20,7 +20,7 @@ export function SnowDropdown(props) {
 
     const renderItem = (item, itemIndex) => {
         return <SnowTextButton
-            selected={itemIndex === selectedIndex}
+            selected={(itemIndex === selectedIndex) || (!selectedIndex && itemIndex === 0)}
             title={item}
             onPress={() => { choose(itemIndex) }} />
     }

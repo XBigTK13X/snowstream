@@ -1,4 +1,5 @@
 import C from '../../../common'
+import SnowDropdown from '../../../comp/snow-dropdown';
 
 export default function MediaTracksPage(props) {
     const { apiClient } = C.useSession();
@@ -9,9 +10,7 @@ export default function MediaTracksPage(props) {
     const [media, setMedia] = C.React.useState(null);
     const [audioTrack, setAudioTrack] = C.React.useState(0)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
-    const [videoFile, setVideoFile] = C.React.useState(null)
     const [videoFileIndex, setVideoFileIndex] = C.React.useState(0)
-    const [videoFileTracks, setVideoFileTracks] = C.React.useState(null)
 
     const shelfId = localParams.shelfId;
 
@@ -20,16 +19,8 @@ export default function MediaTracksPage(props) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
             })
-
             props.loadMedia(apiClient, localParams).then((response) => {
                 setMedia(response)
-                setVideoFile(response.video_files[0])
-                if (response.tracks.inspection.scored_tracks['audio'].length) {
-                    setAudioTrack(response.tracks.inspection.scored_tracks['audio'][0].relative_index)
-                }
-                if (response.tracks.inspection.scored_tracks['subtitle'].length) {
-                    setSubtitleTrack(response.tracks.inspection.scored_tracks['subtitle'][0].relative_index)
-                }
             })
         }
     })
@@ -50,7 +41,17 @@ export default function MediaTracksPage(props) {
             setSubtitleTrack(track.relative_index)
         }
     }
-    if (shelf && media && videoFile) {
+
+    const chooseVideoFile = (fileIndex) => {
+        setVideoFileIndex(fileIndex)
+        if (media.video_files[fileIndex].tracks.inspection.scored_tracks['audio'].length) {
+            setAudioTrack(media.video_files[fileIndex].tracks.inspection.scored_tracks['audio'][0].relative_index)
+        }
+        if (media.video_files[fileIndex].tracks.inspection.scored_tracks['subtitle'].length) {
+            setSubtitleTrack(media.video_files[fileIndex].tracks.inspection.scored_tracks['subtitle'][0].relative_index)
+        }
+    }
+    if (shelf && media) {
         const watchTitle = media.watched ? "Set Status to Unwatched" : "Set Status to Watched"
         const playDestination = {
             videoFileIndex: videoFileIndex,
@@ -60,6 +61,23 @@ export default function MediaTracksPage(props) {
         }
         const mediaDestination = props.getPlayDestination(localParams)
         const combinedPlayDestination = { ...playDestination, ...mediaDestination }
+        let versionPicker = null
+        if (media.video_files.length > 1) {
+            versionPicker = (
+                <C.View>
+                    <C.SnowLabel>Version</C.SnowLabel>
+                    <C.SnowDropdown
+                        options={media.video_files.map((ff) => {
+                            return ff.version
+                        })}
+                        onChoose={chooseVideoFile}
+                        value={videoFileIndex}
+                    />
+                </C.View>
+            )
+        }
+        const videoFile = media.video_files[videoFileIndex]
+        console.log({ videoFile })
         return (
             <C.View>
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
@@ -84,8 +102,9 @@ export default function MediaTracksPage(props) {
                             apiClient.createJobUpdateMediaFiles(combinedDetails)
                         }} />
                 </C.SnowGrid>
+                {versionPicker}
                 <C.SnowTrackSelector
-                    tracks={media.tracks.inspection.scored_tracks}
+                    tracks={videoFile.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}
                     audioTrack={audioTrack}
                     subtitleTrack={subtitleTrack}

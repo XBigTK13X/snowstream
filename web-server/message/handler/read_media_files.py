@@ -7,7 +7,9 @@ def handle(job_id, scope):
     log.info(f"[WORKER] Handling a read_media_files job")
     metadata_files = None
     ticket = db.model.Ticket()
-    if scope.is_shelf():
+    if not scope or scope.is_unscoped():
+        metadata_files = db.op.get_metadata_file_list()
+    elif scope.is_shelf():
         metadata_files = db.op.get_metadata_files_by_shelf(shelf_id=scope.target_id)
     elif scope.is_movie():
         movie = db.op.get_movie_by_id(ticket=ticket,movie_id=scope.target_id)
@@ -29,8 +31,6 @@ def handle(job_id, scope):
             metadata_files += episode.metadata_files
     elif scope.is_episode():
         episode = db.op.get_show_episode_by_id(ticket=ticket,episode_id=scope.target_id)
-    else:
-        metadata_files = db.op.get_metadata_file_list()
 
     defined_tag_ids = {}
     for metadata_file in metadata_files:

@@ -1,7 +1,8 @@
 from log import log
 from db import db
 
-
+from message.handler.update_media.provider.thetvdb_provider import ThetvdbProvider
+from message.handler.update_media.provider.themoviedb_provider import ThemoviedbProvider
 from message.handler.job_media_scope import JobMediaScope
 from message.handler.child_job import create_child_job
 
@@ -34,7 +35,9 @@ def handle(job_id, scope:JobMediaScope):
             show_episode = db.op.get_show_episode_by_id(ticket=ticket, episode_id=scope.target_id)
             shows = [show_episode.season.show]
 
-    movie_media_provider = scope.get_movie_media_provider()
+    movie_media_provider = ThemoviedbProvider()
+    if scope:
+        movie_media_provider = scope.get_movie_media_provider()
 
     if len(movies) > 0:
         log.info(f"Identifying {len(movies)} unknown movies")
@@ -61,7 +64,9 @@ def handle(job_id, scope:JobMediaScope):
             else:
                 log.info(f"Unable to identify {movie.directory}")
 
-    show_media_provider = scope.get_show_media_provider()
+    show_media_provider = ThetvdbProvider()
+    if scope:
+        show_media_provider = scope.get_show_media_provider()
 
     if len(shows) > 0:
         log.info(f"Identifying {len(shows)} unknown shows")

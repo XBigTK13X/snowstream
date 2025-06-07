@@ -73,7 +73,10 @@ export default function StreamSourceEditPage() {
             <C.SnowInput onChangeText={setStreamSourceName} value={streamSourceName} />
 
             <C.SnowLabel>Kind</C.SnowLabel>
-            <C.SnowDropdown options={streamSourceKinds} onChoose={chooseStreamSourceKind} value={streamSourceKind} />
+            <C.SnowDropdown
+                options={streamSourceKinds}
+                onChoose={chooseStreamSourceKind}
+                value={streamSourceKind} />
 
             <C.SnowLabel>URL</C.SnowLabel>
             <C.SnowInput onChangeText={setStreamSourceUrl} value={streamSourceUrl} />

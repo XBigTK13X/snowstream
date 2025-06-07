@@ -35,7 +35,7 @@ def handle(job_id:int, scope:JobMediaScope):
             target_directory = show_episode.season.directory
             shelves = [show_episode.season.show.shelf]
 
-    if scope.target_directory:
+    if scope and scope.target_directory:
         target_directory = scope.target_directory
 
     results = {}

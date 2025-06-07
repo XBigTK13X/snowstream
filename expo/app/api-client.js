@@ -443,7 +443,7 @@ export class ApiClient {
     }
 
     increaseShowEpisodeWatchCount(episodeId) {
-        return this.post(`/show/season/epoisode/watch_count?show_episode_id=${episodeId}`)
+        return this.post(`/show/season/episode/watch_count?show_episode_id=${episodeId}`)
     }
 
     increaseMovieWatchCount(movieId) {

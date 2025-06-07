@@ -277,7 +277,8 @@ def auth_required(router):
         if movie == None:
             return None
         movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
-        movie.tracks = json.loads(movie.video_files[0].ffprobe_pruned_json)
+        for video_file in movie.video_files:
+            video_file.tracks = json.loads(video_file.ffprobe_pruned_json)
         return movie
 
     @router.post("/movie/watched",tags=['Movie'])
@@ -417,7 +418,7 @@ def auth_required(router):
         )
         return not is_watched
 
-    @router.post("/show/season/epoisode/watch_count",tags=['Show'])
+    @router.post("/show/season/episode/watch_count",tags=['Show'])
     def increase_show_episode_watch_count(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         show_episode_id:int
@@ -433,7 +434,8 @@ def auth_required(router):
         if not episode:
             return None
         episode.watched = db.op.get_show_episode_watched(ticket=auth_user.ticket,episode_id=episode_id)
-        episode.tracks = json.loads(episode.video_files[0].ffprobe_pruned_json)
+        for video_file in episode.video_files:
+            video_file.tracks = json.loads(video_file.ffprobe_pruned_json)
         return episode
 
     @router.post("/show/season/episode/progress",tags=['Show'])
