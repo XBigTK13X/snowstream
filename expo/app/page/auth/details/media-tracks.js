@@ -99,7 +99,6 @@ export default function MediaTracksPage(props) {
             )
         }
         const videoFile = media.video_files[videoFileIndex]
-        console.log({ videoFile })
         return (
             <C.View>
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>

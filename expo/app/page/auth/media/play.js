@@ -7,6 +7,7 @@ export default function PlayMediaPage() {
 
     const shelfId = localParams.shelfId
     const streamableId = localParams.streamableId
+    const videoFileIndex = localParams.videoFileIndex
 
     const [episodeId, setEpisodeId] = C.React.useState(localParams.episodeId)
     const [movieId, setMovieId] = C.React.useState(localParams.movieId)
@@ -25,7 +26,6 @@ export default function PlayMediaPage() {
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const [tracks, setTracks] = C.React.useState(null)
     const [videoTitle, setVideoTitle] = C.React.useState("")
-    const videoFileIndex = 0
 
     const durationRef = C.React.useRef(durationSeconds)
 
@@ -37,10 +37,10 @@ export default function PlayMediaPage() {
                 setTranscodeReady(true)
             })
         } else {
-            setTracks(videoHolder.tracks.inspection.scored_tracks)
+            setTracks(videoFile.tracks.inspection.scored_tracks)
             setVideoUrl(videoFile.network_path)
-            setDurationSeconds(videoHolder.tracks.duration_seconds)
-            durationRef.current = videoHolder.tracks.duration_seconds
+            setDurationSeconds(videoFile.tracks.duration_seconds)
+            durationRef.current = videoFile.tracks.duration_seconds
         }
     }
 
@@ -96,6 +96,7 @@ export default function PlayMediaPage() {
                 if (transcode) {
                     apiClient.createStreamableTranscodeSession(streamableId).then((transcodeSession) => {
                         setVideoUrl(transcodeSession.transcode_url)
+                        setTranscodeReady(true)
                     })
                 } else {
                     setVideoUrl(response.url)
@@ -190,6 +191,15 @@ export default function PlayMediaPage() {
             <C.View>
                 <C.SnowText>Unable to play the video.</C.SnowText>
                 <C.SnowText>Error: {JSON.stringify(playbackFailed)}</C.SnowText>
+            </C.View>
+        )
+    }
+
+    if (transcode && !transcodeReady) {
+        return (
+            <C.View>
+                <C.SnowText>This video cannot be played direcly on this device.</C.SnowText>
+                <C.SnowText>Please wait a few moments while the server transcodes it to a supported format.</C.SnowText>
             </C.View>
         )
     }
