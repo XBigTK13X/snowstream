@@ -146,9 +146,11 @@ class ThemoviedbProvider(base.MediaProvider):
                 details = self.tmdb_client.season(tv_id=show_metadata_id,season_id=season_order).details()
                 result = tmdb_utils.as_dict(details)
                 result['poster_url'] = details.poster_url()
+                result['year'] = details.air_date.year
                 for ii in range(0,len(details.episodes)):
                     episode = details.episodes[ii]
                     result['episodes'][ii]['still_url'] = episode.still_url()
+                    result['episodes'][ii]['year'] = episode.air_date.year
                 db.op.upsert_cached_text(key=cache_key, data=json.dumps(result))
                 return result
         return None
@@ -164,14 +166,11 @@ class ThemoviedbProvider(base.MediaProvider):
 
     def to_snowstream_season(self, metadata:dict):
         result = {
-            'tvdbid': int(metadata['id']),
-            'tmdbid': None,
-            'release_date': None
+            'tmdbid': int(metadata['id']),
+            'tvdbid': None,
+            'release_date': metadata['air_date'],
+            'year': metadata['year']
         }
-        if 'episodes' in metadata and len(metadata['episodes']) > 0:
-            result['release_date'] = metadata['episodes'][0]['aired']
-        if 'details' in metadata and 'year' in metadata['details']:
-            result['year'] = int(metadata['details']['year'])
 
         return result
 
@@ -194,16 +193,16 @@ class ThemoviedbProvider(base.MediaProvider):
     def to_snowstream_episodes(self, metadata:list[dict]):
         first = metadata[0]
         result = {
-            'overview': first['overview'] if 'overview' in first else None,
-            'tvdbid': int(first['id']),
-            'tmdbid': None,
-            'episode': int(first['number']),
-            'season': int(first['seasonNumber']),
+            'overview': first['overview'],
+            'tmdbid': int(first['id']),
+            'tvdbid': None,
+            'episode': first['episode_number'],
+            'season': first['season_number'],
             'name': first['name'],
-            'year': int(first['year']),
-            'aired': first['aired'] if 'aired' in first else None
+            'year': first['year'],
+            'aired': first['air_date']
         }
         if len(metadata) > 1:
-            result['overview'] = ' '.join([f'[Episode {xx['number']}] {xx['overview']}' for xx in metadata])
+            result['overview'] = ' '.join([f'[Episode {xx['episode_number']}] {xx['overview']}' for xx in metadata])
             result['name'] =  ' + '.join(xx['name'] for xx in self.tvdb_info if 'name' in xx)
         return result

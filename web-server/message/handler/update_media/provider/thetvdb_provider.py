@@ -234,7 +234,7 @@ class ThetvdbProvider(base.MediaProvider):
         }
         if len(metadata) > 1:
             result['overview'] = ' '.join([f'[Episode {xx['number']}] {xx['overview']}' for xx in metadata])
-            result['name'] =  ' + '.join(xx['name'] for xx in self.tvdb_info if 'name' in xx)
+            result['name'] =  ' + '.join(xx['name'] for xx in metadata if 'name' in xx)
         return result
 
     def to_snowstream_season(self, metadata:dict):

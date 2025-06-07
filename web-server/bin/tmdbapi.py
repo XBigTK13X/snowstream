@@ -66,11 +66,18 @@ def test_to_snowstream_show():
     import pprint
     pprint.pprint(nfo_dict)
 
-def test_to_snowstream_show():
+def test_to_snowstream_season():
     provider = ThemoviedbProvider()
     show = provider.get_season_info(show_metadata_id=82728,season_order=2)
-    nfo_dict = provider.to_snowstream_show(show)
+    nfo_dict = provider.to_snowstream_season(show)
     import pprint
     pprint.pprint(nfo_dict)
 
-test_to_snowstream_show()
+def test_to_snowstream_episode():
+    provider = ThemoviedbProvider()
+    episode = provider.get_episode_info(show_metadata_id=82728,season_order=2, episode_order=4)
+    nfo_dict = provider.to_snowstream_episodes([episode])
+    import pprint
+    pprint.pprint(nfo_dict)
+
+test_to_snowstream_episode()
