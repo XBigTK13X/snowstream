@@ -5,33 +5,56 @@ import nfo
 
 def handle(job_id, scope):
     log.info(f"[WORKER] Handling a read_media_files job")
-    shelves = db.op.get_shelf_list()
-    defined_tag_ids = {}
-    for shelf in shelves:
-        log.info(f"Reading media for shelf [{shelf.name}->{shelf.kind}]")
+    metadata_files = None
+    ticket = db.model.Ticket()
+    if scope.is_shelf():
+        metadata_files = db.op.get_metadata_files_by_shelf(shelf_id=scope.target_id)
+    elif scope.is_movie():
+        movie = db.op.get_movie_by_id(ticket=ticket,movie_id=scope.target_id)
+        metadata_files = movie.metadata_files
+    elif scope.is_show():
+        show = db.op.get_show_by_id(ticket=ticket,show_id=scope.target_id)
+        metadata_files = show.metadata_files
+        seasons = db.op.get_show_season_list_by_show_id(ticket=ticket,show_Id=scope.target_id)
+        for season in seasons:
+            metadata_files += season.metadata_files
+        episodes = db.op.get_show_episode_list_by_show(ticket=ticket,show_id=scope.target_id)
+        for episode in episodes:
+            metadata_files += episode.metadata_files
+    elif scope.is_season():
+        season = db.op.get_show_season_by_id(ticket=ticket,season_id=scope.target_id)
+        metadata_files = season.metadata_files
+        episodes = db.op.get_show_episode_list_by_season(ticket=ticket,show_season_id=scope.target_id)
+        for episode in episodes:
+            metadata_files += episode.metadata_files
+    elif scope.is_episode():
+        episode = db.op.get_show_episode_by_id(ticket=ticket,episode_id=scope.target_id)
+    else:
         metadata_files = db.op.get_metadata_file_list()
-        for metadata_file in metadata_files:
-            nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
-            if not 'tag' in nfo_content:
+
+    defined_tag_ids = {}
+    for metadata_file in metadata_files:
+        nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
+        if not 'tag' in nfo_content:
+            continue
+        for tag_name in nfo_content['tag']:
+            if not ':' in tag_name or 'Source:' in tag_name:
                 continue
-            for tag_name in nfo_content['tag']:
-                if not ':' in tag_name or 'Source:' in tag_name:
-                    continue
-                if not tag_name in defined_tag_ids:
-                    tag = db.op.get_tag_by_name(tag_name)
-                    if tag == None:
-                        tag = am.Tag(**{'name':tag_name})
-                        tag = db.op.upsert_tag(tag)
-                    defined_tag_ids[tag_name] = tag.id
-                    log.info(f"Processed [{tag.name}] for the first time on {metadata_file.local_path}")
-                tag_id = defined_tag_ids[tag_name]
-                if metadata_file.movie != None:
-                    db.op.upsert_movie_tag(metadata_file.movie.id,tag_id)
-                if metadata_file.show != None:
-                    db.op.upsert_show_tag(metadata_file.show.id,tag_id)
-                if metadata_file.show_season != None:
-                    db.op.upsert_show_season_tag(metadata_file.show_season.id,tag_id)
-                if metadata_file.show_episode != None:
-                    db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
+            if not tag_name in defined_tag_ids:
+                tag = db.op.get_tag_by_name(tag_name)
+                if tag == None:
+                    tag = am.Tag(**{'name':tag_name})
+                    tag = db.op.upsert_tag(tag)
+                defined_tag_ids[tag_name] = tag.id
+                log.info(f"Processed [{tag.name}] for the first time on {metadata_file.local_path}")
+            tag_id = defined_tag_ids[tag_name]
+            if metadata_file.movie != None:
+                db.op.upsert_movie_tag(metadata_file.movie.id,tag_id)
+            if metadata_file.show != None:
+                db.op.upsert_show_tag(metadata_file.show.id,tag_id)
+            if metadata_file.show_season != None:
+                db.op.upsert_show_season_tag(metadata_file.show_season.id,tag_id)
+            if metadata_file.show_episode != None:
+                db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
 
     return True
