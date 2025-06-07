@@ -61,14 +61,36 @@ export default function MediaTracksPage(props) {
         }
         const mediaDestination = props.getPlayDestination(localParams)
         const combinedPlayDestination = { ...playDestination, ...mediaDestination }
+        let mainFeatureButton = null
+        if (media.has_extras) {
+            mainFeatureButton = <C.SnowTextButton title="Main Feature" onPress={() => {
+                chooseVideoFile(media.main_feature_index)
+            }} />
+        }
         let versionPicker = null
-        if (media.video_files.length > 1) {
+        if (media.has_versions) {
             versionPicker = (
                 <C.View>
                     <C.SnowLabel>Version</C.SnowLabel>
                     <C.SnowDropdown
-                        options={media.video_files.map((ff) => {
+                        options={media.video_files.filter(ff => ff.version).map((ff) => {
                             return ff.version
+                        })}
+                        onChoose={chooseVideoFile}
+                        value={videoFileIndex}
+                    />
+                </C.View>
+            )
+        }
+        let extraPicker = null
+        if (media.has_extras) {
+            extraPicker = (
+                <C.View>
+                    <C.SnowLabel>Extras</C.SnowLabel>
+                    <C.SnowDropdown
+                        skipDefaultFocus
+                        options={media.video_files.filter(ff => ff.is_extra).map((ff) => {
+                            return { name: ff.name, index: ff.absolute_index }
                         })}
                         onChoose={chooseVideoFile}
                         value={videoFileIndex}
@@ -83,8 +105,9 @@ export default function MediaTracksPage(props) {
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
                 <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
-                <C.SnowGrid>
+                <C.SnowGrid itemsPerRow={3}>
                     <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, combinedPlayDestination)} />
+                    {mainFeatureButton}
                     <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
                     <C.SnowTextButton title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
                     {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
@@ -103,6 +126,8 @@ export default function MediaTracksPage(props) {
                         }} />
                 </C.SnowGrid>
                 {versionPicker}
+                {extraPicker}
+                <C.SnowLabel>Video File: {videoFile.name}</C.SnowLabel>
                 <C.SnowTrackSelector
                     tracks={videoFile.tracks.inspection.scored_tracks}
                     selectTrack={selectTrack}

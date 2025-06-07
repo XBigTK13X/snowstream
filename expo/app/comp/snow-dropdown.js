@@ -19,10 +19,16 @@ export function SnowDropdown(props) {
     }
 
     const renderItem = (item, itemIndex) => {
+        let selected = false
+        if (!props.skipDefaultFocus) {
+            if ((itemIndex === selectedIndex) || (!selectedIndex && itemIndex === 0)) {
+                selected = true
+            }
+        }
         return <SnowTextButton
-            selected={(itemIndex === selectedIndex) || (!selectedIndex && itemIndex === 0)}
-            title={item}
-            onPress={() => { choose(itemIndex) }} />
+            selected={selected}
+            title={item.name ? item.name : item}
+            onPress={() => { choose(item.index ? item.index : itemIndex) }} />
     }
 
     return <SnowGrid items={props.options} renderItem={renderItem} />

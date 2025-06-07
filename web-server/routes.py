@@ -12,6 +12,7 @@ from auth import get_current_user
 from transcode import transcode
 from settings import config
 import json
+import os
 
 def register(router):
     router = no_auth_required(router)
@@ -277,8 +278,20 @@ def auth_required(router):
         if movie == None:
             return None
         movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
-        for video_file in movie.video_files:
-            video_file.tracks = json.loads(video_file.ffprobe_pruned_json)
+        movie.has_extras = False
+        movie.has_versions = False
+
+        for ii in range(0,len(movie.video_files)):
+            movie.video_files[ii].tracks = json.loads(movie.video_files[ii].ffprobe_pruned_json)
+            movie.video_files[ii].absolute_index = ii
+            if 'main_feature' in movie.video_files[ii].kind:
+                movie.main_feature_index = ii
+            if 'extra' in movie.video_files[ii].kind:
+                movie.has_extras = True
+                movie.video_files[ii].is_extra = True
+
+            if movie.video_files[ii].version:
+                movie.has_versions = True
         return movie
 
     @router.post("/movie/watched",tags=['Movie'])
@@ -434,8 +447,13 @@ def auth_required(router):
         if not episode:
             return None
         episode.watched = db.op.get_show_episode_watched(ticket=auth_user.ticket,episode_id=episode_id)
-        for video_file in episode.video_files:
-            video_file.tracks = json.loads(video_file.ffprobe_pruned_json)
+        episode.has_extras = False
+        episode.has_versions = False
+        for ii in range(0,len(episode.video_files)):
+            episode.video_files[ii].tracks = json.loads(episode.video_files[ii].ffprobe_pruned_json)
+            episode.video_files[ii].absolute_index = ii
+            if episode.video_files[ii].version:
+                episode.has_versions = True
         return episode
 
     @router.post("/show/season/episode/progress",tags=['Show'])

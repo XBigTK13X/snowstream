@@ -279,6 +279,7 @@ class VideoFile(BaseModel):
     network_path = sa.Column(sa.Text)
     ffprobe_pruned_json = sa.Column(sa.Text)
     version = sa.Column(sa.Text)
+    name = sa.Column(sa.Text)
     movie: sorm.Mapped["Movie"] = sorm.relationship(secondary="movie_video_file", back_populates="video_files")
     movie_video_file: sorm.Mapped["MovieVideoFile"] = sorm.relationship(back_populates="video_file",overlaps="movie")
     show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_video_file", back_populates="video_files")

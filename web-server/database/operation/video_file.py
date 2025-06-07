@@ -34,6 +34,7 @@ def create_video_file(
         dbm.shelf_id = shelf_id
         dbm.ffprobe_pruned_json = ffprobe_pruned_json
         dbm.version = version
+        dbm.name = os.path.splitext(file_name)[0]
         db.add(dbm)
         db.commit()
         db.refresh(dbm)

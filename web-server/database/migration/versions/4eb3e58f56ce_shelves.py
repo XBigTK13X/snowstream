@@ -45,7 +45,8 @@ def upgrade() -> None:
         sa.Column("web_path", sa.Text, nullable=False),
         sa.Column("network_path", sa.Text, nullable=False),
         sa.Column("ffprobe_pruned_json", sa.Text, nullable=False),
-        sa.Column("version", sa.Text, nullable=True)
+        sa.Column("version", sa.Text, nullable=True),
+        sa.Column("name", sa.Text, nullable=False)
     )
 
     op.create_unique_constraint("unique_video_file_local_path", "video_file", ["local_path"])
