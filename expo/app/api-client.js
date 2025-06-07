@@ -13,6 +13,15 @@ export class ApiClient {
         this.apiErrorSent = false
         let self = this
 
+        // Only functions that get passed around as higher order functions need to be bound
+        // An example of this is the job runner
+        this.createScopedJob = this.createScopedJob.bind(this)
+        this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
+        this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
+        this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
+        this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
+        this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
+
         this.createClient(self.authToken)
 
         this.handleError = (err) => {

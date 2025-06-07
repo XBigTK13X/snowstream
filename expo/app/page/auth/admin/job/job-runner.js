@@ -3,38 +3,47 @@ import C from '../../../../common'
 export default function ShelfEditPage() {
     const { apiClient } = C.useSession()
     const { routes, config } = C.useSettings()
+    const [targetKind, setTargetKind] = C.React.useState('')
+    const [targetId, setTargetId] = C.React.useState('')
+    const [metadataId, setMetadataId] = C.React.useState('')
+    const [metadataSource, setMetadataSource] = C.React.useState('')
+    const [seasonOrder, setSeasonOrder] = C.React.useState('')
+    const [episodeOrder, setEpisodeOrder] = C.React.useState('')
+    const [updateImages, setUpdateImages] = C.React.useState('')
+    const [updateMetadata, setUpdateMetadata] = C.React.useState('')
 
-    const createJob = (kind) => {
-        if (kind === 'refresh-streams') {
-            return apiClient.createJobStreamSourcesRefresh()
+    const jobApiCall = {
+        refreshStreams: apiClient.createJobStreamSourcesRefresh,
+        refreshStreams: apiClient.createJobStreamSourcesRefresh,
+    }
+
+    const createJob = (apiCall) => {
+        let details = {
+            targetKind,
+            targetId,
+            metadataId,
+            metadataSource,
+            seasonOrder,
+            episodeOrder,
+            updateImages,
+            updateMetadata
         }
-        if (kind === 'scan-shelves') {
-            return apiClient.createJobShelvesScan()
-        }
-        if (kind === 'read-media') {
-            return apiClient.createJobReadMediaFiles()
-        }
-        if (kind === 'update-media') {
-            return apiClient.createJobUpdateMediaFiles()
-        }
-        if (kind === 'identify-media') {
-            return apiClient.createJobIdentifyUnknownMedia()
-        }
+        return apiCall(details)
     }
 
     const buttons = [
-        { name: 'Scan Shelves', kind: 'scan-shelves' }, ,
-        { name: 'Refresh Streamables', kind: 'refresh-streams' },
-        { name: 'Read Media Files', kind: 'read-media' },
-        { name: 'Update Media Files', kind: 'update-media' },
-        { name: 'Identify Unknown Media', kind: 'identify-media' }
+        { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan }, ,
+        { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
+        { name: 'Read Media Files', apiCall: apiClient.createJobReadMediaFiles },
+        { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
+        { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia }
     ]
 
     const renderItem = (item) => {
         return <C.SnowTextButton
             title={item.name}
             onPress={() => {
-                createJob(item.kind).then(job => {
+                createJob(item.apiCall).then(job => {
                     routes.goto(routes.admin.jobDetails, { jobId: job.id })
                 })
             }}
@@ -42,6 +51,26 @@ export default function ShelfEditPage() {
     }
 
     return (
-        <C.SnowGrid items={buttons} renderItem={renderItem} />
+        <C.View>
+            <C.SnowGrid items={buttons} renderItem={renderItem} />
+            <C.SnowGrid itemsPerRow={4}>
+                <C.SnowLabel>Target Kind</C.SnowLabel>
+                <C.SnowInput onChangeText={setTargetKind} value={targetKind} />
+                <C.SnowLabel>Target Id</C.SnowLabel>
+                <C.SnowInput onChangeText={setTargetId} value={targetId} />
+                <C.SnowLabel>Metadata Id</C.SnowLabel>
+                <C.SnowInput onChangeText={setMetadataId} value={metadataId} />
+                <C.SnowLabel>Metadata Source</C.SnowLabel>
+                <C.SnowInput onChangeText={setMetadataSource} value={metadataSource} />
+                <C.SnowLabel>Season Order</C.SnowLabel>
+                <C.SnowInput onChangeText={setSeasonOrder} value={seasonOrder} />
+                <C.SnowLabel>Episode Order</C.SnowLabel>
+                <C.SnowInput onChangeText={setEpisodeOrder} value={episodeOrder} />
+                <C.SnowLabel>Update Images</C.SnowLabel>
+                <C.SnowInput onChangeText={setUpdateImages} value={updateImages} />
+                <C.SnowLabel>Update Metadata</C.SnowLabel>
+                <C.SnowInput onChangeText={setUpdateMetadata} value={updateMetadata} />
+            </C.SnowGrid>
+        </C.View>
     )
 }
