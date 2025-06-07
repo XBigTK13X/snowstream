@@ -43,7 +43,7 @@ class Movie(MediaUpdater):
             release_date=self.metadata['release_date'],
             year=self.metadata['year'],
             tvdbid=self.metadata['tvdbid'],
-            tmdbid=self.metadata['tmdbid']
+            tmdbid=self.metadata['tmdbid'],
             tags=tags
         )
 

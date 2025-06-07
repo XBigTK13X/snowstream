@@ -364,11 +364,7 @@ ARTWORK_TYPES_RAW = [
   'recordType': 'actor',
   'slug': 'photo',
   'thumbHeight': 450,
-  'thumbWidth': 300,if 'tvdb_translation' in metadata:
-            if 'tagline' in metadata['tvdb_translation']:
-                tagline = metadata['tvdb_translation']['tagline']
-            if 'overview' in metadata['tvdb_translation']:
-                plot = metadata['tvdb_translation']['overview']
+  'thumbWidth': 300,
   'width': 300},
  {'height': 1000,
   'id': 14,
