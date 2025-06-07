@@ -152,11 +152,13 @@ export class ApiClient {
     createScopedJob(name, details) {
         let payload = { name }
         if (details) {
+            payload.input = {}
             if (details.targetKind && details.targetId) {
-                payload.input = {
-                    target_kind: details.targetKind,
-                    target_id: details.targetId
-                }
+                payload.input.target_kind = details.targetKind
+                payload.input.target_id = details.targetId
+            }
+            if (details.targetDirectory) {
+                payload.input.target_directory = details.targetDirectory
             }
             if (details.metadataId) {
                 payload.input.metadata_id = details.metadataId

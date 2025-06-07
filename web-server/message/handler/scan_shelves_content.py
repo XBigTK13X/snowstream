@@ -35,9 +35,14 @@ def handle(job_id:int, scope:JobMediaScope):
             target_directory = show_episode.season.directory
             shelves = [show_episode.season.show.shelf]
 
+    if scope.target_directory:
+        target_directory = scope.target_directory
+
     results = {}
     handlers = []
     for shelf in shelves:
+        if target_directory and not shelf.local_path in target_directory:
+            continue
         db.op.update_job(job_id=job_id,message=f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
         handler = shelf_handlers[shelf.kind](job_id=job_id, shelf=shelf, target_directory=target_directory)
 

@@ -8,6 +8,7 @@ class JobMediaScope:
     def __init__(self, raw_job_input:dict):
         self.target_kind = parse(raw_job_input,'target_kind')
         self.target_id = parse(raw_job_input,'target_id')
+        self.target_directory = parse(raw_job_input,'target_directory')
         self.metadata_id = parse(raw_job_input,'metadata_id')
         self.metadata_source = parse(raw_job_input,'metadata_source')
         self.season_order = parse(raw_job_input,'season_order')

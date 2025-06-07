@@ -5,6 +5,7 @@ export default function ShelfEditPage() {
     const { routes, config } = C.useSettings()
     const [targetKind, setTargetKind] = C.React.useState('')
     const [targetId, setTargetId] = C.React.useState('')
+    const [targetDirectory, setTargetDirectory] = C.React.useState('')
     const [metadataId, setMetadataId] = C.React.useState('')
     const [metadataSource, setMetadataSource] = C.React.useState('')
     const [seasonOrder, setSeasonOrder] = C.React.useState('')
@@ -12,15 +13,11 @@ export default function ShelfEditPage() {
     const [updateImages, setUpdateImages] = C.React.useState('')
     const [updateMetadata, setUpdateMetadata] = C.React.useState('')
 
-    const jobApiCall = {
-        refreshStreams: apiClient.createJobStreamSourcesRefresh,
-        refreshStreams: apiClient.createJobStreamSourcesRefresh,
-    }
-
     const createJob = (apiCall) => {
         let details = {
             targetKind,
             targetId,
+            targetDirectory,
             metadataId,
             metadataSource,
             seasonOrder,
@@ -58,6 +55,8 @@ export default function ShelfEditPage() {
                 <C.SnowInput onChangeText={setTargetKind} value={targetKind} />
                 <C.SnowLabel>Target Id</C.SnowLabel>
                 <C.SnowInput onChangeText={setTargetId} value={targetId} />
+                <C.SnowLabel>Target Directory</C.SnowLabel>
+                <C.SnowInput onChangeText={setTargetDirectory} value={targetDirectory} />
                 <C.SnowLabel>Metadata Id</C.SnowLabel>
                 <C.SnowInput onChangeText={setMetadataId} value={metadataId} />
                 <C.SnowLabel>Metadata Source</C.SnowLabel>
