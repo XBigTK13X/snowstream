@@ -203,6 +203,6 @@ class ThemoviedbProvider(base.MediaProvider):
             'aired': first['air_date']
         }
         if len(metadata) > 1:
-            result['overview'] = ' '.join([f'[Episode {xx['episode_number']}] {xx['overview']}' for xx in metadata])
+            result['overview'] = ' '.join([f"[Episode {xx['episode_number']}] {xx['overview']}" for xx in metadata])
             result['name'] =  ' + '.join(xx['name'] for xx in self.tvdb_info if 'name' in xx)
         return result

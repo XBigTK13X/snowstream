@@ -233,7 +233,7 @@ class ThetvdbProvider(base.MediaProvider):
             'aired': first['aired'] if 'aired' in first else None
         }
         if len(metadata) > 1:
-            result['overview'] = ' '.join([f'[Episode {xx['number']}] {xx['overview']}' for xx in metadata])
+            result['overview'] = ' '.join([f"[Episode {xx['number']}] {xx['overview']}" for xx in metadata])
             result['name'] =  ' + '.join(xx['name'] for xx in metadata if 'name' in xx)
         return result
 
