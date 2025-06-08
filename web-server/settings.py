@@ -4,8 +4,8 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "0.9.2"
-        self.server_build_date = "May 29, 2025"
+        self.server_version = "0.9.4"
+        self.server_build_date = "June 08, 2025"
 
         self.cached_text_ttl_seconds = 60 * 60 * 24 # One day
         self.ffmpeg_screencap_percent_location = 0.15
