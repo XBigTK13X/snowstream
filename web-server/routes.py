@@ -501,6 +501,15 @@ def auth_required(router):
         )
         return transcode_session
 
+    @router.get("/session/list",tags=['User'])
+    def get_session_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        transcodes = db.op.get_transcode_session_list()
+        return {
+            'transcodes': transcodes
+        }
+
     @router.get("/playing/queue",tags=['User'])
     def get_playing_queue(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],

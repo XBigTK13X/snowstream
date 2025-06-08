@@ -461,6 +461,10 @@ export class ApiClient {
         return this.get(`/keepsake?keepsake_id=${keepsakeId}`)
     }
 
+    getSessionList() {
+        return this.get('/session/list')
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

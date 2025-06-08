@@ -10,6 +10,7 @@ let routes = {
         jobList: '/page/auth/admin/job/job-list',
         jobRunner: '/page/auth/admin/job/job-runner',
         logViewer: '/page/auth/admin/job/log-viewer',
+        sessionList: '/page/auth/admin/session/session-list',
         shelfEdit: '/page/auth/admin/shelf/shelf-edit',
         shelfList: '/page/auth/admin/shelf/shelf-list',
         streamSourceEdit: '/page/auth/admin/stream-source/stream-source-edit',
