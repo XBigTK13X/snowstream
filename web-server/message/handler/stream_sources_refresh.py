@@ -19,8 +19,8 @@ source_handlers = {
 }
 
 
-def generate_streamable_m3u():
-    log.info("Generating streamable M3U content")
+def generate_streamable_m3u(job_id:int):
+    db.op.update_job(job_id=job_id, message="Generating streamable M3U content")
     stream_sources = db.op.get_stream_source_list(ticket=db.model.Ticket(),streamables=True)
 
     m3u = "#EXTM3U"
@@ -38,7 +38,7 @@ def generate_streamable_m3u():
             m3u += f'\n#EXTINF: tvg-id="{streamable.name} (d)" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{channel_id} (d)"'
             m3u += f"\n{config.web_api_url}/api/streamable/direct?streamable_id={streamable.id}"
     m3u += "\n"
-    log.info(f"Generated m3u with {channel_count} channels")
+    db.op.update_job(job_id=job_id, message=f"Generated m3u with {channel_count} channels")
     db.op.upsert_cached_text(
         key=cache.key.STREAMABLE_M3U,
         data=m3u
@@ -46,8 +46,8 @@ def generate_streamable_m3u():
     return True
 
 
-def generate_streamable_epg():
-    log.info("Generating streamable EPG XML")
+def generate_streamable_epg(job_id:int):
+    db.op.update_job(job_id=job_id, message="Generating streamable EPG XML")
     xml = '<?xml version="1.0" encoding="utf-8" ?>\n<!DOCTYPE tv SYSTEM "xmltv.dtd">\n<tv generator-info-name="snowstream">'
     channels = db.op.get_channels_list(schedules=True)
     channel_count = 0
@@ -63,7 +63,7 @@ def generate_streamable_epg():
             xml += f"\n    </program>"
         xml += "\n  <\\channel>"
     xml += "\n</tv>"
-    log.info(
+    db.op.update_job(job_id=job_id, message=
         f"Generated EPG XML with {channel_count} channels and {schedule_count} programs"
     )
     db.op.upsert_cached_text(
@@ -73,15 +73,15 @@ def generate_streamable_epg():
     return True
 
 
-def handle(job_id, scope):
-    log.info(f"[WORKER] Handling a stream_sources_refresh job")
-    log.info("Removing existing streamable schedule info")
+def handle(scope):
+    db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a stream_sources_refresh job")
+    db.op.update_job(job_id=scope.job_id, message="Removing existing streamable schedule info")
     db.sql.truncate("streamable_schedule")
     stream_sources = db.op.get_stream_source_list(ticket=db.model.Ticket(),streamables=True)
     refresh_results = {}
     for stream_source in stream_sources:
-        log.info("Refreshing stream source " + stream_source.kind)
-        handler = source_handlers[stream_source.kind](stream_source)
+        db.op.update_job(job_id=scope.job_id, message="Refreshing stream source " + stream_source.kind)
+        handler = source_handlers[stream_source.kind](scope.job_id, stream_source)
 
         if not handler.download():
             refresh_results[stream_source.url] = False
@@ -94,10 +94,10 @@ def handle(job_id, scope):
             continue
         refresh_results[stream_source.url] = True
 
-    log.info("Finished refreshing stream sources")
-    generate_streamable_m3u()
-    generate_streamable_epg()
-    log.info("Finished stream_sources_refresh job")
+    db.op.update_job(job_id=scope.job_id, message="Finished refreshing stream sources")
+    generate_streamable_m3u(job_id=scope.job_id)
+    generate_streamable_epg(job_id=scope.job_id)
+    db.op.update_job(job_id=scope.job_id, message="Finished stream_sources_refresh job")
     for key, val in refresh_results.items():
         if not val:
             return False

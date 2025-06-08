@@ -6,13 +6,13 @@ from message.handler.update_media.provider.themoviedb_provider import Themoviedb
 from message.handler.job_media_scope import JobMediaScope
 from message.handler.child_job import create_child_job
 
-def handle(job_id, scope:JobMediaScope):
-    log.info(f"[WORKER] Handling an identify_unknown_media job")
+def handle(scope:JobMediaScope):
+    db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling an identify_unknown_media job")
 
     movies = []
     shows = []
     ticket = db.model.Ticket()
-    if scope == None or scope.is_unscoped():
+    if scope.is_unscoped():
         movies = db.op.get_unknown_movie_list()
         shows = db.op.get_unknown_show_list()
     else:
@@ -35,18 +35,16 @@ def handle(job_id, scope:JobMediaScope):
             show_episode = db.op.get_show_episode_by_id(ticket=ticket, episode_id=scope.target_id)
             shows = [show_episode.season.show]
 
-    movie_media_provider = ThemoviedbProvider()
-    if scope:
-        movie_media_provider = scope.get_movie_media_provider()
+    movie_media_provider = scope.get_movie_media_provider()
 
     if len(movies) > 0:
-        log.info(f"Identifying {len(movies)} unknown movies")
+        db.op.update_job(job_id=scope.job_id, message=f"Identifying {len(movies)} unknown movies")
         for movie in movies:
-            log.info(f"Searching media provider for movie {movie.directory}")
+            db.op.update_job(job_id=scope.job_id, message=f"Searching media provider for movie {movie.directory}")
             identities = movie_media_provider.identify(kind='Movie',query=movie.name,year=movie.release_year)
             if len(identities) > 0:
                 identity = identities[0]
-                log.info(f"Identified {movie.directory} as {identity['name']} [{identity['remote_id']}]")
+                db.op.update_job(job_id=scope.job_id, message=f"Identified {movie.directory} as {identity['name']} [{identity['remote_id']}]")
                 db.op.update_movie_remote_metadata_id(
                     movie_id=movie.id,
                     remote_metadata_id=identity['remote_id'],
@@ -62,20 +60,18 @@ def handle(job_id, scope:JobMediaScope):
                     'is_subjob': True
                 })
             else:
-                log.info(f"Unable to identify {movie.directory}")
+                db.op.update_job(job_id=scope.job_id, message=f"Unable to identify {movie.directory}")
 
-    show_media_provider = ThetvdbProvider()
-    if scope:
-        show_media_provider = scope.get_show_media_provider()
+    show_media_provider = scope.get_show_media_provider()
 
     if len(shows) > 0:
-        log.info(f"Identifying {len(shows)} unknown shows")
+        db.op.update_job(job_id=scope.job_id, message=f"Identifying {len(shows)} unknown shows")
         for show in shows:
-            log.info(f"Searching media provider for show {show.directory}")
+            db.op.update_job(job_id=scope.job_id, message=f"Searching media provider for show {show.directory}")
             identities = show_media_provider.identify(kind='Show',query=show.name,year=show.release_year)
             if len(identities) > 0:
                 identity = identities[0]
-                log.info(f"Identified {show.directory} as {identity['name']} [{identity['remote_id']}]")
+                db.op.update_job(job_id=scope.job_id, message=f"Identified {show.directory} as {identity['name']} [{identity['remote_id']}]")
                 db.op.update_show_remote_metadata_id(
                     show_id=show.id,
                     remote_metadata_id=identity['remote_id'],
@@ -92,9 +88,9 @@ def handle(job_id, scope:JobMediaScope):
                     'is_subjob': True
                 })
             else:
-                log.info(f"Unable to identify {show.directory}")
+                db.op.update_job(job_id=scope.job_id, message=f"Unable to identify {show.directory}")
 
     if len(shows) == 0 and len(movies) == 0:
-        log.info("No movies nor shows found to identify.")
+        db.op.update_job(job_id=scope.job_id, message="No movies nor shows found to identify.")
 
     return True

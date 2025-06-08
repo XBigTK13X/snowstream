@@ -30,8 +30,8 @@ def batches(it, size):
 
 
 class SchedulesDirect(StreamSourceImporter):
-    def __init__(self, stream_source):
-        super().__init__("Schedules Direct", stream_source)
+    def __init__(self, job_id, stream_source):
+        super().__init__(job_id, "Schedules Direct", stream_source)
         self.api_url = "https://json.schedulesdirect.org/20141201"
         self.headers = {"User-Agent": "Snowstream 1.0.0"}
 
@@ -47,9 +47,7 @@ class SchedulesDirect(StreamSourceImporter):
             self.api_url + "/token", headers=self.headers, json=token_payload
         ).json()
         if token_response["code"] == RESPONSE_CODE_OFFLINE:
-            log.error(
-                "Schedules Direct reports that it is offline. Try again in an hour."
-            )
+            db.op.update_job(job_id=self.job_id, message="Schedules Direct reports that it is offline. Try again in an hour.")
             return False
         self.headers["token"] = token_response["token"]
 
@@ -61,9 +59,7 @@ class SchedulesDirect(StreamSourceImporter):
         # For now, let's assume a simple account setup with a single lineup.
         # This may grow to support multiple lineups in the future.
         if len(lineups) == 0:
-            log.info(
-                f"Schedules Direct found no lineups for account [{self.stream_source.username}]"
-            )
+            db.op.update_job(job_id=self.job_id, message=f"Schedules Direct found no lineups for account [{self.stream_source.username}]")
             return False
         lineup = lineups[0]
         lineup_response = requests.get(
@@ -157,9 +153,7 @@ class SchedulesDirect(StreamSourceImporter):
                 program_count += 1
 
         initial_count = len(channel_lookup.keys())
-        log.info(
-            f"About to import {initial_count} channels with {program_count} programs"
-        )
+        db.op.update_job(job_id=self.job_id, message=f"About to import {initial_count} channels with {program_count} programs")
         prune_count = 0
         channel_count = 0
         for key, val in channel_lookup.items():
@@ -168,9 +162,7 @@ class SchedulesDirect(StreamSourceImporter):
             else:
                 channel_count += 1
                 channel_name = channel_lookup[key]["name"]
-                log.debug(
-                    f"({channel_count}/{initial_count}) Processing channel {channel_name}"
-                )
+                db.op.update_job(job_id=self.job_id, message=f"({channel_count}/{initial_count}) Processing channel {channel_name}")
                 channel = db.op.get_channel_by_parsed_id(channel_name)
                 if not channel:
                     channel = db.op.create_channel({"parsed_id": channel_name})
@@ -178,8 +170,6 @@ class SchedulesDirect(StreamSourceImporter):
                     program["channel_id"] = channel.id
                 db.sql.bulk_insert(db.model.StreamableSchedule, val["programs"])
 
-        log.info(
-            f"Found programs for {initial_count-prune_count} out of {initial_count} channels."
-        )
+        db.op.update_job(job_id=self.job_id, message=f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
 
         return True

@@ -7,13 +7,13 @@ from message.handler.job_media_scope import JobMediaScope
 
 shelf_handlers = {"Movies": sm.MoviesScanHandler, "Shows": ss.ShowsScanHandler}
 
-def handle(job_id:int, scope:JobMediaScope):
-    db.op.update_job(job_id=job_id,message=f"[WORKER] Handling a scan_shelves_content job")
+def handle(scope:JobMediaScope):
+    db.op.update_job(job_id=scope.job_id,message=f"[WORKER] Handling a scan_shelves_content job")
 
     shelves = []
     target_directory = None
     ticket = db.model.Ticket()
-    if scope == None or scope.is_unscoped():
+    if scope.is_unscoped():
         shelves = db.op.get_shelf_list()
     else:
         if scope.is_shelf():
@@ -35,7 +35,7 @@ def handle(job_id:int, scope:JobMediaScope):
             target_directory = show_episode.season.directory
             shelves = [show_episode.season.show.shelf]
 
-    if scope and scope.target_directory:
+    if scope.target_directory:
         target_directory = scope.target_directory
 
     results = {}
@@ -43,8 +43,8 @@ def handle(job_id:int, scope:JobMediaScope):
     for shelf in shelves:
         if target_directory and not shelf.local_path in target_directory:
             continue
-        db.op.update_job(job_id=job_id,message=f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
-        handler = shelf_handlers[shelf.kind](job_id=job_id, shelf=shelf, target_directory=target_directory)
+        db.op.update_job(job_id=scope.job_id,message=f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
+        handler = shelf_handlers[shelf.kind](job_id=scope.job_id, shelf=shelf, target_directory=target_directory)
 
         if not handler.get_files_in_directory():
             results[shelf.name] = False
@@ -61,14 +61,14 @@ def handle(job_id:int, scope:JobMediaScope):
         handlers.append(handler)
         results[shelf.name] = True
 
-    db.op.update_job(job_id=job_id,message="Checking if all scan_shelves_content job tasks were successful")
+    db.op.update_job(job_id=scope.job_id,message="Checking if all scan_shelves_content job tasks were successful")
     for key, val in results.items():
         if not val:
             return False
 
-    db.op.update_job(job_id=job_id,message="Finished walking the files on disk for shelves. Add found files to database.")
+    db.op.update_job(job_id=scope.job_id,message="Finished walking the files on disk for shelves. Add found files to database.")
     for handler in handlers:
-        db.op.update_job(job_id=job_id,message=f"Organizing [{handler.shelf.name} -> {handler.shelf.kind}] files into the library")
+        db.op.update_job(job_id=scope.job_id,message=f"Organizing [{handler.shelf.name} -> {handler.shelf.kind}] files into the library")
         handler.organize_metadata()
         handler.organize_images()
         handler.organize_videos()

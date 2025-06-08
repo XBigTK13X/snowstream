@@ -11,8 +11,8 @@ from log import log
 # https://github.com/leandcesar/themoviedb/tree/master/themoviedb/routes_sync
 # https://github.com/leandcesar/themoviedb/tree/master/themoviedb/schemas
 class ThemoviedbProvider(base.MediaProvider):
-    def __init__(self):
-        super().__init__("themoviedb")
+    def __init__(self,job_id):
+        super().__init__(job_id,"themoviedb")
         self.tmdb_client = TMDb(key=config.themoviedb_api_key, language="EN", region="US")
 
     def identify(self, kind:str, query:str, year:int=None):
@@ -21,7 +21,7 @@ class ThemoviedbProvider(base.MediaProvider):
             cache_key = f'tmdb-identify-{kind}-{year}-{query}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
-            log.info(f"{kind} result for {query} is fresh, return cached result [{cache_key}]")
+            db.op.update_job(job_id=self.job_id, message=f"{kind} result for {query} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
 
         results = []
@@ -63,9 +63,9 @@ class ThemoviedbProvider(base.MediaProvider):
         cache_key = f'tmdb-movie-{metadata_id}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
-            log.info(f"Movie result for {metadata_id} is fresh, return cached result [{cache_key}]")
+            db.op.update_job(job_id=self.job_id, message=f"Movie result for {metadata_id} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
-        log.info(f"Movie result for {metadata_id} is stale, read from tmdb")
+        db.op.update_job(job_id=self.job_id, message=f"Movie result for {metadata_id} is stale, read from tmdb")
         details = self.tmdb_client.movie(movie_id=metadata_id).details()
         movie = tmdb_utils.as_dict(details)
         movie['poster_url'] = details.poster_url()
@@ -102,10 +102,10 @@ class ThemoviedbProvider(base.MediaProvider):
         cache_key = f'tmdb-show-{metadata_id}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
-            log.info(f"Show result for {metadata_id} is fresh, return cached result [{cache_key}]")
+            db.op.update_job(job_id=self.job_id, message=f"Show result for {metadata_id} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
 
-        log.info(f"Show result for {metadata_id} is stale, read from tmdb")
+        db.op.update_job(job_id=self.job_id, message=f"Show result for {metadata_id} is stale, read from tmdb")
         details = self.tmdb_client.tv(tv_id=metadata_id).details()
         show = tmdb_utils.as_dict(details)
         show['poster_url'] = details.poster_url()
@@ -136,10 +136,10 @@ class ThemoviedbProvider(base.MediaProvider):
         cache_key = f'tmdb-show-{show_metadata_id}-season-{season_order}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
-            log.info(f"Season result for {show_metadata_id} {season_order} is fresh, return cached result [{cache_key}]")
+            db.op.update_job(job_id=self.job_id, message=f"Season result for {show_metadata_id} {season_order} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
 
-        log.info(f"Season result for {show_metadata_id} {season_order} is stale, read from tmdb [{cache_key}]")
+        db.op.update_job(job_id=self.job_id, message=f"Season result for {show_metadata_id} {season_order} is stale, read from tmdb [{cache_key}]")
         show = self.get_show_info(metadata_id=show_metadata_id)
         for season in show['seasons']:
             if int(season['season_number']) == int(season_order):

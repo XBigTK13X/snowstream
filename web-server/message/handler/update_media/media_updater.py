@@ -13,7 +13,8 @@ class FileStub:
         self.id = None
 
 class MediaUpdater:
-    def __init__(self, kind, scope):
+    def __init__(self, job_id, kind, scope):
+        self.job_id = job_id
         self.kind = kind
         self.media_provider = scope.get_media_provider()
         self.db = db
@@ -31,7 +32,7 @@ class MediaUpdater:
             with open(local_path, 'wb') as write_handle:
                 write_handle.write(download.content)
             magick.create_thumbnail(local_path=local_path,force_overwrite=True)
-            log.info(f"Downloaded {image_url} to {local_path}")
+            db.op.update_job(job_id=self.job_id, message=f"Downloaded {image_url} to {local_path}")
             return True
         return False
 

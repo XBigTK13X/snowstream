@@ -10,8 +10,8 @@ EPG_DATE_TIME_FORMAT = "%Y%m%d%H%M%S %z"
 
 
 class IptvEpg(StreamSourceImporter):
-    def __init__(self, stream_source):
-        super().__init__("IPTV EPG", stream_source)
+    def __init__(self, job_id, stream_source):
+        super().__init__(job_id, "IPTV EPG", stream_source)
 
     def download(self):
         if super().download():
@@ -56,9 +56,7 @@ class IptvEpg(StreamSourceImporter):
                         program["description"] = sub_node.text
                 channels[channel_id]["programs"].append(program)
         initial_count = len(channels.keys())
-        log.info(
-            f"About to import {initial_count} channels with {program_count} programs"
-        )
+        db.op.update_job(job_id=self.job_id, message=f"About to import {initial_count} channels with {program_count} programs")
         prune_count = 0
         channel_count = 0
         for key, val in channels.items():
@@ -66,7 +64,7 @@ class IptvEpg(StreamSourceImporter):
                 prune_count += 1
             else:
                 channel_count += 1
-                log.debug(f"({channel_count}/{initial_count}) Processing channel {key}")
+                db.op.update_job(job_id=self.job_id, message=f"({channel_count}/{initial_count}) Processing channel {key}")
                 channel = db.op.get_channel_by_parsed_id(key)
                 if not channel:
                     channel = db.op.create_channel({"parsed_id": key})
@@ -74,7 +72,5 @@ class IptvEpg(StreamSourceImporter):
                     program["channel_id"] = channel.id
                 db.sql.bulk_insert(db.model.StreamableSchedule, val["programs"])
 
-        log.info(
-            f"Found programs for {initial_count-prune_count} out of {initial_count} channels."
-        )
+        db.op.update_job(job_id=self.job_id, message=f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
         return True

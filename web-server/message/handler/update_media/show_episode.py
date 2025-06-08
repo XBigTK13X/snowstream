@@ -3,11 +3,12 @@ import os
 import ffmpeg
 import magick
 import json
+from db import db
 
 class ShowEpisode(MediaUpdater):
-    def __init__(self, scope):
-        super().__init__("ShowEpisode",scope)
-        self.log.info(f"Updating media for episode {scope.target_id}")
+    def __init__(self, job_id, scope):
+        super().__init__(job_id,"ShowEpisode",scope)
+        db.op.update_job(job_id=self.job_id, message=f"Updating media for episode {scope.target_id}")
         self.show_episode_id = scope.target_id
         self.show_metadata_id = scope.metadata_id
         self.season_order = scope.season_order
@@ -109,7 +110,7 @@ class ShowEpisode(MediaUpdater):
                     duration_seconds=ffprobe['duration_seconds'],
                     output_path=local_path
                 )
-                self.log.info(f"Took a screencap from {self.show_episode.name} to {local_path}")
+                db.op.update_job(job_id=self.job_id, message=f"Took a screencap from {self.show_episode.name} to {local_path}")
                 magick.create_thumbnail(local_path=local_path,force_overwrite=True)
         if not self.db.op.get_image_file_by_path(local_path=local_path):
             image_file = self.db.op.create_image_file(

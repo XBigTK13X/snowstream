@@ -49,10 +49,8 @@ def start():
             try:
                 kind = payload["kind"]
                 if kind in handlers:
-                    scope = None
-                    if 'input' in payload and payload['input'] != None:
-                        scope = JobMediaScope(payload['input'])
-                    if handlers[kind].handle(job_id=job_id, scope=scope):
+                    scope = JobMediaScope(job_id,payload['input'])
+                    if handlers[kind].handle(scope=scope):
                         db.op.update_job(job_id=job_id, status="complete")
                     else:
                         db.op.update_job(job_id=job_id, status="failed")

@@ -1,5 +1,6 @@
 class MediaProvider:
-    def __init__(self,kind):
+    def __init__(self,job_id,kind):
+        self.job_id = job_id
         self.kind = kind
 
 

@@ -51,30 +51,30 @@ class ShelfScanner:
 
     def get_files_in_directory(self):
         scan_directory = self.shelf.local_path if self.target_directory == None else self.target_directory
-        log.info(f"Scanning directory [{scan_directory}]")
+        db.op.update_job(job_id=self.job_id, message=f"Scanning directory [{scan_directory}]")
         file_count = 0
         for root, dirs, files in os.walk(scan_directory, followlinks=True):
             for shelf_file in files:
                 file_path = os.path.join(root, shelf_file)
                 file_count += 1
                 self.file_lookup[get_file_kind(file_path)].append(file_path)
-        log.info(f"Found [{file_count}] files to process")
+        db.op.update_job(job_id=self.job_id, message=f"Found [{file_count}] files to process")
         return True
 
     def ingest_files(self, kind: str):
         parsed_files = []
         for media_path in self.file_lookup[kind]:
-            # log.info(f"Found a {kind} file [{media_path}]")
+            # db.op.update_job(job_id=self.job_id, message=f"Found a {kind} file [{media_path}]")
             media_info = self.file_info_parser(file_path=media_path)
             if media_info == None:
-                log.info(f"Wasn't able to parse {kind} info for [{media_path}]")
+                db.op.update_job(job_id=self.job_id, message=f"Wasn't able to parse {kind} info for [{media_path}]")
                 continue
             media_info["kind"] = self.file_kind_identifier(
                 extension_kind=kind, info=media_info, file_path=media_path
             )
             media_info["file_path"] = media_path
             parsed_files.append(media_info)
-        log.info(
+        db.op.update_job(job_id=self.job_id, message=
             f"Ingested info for ({len(parsed_files)}/{len(self.file_lookup[kind])}) parsed {kind} file paths"
         )
         parsed_files = sorted(parsed_files, key=lambda x: x["file_path"])
@@ -95,7 +95,7 @@ class ShelfScanner:
         for info in items:
             progress_count += 1
             if progress_count % 500 == 0:
-                log.info(f'Ingesting item {progress_count} out of {len(items)}')
+                db.op.update_job(job_id=self.job_id, message=f'Ingesting item {progress_count} out of {len(items)}')
             local_path = info['file_path']
             creator = None
             if kind == 'video':

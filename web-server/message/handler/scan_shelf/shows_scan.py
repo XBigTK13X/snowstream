@@ -218,7 +218,7 @@ class ShowsScanHandler(ShelfScanner):
         for info in self.file_info_lookup["metadata"]:
             progress_count += 1
             if progress_count % 500 == 0:
-                log.info(f'Organize show metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
+                db.op.update_job(job_id=self.job_id, message=f'Organize show metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
             show_slug, show_id = self.get_or_create_show(info=info)
             season_slug = None
             season_id = None
@@ -282,7 +282,7 @@ class ShowsScanHandler(ShelfScanner):
         for info in self.file_info_lookup["image"]:
             progress_count += 1
             if progress_count % 500 == 0:
-                log.info(f'Organize show image {progress_count} out of {len(self.file_info_lookup["image"])}')
+                db.op.update_job(job_id=self.job_id, message=f'Organize show image {progress_count} out of {len(self.file_info_lookup["image"])}')
             show_slug, show_id = self.get_or_create_show(info=info)
             season_slug = None
             season_id = None
@@ -319,7 +319,7 @@ class ShowsScanHandler(ShelfScanner):
         for info in self.file_info_lookup["video"]:
             progress_count += 1
             if progress_count % 500 == 0:
-                log.info(f'Organize show video {progress_count} out of {len(self.file_info_lookup["video"])}')
+                db.op.update_job(job_id=self.job_id, message=f'Organize show video {progress_count} out of {len(self.file_info_lookup["video"])}')
             show_slug, show_id = self.get_or_create_show(info=info)
             season_slug, season_id = self.get_or_create_season(
                 show_slug=show_slug, show_id=show_id, info=info

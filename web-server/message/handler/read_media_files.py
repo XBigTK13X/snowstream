@@ -3,11 +3,11 @@ from db import db
 import api_models as am
 import nfo
 
-def handle(job_id, scope):
-    log.info(f"[WORKER] Handling a read_media_files job")
+def handle(scope):
+    db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a read_media_files job")
     metadata_files = None
     ticket = db.model.Ticket()
-    if not scope or scope.is_unscoped():
+    if scope.is_unscoped():
         metadata_files = db.op.get_metadata_file_list()
     elif scope.is_shelf():
         metadata_files = db.op.get_metadata_files_by_shelf(shelf_id=scope.target_id)
@@ -46,7 +46,7 @@ def handle(job_id, scope):
                     tag = am.Tag(**{'name':tag_name})
                     tag = db.op.upsert_tag(tag)
                 defined_tag_ids[tag_name] = tag.id
-                log.info(f"Processed [{tag.name}] for the first time on {metadata_file.local_path}")
+                db.op.update_job(job_id=scope.job_id, message=f"Processed [{tag.name}] for the first time on {metadata_file.local_path}")
             tag_id = defined_tag_ids[tag_name]
             if metadata_file.movie != None:
                 db.op.upsert_movie_tag(metadata_file.movie.id,tag_id)

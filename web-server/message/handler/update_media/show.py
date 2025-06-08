@@ -1,11 +1,12 @@
 from message.handler.update_media.media_updater import MediaUpdater
 from message.handler.child_job import create_child_job
 import os
+from db import db
 
 class Show(MediaUpdater):
-    def __init__(self,scope):
-        super().__init__("Show",scope)
-        self.log.info(f"Updating media for show {scope.target_id}")
+    def __init__(self,job_id,scope):
+        super().__init__(job_id,"Show",scope)
+        db.op.update_job(job_id=self.job_id, message=f"Updating media for show {scope.target_id}")
         self.show_id = scope.target_id
         self.metadata_id = scope.metadata_id
 

@@ -3,7 +3,8 @@ from log import log
 
 
 class StreamSourceImporter:
-    def __init__(self, kind, stream_source):
+    def __init__(self, job_id, kind, stream_source):
+        self.job_id = job_id
         self.kind = kind
         self.stream_source = stream_source
         self.cache_key = (
@@ -12,13 +13,13 @@ class StreamSourceImporter:
         self.cached_data = None
 
     def download(self):
-        log.info(f"{self.kind} stream source updating")
+        db.op.update_job(job_id=self.job_id, message=f"{self.kind} stream source updating")
         self.cached_data = db.op.get_cached_text_by_key(key=self.cache_key)
         if self.cached_data:
             self.cached_data = self.cached_data
-            log.info(f"Using cached data from previous {self.kind} download")
+            db.op.update_job(job_id=self.job_id, message=f"Using cached data from previous {self.kind} download")
             return True
-        log.info(
+        db.op.update_job(job_id=self.job_id, message=
             f"Remote data not cached. Get the latest from {self.kind} data provider."
         )
         return False

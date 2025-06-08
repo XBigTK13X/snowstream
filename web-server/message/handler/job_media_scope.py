@@ -2,10 +2,13 @@ from message.handler.update_media.provider.thetvdb_provider import ThetvdbProvid
 from message.handler.update_media.provider.themoviedb_provider import ThemoviedbProvider
 
 def parse(input, key):
+    if not input:
+        return None
     return input[key] if key in input else None
 
 class JobMediaScope:
-    def __init__(self, raw_job_input:dict):
+    def __init__(self, job_id:int, raw_job_input:dict):
+        self.job_id = job_id
         self.target_kind = parse(raw_job_input,'target_kind')
         self.target_id = parse(raw_job_input,'target_id')
         self.target_directory = parse(raw_job_input,'target_directory')
@@ -37,10 +40,10 @@ class JobMediaScope:
 
     def get_movie_media_provider(self):
         if not self.metadata_source or self.metadata_source == 'themoviedb':
-            return ThemoviedbProvider()
-        return ThetvdbProvider()
+            return ThemoviedbProvider(self.job_id)
+        return ThetvdbProvider(self.job_id)
 
     def get_show_media_provider(self):
         if not self.metadata_source or self.metadata_source == 'thetvdb':
-            return ThetvdbProvider()
-        return ThemoviedbProvider()
+            return ThetvdbProvider(self.job_id)
+        return ThemoviedbProvider(self.job_id)

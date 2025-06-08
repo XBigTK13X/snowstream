@@ -4,8 +4,8 @@ import cloudscraper
 from log import log
 
 class IptvM3u(StreamSourceImporter):
-    def __init__(self, stream_source):
-        super().__init__("IPTV M3U", stream_source)
+    def __init__(self, job_id, stream_source):
+        super().__init__(job_id, "IPTV M3U", stream_source)
 
     def download(self):
         if super().download():
@@ -38,5 +38,5 @@ class IptvM3u(StreamSourceImporter):
                 )
                 new_count += 1
         if new_count > 0:
-            log.info(f"Found {new_count} new streams")
+            db.op.update_job(job_id=self.job_id, message=f"Found {new_count} new streams")
         return True
