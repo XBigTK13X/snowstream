@@ -12,6 +12,7 @@ class User(BaseModel):
     permissions: str
     cduid: int | None = None
     ticket: list[int] | None = None
+    set_password: bool | None = False
 
 
 class AuthToken(BaseModel):

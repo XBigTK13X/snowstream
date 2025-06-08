@@ -11,16 +11,20 @@ export default function UserEditPage() {
     const [userPermissions, setUserPermissions] = C.React.useState('')
     const [userDeleteCount, setUserDeleteCount] = C.React.useState(3)
     const [userDeleted, setUserDeleted] = C.React.useState(false)
+    const [userHasPassword, setUserHasPassword] = C.React.useState(false)
     const localParams = C.useLocalSearchParams()
 
     C.React.useEffect(() => {
-        if (!userId && localParams.userId) {
+        if (userId == null && localParams.userId) {
             apiClient.getUser(localParams.userId).then((user) => {
-                setUserId(user.id)
-                setUserEnabled(user.enabled || true)
-                setUserUsername(user.username || '')
-                setUserDisplayName(user.display_name || '')
-                setUserPermissions(user.permissions || '')
+                if (user) {
+                    setUserId(user.id)
+                    setUserEnabled(user.enabled || true)
+                    setUserUsername(user.username || '')
+                    setUserDisplayName(user.display_name || '')
+                    setUserPermissions(user.permissions || '')
+                    setUserHasPassword(user.has_password)
+                }
             })
         }
     })
@@ -29,11 +33,19 @@ export default function UserEditPage() {
             id: userId,
             username: userUsername,
             displayName: userDisplayName,
-            rawPassword: userPassword,
             enabled: !!userEnabled,
             permissions: userPermissions
         }
-        apiClient.saveUser(payload)
+        if (userPassword) {
+            if (userUsername !== 'admin' || userPassword !== 'SNOWSTREAM_EMPTY') {
+                payload.rawPassword = userPassword
+                payload.setPassword = true
+            }
+        }
+        apiClient.saveUser(payload).then(() => {
+            setUserPassword('')
+            setUserId(null)
+        })
     }
 
     const deleteUser = () => {
@@ -79,6 +91,10 @@ export default function UserEditPage() {
 
             <C.SnowLabel>Permissions</C.SnowLabel>
             <C.SnowInput onChangeText={setUserPermissions} value={userPermissions} />
+
+            <C.SnowLabel>Change Password (Currently {userHasPassword ? 'Set' : 'None'})</C.SnowLabel>
+            <C.SnowText>Set to "SNOWSTREAM_EMPTY" for a no password user (nonadmin only).</C.SnowText>
+            <C.SnowInput onChangeText={setUserPassword} value={userPassword} />
 
             <C.SnowTextButton title="Save User" onPress={saveUser} />
             {deleteButton}

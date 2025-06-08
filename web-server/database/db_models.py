@@ -25,7 +25,7 @@ class User(BaseModel):
     __tablename__ = "snowstream_user"
     username = sa.Column(sa.Text, nullable=False)
     display_name = sa.Column(sa.Text, nullable=True)
-    hashed_password = sa.Column(sa.Text, nullable=False)
+    hashed_password = sa.Column(sa.Text, nullable=True)
     enabled = sa.Column(sa.Boolean)
     permissions = sa.Column(sa.Text)
     has_password = sa.Column(sa.Boolean, nullable=False)

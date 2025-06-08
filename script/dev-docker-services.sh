@@ -42,7 +42,6 @@ docker run -d \
     -v $(pwd)/.docker-volume/logs:/app/logs \
     -v $(pwd)/.docker-volume/postgresql:/var/lib/postgresql/data \
     -v $(pwd)/.docker-volume/rabbitmq:/var/lib/rabbitmq \
-    -v $(pwd)/.docker-volume/transcode:/app/cache-transcode \
     -v $(pwd)/web-server/.snowstream/thumbnail:/mnt/.snowstream/thumbnail \
     -v /mnt/j-media/tv:/mnt/j-media/tv \
     -v /mnt/j-media/photo:/mnt/j-media/photo \

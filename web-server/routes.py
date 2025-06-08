@@ -13,6 +13,7 @@ from transcode import transcode
 from settings import config
 import json
 import os
+import util
 
 def register(router):
     router = no_auth_required(router)
@@ -553,7 +554,7 @@ def no_auth_required(router):
 
     @router.get("/password/hash",tags=['Unauthed'])
     def password_hash(password: str):
-        return auth.get_password_hash(password)
+        return util.get_password_hash(password)
 
 
     @router.get("/user/list",tags=['Unauthed'])

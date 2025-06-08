@@ -70,9 +70,9 @@ def ffprobe_media(media_path:str):
                 entry['display'] += f" - {entry['language']}"
             else:
                 entry['language'] = '???'
-                entry['display'] += f' - {entry['language']}'
+                entry['display'] += f" - {entry['language']}"
             if 'tags' in stream and 'title' in stream['tags']:
-                entry['display'] += f' - {stream['tags']['title']}'
+                entry['display'] += f" - {stream['tags']['title']}"
                 entry['title'] = stream['tags']['title']
             entry['is_forced'] = False
             entry['is_default'] = False
@@ -92,7 +92,7 @@ def ffprobe_media(media_path:str):
                 entry['display'] = f"{stream['codec_name']}"
             entry['title'] = ''
             if 'tags' in stream and 'title' in stream['tags']:
-                 entry['display'] += f' - {stream['tags']['title']}'
+                 entry['display'] += f" - {stream['tags']['title']}"
                  entry['title'] = stream['tags']['title']
             entry['kind'] = 'subtitle'
             if 'pgs' in entry['display'].lower():

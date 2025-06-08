@@ -6,16 +6,16 @@ class Config {
         }
         catch {
             //Prod
-            this.webApiUrl = 'http://192.168.100.110:9064'
+            //this.webApiUrl = 'https://snowstream.9914.us'
 
             //Laptop Dev
             //this.webApiUrl = 'http://192.168.101.30:8000'
 
             //Desktop Dev
-            //this.webApiUrl = 'http://192.168.101.10:8000'
+            this.webApiUrl = 'http://192.168.101.10:8000'
         }
 
-        this.clientVersion = "0.9.4"
+        this.clientVersion = "0.9.5"
         this.clientBuildDate = "June 08, 2025"
         this.useNullVideoView = false
         this.debugVideoView = false

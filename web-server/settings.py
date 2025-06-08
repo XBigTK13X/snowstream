@@ -4,7 +4,7 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "0.9.4"
+        self.server_version = "0.9.5"
         self.server_build_date = "June 08, 2025"
 
         self.cached_text_ttl_seconds = 60 * 60 * 24 # One day

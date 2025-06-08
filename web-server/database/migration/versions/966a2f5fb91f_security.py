@@ -27,7 +27,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime, nullable=False),
         sa.Column("username", sa.Text, nullable=False),
         sa.Column("display_name", sa.Text),
-        sa.Column("hashed_password", sa.Text, nullable=False),
+        sa.Column("hashed_password", sa.Text, nullable=True),
         sa.Column("has_password", sa.Boolean, default=False),
         sa.Column("enabled", sa.Boolean, default=True),
         sa.Column("permissions", sa.Text),

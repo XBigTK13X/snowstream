@@ -309,14 +309,19 @@ export class ApiClient {
         return this.get('/user', { user_id: userId })
     }
 
-    saveUser(payload) {
-        return this.post('/user', {
-            id: payload.id,
-            username: payload.username,
-            display_name: payload.displayName,
-            enabled: payload.enabled,
-            permissions: payload.permissions
-        })
+    saveUser(details) {
+        let payload = {
+            id: details.id,
+            username: details.username,
+            display_name: details.displayName,
+            enabled: details.enabled,
+            permissions: details.permissions,
+        }
+        if (details.rawPassword) {
+            payload.raw_password = details.rawPassword
+            payload.set_password = details.setPassword
+        }
+        return this.post('/user', payload)
     }
 
     deleteUser(userId) {

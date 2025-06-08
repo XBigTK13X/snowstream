@@ -76,9 +76,13 @@ if not hasattr(bcrypt, '__about__'):
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password, hashed_password):
+    if hashed_password == None:
+        return True
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    if password == 'SNOWSTREAM_EMPTY':
+        return None
     return pwd_context.hash(password)
 
 def get_episode_slug(episode):

@@ -9,12 +9,13 @@ import util
 def create_user(user: am.User):
     with DbSession() as db:
         model_dump = user.model_dump()
-        model_dump['has_password'] = model_dump['raw_password'] != ''
+        model_dump['has_password'] = model_dump['raw_password'] != 'SNOWSTREAM_EMPTY'
         model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
         del model_dump['raw_password']
         del model_dump['id']
         del model_dump['cduid']
         del model_dump['ticket']
+        del model_dump['set_password']
         dbm = dm.User(**model_dump)
         db.add(dbm)
         db.commit()
@@ -30,17 +31,23 @@ def upsert_user(user: am.User):
     if not existing:
         return create_user(user)
     with DbSession() as db:
-        old_hash = existing.hashed_password
         model_dump = user.model_dump()
+        if model_dump['set_password']:
+            if user.raw_password != 'SNOWSTREAM_EMPTY' and user.raw_password != '':
+                model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
+                model_dump['has_password'] = True
+            else:
+                model_dump['hashed_password'] = util.get_password_hash('SNOWSTREAM_EMPTY')
+                model_dump['has_password'] = False
+        else:
+            model_dump['hashed_password'] = existing.hashed_password
+            model_dump['has_password'] = existing.has_password
+
+        del model_dump['raw_password']
+        del model_dump['set_password']
         del model_dump['cduid']
         del model_dump['ticket']
-        if user.raw_password != '':
-            model_dump['hashed_password'] = util.get_password_hash(model_dump['raw_password'])
-            model_dump['has_password'] = True
-        else:
-            model_dump['hashed_password'] = old_hash
-            model_dump['has_password'] = False
-        del model_dump['raw_password']
+
         existing = db.query(dm.User).filter(dm.User.id == existing.id).update(model_dump)
         db.commit()
         return existing
