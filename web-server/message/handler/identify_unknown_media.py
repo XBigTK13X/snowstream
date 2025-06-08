@@ -3,8 +3,8 @@ from db import db
 
 from message.handler.update_media.provider.thetvdb_provider import ThetvdbProvider
 from message.handler.update_media.provider.themoviedb_provider import ThemoviedbProvider
-from message.handler.job_media_scope import JobMediaScope
-from message.handler.child_job import create_child_job
+from message.job_media_scope import JobMediaScope
+from message.child_job import create_child_job
 
 def handle(scope:JobMediaScope):
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling an identify_unknown_media job")

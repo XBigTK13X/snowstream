@@ -64,7 +64,11 @@ class Streamable(BaseModel):
 
 
 class ShelfKind(BaseModel):
-    name: Union[Literal["Movies"], Literal["Shows"]]
+    name: Union[
+        Literal["Movies"],
+        Literal["Shows"],
+        Literal["Keepsakes"]
+    ]
 
 
 class Shelf(BaseModel):

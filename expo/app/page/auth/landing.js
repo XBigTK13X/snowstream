@@ -57,7 +57,15 @@ export default function LandingPage(props) {
                         }}
                     />
                 )
+            } else if (shelf.kind === 'Keepsakes') {
+                return (
+                    <C.SnowTextButton
+                        title={shelf.name}
+                        onPress={routes.func(routes.keepsakeList, { shelfId: shelf.id })}
+                    />
+                )
             }
+
             return null
         }))
     }

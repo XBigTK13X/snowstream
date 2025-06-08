@@ -4,6 +4,7 @@ from database.operation.continue_watching import *
 from database.operation.files import *
 from database.operation.image_file import *
 from database.operation.job import *
+from database.operation.keepsake import *
 from database.operation.metadata_file import *
 from database.operation.movie import *
 from database.operation.playing_queue import *

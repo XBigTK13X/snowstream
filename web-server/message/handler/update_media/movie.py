@@ -1,5 +1,4 @@
 from message.handler.update_media.media_updater import MediaUpdater
-from message.handler.child_job import create_child_job
 import os
 from db import db
 

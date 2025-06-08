@@ -78,8 +78,6 @@ def parse_movie_extras_video_file_info(matches):
     result["extra_name"] = matches.group("extra_name")
     return result
 
-image_formats = ['']
-
 def is_image(file_path):
     ff = file_path.lower()
     return '.jpg' in ff or '.png' in ff or '.bmp' in ff or '.jpeg' in ff

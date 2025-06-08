@@ -453,6 +453,10 @@ export class ApiClient {
         return this.post(`/movie/watch_count?movie_id=${movieId}`)
     }
 
+    getKeepsakeList(shelfId) {
+        return this.get(`/keepsake/list?shelf_id=${shelfId}`)
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

@@ -1,11 +1,16 @@
 from db import db
 
-import message.handler.scan_shelf.movies_scan as sm
-import message.handler.scan_shelf.shows_scan as ss
+from message.handler.scan_shelf.movies_scan import MoviesScanHandler
+from message.handler.scan_shelf.shows_scan import ShowsScanHandler
+from message.handler.scan_shelf.keepsakes_scan import KeepsakesScanHandler
 
-from message.handler.job_media_scope import JobMediaScope
+from message.job_media_scope import JobMediaScope
 
-shelf_handlers = {"Movies": sm.MoviesScanHandler, "Shows": ss.ShowsScanHandler}
+shelf_handlers = {
+    "Movies": MoviesScanHandler,
+    "Shows": ShowsScanHandler,
+    "Keepsakes": KeepsakesScanHandler
+}
 
 def handle(scope:JobMediaScope):
     db.op.update_job(job_id=scope.job_id,message=f"[WORKER] Handling a scan_shelves_content job")

@@ -23,6 +23,7 @@ let routes = {
     continueWatching: '/page/auth/list/continue-watching',
     episodeDetails: '/page/auth/details/episode',
     episodeList: '/page/auth/list/episode',
+    keepsakeList: '/page/auth/list/keepsake',
     landing: '/page/auth/landing',
     movieDetails: '/page/auth/details/movie',
     movieList: '/page/auth/list/movie',

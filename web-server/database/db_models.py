@@ -251,6 +251,8 @@ class ImageFile(BaseModel):
     show_season_image_file: sorm.Mapped["ShowSeasonImageFile"] = sorm.relationship(back_populates="image_file",overlaps="show_season")
     show: sorm.Mapped["Show"] = sorm.relationship(secondary="show_image_file", back_populates="image_files")
     show_image_file: sorm.Mapped["ShowImageFile"] = sorm.relationship(back_populates="image_file",overlaps="show")
+    keepsake: sorm.Mapped["Keepsake"] = sorm.relationship(secondary="keepsake_image_file", back_populates="image_files")
+    keepsake_image_file: sorm.Mapped["KeepsakeImageFile"] = sorm.relationship(back_populates="image_file",overlaps="keepsake")
 
 class MetadataFile(BaseModel):
     __tablename__ = "metadata_file"
@@ -284,6 +286,8 @@ class VideoFile(BaseModel):
     movie_video_file: sorm.Mapped["MovieVideoFile"] = sorm.relationship(back_populates="video_file",overlaps="movie")
     show_episode: sorm.Mapped["ShowEpisode"] = sorm.relationship(secondary="show_episode_video_file", back_populates="video_files")
     show_episode_video_file: sorm.Mapped["ShowEpisodeVideoFile"] = sorm.relationship(back_populates="video_file",overlaps="show_episode")
+    keepsake: sorm.Mapped["Keepsake"] = sorm.relationship(secondary="keepsake_video_file", back_populates="video_files")
+    keepsake_video_file: sorm.Mapped["KeepsakeVideoFile"] = sorm.relationship(back_populates="video_file",overlaps="keepsake")
 
 class Shelf(BaseModel):
     __tablename__ = "shelf"
@@ -293,6 +297,7 @@ class Shelf(BaseModel):
     network_path = sa.Column(sa.Text)
     movies: sorm.Mapped[List["Movie"]] = sorm.relationship(secondary="movie_shelf",back_populates="shelf")
     shows: sorm.Mapped[List["Show"]] = sorm.relationship(secondary="show_shelf",back_populates="shelf")
+    keepsakes: sorm.Mapped[List["Keepsake"]] = sorm.relationship(secondary="keepsake_shelf",back_populates="shelf")
 
 
 class Movie(BaseModel):
@@ -550,6 +555,30 @@ class StreamableSchedule(BaseModel):
         sa.ForeignKey("streamable_channel.id")
     )
     channel: sorm.Mapped["StreamableChannel"] = sorm.relationship(back_populates="schedules")
+
+class Keepsake(BaseModel):
+    __tablename__ = "keepsake"
+    directory = sa.Column(sa.Text)
+    video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="keepsake_video_file",back_populates="keepsake",overlaps="keepsake_video_file")
+    image_files: sorm.Mapped[List["ImageFile"]] = sorm.relationship(secondary="keepsake_image_file",back_populates="keepsake",overlaps="keepsake_image_file")
+    shelf: sorm.Mapped["Shelf"] = sorm.relationship(secondary="keepsake_shelf")
+
+class KeepsakeShelf(BaseModel):
+    __tablename__ = "keepsake_shelf"
+    keepsake_id = sa.Column(sa.Integer, sa.ForeignKey("keepsake.id"))
+    shelf_id = sa.Column(sa.Integer, sa.ForeignKey("shelf.id"))
+
+class KeepsakeVideoFile(BaseModel):
+    __tablename__ = "keepsake_video_file"
+    keepsake_id = sa.Column(sa.Integer, sa.ForeignKey("keepsake.id"))
+    video_file_id = sa.Column(sa.Integer, sa.ForeignKey("video_file.id"))
+    video_file: sorm.Mapped['VideoFile'] = sorm.relationship(back_populates="keepsake_video_file",overlaps="keepsake,video_files")
+
+class KeepsakeImageFile(BaseModel):
+    __tablename__ = "keepsake_image_file"
+    keepsake_id = sa.Column(sa.Integer, sa.ForeignKey("keepsake.id"))
+    image_file_id = sa.Column(sa.Integer, sa.ForeignKey("image_file.id"))
+    image_file: sorm.Mapped['ImageFile'] = sorm.relationship(back_populates='keepsake_image_file',overlaps="keepsake,image_files")
 
 # For whatever reason, aliased cannot be called until after ALL models are defined
 # Otherwise you get a bunch of "model cannot map X to Y" errors

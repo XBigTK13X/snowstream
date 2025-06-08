@@ -18,7 +18,7 @@ import message.handler.scan_shelves_content
 import message.handler.stream_sources_refresh
 import message.handler.update_media_files
 
-from message.handler.job_media_scope import JobMediaScope
+from message.job_media_scope import JobMediaScope
 
 handlers = {
         'identify_unknown_media': message.handler.identify_unknown_media,

@@ -464,6 +464,13 @@ def auth_required(router):
         return db.op.set_show_episode_watch_progress(ticket=auth_user.ticket,watch_progress=watch_progress)
 
 
+    @router.get('/keepsake/list')
+    def get_keepsake_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        shelf_id: int
+    ):
+        return db.op.get_keepsake_list_by_shelf(shelf_id=shelf_id)
+
     @router.get('/continue/watching',tags=['User'])
     def get_continue_watching_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
