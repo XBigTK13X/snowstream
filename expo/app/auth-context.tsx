@@ -86,10 +86,14 @@ export function SessionProvider(props: React.PropsWithChildren) {
                     return new Promise(resolve => {
                         apiClient.login({ username: username, password: password })
                             .then(loginResponse => {
-                                setDisplayName(loginResponse.displayName)
-                                setSession(loginResponse.authToken);
-                                setIsAdmin(loginResponse.isAdmin ? 'true' : 'false')
-                                resolve(loginResponse.authToken)
+                                if (loginResponse && loginResponse.failed) {
+                                    resolve(loginResponse)
+                                } else {
+                                    setDisplayName(loginResponse.displayName)
+                                    setSession(loginResponse.authToken);
+                                    setIsAdmin(loginResponse.isAdmin ? 'true' : 'false')
+                                    resolve({ token: loginResponse.authToken })
+                                }
                             })
                             .catch((err) => {
                                 console.log({ err })

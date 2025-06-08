@@ -141,6 +141,9 @@ export class ApiClient {
                         }
                         return resolve({ authToken: self.authToken, isAdmin: self.hasAdmin, displayName: self.displayName })
                     })
+                    .catch((err) => {
+                        return resolve({ failed: true, err: err })
+                    })
             })
         })
     }

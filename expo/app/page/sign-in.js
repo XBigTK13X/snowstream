@@ -33,8 +33,13 @@ export default function SignInPage() {
 
     function login() {
         signIn(user.username, password)
-            .then(() => {
-                routes.replace(routes.landing)
+            .then((result) => {
+                if (result.failed) {
+                    setErrors("Incorrect password for this user.")
+                }
+                else {
+                    routes.replace(routes.landing)
+                }
             })
             .catch((err) => {
                 setErrors(err)
@@ -50,8 +55,7 @@ export default function SignInPage() {
     if (users && user && user.has_password) {
         passwordForm = (
             <C.View>
-                <C.SnowText>Enter the password for {user.username}</C.SnowText>
-                <C.SnowLabel>Password</C.SnowLabel>
+                <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
                 <C.SnowInput secureTextEntry onSubmit={login} shouldFocus onChangeText={setPassword} value={password} />
                 <C.SnowGrid itemsPerRow={2} >
                     <C.SnowTextButton title="Login" onPress={login} />
@@ -78,7 +82,7 @@ export default function SignInPage() {
         <C.View>
             {userList}
             {passwordForm}
-            <C.SnowText>{errors ? JSON.stringify(errors) : ""}</C.SnowText>
+            <C.SnowLabel>{errors ? 'Errors: ' + JSON.stringify(errors) : ""}</C.SnowLabel>
         </C.View>
     )
 }
