@@ -45,6 +45,7 @@ docker run -d \
     -v $(pwd)/.docker-volume/transcode:/app/cache-transcode \
     -v $(pwd)/web-server/.snowstream/thumbnail:/mnt/.snowstream/thumbnail \
     -v /mnt/j-media/tv:/mnt/j-media/tv \
+    -v /mnt/j-media/photo:/mnt/j-media/photo \
     -v /mnt/m-media/movie:/mnt/m-media/movie \
     xbigtk13x/snowstream
 

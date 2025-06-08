@@ -21,7 +21,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
             items = []
             for progress in movies_in_progress:
                 movie = db_movie.get_movie_by_id(ticket=ticket,movie_id=progress.movie_id)
-                movie.kind = 'movie'
                 items.append(movie)
             results.append({
                 'kind': 'movies_in_progress',
@@ -39,7 +38,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
             items = []
             for progress in episodes_in_progress:
                 episode = db_episode.get_show_episode_by_id(ticket=ticket,episode_id=progress.show_episode_id)
-                episode.kind = 'episode'
                 items.append(episode)
             results.append({
                 'kind': 'episodes_in_progress',
@@ -55,8 +53,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
         for shelf in shelves:
             if shelf.kind == 'Movies':
                 movies = db_movie.get_partial_shelf_movie_list(ticket=ticket,shelf_id=shelf.id,only_watched=False)
-                for movie in movies:
-                    movie.kind = 'movie'
                 if not movies:
                     continue
                 unwatched_movies += movies
@@ -76,7 +72,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     if not episodes:
                         continue
                     next_episode = episodes[0]
-                    next_episode.kind = 'episode'
                     next_episode.poster_image = show.poster_image
                     next_episode.episode_slug = util.get_episode_slug(next_episode)
                     if next_season.season_order_counter == 1:

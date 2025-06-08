@@ -109,9 +109,9 @@ def get_playing_queue(
             playlist = db_playlist.get_playlist_by_tag_id(ticket=ticket,tag_id=tag_id)
             queue_entries = []
             for entry in playlist:
-                if entry.kind == 'movie':
+                if entry.model_kind == 'movie':
                     queue_entries.append(entry)
-                elif entry.kind == 'show':
+                elif entry.model_kind == 'show':
                     episodes = db_episode.get_show_episode_list_by_show(ticket=ticket, show_id=entry.id)
                     for episode in episodes:
                         if episode.season.season_order_counter > 0:
@@ -121,7 +121,7 @@ def get_playing_queue(
                 queue_entries = sorted(queue_entries, key=lambda xx:xx.watch_count.amount)
             items = []
             for entry in queue_entries:
-                items.append(f'm-{entry.id}' if entry.kind == 'movie' else f'e-{entry.id}')
+                items.append(f'm-{entry.id}' if entry.model_kind == 'movie' else f'e-{entry.id}')
             length = len(queue_entries)
             queue_content = ','.join(items)
         playing_queue = create_playing_queue(

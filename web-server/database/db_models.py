@@ -291,6 +291,7 @@ class VideoFile(BaseModel):
 
 class Shelf(BaseModel):
     __tablename__ = "shelf"
+    model_kind = 'shelf'
     name = sa.Column(sa.Text)
     kind = sa.Column(sa.Text)
     local_path = sa.Column(sa.Text)
@@ -302,6 +303,7 @@ class Shelf(BaseModel):
 
 class Movie(BaseModel):
     __tablename__ = "movie"
+    model_kind = 'movie'
     name = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
     directory = sa.Column(sa.Text)
@@ -365,6 +367,7 @@ class PlayingQueue(BaseModel):
 
 class Show(BaseModel):
     __tablename__ = "show"
+    model_kind = 'show'
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
@@ -406,6 +409,7 @@ class ShowMetadataFile(BaseModel):
 
 class ShowSeason(BaseModel):
     __tablename__ = "show_season"
+    model_kind = 'show_season'
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
     season_order_counter = sa.Column(sa.Integer)
@@ -446,6 +450,7 @@ class ShowEpisode(BaseModel):
         self.episode_slug = ''
 
     __tablename__ = "show_episode"
+    model_kind = 'show_episode'
     name = sa.Column(sa.Text)
     episode_order_counter = sa.Column(sa.Integer)
     episode_end_order_counter = sa.Column(sa.Integer)
@@ -495,6 +500,7 @@ class ShowEpisodeVideoFile(BaseModel):
 
 class StreamSource(BaseModel):
     __tablename__ = "stream_source"
+    model_kind = 'stream_source'
     kind = sa.Column(sa.Text)
     name = sa.Column(sa.Text, unique=True)
     url = sa.Column(sa.Text, unique=True)
@@ -517,6 +523,7 @@ class StreamSourceTag(BaseModel):
 
 class Streamable(BaseModel):
     __tablename__ = "streamable"
+    model_kind = 'streamable'
     url = sa.Column(sa.Text)
     name = sa.Column(sa.Text)
     stream_source_id: sorm.Mapped[int] = sorm.mapped_column(

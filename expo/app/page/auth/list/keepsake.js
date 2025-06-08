@@ -24,7 +24,7 @@ export function KeepsakeListPage(props) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}`
 
         const gotoItem = (item) => {
-            props.gotoItem(routes, shelfId, item.id, item)
+            routes.goto(routes.keepsakeDetails, { keepsakeId: item.id })
         }
 
         const shuffleAll = () => {
@@ -41,6 +41,13 @@ export function KeepsakeListPage(props) {
                     <C.SnowAdminButton title={`Scan Keepsakes`} onPress={() => {
                         props.scanContentsJob(apiClient, shelfId)
                     }} />
+                </C.SnowGrid>
+                <C.SnowGrid itemsPerRow={2}>
+                    {items.map((item, itemIndex) => {
+                        return (
+                            <C.SnowTextButton title={item.directory} onPress={() => { gotoItem(item) }} />
+                        )
+                    })}
                 </C.SnowGrid>
             </C.View >
         )

@@ -34,6 +34,7 @@ class KeepsakesScanHandler(ShelfScanner):
             keepsake = db.op.get_keepsake_by_directory(directory=info['directory'])
             if not keepsake:
                 keepsake = db.op.create_keepsake(directory=info['directory'])
+                db.op.add_keepsake_to_shelf(shelf_id=self.shelf.id, keepsake_id=keepsake.id)
             self.batch_lookup[info['directory']] = keepsake
         return self.batch_lookup[info['directory']]
 

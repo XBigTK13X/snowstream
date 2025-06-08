@@ -457,6 +457,10 @@ export class ApiClient {
         return this.get(`/keepsake/list?shelf_id=${shelfId}`)
     }
 
+    getKeepsake(keepsakeId) {
+        return this.get(`/keepsake?keepsake_id=${keepsakeId}`)
+    }
+
     debug() {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

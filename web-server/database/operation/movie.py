@@ -83,7 +83,6 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
         for movie in movies:
             if tag_id in movie.get_tag_ids():
                 movie = dm.set_primary_images(movie)
-                movie.kind = 'movie'
                 results.append(movie)
         return results
 
@@ -94,7 +93,6 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
         query = (
             db.query(dm.Movie)
             .join(dm.MovieShelf)
-            .filter(dm.MovieShelf.shelf_id == shelf_id)
             .options(sorm.joinedload(dm.Movie.image_files))
             .options(sorm.joinedload(dm.Movie.shelf))
         )
@@ -114,7 +112,6 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
                 continue
             movie = dm.set_primary_images(movie)
-            movie.kind = 'movie'
             results.append(movie)
         return results
 

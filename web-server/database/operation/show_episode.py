@@ -50,7 +50,6 @@ def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int,search_query:st
                 continue
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)
-            episode.kind = 'episode'
             results.append(episode)
         return results
 
@@ -100,7 +99,6 @@ def get_show_episode_list_by_show(ticket:dm.Ticket,show_id:int):
                 continue
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)
-            episode.kind = 'episode'
             if not episode.watch_count:
                 episode.watch_count = dm.WatchCount()
                 episode.watch_count.amount = 0
@@ -169,7 +167,6 @@ def get_show_episode_list_by_season(ticket:dm.Ticket,show_season_id: int):
                 continue
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)
-            episode.kind = 'episode'
             results.append(episode)
         return results
 

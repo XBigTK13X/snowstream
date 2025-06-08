@@ -23,6 +23,7 @@ let routes = {
     continueWatching: '/page/auth/list/continue-watching',
     episodeDetails: '/page/auth/details/episode',
     episodeList: '/page/auth/list/episode',
+    keepsakeDetails: '/page/auth/details/keepsake',
     keepsakeList: '/page/auth/list/keepsake',
     landing: '/page/auth/landing',
     movieDetails: '/page/auth/details/movie',
@@ -75,19 +76,19 @@ routes.reset = () => {
 }
 
 routes.gotoItem = (item) => {
-    if (item.kind === 'movie') {
+    if (item.model_kind === 'movie') {
         routes.goto(routes.movieDetails, {
             shelfId: item.shelf.id,
             movieId: item.id
         })
     }
-    else if (item.kind === 'show') {
+    else if (item.model_kind === 'show') {
         routes.goto(routes.seasonList, {
             shelfId: item.shelf.id,
             showId: item.id
         })
     }
-    else if (item.kind === 'season') {
+    else if (item.model_kind === 'season') {
         routes.goto(routes.episodeList, {
             shelfId: item.show.shelf.id,
             showId: item.show.id,
@@ -96,7 +97,7 @@ routes.gotoItem = (item) => {
             seasonOrder: item.season_order_counter,
         })
     }
-    else if (item.kind === 'episode') {
+    else if (item.model_kind === 'episode') {
         routes.goto(routes.episodeDetails, {
             shelfId: item.season.show.shelf.id,
             showId: item.season.show.id,

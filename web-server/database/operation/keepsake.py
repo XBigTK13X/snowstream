@@ -36,13 +36,22 @@ def get_keepsake_by_directory(directory:str):
             .first()
         )
 
+def get_keepsake_by_id(keepsake_id:int):
+    with DbSession() as db:
+        return (
+            db.query(dm.Keepsake)
+            .filter(dm.Keepsake.id == keepsake_id)
+            .options(sorm.joinedload(dm.Keepsake.video_files))
+            .options(sorm.joinedload(dm.Keepsake.image_files))
+            .options(sorm.joinedload(dm.Keepsake.shelf))
+            .first()
+        )
+
 def get_keepsake_list_by_shelf(shelf_id: int, search_query:str=None):
     with DbSession() as db:
         query = (
             db.query(dm.Keepsake)
             .join(dm.KeepsakeShelf)
-            .filter(dm.KeepsakeShelf.shelf_id == shelf_id)
-            .options(sorm.joinedload(dm.Keepsake.image_files))
             .options(sorm.joinedload(dm.Keepsake.shelf))
         )
         if search_query:
@@ -53,11 +62,7 @@ def get_keepsake_list_by_shelf(shelf_id: int, search_query:str=None):
         )
         if search_query:
             query = query.limit(config.search_results_per_shelf_limit)
-        keepsakes = query.all()
-        results = []
-        for keepsake in keepsakes:
-            keepsake.kind = 'keepsake'
-        return results
+        return query.all()
 
 def create_keepsake_video_file(keepsake_id: int, video_file_id: int):
     with DbSession() as db:

@@ -26,6 +26,10 @@ const styles = {
         height: 170 * mult,
         width: 200 * mult
     },
+    wrapperSquare: {
+        height: 250 * mult,
+        width: 250 * mult
+    },
     selected: {
         borderColor: 'white'
     },
@@ -45,6 +49,10 @@ const styles = {
     imageWide: {
         height: 90 * mult,
         width: 150 * mult,
+    },
+    imageSquare: {
+        height: 200 * mult,
+        width: 200 * mult
     },
     text: {
         height: 80,
@@ -77,19 +85,20 @@ export function SnowImageButton(props) {
     }
 
     const wrapperStyle = [styles.wrapper]
+    const imageStyle = [styles.image]
     if (props.wide) {
         wrapperStyle.push(styles.wrapperWide)
+        imageStyle.push(styles.imageWide)
+    }
+    if (props.square) {
+        wrapperStyle.push(styles.wrapperSquare)
+        imageStyle.push(styles.imageSquare)
     }
     if (props.selected) {
         wrapperStyle.push(styles.selected)
     }
     if (focused) {
         wrapperStyle.push(styles.focused)
-    }
-
-    const imageStyle = [styles.image]
-    if (props.wide) {
-        imageStyle.push(styles.imageWide)
     }
 
     let imageSource = { uri: props.imageUrl }

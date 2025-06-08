@@ -78,7 +78,6 @@ def get_show_list_by_tag_id(ticket:dm.Ticket, tag_id:int):
         for show in shows:
             if tag_id in show.get_tag_ids():
                 show = dm.set_primary_images(show)
-                show.kind = 'show'
                 results.append(show)
         return results
 
@@ -110,7 +109,6 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None)
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):
                 continue
             show = dm.set_primary_images(show)
-            show.kind = 'show'
             results.append(show)
         return results
 
