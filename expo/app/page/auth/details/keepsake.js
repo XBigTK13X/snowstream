@@ -31,40 +31,81 @@ export default function KeepsakeDetailsPage() {
         setZoomedItem(null)
     }
 
-    console.log("Rendering")
-
     if (zoomedItem) {
+        let modalContent = null
+        if (zoomedItem.model_kind === 'image_file') {
+            let imageUrl = zoomedItem.web_path
+            if (C.Platform.OS == 'web') {
+                // Full size images cause the app to crash on web!?!?
+                imageUrl = zoomedItem.thumbnail_web_path
+            }
+            modalContent = <C.Image
+                style={styles.zoomedImage}
+                resizeMode="contain"
+                source={{ uri: imageUrl }} />
+        } else {
+            modalContent = <C.SnowVideoPlayer
+                videoUrl={zoomedItem.web_path}
+            />
+        }
         return (
             <C.Modal
                 onRequestClose={closeModal}
             >
                 <C.TouchableOpacity
-                    activeOpacity={1.0}
                     onPress={closeModal}
                     style={styles.modal}>
-                    <C.Image
-                        style={styles.zoomedImage}
-                        resizeMode="contain"
-                        source={zoomedItem.web_path} />
+                    {modalContent}
                 </C.TouchableOpacity>
             </C.Modal>
         )
     }
 
+    let videos = null
+    if (keepsake.video_files) {
+        videos = (
+            <C.View>
+                <C.SnowLabel>Videos</C.SnowLabel>
+                <C.SnowGrid>
+                    {keepsake.video_files.map((video, videoIndex) => {
+                        return (
+                            <C.SnowTextButton
+                                title={video.name}
+                                key={videoIndex}
+                                onPress={() => { setZoomedItem(video) }}
+                            />
+                        )
+                    })}
+                </C.SnowGrid>
+            </C.View>
+        )
+    }
+    let images = null
+    if (keepsake.image_files) {
+        images = (
+            <C.View>
+                <C.SnowLabel>Images</C.SnowLabel>
+                <C.SnowGrid>
+                    {keepsake.image_files.map((image, imageIndex) => {
+                        return (
+                            <C.SnowImageButton
+                                square
+                                key={imageIndex}
+                                imageUrl={image.thumbnail_web_path}
+                                onPress={() => { setZoomedItem(image) }}
+                            />
+                        )
+                    })}
+                </C.SnowGrid>
+            </C.View>
+        )
+    }
     if (keepsake) {
         return (
-            <C.SnowGrid>
-                {keepsake.image_files.map((image, imageIndex) => {
-                    return (
-                        <C.SnowImageButton
-                            square
-                            key={imageIndex}
-                            imageUrl={image.thumbnail_web_path}
-                            onPress={() => { setZoomedItem(image) }}
-                        />
-                    )
-                })}
-            </C.SnowGrid>
+            <C.View>
+                {videos}
+                {images}
+            </C.View>
         )
     }
     return <C.Text>Loading stream source {localParams.streamSourceId}.</C.Text>

@@ -45,7 +45,7 @@ export function KeepsakeListPage(props) {
                 <C.SnowGrid itemsPerRow={2}>
                     {items.map((item, itemIndex) => {
                         return (
-                            <C.SnowTextButton title={item.directory} onPress={() => { gotoItem(item) }} />
+                            <C.SnowTextButton key={itemIndex} title={item.directory} onPress={() => { gotoItem(item) }} />
                         )
                     })}
                 </C.SnowGrid>

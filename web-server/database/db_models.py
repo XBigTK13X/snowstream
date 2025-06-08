@@ -237,6 +237,7 @@ class Tag(BaseModel):
 
 class ImageFile(BaseModel):
     __tablename__ = "image_file"
+    model_kind = "image_file"
     shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
     kind = sa.Column(sa.Text)
     local_path = sa.Column(sa.Text)
@@ -256,6 +257,7 @@ class ImageFile(BaseModel):
 
 class MetadataFile(BaseModel):
     __tablename__ = "metadata_file"
+    model_kind = "metadata_file"
     shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
     kind = sa.Column(sa.Text)
     local_path = sa.Column(sa.Text)
@@ -274,6 +276,7 @@ class MetadataFile(BaseModel):
 
 class VideoFile(BaseModel):
     __tablename__ = "video_file"
+    model_kind = 'video_file'
     shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
     kind = sa.Column(sa.Text)
     local_path = sa.Column(sa.Text)

@@ -62,3 +62,7 @@ Run `script/prod-generate-apks.sh`
     <img src="/images/attribution/logo1.png" height="45">
     Metadata provided by TheTVDB. Please consider adding missing information or subscribing.
 </a>
+
+# Escape the dreaded Android emulator pinch to zoom
+
+Double click the magnifying glass twice on the external controls.
