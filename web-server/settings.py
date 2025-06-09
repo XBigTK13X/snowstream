@@ -6,17 +6,16 @@ class Config:
     def __init__(self):
         self.server_version = "0.9.5"
         self.server_build_date = "June 08, 2025"
+        self.app_data_dir = '.snowstream/'
 
         self.cached_text_ttl_seconds = 60 * 60 * 24 # One day
         self.ffmpeg_screencap_percent_location = 0.15
-        self.ffprobe_dir = ".snowstream/ffprobe"
         self.frontend_url = "http://localhost:3000"
         self.is_deployed_environment = None
         self.jwt_algorithm = "HS256"
         self.jwt_expire_unit = "days"
         self.jwt_expire_value = 30
         self.jwt_secret_hex = "0" * 32
-        self.log_file_path = ".snowstream/log/snowstream.log"
         self.tail_log_paths = [
             '.snowstream/log/worker.log',
             '.snowstream/log/server.log'
@@ -41,11 +40,8 @@ class Config:
         self.themoviedb_api_key = None
         self.thetvdb_api_key = None
         self.thumbnail_dimensions = "340x500"
-        self.thumbnail_dir = ".snowstream/thumbnail"
         self.transcode_create_max_wait_seconds = 10
-        self.transcode_dir = ".snowstream/cache-transcode"
         self.transcode_disconnect_seconds = 60
-        self.transcode_log_dir = ".snowstream/log/transcode/"
         self.transcode_port_range = "11910-11950"
         self.transcode_stream_host = '0.0.0.0'
         self.transcode_video_codec = "h264_nvenc"
@@ -55,10 +51,17 @@ class Config:
         self.web_media_url = "<need_to_set_an_env_var-SNOWSTREAM_WEB_MEDIA_URL>"
 
         self.refresh_postgres_url()
+        self.refresh_app_data_dirs()
 
     def refresh_postgres_url(self):
         self.postgres_url = f"postgresql://{self.postgres_username}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_database}"
 
+    def refresh_app_data_dirs(self):
+        self.thumbnail_dir = f"{self.app_data_dir}thumbnail"
+        self.ffprobe_dir = f"{self.app_data_dir}ffprobe"
+        self.log_file_path = f"{self.app_data_dir}log/snowstream.log"
+        self.transcode_dir = f"{self.app_data_dir}cache-transcode"
+        self.transcode_log_dir = f"{self.app_data_dir}log/transcode/"
 
 config = Config()
 
@@ -67,8 +70,9 @@ for key, val in vars(config).items():
     env_var_value = os.environ.get(env_var_key)
     if env_var_value:
         setattr(config, key, env_var_value)
-        if "POSTGRES" in env_var_key:
-            config.refresh_postgres_url()
+
+config.refresh_postgres_url()
+config.refresh_app_data_dirs()
 
 if config.is_deployed_environment:
     config.tail_log_paths = [

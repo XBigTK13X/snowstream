@@ -64,7 +64,7 @@ class ShelfScanner:
     def ingest_files(self, kind: str):
         parsed_files = []
         for media_path in self.file_lookup[kind]:
-            # db.op.update_job(job_id=self.job_id, message=f"Found a {kind} file [{media_path}]")
+            db.op.update_job(job_id=self.job_id,message=f"Processing {kind} [{media_path}]")
             media_info = self.file_info_parser(file_path=media_path)
             if media_info == None:
                 db.op.update_job(job_id=self.job_id, message=f"Wasn't able to parse {kind} info for [{media_path}]")
