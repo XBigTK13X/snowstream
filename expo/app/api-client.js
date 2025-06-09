@@ -1,5 +1,5 @@
 import axios from 'axios'
-import config from './settings'
+import { config } from './settings'
 import DeviceInfo from 'react-native-device-info';
 import { UAParser } from 'ua-parser-js'
 import { Platform } from 'react-native'
@@ -474,3 +474,5 @@ export class ApiClient {
         console.log({ baseURL: this.baseURL, authToken: this.authToken })
     }
 }
+
+export default ApiClient

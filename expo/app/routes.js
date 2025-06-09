@@ -2,7 +2,7 @@ import { router } from 'expo-router'
 
 // DOCS router method https://docs.expo.dev/router/navigating-pages/#imperative-navigation
 
-let routes = {
+export var routes = {
     root: '/',
     admin: {
         dashboard: '/page/auth/admin/dashboard',
@@ -77,6 +77,7 @@ routes.reset = () => {
 }
 
 routes.gotoItem = (item) => {
+    console.log({ item })
     if (item.model_kind === 'movie') {
         routes.goto(routes.movieDetails, {
             shelfId: item.shelf.id,
@@ -89,7 +90,7 @@ routes.gotoItem = (item) => {
             showId: item.id
         })
     }
-    else if (item.model_kind === 'season') {
+    else if (item.model_kind === 'show_season') {
         routes.goto(routes.episodeList, {
             shelfId: item.show.shelf.id,
             showId: item.show.id,
@@ -98,7 +99,7 @@ routes.gotoItem = (item) => {
             seasonOrder: item.season_order_counter,
         })
     }
-    else if (item.model_kind === 'episode') {
+    else if (item.model_kind === 'show_episode') {
         routes.goto(routes.episodeDetails, {
             shelfId: item.season.show.shelf.id,
             showId: item.season.show.id,
@@ -114,4 +115,8 @@ routes.gotoItem = (item) => {
     }
 }
 
-module.exports = routes
+export function QuietReactWarning() {
+    return null
+}
+
+export default QuietReactWarning

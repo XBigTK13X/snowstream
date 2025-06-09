@@ -4,7 +4,7 @@ import SnowText from './comp/snow-text'
 import SnowTextButton from './comp/snow-text-button'
 import { useStorageState } from './use-storage-state';
 import { ApiClient } from './api-client'
-const routes = require('./routes')
+import { routes } from './routes'
 
 
 const AuthContext = React.createContext<{
@@ -116,3 +116,5 @@ export function SessionProvider(props: React.PropsWithChildren) {
         </AuthContext.Provider>
     );
 }
+
+export default SessionProvider

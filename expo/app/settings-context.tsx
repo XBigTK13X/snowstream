@@ -1,7 +1,6 @@
 import React from 'react';
-const settings = require('./settings')
-const routes = require('./routes')
-
+import { config } from './settings'
+import { routes } from './routes'
 const SettingsContext = React.createContext<{
     config: object;
     routes: object;
@@ -26,10 +25,12 @@ export function SettingsProvider(props: React.PropsWithChildren) {
     return (
         <SettingsContext.Provider
             value={{
-                config: settings,
+                config: config,
                 routes: routes
             }}>
             {props.children}
         </SettingsContext.Provider>
     );
 }
+
+export default SettingsProvider

@@ -50,7 +50,7 @@ export function WatchableListPage(props) {
         }
 
         const gotoItem = (item) => {
-            props.gotoItem(routes, shelfId, item.id, item)
+            routes.gotoItem(item)
         }
 
         const toggleWatchedItem = (item) => {

@@ -70,7 +70,7 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket, show_id: int):
     with DbSession() as db:
         query = (
             db.query(dm.ShowSeason)
-            .options(sorm.joinedload(dm.ShowSeason.show))
+            .options(sorm.joinedload(dm.ShowSeason.show).joinedload(dm.Show.shelf))
             .filter(dm.ShowSeason.show_id == show_id)
             .options(sorm.joinedload(dm.ShowSeason.image_files))
             .options(sorm.joinedload(dm.ShowSeason.metadata_files))

@@ -64,16 +64,20 @@ class ShelfScanner:
     def ingest_files(self, kind: str):
         parsed_files = []
         for media_path in self.file_lookup[kind]:
-            db.op.update_job(job_id=self.job_id,message=f"Processing {kind} [{media_path}]")
-            media_info = self.file_info_parser(file_path=media_path)
-            if media_info == None:
-                db.op.update_job(job_id=self.job_id, message=f"Wasn't able to parse {kind} info for [{media_path}]")
-                continue
-            media_info["kind"] = self.file_kind_identifier(
-                extension_kind=kind, info=media_info, file_path=media_path
-            )
-            media_info["file_path"] = media_path
-            parsed_files.append(media_info)
+            try:
+                media_info = self.file_info_parser(file_path=media_path)
+                if media_info == None:
+                    db.op.update_job(job_id=self.job_id, message=f"Wasn't able to parse {kind} info for [{media_path}]")
+                    continue
+                media_info["kind"] = self.file_kind_identifier(
+                    extension_kind=kind, info=media_info, file_path=media_path
+                )
+                media_info["file_path"] = media_path
+                parsed_files.append(media_info)
+            except Exception as e:
+                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing {kind} [{media_path}]")
+                import traceback
+                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
         db.op.update_job(job_id=self.job_id, message=
             f"Ingested info for ({len(parsed_files)}/{len(self.file_lookup[kind])}) parsed {kind} file paths"
         )

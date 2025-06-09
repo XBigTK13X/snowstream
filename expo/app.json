@@ -1,6 +1,8 @@
 {
   "expo": {
-    "version": "0.9.5",
+    "version": "0.9.6",
+    "scheme": "snowstream",
+    "newArchEnabled": false,
     "plugins": [
       [
         "@react-native-tvos/config-tv",
@@ -36,7 +38,8 @@
       "visible": "sticky-immersive"
     },
     "android": {
-      "package": "com.simplepathstudios.snowstream"
+      "package": "com.simplepathstudios.snowstream",
+      "edgeToEdgeEnabled": true
     },
     "ios": {
       "bundleIdentifier": "com.simplepathstudios.snowstream"

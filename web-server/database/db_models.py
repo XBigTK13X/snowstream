@@ -22,6 +22,9 @@ def set_primary_images(model):
     return model
 
 class User(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'snowstream_user'
     __tablename__ = "snowstream_user"
     username = sa.Column(sa.Text, nullable=False)
     display_name = sa.Column(sa.Text, nullable=True)
@@ -236,8 +239,10 @@ class Tag(BaseModel):
     streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(secondary="streamable_tag",back_populates="tags")
 
 class ImageFile(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'image_file'
     __tablename__ = "image_file"
-    model_kind = "image_file"
     shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
     kind = sa.Column(sa.Text)
     local_path = sa.Column(sa.Text)
@@ -256,8 +261,10 @@ class ImageFile(BaseModel):
     keepsake_image_file: sorm.Mapped["KeepsakeImageFile"] = sorm.relationship(back_populates="image_file",overlaps="keepsake")
 
 class MetadataFile(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'metadata_file'
     __tablename__ = "metadata_file"
-    model_kind = "metadata_file"
     shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
     kind = sa.Column(sa.Text)
     local_path = sa.Column(sa.Text)
@@ -275,8 +282,10 @@ class MetadataFile(BaseModel):
 
 
 class VideoFile(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'video_file'
     __tablename__ = "video_file"
-    model_kind = 'video_file'
     shelf_id: sorm.Mapped[int] = sorm.mapped_column(sa.ForeignKey("shelf.id"))
     kind = sa.Column(sa.Text)
     local_path = sa.Column(sa.Text)
@@ -293,8 +302,10 @@ class VideoFile(BaseModel):
     keepsake_video_file: sorm.Mapped["KeepsakeVideoFile"] = sorm.relationship(back_populates="video_file",overlaps="keepsake")
 
 class Shelf(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'shelf'
     __tablename__ = "shelf"
-    model_kind = 'shelf'
     name = sa.Column(sa.Text)
     kind = sa.Column(sa.Text)
     local_path = sa.Column(sa.Text)
@@ -305,8 +316,10 @@ class Shelf(BaseModel):
 
 
 class Movie(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'movie'
     __tablename__ = "movie"
-    model_kind = 'movie'
     name = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
     directory = sa.Column(sa.Text)
@@ -369,8 +382,10 @@ class PlayingQueue(BaseModel):
     length = sa.Column(sa.Integer)
 
 class Show(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'show'
     __tablename__ = "show"
-    model_kind = 'show'
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
     release_year = sa.Column(sa.Integer)
@@ -411,8 +426,10 @@ class ShowMetadataFile(BaseModel):
     metadata_file: sorm.Mapped['MetadataFile'] = sorm.relationship(back_populates='show_metadata_file',overlaps="show,metadata_files")
 
 class ShowSeason(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'show_season'
     __tablename__ = "show_season"
-    model_kind = 'show_season'
     name = sa.Column(sa.Text)
     directory = sa.Column(sa.Text)
     season_order_counter = sa.Column(sa.Integer)
@@ -448,12 +465,12 @@ class ShowSeasonMetadataFile(BaseModel):
     metadata_file: sorm.Mapped['MetadataFile'] = sorm.relationship(back_populates='show_season_metadata_file',overlaps="show_season,metadata_files")
 
 class ShowEpisode(BaseModel):
-    def __init__(self):
-        super().__init__()
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'show_episode'
         self.episode_slug = ''
 
     __tablename__ = "show_episode"
-    model_kind = 'show_episode'
     name = sa.Column(sa.Text)
     episode_order_counter = sa.Column(sa.Integer)
     episode_end_order_counter = sa.Column(sa.Integer)
@@ -502,8 +519,10 @@ class ShowEpisodeVideoFile(BaseModel):
 
 
 class StreamSource(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'stream_source'
     __tablename__ = "stream_source"
-    model_kind = 'stream_source'
     kind = sa.Column(sa.Text)
     name = sa.Column(sa.Text, unique=True)
     url = sa.Column(sa.Text, unique=True)
@@ -525,8 +544,10 @@ class StreamSourceTag(BaseModel):
     tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
 
 class Streamable(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'streamable'
     __tablename__ = "streamable"
-    model_kind = 'streamable'
     url = sa.Column(sa.Text)
     name = sa.Column(sa.Text)
     stream_source_id: sorm.Mapped[int] = sorm.mapped_column(
@@ -567,6 +588,9 @@ class StreamableSchedule(BaseModel):
     channel: sorm.Mapped["StreamableChannel"] = sorm.relationship(back_populates="schedules")
 
 class Keepsake(BaseModel):
+    @sorm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'keepsake'
     __tablename__ = "keepsake"
     directory = sa.Column(sa.Text)
     video_files: sorm.Mapped[List["VideoFile"]] = sorm.relationship(secondary="keepsake_video_file",back_populates="keepsake",overlaps="keepsake_video_file")

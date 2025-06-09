@@ -17,15 +17,7 @@ export default function SeasonListPage() {
     const refreshList = (routes, shelfId, watchStatus) => {
         routes.goto(routes.seasonList, { shelfId, showId, watchStatus })
     }
-    const gotoItem = (routes, shelfId, itemId, item) => {
-        routes.goto(routes.episodeList, {
-            shelfId,
-            showId: showId,
-            seasonId: itemId,
-            showName: showName,
-            seasonOrder: item.season_order_counter,
-        })
-    }
+
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleSeasonWatchStatus(itemId)
     }
@@ -62,7 +54,6 @@ export default function SeasonListPage() {
             getPageTitle={getPageTitle}
             loadItems={loadItems}
             refreshList={refreshList}
-            gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
             updateMediaJob={updateMediaJob}

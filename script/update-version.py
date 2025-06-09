@@ -8,6 +8,7 @@ CLIENT_SETTINGS_PATH = './expo/app/settings.js'
 SERVER_SETTINGS_PATH = './web-server/settings.py'
 EXPO_SETTINGS_PATH = './expo/app.json'
 PACKAGE_JSON_PATH = './expo/package.json'
+BUILD_GRADLE_PATH = './expo/android/app/build.gradle'
 
 if len(sys.argv) < 2:
     version = None
@@ -67,4 +68,10 @@ update_info(
     input_path=PACKAGE_JSON_PATH,
     version_needle='"version"',
     version_replacement=f'    "version": "{build_version}",\n'
+)
+
+update_info(
+    input_path=BUILD_GRADLE_PATH,
+    version_needle='versionName',
+    version_replacement=f'        versionName "{build_version}"\n'
 )

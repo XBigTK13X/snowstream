@@ -9,9 +9,7 @@ export default function MovieListPage() {
     const refreshList = (routes, shelfId, watchStatus) => {
         routes.goto(routes.movieList, { shelfId, watchStatus })
     }
-    const gotoItem = (routes, shelfId, itemId) => {
-        routes.goto(routes.movieDetails, { shelfId, movieId: itemId })
-    }
+
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleMovieWatchStatus(itemId)
     }
@@ -35,7 +33,6 @@ export default function MovieListPage() {
             kind="Shelf"
             loadItems={loadItems}
             refreshList={refreshList}
-            gotoItem={gotoItem}
             toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
         />

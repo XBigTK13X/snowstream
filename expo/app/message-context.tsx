@@ -35,3 +35,5 @@ export function MessageDisplayProvider(props: React.PropsWithChildren) {
         </MessageDisplayContext.Provider>
     );
 }
+
+export default MessageDisplayProvider

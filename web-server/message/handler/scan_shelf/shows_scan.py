@@ -216,119 +216,134 @@ class ShowsScanHandler(ShelfScanner):
     def organize_metadata(self):
         progress_count = 0
         for info in self.file_info_lookup["metadata"]:
-            progress_count += 1
-            if progress_count % 500 == 0:
-                db.op.update_job(job_id=self.job_id, message=f'Organize show metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
-            show_slug, show_id = self.get_or_create_show(info=info)
-            season_slug = None
-            season_id = None
-            show_nfo = None
-            if info["asset_scope"] in AssetScope.HAS_SEASON:
-                season_slug, season_id = self.get_or_create_season(
-                    show_slug=show_slug, show_id=show_id, info=info
-                )
+            try:
+                progress_count += 1
+                if progress_count % 500 == 0:
+                    db.op.update_job(job_id=self.job_id, message=f'Organize show metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
+                show_slug, show_id = self.get_or_create_show(info=info)
+                season_slug = None
+                season_id = None
+                show_nfo = None
+                if info["asset_scope"] in AssetScope.HAS_SEASON:
+                    season_slug, season_id = self.get_or_create_season(
+                        show_slug=show_slug, show_id=show_id, info=info
+                    )
 
-            if info["asset_scope"] == AssetScope.SHOW:
-                if not db.op.get_show_metadata_file(
-                    show_id=show_id, metadata_file_id=info["id"]
-                ):
-                    db.op.create_show_metadata_file(
+                if info["asset_scope"] == AssetScope.SHOW:
+                    if not db.op.get_show_metadata_file(
                         show_id=show_id, metadata_file_id=info["id"]
-                    )
-                    show_nfo = nfo.nfo_path_to_dict(info['file_path'])
-                    if 'year' in show_nfo:
-                        db.op.update_show_release_year(
-                            show_id=show_id,
-                            release_year=int(show_nfo['year'])
+                    ):
+                        db.op.create_show_metadata_file(
+                            show_id=show_id, metadata_file_id=info["id"]
                         )
-                    remote_id = None
-                    remote_source = None
-                    if 'tmdbid' in show_nfo:
-                        remote_id = int(show_nfo['tmdbid'])
-                        remote_source = 'themoviedb'
-                    if 'tvdbid' in show_nfo:
-                        remote_id = int(show_nfo['tvdbid'])
-                        remote_source = 'thetvdb'
-                    if remote_id != None:
-                        db.op.update_show_remote_metadata_id(
-                            show_id=show_id,
-                            remote_metadata_id=remote_id,
-                            remote_metadata_source=remote_source
-                        )
-            elif info["asset_scope"] == AssetScope.SEASON:
-                if not db.op.get_show_season_metadata_file(
-                    show_season_id=season_id, metadata_file_id=info["id"]
-                ):
-                    db.op.create_show_season_metadata_file(
+                        show_nfo = nfo.nfo_path_to_dict(info['file_path'])
+                        if 'year' in show_nfo:
+                            db.op.update_show_release_year(
+                                show_id=show_id,
+                                release_year=int(show_nfo['year'])
+                            )
+                        remote_id = None
+                        remote_source = None
+                        if 'tmdbid' in show_nfo:
+                            remote_id = int(show_nfo['tmdbid'])
+                            remote_source = 'themoviedb'
+                        if 'tvdbid' in show_nfo:
+                            remote_id = int(show_nfo['tvdbid'])
+                            remote_source = 'thetvdb'
+                        if remote_id != None:
+                            db.op.update_show_remote_metadata_id(
+                                show_id=show_id,
+                                remote_metadata_id=remote_id,
+                                remote_metadata_source=remote_source
+                            )
+                elif info["asset_scope"] == AssetScope.SEASON:
+                    if not db.op.get_show_season_metadata_file(
                         show_season_id=season_id, metadata_file_id=info["id"]
-                    )
-            else:
-                episode = self.get_episode_from_info(season_id=season_id,info=info)
-                if not db.op.get_show_episode_metadata_file(
-                    show_episode_id=episode.id, metadata_file_id=info["id"]
-                ):
-                    db.op.create_show_episode_metadata_file(
-                        show_episode_id=episode.id, metadata_file_id=info["id"]
-                    )
-                    metadata = nfo.nfo_path_to_dict(nfo_path=info['file_path'])
-                    if 'title' in metadata:
-                        db.op.update_show_episode_name(
-                            show_episode_id=episode.id,
-                            name=metadata['title']
+                    ):
+                        db.op.create_show_season_metadata_file(
+                            show_season_id=season_id, metadata_file_id=info["id"]
                         )
+                else:
+                    episode = self.get_episode_from_info(season_id=season_id,info=info)
+                    if not db.op.get_show_episode_metadata_file(
+                        show_episode_id=episode.id, metadata_file_id=info["id"]
+                    ):
+                        db.op.create_show_episode_metadata_file(
+                            show_episode_id=episode.id, metadata_file_id=info["id"]
+                        )
+                        metadata = nfo.nfo_path_to_dict(nfo_path=info['file_path'])
+                        if 'title' in metadata:
+                            db.op.update_show_episode_name(
+                                show_episode_id=episode.id,
+                                name=metadata['title']
+                            )
+            except Exception as e:
+                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing metadata [{info['file_path']}]")
+                import traceback
+                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
 
     def organize_images(self):
         progress_count = 0
         for info in self.file_info_lookup["image"]:
-            progress_count += 1
-            if progress_count % 500 == 0:
-                db.op.update_job(job_id=self.job_id, message=f'Organize show image {progress_count} out of {len(self.file_info_lookup["image"])}')
-            show_slug, show_id = self.get_or_create_show(info=info)
-            season_slug = None
-            season_id = None
-            if info["asset_scope"] in AssetScope.HAS_SEASON:
-                season_slug, season_id = self.get_or_create_season(
-                    show_slug=show_slug, show_id=show_id, info=info
-                )
-            if info["asset_scope"] == AssetScope.SHOW:
-                if not db.op.get_show_image_file(
-                    show_id=show_id, image_file_id=info["id"]
-                ):
-                    db.op.create_show_image_file(
+            try:
+                progress_count += 1
+                if progress_count % 500 == 0:
+                    db.op.update_job(job_id=self.job_id, message=f'Organize show image {progress_count} out of {len(self.file_info_lookup["image"])}')
+                show_slug, show_id = self.get_or_create_show(info=info)
+                season_slug = None
+                season_id = None
+                if info["asset_scope"] in AssetScope.HAS_SEASON:
+                    season_slug, season_id = self.get_or_create_season(
+                        show_slug=show_slug, show_id=show_id, info=info
+                    )
+                if info["asset_scope"] == AssetScope.SHOW:
+                    if not db.op.get_show_image_file(
                         show_id=show_id, image_file_id=info["id"]
-                    )
-            elif info["asset_scope"] == AssetScope.SEASON:
-                if not db.op.get_show_season_image_file(
-                    show_season_id=season_id, image_file_id=info["id"]
-                ):
-                    db.op.create_show_season_image_file(
+                    ):
+                        db.op.create_show_image_file(
+                            show_id=show_id, image_file_id=info["id"]
+                        )
+                elif info["asset_scope"] == AssetScope.SEASON:
+                    if not db.op.get_show_season_image_file(
                         show_season_id=season_id, image_file_id=info["id"]
-                    )
-            else:
-                episode = self.get_episode_from_info(season_id=season_id,info=info)
-                image_file_association = db.op.get_show_episode_image_file(
-                    show_episode_id=episode.id, image_file_id=info["id"]
-                )
-                if not image_file_association:
-                    db.op.create_show_episode_image_file(
+                    ):
+                        db.op.create_show_season_image_file(
+                            show_season_id=season_id, image_file_id=info["id"]
+                        )
+                else:
+                    episode = self.get_episode_from_info(season_id=season_id,info=info)
+                    image_file_association = db.op.get_show_episode_image_file(
                         show_episode_id=episode.id, image_file_id=info["id"]
                     )
+                    if not image_file_association:
+                        db.op.create_show_episode_image_file(
+                            show_episode_id=episode.id, image_file_id=info["id"]
+                        )
+            except Exception as e:
+                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing image [{info['file_path']}]")
+                import traceback
+                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
 
     def organize_videos(self):
         progress_count = 0
         for info in self.file_info_lookup["video"]:
-            progress_count += 1
-            if progress_count % 500 == 0:
-                db.op.update_job(job_id=self.job_id, message=f'Organize show video {progress_count} out of {len(self.file_info_lookup["video"])}')
-            show_slug, show_id = self.get_or_create_show(info=info)
-            season_slug, season_id = self.get_or_create_season(
-                show_slug=show_slug, show_id=show_id, info=info
-            )
-            episode = self.get_episode_from_info(season_id=season_id,info=info)
-            video_file_association = db.op.get_show_episode_video_file(
-                show_episode_id=episode.id, video_file_id=info["id"]
-            )
-            if not video_file_association:
-                db.op.create_show_episode_video_file(
+            try:
+                progress_count += 1
+                if progress_count % 500 == 0:
+                    db.op.update_job(job_id=self.job_id, message=f'Organize show video {progress_count} out of {len(self.file_info_lookup["video"])}')
+                show_slug, show_id = self.get_or_create_show(info=info)
+                season_slug, season_id = self.get_or_create_season(
+                    show_slug=show_slug, show_id=show_id, info=info
+                )
+                episode = self.get_episode_from_info(season_id=season_id,info=info)
+                video_file_association = db.op.get_show_episode_video_file(
                     show_episode_id=episode.id, video_file_id=info["id"]
                 )
+                if not video_file_association:
+                    db.op.create_show_episode_video_file(
+                        show_episode_id=episode.id, video_file_id=info["id"]
+                    )
+            except Exception as e:
+                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing video [{info['file_path']}]")
+                import traceback
+                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")

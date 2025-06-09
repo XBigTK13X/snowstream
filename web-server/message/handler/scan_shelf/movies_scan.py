@@ -151,57 +151,72 @@ class MoviesScanHandler(ShelfScanner):
     def organize_images(self):
         progress_count = 0
         for info in self.file_info_lookup["image"]:
-            progress_count += 1
-            if progress_count % 500 == 0:
-                db.op.update_job(job_id=self.job_id, message=f'Organize movie image {progress_count} out of {len(self.file_info_lookup["image"])}')
-            movie_slug, movie = self.get_or_create_movie(info=info)
-            if not db.op.get_movie_image_file(
-                movie_id=movie.id, image_file_id=info["id"]
-            ):
-                db.op.create_movie_image_file(
+            try:
+                progress_count += 1
+                if progress_count % 500 == 0:
+                    db.op.update_job(job_id=self.job_id, message=f'Organize movie image {progress_count} out of {len(self.file_info_lookup["image"])}')
+                movie_slug, movie = self.get_or_create_movie(info=info)
+                if not db.op.get_movie_image_file(
                     movie_id=movie.id, image_file_id=info["id"]
-                )
+                ):
+                    db.op.create_movie_image_file(
+                        movie_id=movie.id, image_file_id=info["id"]
+                    )
+            except Exception as e:
+                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing image [{info['file_path']}]")
+                import traceback
+                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
 
     def organize_metadata(self):
         progress_count = 0
         for info in self.file_info_lookup["metadata"]:
-            progress_count += 1
-            if progress_count % 500 == 0:
-                db.op.update_job(job_id=self.job_id, message=f'Organize movie metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
-            movie_slug, movie = self.get_or_create_movie(info=info)
-            if not db.op.get_movie_metadata_file(
-                movie_id=movie.id, metadata_file_id=info["id"]
-            ):
-                db.op.create_movie_metadata_file(
+            try:
+                progress_count += 1
+                if progress_count % 500 == 0:
+                    db.op.update_job(job_id=self.job_id, message=f'Organize movie metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
+                movie_slug, movie = self.get_or_create_movie(info=info)
+                if not db.op.get_movie_metadata_file(
                     movie_id=movie.id, metadata_file_id=info["id"]
-                )
-                movie_nfo = nfo.nfo_path_to_dict(info['file_path'])
-                remote_id = None
-                remote_source = None
-                if 'tvdbid' in movie_nfo:
-                    remote_id = int(movie_nfo['tvdbid'])
-                    remote_source = 'thetvdb'
-                if 'tmdbid' in movie_nfo:
-                    remote_id = int(movie_nfo['tmdbid'])
-                    remote_source = 'themoviedb'
-                if remote_id:
-                    movie = db.op.update_movie_remote_metadata_id(
-                        movie_id=movie.id,
-                        remote_metadata_id=remote_id,
-                        remote_metadata_source=remote_source
+                ):
+                    db.op.create_movie_metadata_file(
+                        movie_id=movie.id, metadata_file_id=info["id"]
                     )
+                    movie_nfo = nfo.nfo_path_to_dict(info['file_path'])
+                    remote_id = None
+                    remote_source = None
+                    if 'tvdbid' in movie_nfo:
+                        remote_id = int(movie_nfo['tvdbid'])
+                        remote_source = 'thetvdb'
+                    if 'tmdbid' in movie_nfo:
+                        remote_id = int(movie_nfo['tmdbid'])
+                        remote_source = 'themoviedb'
+                    if remote_id:
+                        movie = db.op.update_movie_remote_metadata_id(
+                            movie_id=movie.id,
+                            remote_metadata_id=remote_id,
+                            remote_metadata_source=remote_source
+                        )
+            except Exception as e:
+                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing metadata [{info['file_path']}]")
+                import traceback
+                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
 
 
     def organize_videos(self):
         progress_count = 0
         for info in self.file_info_lookup["video"]:
-            progress_count += 1
-            if progress_count % 500 == 0:
-                db.op.update_job(job_id=self.job_id, message=f'Organize movie video {progress_count} out of {len(self.file_info_lookup["video"])}')
-            movie_slug, movie = self.get_or_create_movie(info=info)
-            if not db.op.get_movie_video_file(
-                movie_id=movie.id, video_file_id=info["id"]
-            ):
-                db.op.create_movie_video_file(
+            try:
+                progress_count += 1
+                if progress_count % 500 == 0:
+                    db.op.update_job(job_id=self.job_id, message=f'Organize movie video {progress_count} out of {len(self.file_info_lookup["video"])}')
+                movie_slug, movie = self.get_or_create_movie(info=info)
+                if not db.op.get_movie_video_file(
                     movie_id=movie.id, video_file_id=info["id"]
-                )
+                ):
+                    db.op.create_movie_video_file(
+                        movie_id=movie.id, video_file_id=info["id"]
+                    )
+            except Exception as e:
+                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing video [{info['file_path']}]")
+                import traceback
+                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")

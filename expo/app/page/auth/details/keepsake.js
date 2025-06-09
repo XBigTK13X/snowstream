@@ -7,6 +7,11 @@ const styles = {
         backgroundColor: 'black'
     },
     zoomedImage: {
+        width: "100%",
+        height: 800,
+        justifyContent: 'center',
+    },
+    webImage: {
         flex: 1
     }
 }
@@ -36,14 +41,37 @@ export default function KeepsakeDetailsPage() {
         if (zoomedItem.model_kind === 'image_file') {
             let imageUrl = zoomedItem.web_path
             if (C.Platform.OS == 'web') {
-                // Full size images cause the app to crash on web!?!?
-                imageUrl = zoomedItem.thumbnail_web_path
+                // Full size images cause the app to crash on web if they are in a modal
+                return (
+                    <C.View style={styles.zoomedImage}>
+                        <C.TouchableOpacity
+                            onPress={closeModal}
+                            style={styles.modal}>
+                            <C.Image
+                                style={styles.webImage}
+                                resizeMode="contain"
+                                source={{ uri: imageUrl }} />
+                        </C.TouchableOpacity>
+                    </C.View>)
             }
             modalContent = <C.Image
                 style={styles.zoomedImage}
                 resizeMode="contain"
                 source={{ uri: imageUrl }} />
         } else {
+            if (C.Platform.OS == 'web') {
+                // Full size images cause the app to crash on web if they are in a modal
+                return (
+                    <C.View style={styles.zoomedImage}>
+                        <C.TouchableOpacity
+                            onPress={closeModal}
+                            style={styles.modal}>
+                            <C.SnowVideoPlayer
+                                videoUrl={zoomedItem.web_path}
+                            />
+                        </C.TouchableOpacity>
+                    </C.View>)
+            }
             modalContent = <C.SnowVideoPlayer
                 videoUrl={zoomedItem.web_path}
             />
@@ -59,6 +87,10 @@ export default function KeepsakeDetailsPage() {
                 </C.TouchableOpacity>
             </C.Modal>
         )
+    }
+
+    if (!keepsake) {
+        return "Loading keepsake"
     }
 
     let videos = null
