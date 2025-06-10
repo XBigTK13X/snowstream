@@ -38,10 +38,9 @@ export default function KeepsakeDetailsPage() {
 
     if (zoomedItem) {
         let modalContent = null
-        if (zoomedItem.model_kind === 'image_file') {
-            let imageUrl = zoomedItem.web_path
-            if (C.Platform.OS == 'web') {
-                // Full size images cause the app to crash on web if they are in a modal
+        // Full size images cause the app to crash on web if they are in a modal
+        if (C.Platform.OS == 'web') {
+            if (zoomedItem.model_kind === 'image_file') {
                 return (
                     <C.View style={styles.zoomedImage}>
                         <C.TouchableOpacity
@@ -50,17 +49,11 @@ export default function KeepsakeDetailsPage() {
                             <C.Image
                                 style={styles.webImage}
                                 resizeMode="contain"
-                                source={{ uri: imageUrl }} />
+                                source={{ uri: zoomedItem.web_path }} />
                         </C.TouchableOpacity>
                     </C.View>)
             }
-            modalContent = <C.Image
-                style={styles.zoomedImage}
-                resizeMode="contain"
-                source={{ uri: imageUrl }} />
-        } else {
-            if (C.Platform.OS == 'web') {
-                // Full size images cause the app to crash on web if they are in a modal
+            else if (zoomedItem.model_kind === 'video_file') {
                 return (
                     <C.View style={styles.zoomedImage}>
                         <C.TouchableOpacity
@@ -72,9 +65,19 @@ export default function KeepsakeDetailsPage() {
                         </C.TouchableOpacity>
                     </C.View>)
             }
-            modalContent = <C.SnowVideoPlayer
-                videoUrl={zoomedItem.web_path}
-            />
+        }
+        else {
+            if (zoomedItem.model_kind === 'image_file') {
+                modalContent = <C.Image
+                    style={styles.zoomedImage}
+                    resizeMode="contain"
+                    source={{ uri: imageUrl }} />
+            }
+            else if (zoomedItem.model_kind === 'video_file') {
+                modalContent = <C.SnowVideoPlayer
+                    videoUrl={zoomedItem.web_path}
+                />
+            }
         }
         return (
             <C.Modal
