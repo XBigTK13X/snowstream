@@ -76,7 +76,7 @@ function Footer() {
         <C.View style={styles.footer}>
             <C.Text>{'\n'}</C.Text>
             <C.SnowText>
-                Client v{config.clientVersion} talking to server at [{config.webApiUrl}] - {authedInfo}
+                snowstream client v{config.clientVersion} talking to server at [{config.webApiUrl}] - {authedInfo}
             </C.SnowText>
         </C.View>
     )
