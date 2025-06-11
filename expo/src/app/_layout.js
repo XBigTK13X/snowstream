@@ -89,7 +89,7 @@ function SafeAreaView(props) {
         )
     }
     return (
-        <C.TVFocusGuideView style={styles.page}>
+        <C.TVFocusGuideView style={styles.safeArea}>
             {props.children}
         </C.TVFocusGuideView>
     )
