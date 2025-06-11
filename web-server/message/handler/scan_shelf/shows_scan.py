@@ -30,12 +30,12 @@ SHOW_SEASON_REGEX = re.compile(
 SHOW_EPISODE_REGEX = re.compile(
     r"(?P<directory>.*?)"
     r"(?P<show_name>[^\/]*?)\/"
-    r"(Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/"
+    r"((Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/)?"
     r"(?P<metadata>metadata\/)?"
-    r"S(?P<season_start>\d{0,5})E(?P<episode_start>\d{1,6})"
-    r"(-(S(?P<season_end>\d{1,6}))?E(?P<episode_end>\d{0,5}))?"
-    r"( - (?P<title>.*)?)?"
-    r"\.(?P<format>[a-zA-Z0-9]{3,6})",
+    r"([^\/]*?)(S(?P<season_start>\d{0,5}))?(E)?(?P<episode_start>\d{1,6})"
+    r"((-(S(?P<season_end>\d{1,6}))?(E)?(?P<episode_end>\d{0,5}))?"
+    r"( - (?P<title>.*)?)?)?"
+    r"\s*\.(?P<format>[a-zA-Z0-9]{3,6})",
     re.IGNORECASE,
 )
 
@@ -56,11 +56,14 @@ def parse_season_file_info(matches):
     result = {}
     result["asset_scope"] = AssetScope.SEASON
     result["show_name"] = matches.group("show_name")
-    result["season"] = (
-        0
-        if match_lookup["season_order_counter"] == None
-        else int(matches.group("season_order_counter"))
-    )
+    raw_season = None
+    if 'season_start' in match_lookup and match_lookup['season_start'] != None:
+        raw_season = match_lookup['season_start']
+    elif 'season_order_counter' in match_lookup:
+        raw_season = match_lookup['season_order_counter']
+        if raw_season == None:
+            raw_season = 0
+    result['season'] = int(raw_season)
     result["directory"] = Path(
         os.path.join(matches.group("directory"), matches.group("show_name") + "/")
     ).as_posix()
@@ -73,12 +76,14 @@ def parse_episode_file_info(matches):
     result = {}
     result["show_name"] = matches.group("show_name")
     result["asset_scope"] = AssetScope.EPISODE
-    result["season"] = (
-        0
-        if match_lookup["season_order_counter"] == None
-        else int(matches.group("season_order_counter"))
-    )
-    result["season_start"] = int(matches.group("season_start"))
+    raw_season = None
+    if 'season_start' in match_lookup and match_lookup['season_start'] != None:
+        raw_season = match_lookup['season_start']
+    elif 'season_order_counter' in match_lookup:
+        raw_season = match_lookup['season_order_counter']
+        if raw_season == None:
+            raw_season = 0
+    result['season'] = int(raw_season)
     result["episode_start"] = int(matches.group("episode_start"))
     result["season_end"] = (
         None if match_lookup["season_end"] == None else int(matches.group("season_end"))
