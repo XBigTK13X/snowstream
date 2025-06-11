@@ -1,7 +1,6 @@
 import C from '../common'
 export default function SignInPage() {
     const { session, routes } = C.useAppContext()
-    console.log({ session })
     if (session) {
         return <C.Redirect href={routes.landing} />
     }
@@ -12,10 +11,8 @@ export default function SignInPage() {
     const [password, setPassword] = C.React.useState("")
 
     C.React.useEffect(() => {
-        console.log({ users })
         if (!users) {
             apiClient.getUserList().then((response) => {
-                console.log({ response })
                 setUsers(response)
             })
         }
@@ -38,14 +35,12 @@ export default function SignInPage() {
     }
 
     const login = () => {
-        console.log({ user, password })
         signIn(user.username, password)
             .then((result) => {
                 if (result.failed) {
                     setErrors("Incorrect password for this user.")
                 }
                 else {
-                    console.log({ result })
                     routes.replace(routes.landing)
                 }
             })

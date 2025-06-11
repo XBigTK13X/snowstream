@@ -104,7 +104,6 @@ function MessageDisplay() {
 }
 
 export default function RootLayout() {
-    console.log("RootLayout")
     if (C.Platform.OS === 'android') {
         NavigationBar.setVisibilityAsync('hidden')
     }
@@ -113,8 +112,6 @@ export default function RootLayout() {
     if (C.Platform.OS === 'web') {
         scrollStyle.push({ height: C.getWindowHeight() - 300 })
     }
-
-    console.log("Rendering the root layout")
 
     return (
         <SafeAreaView>

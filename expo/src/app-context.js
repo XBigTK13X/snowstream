@@ -66,7 +66,6 @@ export function useAppContext() {
 }
 
 export function AppContextProvider(props) {
-    console.log("AppContextProvider")
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
     const [message, setMessage] = React.useState("All is well")
@@ -75,10 +74,7 @@ export function AppContextProvider(props) {
     const [displayName, setDisplayName] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
 
-    //console.log({ apiError, apiClient, message, session, isAdmin, displayName, isLoading })
-
     React.useEffect(() => {
-        console.log("Init apiClient")
         if (!apiClient) {
             const storedSession = getStoredValue('session')
             setSession(storedSession)
@@ -134,7 +130,6 @@ export function AppContextProvider(props) {
     }
 
     if (apiError) {
-        console.log("Api error")
         return (
             <Modal>
                 <View style={styles.prompt}>
@@ -150,7 +145,6 @@ export function AppContextProvider(props) {
 
 
     if (!apiClient) {
-        console.log("No apiClient")
         return null
     }
     const appContext = {
@@ -166,7 +160,7 @@ export function AppContextProvider(props) {
         signIn: login,
         signOut: logout
     }
-    console.log("Rendering the provider")
+
     return (
         <AppContext.Provider
             value={appContext}>

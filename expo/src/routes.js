@@ -76,7 +76,6 @@ routes.reset = () => {
 }
 
 routes.gotoItem = (item) => {
-    console.log({ item })
     if (item.model_kind === 'movie') {
         routes.goto(routes.movieDetails, {
             shelfId: item.shelf.id,
