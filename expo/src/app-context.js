@@ -29,6 +29,12 @@ const setStoredValue = (key, value) => {
         if (value == null) {
             SecureStore.deleteItemAsync(key);
         } else {
+            if (value === false) {
+                value = 'false'
+            }
+            if (value === true) {
+                value = 'true'
+            }
             SecureStore.setItem(key, value);
         }
     }
@@ -38,7 +44,14 @@ const getStoredValue = (key) => {
     if (Platform.OS === 'web') {
         return localStorage.getItem(key)
     } else {
-        return SecureStore.getItem(key)
+        value = SecureStore.getItem(key)
+        if (value === 'true') {
+            return true
+        }
+        if (value === 'false') {
+            return false
+        }
+        return value
     }
 }
 
@@ -78,7 +91,7 @@ export function AppContextProvider(props) {
         if (!apiClient) {
             const storedSession = getStoredValue('session')
             setSession(storedSession)
-            const storedAdmin = getStoredValue('isAdmin') === 'true'
+            const storedAdmin = getStoredValue('isAdmin')
             setIsAdmin(storedAdmin)
             setDisplayName(getStoredValue('displayName'))
             setIsLoading(false)
@@ -102,11 +115,12 @@ export function AppContextProvider(props) {
                     if (loginResponse && loginResponse.failed) {
                         resolve(loginResponse)
                     } else {
+                        console.log({ loginResponse })
                         setStoredValue('displayName', loginResponse.displayName)
                         setDisplayName(loginResponse.displayName)
                         setStoredValue('session', loginResponse.authToken);
                         setSession(loginResponse.authToken)
-                        setStoredValue('isAdmin', loginResponse.isAdmin ? 'true' : 'false')
+                        setStoredValue('isAdmin', loginResponse.isAdmin)
                         setIsAdmin(loginResponse.isAdmin)
                         resolve({ token: loginResponse.authToken })
                     }
@@ -153,7 +167,7 @@ export function AppContextProvider(props) {
         session,
         isLoading,
         apiClient,
-        isAdmin: isAdmin === 'true',
+        isAdmin: isAdmin,
         displayName,
         message,
         setMessageDisplay: setMessage,

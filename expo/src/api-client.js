@@ -7,7 +7,7 @@ import { Platform } from 'react-native'
 export class ApiClient {
     constructor(authToken, isAdmin, onApiError, onLogout) {
         this.authToken = authToken
-        this.hasAdmin = isAdmin === 'true'
+        this.hasAdmin = isAdmin
         this.baseURL = config.webApiUrl + '/api'
         this.onApiError = onApiError
         this.apiErrorSent = false
@@ -99,10 +99,6 @@ export class ApiClient {
         return this.authToken !== null
     }
 
-    isAdmin() {
-        return this.hasAdmin
-    }
-
     login(payload) {
         let self = this
         return new Promise(resolve => {
@@ -139,7 +135,11 @@ export class ApiClient {
                             self.createClient(self.authToken)
                             self.displayName = data.data.display_name
                         }
-                        return resolve({ authToken: self.authToken, isAdmin: self.hasAdmin, displayName: self.displayName })
+                        return resolve({
+                            authToken: self.authToken,
+                            isAdmin: self.hasAdmin,
+                            displayName: self.displayName
+                        })
                     })
                     .catch((err) => {
                         return resolve({ failed: true, err: err })
