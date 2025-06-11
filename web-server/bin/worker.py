@@ -1,6 +1,6 @@
-from settings import config
-
 from log import log
+from settings import config
+config.validate(log)
 
 from db import db
 

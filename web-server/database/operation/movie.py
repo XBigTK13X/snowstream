@@ -98,8 +98,7 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
         )
         if search_query:
             query = query.filter(dm.Movie.name.ilike(f'%{search_query}%'))
-        if ticket.has_tag_restrictions():
-            query = query.options(sorm.joinedload(dm.Movie.tags))
+        query = query.options(sorm.joinedload(dm.Movie.tags))
         query = (
             query.filter(dm.MovieShelf.shelf_id == shelf_id)
             .order_by(dm.Movie.name)
@@ -110,6 +109,8 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
         results = []
         for movie in movies:
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
+                continue
+            if any('Playlist:' in xx.name for xx in movie.tags):
                 continue
             movie = dm.set_primary_images(movie)
             results.append(movie)

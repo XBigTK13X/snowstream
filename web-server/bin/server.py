@@ -10,6 +10,8 @@ from fastapi.responses import JSONResponse
 import auth
 import routes
 from settings import config
+config.validate(log)
+
 from transcode import transcode
 
 transcode.register_cleanup()
@@ -77,3 +79,5 @@ auth.register(router=api_router)
 routes.register(router=api_router)
 
 app.include_router(api_router)
+
+log.info(f"snowstream server v{config.server_version} [{config.server_build_dev_number}] built {config.server_build_date} now running.")

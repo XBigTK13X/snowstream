@@ -4,8 +4,9 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "0.9.6"
+        self.server_version = "0.9.7"
         self.server_build_date = "June 09, 2025"
+        self.server_build_dev_number = 1
         self.app_data_dir = '.snowstream/'
 
         self.cached_text_ttl_seconds = 60 * 60 * 24 # One day
@@ -63,6 +64,13 @@ class Config:
         self.transcode_dir = f"{self.app_data_dir}cache-transcode"
         self.transcode_log_dir = f"{self.app_data_dir}log/transcode/"
 
+    def validate(self, log):
+        if not self.web_media_url or 'SNOWSTREAM_WEB_MEDIA_URL' in self.web_media_url:
+            log.error("SNOWSTREAM_WEB_MEDIA_URL environment variable must be set.")
+            log.error("example: http://<host-ip>:9064/mnt")
+            log.error("Exiting")
+            sys.exit(1)
+
 config = Config()
 
 for key, val in vars(config).items():
@@ -81,12 +89,6 @@ if config.is_deployed_environment:
         '/app/logs/worker-out.log',
         '/app/logs/worker-err.log'
     ]
-
-if not config.web_media_url or 'SNOWSTREAM_WEB_MEDIA_URL' in config.web_media_url:
-    print("SNOWSTREAM_WEB_MEDIA_URL environment variable must be set.")
-    print("example: http://<host-ip>:9064/mnt")
-    print("Exiting")
-    sys.exit(1)
 
 if not os.path.exists(config.thumbnail_dir):
     os.makedirs(config.thumbnail_dir, exist_ok=True)

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "version": "0.9.6",
-    "scheme": "snowstream",
+    "version": "0.9.7",
+    "scheme": "com.simplepathstudios.snowstream",
     "newArchEnabled": false,
     "plugins": [
       [
@@ -48,6 +48,9 @@
     },
     "ios": {
       "bundleIdentifier": "com.simplepathstudios.snowstream"
+    },
+    "web": {
+      "bundler": "metro"
     },
     "extra": {
       "router": {
