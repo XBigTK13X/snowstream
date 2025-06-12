@@ -8,7 +8,7 @@ const missingPosterImage = require('../../assets/images/app/missing-poster.jpeg'
 const missingScreencapImage = require('../../assets/images/app/missing-screencap.jpeg')
 
 
-const mult = 0.8
+const mult = 0.75
 
 const styles = {
     wrapper: {
@@ -16,6 +16,7 @@ const styles = {
         width: 200 * mult,
         margin: 10,
         padding: 10,
+        marginBottom: 0,
         alignContent: 'center',
         backgroundColor: 'rgb(219, 158, 44)',
         borderWidth: 5,

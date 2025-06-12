@@ -33,7 +33,7 @@ export function SnowScreencapGrid(props) {
     return (
         <View>
             {props.title ? <SnowLabel>{props.title} ({props.items.length})</SnowLabel> : null}
-            <SnowGrid wide={true} items={props.items} renderItem={renderItem} />
+            <SnowGrid wide={true} items={props.items} renderItem={renderItem} itemsPerRow={8} />
         </View>
     )
 }

@@ -37,7 +37,7 @@ def handle(scope):
     for metadata_file in metadata_files:
         progress_count += 1
         if progress_count % 500 == 0:
-            db.op.update_job(job_id=scope.job_id, message=f'Read metadata file {progress_count} out of {len(metadata_file)}')
+            db.op.update_job(job_id=scope.job_id, message=f'Read metadata file {progress_count} out of {len(metadata_files)}')
         nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
         if not 'tag' in nfo_content:
             continue

@@ -33,7 +33,7 @@ export function SnowPosterGrid(props) {
     return (
         <View>
             {props.title ? <SnowLabel>{props.title} ({props.items.length})</SnowLabel> : null}
-            <SnowGrid items={props.items} renderItem={renderItem} />
+            <SnowGrid items={props.items} renderItem={renderItem} itemsPerRow={8} />
         </View>
     )
 }

@@ -56,7 +56,7 @@ export function SnowTextButton(props) {
     }
 
     let textStyle = [styles.text]
-    if (props.title.length > 40) {
+    if (props.title.length > 20) {
         textStyle.push({ fontSize: 12 })
     }
 

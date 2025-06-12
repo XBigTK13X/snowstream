@@ -3,7 +3,8 @@ import { Platform, View } from 'react-native'
 
 const styles = {
     grid: {
-        padding: 20,
+        padding: 5,
+        margin: 0,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
