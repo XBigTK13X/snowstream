@@ -27,6 +27,8 @@ import {
     View,
 } from 'react-native'
 
+import { useDebouncedCallback } from 'use-debounce';
+
 // https://www.npmjs.com/package/react-native-tvos
 // TVFocusGuideView docs
 
@@ -70,6 +72,7 @@ export default {
     getWindowWidth,
     getWindowHeight,
     useAppContext,
+    useDebouncedCallback,
     useLocalSearchParams,
     useNavigation,
     useRouter,

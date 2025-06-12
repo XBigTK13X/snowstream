@@ -63,6 +63,7 @@ export default function SnowVideoControls(props) {
                     minimumTrackTintColor="#FFFFFF"
                     maximumTrackTintColor="#cccccc"
                     onSlidingComplete={props.onSeek}
+                    onValueChange={props.onSeek}
                 />
                 <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
 

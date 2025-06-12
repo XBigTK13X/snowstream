@@ -3,6 +3,7 @@ import { StyleSheet, Dimensions, Modal, TouchableOpacity, Platform, View } from 
 import { useRouter } from 'expo-router'
 import { useAppContext } from '../app-context'
 import SnowVideoControls from './snow-video-controls'
+import { useDebouncedCallback } from 'use-debounce'
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
 
@@ -128,7 +129,7 @@ export default function SnowVideoPlayer(props) {
         setIsPlaying(true)
     }
 
-    const onSeek = (progressPercent) => {
+    const onSeek = useDebouncedCallback((progressPercent) => {
         const progressSeconds = (progressPercent / 100) * props.durationSeconds
         if (progressPercent >= 100) {
             setCompleteOnResume(true)
@@ -140,7 +141,7 @@ export default function SnowVideoPlayer(props) {
         }
         setSeekToSeconds(progressSeconds)
         setProgressSeconds(progressSeconds)
-    }
+    }, 350)
 
     let controlToggleButton = null
     if (isReady) {

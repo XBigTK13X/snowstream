@@ -104,8 +104,6 @@ export function SnowImageButton(props) {
 
     let placeholder = props.wide ? missingScreencapImage : missingPosterImage
 
-    console.log({ url: props.imageUrl, placeholder })
-
     return (
         <TouchableOpacity
             ref={touchRef}
