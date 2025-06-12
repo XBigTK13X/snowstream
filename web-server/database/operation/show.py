@@ -90,6 +90,7 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None)
             .join(dm.ShowShelf)
             .filter(dm.ShowShelf.shelf_id == shelf_id)
             .options(sorm.joinedload(dm.Show.shelf))
+            .options(sorm.joinedload(dm.Show.seasons))
         )
         if search_query:
             query = query.filter(dm.Show.name.ilike(f'%{search_query}%'))
@@ -105,6 +106,8 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None)
         shows = query.all()
         results = []
         for show in shows:
+            if not show.seasons:
+                continue
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):
                 continue
             if search_query == None and any('Playlist:' in xx.name for xx in show.tags):
