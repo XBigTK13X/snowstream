@@ -84,10 +84,24 @@ export function WatchableListPage(props) {
             remoteId = props.getRemoteId(items[0])
         }
 
+        let itemsPerRow = 1
+        if (props.watchAll && props.shuffleAll) {
+            itemsPerRow = 3
+        }
+        else if (!props.watchAll && !props.shuffleAll) {
+            itemsPerRow = 1
+        }
+        else {
+            itemsPerRow = 2
+        }
+        if (isAdmin) {
+            itemsPerRow = 3
+        }
+
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
-                <C.SnowGrid itemsPerRow={isAdmin ? 3 : 1}>
+                <C.SnowGrid itemsPerRow={itemsPerRow}>
                     <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
                     {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
                     {props.shuffleAll ? <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} /> : null}

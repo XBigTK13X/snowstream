@@ -33,7 +33,11 @@ def handle(scope):
         episode = db.op.get_show_episode_by_id(ticket=ticket,episode_id=scope.target_id)
 
     defined_tag_ids = {}
+    progress_count = 0
     for metadata_file in metadata_files:
+        progress_count += 1
+        if progress_count % 500 == 0:
+            db.op.update_job(job_id=scope.job_id, message=f'Read metadata file {progress_count} out of {len(metadata_file)}')
         nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
         if not 'tag' in nfo_content:
             continue
