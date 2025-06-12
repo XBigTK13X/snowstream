@@ -32,7 +32,7 @@ export function WatchableListPage(props) {
         }
     })
     if (shelf && items) {
-        let pageTitle = `Found ${items.length} items from shelf ${shelf.name}`
+        let pageTitle = `Found ${items.length} items from shelf ${shelf.name}.`
         if (props.getPageTitle) {
             pageTitle = props.getPageTitle(shelf, items)
         }
