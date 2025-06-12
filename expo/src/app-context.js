@@ -115,7 +115,6 @@ export function AppContextProvider(props) {
                     if (loginResponse && loginResponse.failed) {
                         resolve(loginResponse)
                     } else {
-                        console.log({ loginResponse })
                         setStoredValue('displayName', loginResponse.displayName)
                         setDisplayName(loginResponse.displayName)
                         setStoredValue('session', loginResponse.authToken);

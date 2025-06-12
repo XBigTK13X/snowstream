@@ -9,7 +9,10 @@ import datetime
 def transcode_command(input_url:str, stream_port:int, audio_track_index:int, subtitle_track_index:int):
     streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream'
     command =  f'ffmpeg  -i "{input_url}"'
-    command += f' -c:v av1_nvenc'
+    if config.transcode_dialect == 'nvidia':
+        command += f' -c:v h264_nvenc'
+    elif config.transcode_dialect == 'quicksync':
+        command += f' -c:v h264_sql'
     if subtitle_track_index:
         command += f' -vf "subtitles=\'{input_url}\':si={subtitle_track_index}"'
     command += f' -c:a libvorbis'

@@ -6,7 +6,7 @@ import database.operation.shelf as db_shelf
 
 def create_image_file(shelf_id: int, kind: str, local_path: str):
     local_thumbnail_path = magick.create_thumbnail(local_path)
-    thumbnail_web_path = config.web_media_url + '/mnt/' + local_thumbnail_path
+    thumbnail_web_path = config.web_media_url + local_thumbnail_path
     shelf = db_shelf.get_shelf_by_id(shelf_id=shelf_id)
     network_path = ''
     if shelf.network_path:
@@ -46,3 +46,12 @@ def get_image_files_by_shelf(shelf_id: int):
 def get_image_files_list():
     with DbSession() as db:
         return db.query(dm.ImageFile).all()
+
+def fix_image_file_thumbnail_paths():
+    with DbSession() as db:
+        images = db.query(dm.ImageFile).all()
+        for image in images:
+            local_thumbnail_path = magick.create_thumbnail(image.local_path)
+            image.thumbnail_web_path = local_thumbnail_path
+        db.commit()
+        return True

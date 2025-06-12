@@ -537,6 +537,12 @@ def auth_required(router):
     ):
         return db.op.update_playing_queue(ticket=auth_user.ticket,source=source,progress=progress)
 
+    # @router.post('/hotfix')
+    # def deployment_hotfix(
+    #     auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+    # ):
+    #      return db.op.fix_image_file_thumbnail_paths()
+
     return router
 
 
@@ -598,6 +604,8 @@ def no_auth_required(router):
     def delete_transcode_session(transcode_session_id:int,tags=['Unauthed']):
         transcode.close(transcode_session_id=transcode_session_id)
         return True
+
+
 
     async def webhook(kind:str, request:Request):
         headers = dict(request.headers)

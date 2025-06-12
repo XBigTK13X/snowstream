@@ -13,11 +13,14 @@ SeasonTags = sorm.aliased(dm.Tag)
 
 
 def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int,search_query:str=None):
-    if not ticket.is_allowed(shelf_id=shelf_id):
+    if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
         query = (
             db.query(dm.ShowEpisode)
+            .options(sorm.joinedload(dm.ShowEpisode.video_files))
+            .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
+            .options(sorm.joinedload(dm.ShowEpisode.image_files))
             .options(sorm.joinedload(dm.ShowEpisode.tags.of_type(dm.ShowEpisodeTagAlias)))
             .join(dm.ShowEpisode.season)
             .join(dm.ShowSeason.show)
@@ -39,8 +42,9 @@ def get_show_episode_list_by_shelf(ticket:dm.Ticket,shelf_id:int,search_query:st
                 .contains_eager(dm.ShowSeason.show)
                 .contains_eager(dm.Show.tags.of_type(dm.ShowTagAlias))
             )
-            .filter(dm.Shelf.id == shelf_id)
         )
+        if shelf_id != None:
+            query = query.filter(dm.Shelf.id == shelf_id)
         if search_query:
             query = query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
         episodes = query.all()

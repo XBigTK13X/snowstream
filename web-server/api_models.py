@@ -33,6 +33,7 @@ class UserAccess(BaseModel):
 
 class JobRequest(BaseModel):
     name: Union[
+        Literal["clean_file_records"],
         Literal["identify_unknown_media"],
         Literal["read_media_files"],
         Literal["scan_shelves_content"],

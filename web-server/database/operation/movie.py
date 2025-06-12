@@ -87,22 +87,23 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
         return results
 
 def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None):
-    if not ticket.is_allowed(shelf_id=shelf_id):
+    if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
         query = (
             db.query(dm.Movie)
             .join(dm.MovieShelf)
             .options(sorm.joinedload(dm.Movie.image_files))
+            .options(sorm.joinedload(dm.Movie.metadata_files))
+            .options(sorm.joinedload(dm.Movie.video_files))
             .options(sorm.joinedload(dm.Movie.shelf))
         )
         if search_query:
             query = query.filter(dm.Movie.name.ilike(f'%{search_query}%'))
         query = query.options(sorm.joinedload(dm.Movie.tags))
-        query = (
-            query.filter(dm.MovieShelf.shelf_id == shelf_id)
-            .order_by(dm.Movie.name)
-        )
+        if shelf_id != None:
+            query = query.filter(dm.MovieShelf.shelf_id == shelf_id)
+        query = query.order_by(dm.Movie.name)
         if search_query:
             query = query.limit(config.search_results_per_shelf_limit)
         movies = query.all()

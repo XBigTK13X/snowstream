@@ -7,13 +7,13 @@ export default function AdminDashboardPage() {
     }
     const buttons = [
         { title: 'Run Job', route: routes.admin.jobRunner },
+        { title: 'Job List', route: routes.admin.jobList },
         { title: 'Logs', route: routes.admin.logViewer },
         { title: 'Sessions', route: routes.admin.sessionList },
         { title: 'Shelves', route: routes.admin.shelfList },
         { title: 'Stream Sources', route: routes.admin.streamSourceList },
         { title: 'Users', route: routes.admin.userList },
         { title: 'Tags', route: routes.admin.tagList },
-        { title: 'Job List', route: routes.admin.jobList },
     ]
     return <C.SnowGrid items={buttons} renderItem={renderItem} itemsPerRow={3}></C.SnowGrid>
 }

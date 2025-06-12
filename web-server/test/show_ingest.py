@@ -85,3 +85,17 @@ def test_bluray_rip():
     assert info['season'] == 1
     assert info['episode_start'] == 9
     assert info['episode_end'] == 10
+
+def test_hyphenated_directory():
+    info = get_show_info('/mnt/j-media/tv/anime/gundam/Mobile Suit Gundam 0080 - War in the Pocket/Season 1/S01E001 - How Many Miles to the Battlefield.mkv')
+    assert info != None
+    assert info['season'] == 1
+    assert info['episode_start'] == 1
+    assert info['show_name'] == 'Mobile Suit Gundam 0080 - War in the Pocket'
+
+def test_number_directory():
+    info = get_show_info('/mnt/j-media/tv/anime/[number]/86 - Eighty Six/Season 1/S01E001 - Undertaker.mkv')
+    assert info != None
+    assert info['season'] == 1
+    assert info['episode_start'] == 1
+    assert info['show_name'] == '86 - Eighty Six'

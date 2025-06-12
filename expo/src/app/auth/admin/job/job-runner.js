@@ -33,7 +33,8 @@ export default function ShelfEditPage() {
         { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
         { name: 'Read Media Files', apiCall: apiClient.createJobReadMediaFiles },
         { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
-        { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia }
+        { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia },
+        { name: 'Clean File Records', apiCall: apiClient.createJobCleanFileRecords }
     ]
 
     const renderItem = (item) => {
@@ -49,7 +50,10 @@ export default function ShelfEditPage() {
 
     return (
         <C.View>
-            <C.SnowGrid items={buttons} renderItem={renderItem} />
+            <C.SnowGrid
+                itemsPerRow={3}
+                items={buttons}
+                renderItem={renderItem} />
             <C.SnowGrid itemsPerRow={4}>
                 <C.SnowLabel>Target Kind</C.SnowLabel>
                 <C.SnowInput onChangeText={setTargetKind} value={targetKind} />

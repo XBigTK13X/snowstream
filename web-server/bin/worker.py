@@ -12,6 +12,7 @@ import traceback
 
 import json
 import message.read
+import message.handler.clean_file_records
 import message.handler.identify_unknown_media
 import message.handler.read_media_files
 import message.handler.scan_shelves_content
@@ -21,6 +22,7 @@ import message.handler.update_media_files
 from message.job_media_scope import JobMediaScope
 
 handlers = {
+        'clean_file_records': message.handler.clean_file_records,
         'identify_unknown_media': message.handler.identify_unknown_media,
         'read_media_files': message.handler.read_media_files,
         'update_media_files': message.handler.update_media_files,
@@ -51,9 +53,9 @@ def start():
                 if kind in handlers:
                     scope = JobMediaScope(job_id,payload['input'])
                     if handlers[kind].handle(scope=scope):
-                        db.op.update_job(job_id=job_id, status="complete")
+                        db.op.update_job(job_id=job_id, message="The job has completed successfully.", status="complete")
                     else:
-                        db.op.update_job(job_id=job_id, status="failed")
+                        db.op.update_job(job_id=job_id, message="The job has completed in failure.", status="failed")
                 else:
                     db.op.update_job(
                         job_id=job_id,

@@ -27,6 +27,18 @@ SHOW_SEASON_REGEX = re.compile(
     re.IGNORECASE,
 )
 
+SHOW_EPISODE_WITH_SEASON_DIR_REGEX = re.compile(
+    r"(?P<directory>.*?)"
+    r"(?P<show_name>[^\/]*?)\/"
+    r"((Season (?P<season_order_counter>\d{1,6})|Specials|Extras)\/).?"
+    r"(?P<metadata>metadata\/)?"
+    r"([^\/]*?)(S(?P<season_start>\d{0,5}))?(E)?(?P<episode_start>\d{1,6})"
+    r"((-(S(?P<season_end>\d{1,6}))?(E)?(?P<episode_end>\d{0,5}))?"
+    r"( - (?P<title>.*)?)?)?"
+    r"\s*\.(?P<format>[a-zA-Z0-9]{3,6})",
+    re.IGNORECASE,
+)
+
 SHOW_EPISODE_REGEX = re.compile(
     r"(?P<directory>.*?)"
     r"(?P<show_name>[^\/]*?)\/"
@@ -102,7 +114,9 @@ def parse_episode_file_info(matches):
 
 def parse_show_info(file_path: str):
     location = Path(file_path).as_posix()
-    matches = re.search(SHOW_EPISODE_REGEX, location)
+    matches = re.search(SHOW_EPISODE_WITH_SEASON_DIR_REGEX, location)
+    if matches == None:
+        matches = re.search(SHOW_EPISODE_REGEX,location)
     if matches != None:
         info = parse_episode_file_info(matches=matches)
         info['file_directory'] = os.path.dirname(file_path)

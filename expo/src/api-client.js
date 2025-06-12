@@ -21,6 +21,7 @@ export class ApiClient {
         this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
         this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
         this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
+        this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
 
         this.createClient(self.authToken)
 
@@ -200,6 +201,10 @@ export class ApiClient {
 
     createJobIdentifyUnknownMedia(details) {
         return this.createScopedJob('identify_unknown_media', details)
+    }
+
+    createJobCleanFileRecords(details) {
+        return this.createScopedJob('clean_file_records', details)
     }
 
     getJobList() {

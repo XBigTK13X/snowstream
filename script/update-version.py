@@ -4,7 +4,7 @@ import os
 import sys
 import datetime
 
-CLIENT_SETTINGS_PATH = './expo/app/settings.js'
+CLIENT_SETTINGS_PATH = './expo/src/settings.js'
 SERVER_SETTINGS_PATH = './web-server/settings.py'
 EXPO_SETTINGS_PATH = './expo/app.json'
 PACKAGE_JSON_PATH = './expo/package.json'
