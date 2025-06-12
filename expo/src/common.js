@@ -11,9 +11,11 @@ import {
 } from 'expo-router'
 
 import {
+    Image
+} from 'expo-image'
+
+import {
     Dimensions,
-    FlatList,
-    Image,
     Linking,
     Modal,
     Platform,
@@ -72,7 +74,6 @@ export default {
     useNavigation,
     useRouter,
     util,
-    FlatList,
     Image,
     Link,
     Linking,

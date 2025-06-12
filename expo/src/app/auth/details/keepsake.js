@@ -20,7 +20,6 @@ export default function KeepsakeDetailsPage() {
     const localParams = C.useLocalSearchParams()
 
     const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
@@ -48,7 +47,7 @@ export default function KeepsakeDetailsPage() {
                             style={styles.modal}>
                             <C.Image
                                 style={styles.webImage}
-                                resizeMode="contain"
+                                resicontentFitzeMode="contain"
                                 source={{ uri: zoomedItem.web_path }} />
                         </C.TouchableOpacity>
                     </C.View>)
@@ -70,7 +69,7 @@ export default function KeepsakeDetailsPage() {
             if (zoomedItem.model_kind === 'image_file') {
                 modalContent = <C.Image
                     style={styles.zoomedImage}
-                    resizeMode="contain"
+                    contentFit="contain"
                     source={{ uri: imageUrl }} />
             }
             else if (zoomedItem.model_kind === 'video_file') {
