@@ -1,8 +1,7 @@
 import C from '../../../common'
 
 export default function PlayMediaPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient, routes } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
 
     const shelfId = localParams.shelfId
@@ -30,7 +29,8 @@ export default function PlayMediaPage() {
     const durationRef = C.React.useRef(durationSeconds)
 
     const loadVideoFile = (videoHolder) => {
-        const videoFile = videoHolder.video_files[videoFileIndex]
+        // TODO This is where the playing queue needs to determine a videoFileIndex
+        const videoFile = videoHolder.video_files[videoFileIndex ? videoFileIndex : 0]
         if (transcode) {
             apiClient.createVideoFileTranscodeSession(videoFile.id, audioTrackIndex, subtitleTrackIndex).then((transcodeSession) => {
                 setVideoUrl(transcodeSession.transcode_url)
