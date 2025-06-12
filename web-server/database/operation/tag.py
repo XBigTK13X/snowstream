@@ -32,18 +32,18 @@ def upsert_tag(tag: am.Tag):
         return create_tag(tag)
     with DbSession() as db:
         existing = db.query(dm.Tag).filter(dm.Tag.id == existing.id).update(tag.model_dump())
-        db.commit()        
+        db.commit()
         return existing
 
 def get_tag_list(ticket:dm.Ticket=None):
     with DbSession() as db:
         query = db.query(dm.Tag)
         if ticket != None and ticket.tag_ids != None:
-            query = query.filter(dm.Tag.id.in_(ticket.tag_ids))
+            query = query.filter(dm.Tag.id.in_(ticket.tag_ids)).order_by(dm.Tag.name)
         return query.all()
 
 def delete_tag_by_id(tag_id:int):
     with DbSession() as db:
         deleted = db.query(dm.Tag).filter(dm.Tag.id == tag_id).delete()
         db.commit()
-        return deleted    
+        return deleted

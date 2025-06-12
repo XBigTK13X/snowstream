@@ -111,7 +111,7 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
         for movie in movies:
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
                 continue
-            if any('Playlist:' in xx.name for xx in movie.tags):
+            if search_query == None and any('Playlist:' in xx.name for xx in movie.tags):
                 continue
             movie = dm.set_primary_images(movie)
             results.append(movie)

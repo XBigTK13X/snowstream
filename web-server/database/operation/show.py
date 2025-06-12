@@ -107,7 +107,7 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None)
         for show in shows:
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):
                 continue
-            if any('Playlist:' in xx.name for xx in show.tags):
+            if search_query == None and any('Playlist:' in xx.name for xx in show.tags):
                 continue
             show = dm.set_primary_images(show)
             results.append(show)
