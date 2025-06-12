@@ -537,11 +537,11 @@ def auth_required(router):
     ):
         return db.op.update_playing_queue(ticket=auth_user.ticket,source=source,progress=progress)
 
-    # @router.post('/hotfix')
-    # def deployment_hotfix(
-    #     auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-    # ):
-    #      return db.op.fix_image_file_thumbnail_paths()
+    @router.post('/hotfix')
+    def deployment_hotfix(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+    ):
+         return db.op.fix_image_file_thumbnail_paths()
 
     return router
 
