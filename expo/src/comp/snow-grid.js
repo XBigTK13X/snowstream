@@ -31,6 +31,9 @@ export function SnowGrid(props) {
         itemStyle.push({ flexBasis: `${100 / props.itemsPerRow}%` })
     }
     let gridStyle = [styles.grid]
+    if (props.gridStyle) {
+        gridStyle.push(props.gridStyle)
+    }
     if (!props.items) {
         // Without this, if a ternary `{x?x:null}` nullable component will leave a gap in the grid
         const children = React.Children.toArray(props.children).filter(child => child !== null)

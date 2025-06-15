@@ -2,8 +2,7 @@ import os
 from db import db
 from log import log
 import nfo
-from message.handler.update_media.provider.thetvdb_provider import ThetvdbProvider
-from message.handler.update_media.provider.themoviedb_provider import ThemoviedbProvider
+from message.job_media_scope import JobMediaScope
 import requests
 import magick
 from settings import config
@@ -14,7 +13,7 @@ class FileStub:
         self.id = None
 
 class MediaUpdater:
-    def __init__(self, job_id, kind, scope):
+    def __init__(self, job_id:int, kind:str, scope:JobMediaScope):
         self.scope = scope
         self.job_id = job_id
         self.kind = kind
@@ -26,15 +25,12 @@ class MediaUpdater:
         self.FileStub = FileStub
         self.metadata = None
 
-    def has_images(self):
-        return os.path.exists(self.get_image_path())
-
     def download_metadata(self):
         self.read_local_info()
         self.merge_remote_into_local()
         self.save_info_to_local()
 
-    def download_image(self,image_url,local_path):
+    def download_image(self,image_url:str,local_path:str):
         if not image_url:
             return False
         download = requests.get(image_url)
@@ -50,6 +46,9 @@ class MediaUpdater:
         pass
 
     def has_nfo(self):
+        pass
+
+    def has_images(self):
         pass
 
     def read_local_info(self):
@@ -70,5 +69,5 @@ class MediaUpdater:
     def download_images(self):
         pass
 
-    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
+    def schedule_subjobs(self):
         pass

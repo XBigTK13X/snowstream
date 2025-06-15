@@ -167,6 +167,9 @@ export class ApiClient {
             if (details.metadataId) {
                 payload.input.metadata_id = details.metadataId
             }
+            if (details.metadataSource) {
+                payload.input.metadata_source = details.metadataSource
+            }
             if (details.seasonOrder) {
                 payload.input.season_order = details.seasonOrder
             }
@@ -178,6 +181,9 @@ export class ApiClient {
             }
             if (details.updateImages) {
                 payload.input.update_images = details.updateImages
+            }
+            if (details.skipExisting) {
+                payload.input.skip_existing = details.skipExisting
             }
         }
         return this.post('/job', payload)

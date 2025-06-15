@@ -18,6 +18,9 @@ class ShowSeason(MediaUpdater):
     def has_nfo(self):
         return len(self.show_season.metadata_files) > 0
 
+    def has_images(self):
+        return os.path.exists(self.get_image_path())
+
     def read_local_info(self):
         if self.has_nfo():
             self.season_nfo_file = self.show_season.metadata_files[0]
@@ -94,7 +97,7 @@ class ShowSeason(MediaUpdater):
                 )
 
 
-    def schedule_subjobs(self,update_images:bool,update_metadata:bool):
+    def schedule_subjobs(self):
         if self.episodes:
             for episode in self.episodes:
                 create_child_job(name='update_media_files',payload={
@@ -103,8 +106,8 @@ class ShowSeason(MediaUpdater):
                     'target_id': episode.id,
                     'season_order': self.show_season.season_order_counter,
                     'episode_order': episode.episode_order_counter,
-                    'update_images': update_images,
-                    'update_metadata': update_metadata,
+                    'update_images': self.scope.update_images,
+                    'update_metadata': self.scope.update_metadata,
                     'is_subjob': True
                 })
         if not self.is_subjob:

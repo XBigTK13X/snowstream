@@ -17,13 +17,9 @@ export default function ShowListPage() {
         })
     }
     const updateMediaJob = (apiClient, details) => {
-        apiClient.createJobUpdateMediaFiles({
-            targetKind: 'shelf',
-            targetId: details.shelfId,
-            metadataId: details.metadataId,
-            updateMetadata: details.metadata,
-            updateImages: details.images
-        })
+        details.targetKind = 'shelf'
+        details.targetId = details.shelfId
+        apiClient.createJobUpdateMediaFiles(details)
     }
     return (
         <WatchableListPage

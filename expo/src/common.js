@@ -40,9 +40,11 @@ import SnowAdminButton from './comp/snow-admin-button'
 import SnowImageButton from './comp/snow-image-button'
 import SnowDropdown from './comp/snow-dropdown'
 import SnowGrid from './comp/snow-grid'
+import SnowHeader from './comp/snow-header'
 import SnowInput from './comp/snow-input'
 import SnowLabel from './comp/snow-label'
 import SnowPosterGrid from './comp/snow-poster-grid'
+import SnowToggle from './comp/snow-toggle'
 import SnowText from './comp/snow-text'
 import SnowScreencapGrid from './comp/snow-screencap-grid'
 import SnowVideoPlayer from './comp/snow-video-player'
@@ -89,12 +91,14 @@ export default {
     SnowAdminButton,
     SnowDropdown,
     SnowGrid,
+    SnowHeader,
     SnowImageButton,
     SnowInput,
     SnowLabel,
     SnowPosterGrid,
     SnowText,
     SnowTextButton,
+    SnowToggle,
     SnowScreencapGrid,
     SnowTrackSelector,
     SnowUpdateMediaButton,

@@ -629,7 +629,7 @@ def no_auth_required(router):
                 input={
                     'targetId': None
                 }
-                job = db.op.create_job(kind='scan_shelves_content',)
+                job = db.op.create_job(kind='scan_shelves_content',input=input)
                 message.write.send(job_id=job.id, kind='scan_shelves_content', input=input)
             elif kind == 'movie':
                 pass
@@ -637,11 +637,10 @@ def no_auth_required(router):
                 log.info(f"Unhandled webhook kind [{kind}]")
         else:
             log.info("Unable to process sonarr hook")
-            import pprint
-            print("Header")
-            pprint.pprint(headers)
-            print("Body")
-            pprint.pprint(body)
+            log.info("Header")
+            log.info(json.dumps(headers,indent=4))
+            log.info("Body")
+            log.info(json.dumps(body,indent=4))
         return True
 
     # https://github.com/Sonarr/Sonarr/blob/14e324ee30694ae017a39fd6f66392dc2d104617/src/NzbDrone.Core/Notifications/Webhook/WebhookBase.cs#L32

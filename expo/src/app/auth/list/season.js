@@ -28,13 +28,9 @@ export default function SeasonListPage() {
         })
     }
     const updateMediaJob = (apiClient, details) => {
-        apiClient.createJobUpdateMediaFiles({
-            targetKind: 'show',
-            targetId: showId,
-            metadataId: details.metadataId,
-            updateMetadata: details.metadata,
-            updateImages: details.images
-        })
+        details.targetKind = 'show'
+        details.targetId = showId
+        apiClient.createJobUpdateMediaFiles(details)
     }
 
     const watchAll = (apiClient) => {

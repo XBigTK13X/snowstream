@@ -114,9 +114,7 @@ export function WatchableListPage(props) {
                             remoteId={remoteId}
                             updateMediaJob={(details) => {
                                 details.shelfId = shelfId
-                                details.updateMetadata = details.metadata
-                                details.updateImages = details.images
-                                props.updateMediaJob(apiClient, details)
+                                return props.updateMediaJob(apiClient, details)
                             }}
                         /> : null}
                 </C.SnowGrid>

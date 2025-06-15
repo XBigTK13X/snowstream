@@ -113,7 +113,7 @@ class ThetvdbProvider(base.MediaProvider):
         if not episodes:
             return None
         for episode in episodes:
-            if int(episode['seasonNumber']) == int(season_order) and int(episode['number']) == episode_order:
+            if int(episode['seasonNumber']) == season_order and int(episode['number']) == episode_order:
                 return episode
         return None
 

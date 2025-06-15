@@ -14,6 +14,9 @@ class Movie(MediaUpdater):
     def has_nfo(self):
         return len(self.movie.metadata_files) > 0
 
+    def has_images(self):
+        return os.path.exists(self.get_image_path())
+
     def read_local_info(self):
         if self.has_nfo():
             self.movie_nfo_file = self.movie.metadata_files[0]

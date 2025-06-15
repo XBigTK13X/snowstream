@@ -38,12 +38,18 @@ def handle(scope):
         db.op.update_job(job_id=scope.job_id, message=f"Unhandled target of kind {scope.target}")
         return False
 
-    if scope.update_metadata and (not handler.has_nfo() or not scope.skip_existing_media()):
-        handler.download_metadata()
+    if scope.update_metadata:
+        if handler.has_nfo() and scope.skip_existing_media():
+            db.op.update_job(job_id=scope.job_id, message=f"Not overwriting existing metadata")
+        else:
+            handler.download_metadata()
 
-    if scope.update_images and (not handler.has_images() or not scope.skip_existing_media()):
-        handler.download_images()
+    if scope.update_images:
+        if handler.has_images() and scope.skip_existing_media():
+            db.op.update_job(job_id=scope.job_id, message=f"Not overwriting existing images")
+        else:
+            handler.download_images()
 
-    handler.schedule_subjobs(update_images=scope.update_images,update_metadata=scope.update_metadata)
+    handler.schedule_subjobs()
 
     return True

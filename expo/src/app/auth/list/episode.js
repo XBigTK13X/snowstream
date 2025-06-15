@@ -28,14 +28,10 @@ export default function EpisodeListPage() {
         })
     }
     const updateMediaJob = (apiClient, details) => {
-        apiClient.createJobUpdateMediaFiles({
-            targetKind: 'season',
-            targetId: seasonId,
-            metadataId: details.metadataId,
-            seasonOrder,
-            updateMetadata: details.metadata,
-            updateImages: details.images
-        })
+        details.targetKind = 'season'
+        details.targetId = seasonId
+        details.seasonOrder = seasonOrder
+        apiClient.createJobUpdateMediaFiles(details)
     }
     const watchAll = (apiClient) => {
         return apiClient.getPlayingQueue({ seasonId })

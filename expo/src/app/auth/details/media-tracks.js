@@ -99,6 +99,13 @@ export default function MediaTracksPage(props) {
             )
         }
         const videoFile = media.video_files[videoFileIndex]
+        let remoteMetadataId = ''
+        if (media.remote_metadata_id) {
+            remoteMetadataId = media.remote_metadata_id
+        }
+        else if (props.getRemoteMetadataId) {
+            remoteMetadataId = props.getRemoteMetadataId(media)
+        }
         return (
             <C.View>
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
@@ -116,14 +123,11 @@ export default function MediaTracksPage(props) {
                             return apiClient.createJobShelvesScan(scanDetails)
                         }} />
                     <C.SnowUpdateMediaButton
-                        remoteId={media.remote_metadata_id ? media.remote_metadata_id : ''}
+                        remoteId={remoteMetadataId}
                         kind={props.mediaKind}
-                        updateMediaJob={(details) => {
+                        updateMediaJob={(promptDetails) => {
                             const mediaDetails = props.getUpdateMediaJobDetails(localParams)
-                            const combinedDetails = { ...details, ...mediaDetails }
-                            combinedDetails.updateMetadata = details.metadata
-                            combinedDetails.updateImages = details.images
-                            return apiClient.createJobUpdateMediaFiles(combinedDetails)
+                            return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
                         }} />
                 </C.SnowGrid>
                 {versionPicker}

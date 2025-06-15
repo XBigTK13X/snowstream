@@ -4,7 +4,14 @@ from message.handler.update_media.provider.themoviedb_provider import Themoviedb
 def parse(input, key):
     if not input:
         return None
-    return input[key] if key in input else None
+    value = input[key] if key in input else None
+    if value == None:
+        return None
+    if isinstance(value,str) and value.isnumeric():
+        if '.' in value:
+            return float(value)
+        return int(value)
+    return value
 
 class JobMediaScope:
     def __init__(self, job_id:int, raw_job_input:dict):

@@ -25,6 +25,9 @@ const styles = {
     focused: {
         borderColor: 'green'
     },
+    disabled: {
+        opacity: 0.5
+    },
     text: {
         fontSize: 16,
         padding: 0,
@@ -48,11 +51,16 @@ export function SnowTextButton(props) {
     }, [])
 
     const style = [styles.wrapper]
-    if (props.selected) {
-        style.push(styles.selected)
+    if (props.disabled) {
+        style.push(styles.disabled)
     }
-    if (focused) {
-        style.push(styles.focused)
+    else {
+        if (props.selected) {
+            style.push(styles.selected)
+        }
+        if (focused) {
+            style.push(styles.focused)
+        }
     }
 
     let textStyle = [styles.text]
@@ -69,7 +77,8 @@ export function SnowTextButton(props) {
             onLongPress={props.onLongPress}
             onFocus={() => { setFocused(true) }}
             onBlur={() => { setFocused(false) }}
-            style={style}>
+            style={style}
+            disabled={props.disabled}>
             <SnowText style={textStyle}>{props.title}</SnowText>
         </TouchableOpacity>
     )

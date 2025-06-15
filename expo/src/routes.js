@@ -104,7 +104,8 @@ routes.gotoItem = (item) => {
             seasonId: item.season.id,
             episodeId: item.id,
             showName: item.season.show.name,
-            seasonOrder: item.season.season_order_counter
+            seasonOrder: item.season.season_order_counter,
+            episodeOrder: item.episode_order_counter
         })
     }
     else {

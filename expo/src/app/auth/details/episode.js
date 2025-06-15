@@ -6,6 +6,9 @@ export default function EpisodeDetailsPage() {
 
     return <MediaTracksPage
         mediaKind="Episode"
+        getRemoteMetadataId={(media) => {
+            return media.season.show.remote_metadata_id
+        }}
         getMediaName={(localParams, media) => {
             return `${localParams.showName} season ${localParams.seasonOrder} episode ${C.util.formatEpisodeTitle(media)}`
         }}
@@ -46,19 +49,24 @@ export default function EpisodeDetailsPage() {
                 showId: localParams.showId,
                 seasonId: localParams.seasonId,
                 showName: localParams.showName,
-                seasonOrder: localParams.seasonOrder
+                seasonOrder: localParams.seasonOrder,
+                episodeOrder: localParams.episodeOrder
             }
         }}
         getScanDetails={(localParams) => {
             return {
                 targetKind: 'episode',
-                targetId: localParams.episodeId
+                targetId: localParams.episodeId,
+                seasonOrder: localParams.seasonOrder,
+                episodeOrder: localParams.episodeOrder
             }
         }}
         getUpdateMediaJobDetails={(localParams) => {
             return {
                 targetKind: 'episode',
-                targetId: localParams.episodeId
+                targetId: localParams.episodeId,
+                seasonOrder: localParams.seasonOrder,
+                episodeOrder: localParams.episodeOrder
             }
         }}
     />

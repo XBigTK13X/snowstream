@@ -1,3 +1,4 @@
+from log import log
 from message.handler.update_media.media_updater import MediaUpdater
 import os
 import ffmpeg
@@ -15,12 +16,15 @@ class ShowEpisode(MediaUpdater):
         self.season_order = scope.season_order
         self.episode_order = scope.episode_order
         self.show_episode = self.db.op.get_show_episode_by_id(ticket=self.ticket,episode_id=self.show_episode_id)
+        self.episode_video_file = self.show_episode.video_files[0]
 
     def has_nfo(self):
         return len(self.show_episode.metadata_files) > 0
 
+    def has_images(self):
+        return os.path.exists(self.get_image_path())
+
     def read_local_info(self):
-        self.episode_video_file = self.show_episode.video_files[0]
         if self.has_nfo():
             self.episode_nfo_file = self.show_episode.metadata_files[0]
             self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.episode_nfo_file.xml_content)
@@ -34,21 +38,22 @@ class ShowEpisode(MediaUpdater):
         if self.metadata:
             return self.metadata
         if self.show_episode.episode_end_order_counter:
-            self.metadata = []
+            infos = []
             for ii in range(self.show_episode.episode_order_counter,self.show_episode.episode_end_order_counter+1):
                 info = self.media_provider.get_episode_info(
                     show_metadata_id=self.show_metadata_id,
                     season_order=self.season_order,
                     episode_order=ii
                 )
-                self.metadata.append(self.media_provider.to_snowstream_episodes(info))
+                infos.append(info)
+            self.metadata = self.media_provider.to_snowstream_episodes(infos)
         else:
             info = self.media_provider.get_episode_info(
                 show_metadata_id=self.show_metadata_id,
                 season_order=self.season_order,
                 episode_order=self.episode_order
             )
-            self.metadata = [self.media_provider.to_snowstream_episodes(info)]
+            self.metadata = self.media_provider.to_snowstream_episodes([info])
         return self.metadata
 
     def merge_remote_into_local(self):
@@ -56,11 +61,11 @@ class ShowEpisode(MediaUpdater):
         tags = None
         if self.local_nfo_dict and 'tag' in self.local_nfo_dict:
             tags = [xx for xx in self.local_nfo_dict['tag'] if ':' in xx]
-        info = self.metadata[0]
-        if 'tmdbid' in self.local_nfo_dict and not self.metadata[0]['tmdbid']:
-            self.metadata[0]['tmdbid'] = self.local_nfo_dict['tmdbid']
-        if 'tvdbid' in self.local_nfo_dict and not self.metadata[0]['tvdbid']:
-            self.metadata[0]['tvdbid'] = self.local_nfo_dict['tvdbid']
+        info = self.metadata
+        if 'tmdbid' in self.local_nfo_dict and not info['tmdbid']:
+            info['tmdbid'] = self.local_nfo_dict['tmdbid']
+        if 'tvdbid' in self.local_nfo_dict and not info['tvdbid']:
+            info['tvdbid'] = self.local_nfo_dict['tvdbid']
         self.new_nfo_xml = self.nfo.show_episode_to_xml(
             season=info['season'],
             episode=info['episode'],

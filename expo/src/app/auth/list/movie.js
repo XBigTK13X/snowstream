@@ -20,13 +20,9 @@ export default function MovieListPage() {
         })
     }
     const updateMediaJob = (apiClient, details) => {
-        return apiClient.createJobUpdateMediaFiles({
-            targetKind: 'shelf',
-            targetId: details.shelfId,
-            metadataId: details.metadataId,
-            updateMetadata: details.metadata,
-            updateImages: details.images
-        })
+        details.targetKind = 'shelf'
+        details.targetId = details.shelfId
+        return apiClient.createJobUpdateMediaFiles(details)
     }
     return (
         <WatchableListPage
