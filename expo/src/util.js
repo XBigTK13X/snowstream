@@ -10,6 +10,9 @@ export function formatEpisodeTitle(episode) {
 
 const ONE_HOUR = 3600
 export function secondsToTimestamp(seconds) {
+    if (!seconds) {
+        return "00:00"
+    }
     if (seconds < ONE_HOUR) {
         return new Date(seconds * 1000).toISOString().substring(14, 19)
     }

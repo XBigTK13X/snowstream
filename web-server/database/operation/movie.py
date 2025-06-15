@@ -255,7 +255,7 @@ def get_partial_shelf_movie_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool
         return [xx for xx in movies if not xx.id in watched_ids]
 
 
-def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
+def set_movie_watched(ticket:dm.Ticket, movie_id:int, is_watched:bool=True):
     with DbSession() as db:
         movie = get_movie_by_id(ticket=ticket,movie_id=movie_id)
         if not movie:
@@ -265,8 +265,6 @@ def set_movie_watched(ticket:dm.Ticket,movie_id:int,is_watched:bool=True):
         movies = get_movie_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
         if not movies:
             return False
-        if is_watched:
-            increase_movie_watch_count(ticket=ticket,movie_id=movie_id)
         if is_watched and not shelf_watched:
             watched_movies = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
@@ -329,6 +327,7 @@ def set_movie_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
     movie = get_movie_by_id(ticket=ticket,movie_id=watch_progress.movie_id)
     if not movie:
         return False
+    is_watched = False
     with DbSession() as db:
         db.query(dm.WatchProgress).filter(
                 dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
@@ -340,6 +339,7 @@ def set_movie_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
             set_movie_watched(ticket=ticket,movie_id=watch_progress.movie_id,is_watched=False)
         elif watch_percent >= config.watch_progress_watched_threshold:
             set_movie_watched(ticket=ticket,movie_id=watch_progress.movie_id,is_watched=True)
+            is_watched = True
         else:
             dbm = dm.WatchProgress()
             dbm.client_device_user_id = ticket.cduid
@@ -349,7 +349,7 @@ def set_movie_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
             db.add(dbm)
             db.commit()
             db.refresh(dbm)
-    return True
+    return is_watched
 
 def make_movie_watch_count(cduid:int,movie_id):
     dbm = dm.WatchCount()

@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function PlayMediaPage() {
-    const { apiClient, routes } = C.useAppContext()
+    const { apiClient, routes, config } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
 
     const shelfId = localParams.shelfId
@@ -25,6 +25,8 @@ export default function PlayMediaPage() {
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const [tracks, setTracks] = C.React.useState(null)
     const [videoTitle, setVideoTitle] = C.React.useState("")
+    const [countedWatch, setCountedWatch] = C.React.useState(false)
+    const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(0)
 
     const durationRef = C.React.useRef(durationSeconds)
 
@@ -132,18 +134,33 @@ export default function PlayMediaPage() {
     }
 
     const onSeek = (seekedToSeconds) => {
-        return onProgress(seekedToSeconds)
+        return onProgress(seekedToSeconds, true)
     }
 
-    const onProgress = (progressSeconds) => {
-        if (!playingQueueSource) {
-            const duration = durationRef.current
-            if (duration > 0 && progressSeconds > 0) {
-                if (movie) {
-                    return apiClient.setMovieWatchProgress(movieId, progressSeconds, duration)
-                }
-                if (episode) {
-                    return apiClient.setEpisodeWatchProgress(episodeId, progressSeconds, duration)
+    const onProgress = (progressSeconds, force) => {
+        if (Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds || force) {
+            setProgressSeconds(progressSeconds)
+            if (!playingQueueSource) {
+                const duration = durationRef.current
+                if (duration > 0 && progressSeconds > 0) {
+                    if (movie) {
+                        return apiClient.setMovieWatchProgress(movieId, progressSeconds, duration, countedWatch)
+                            .then((isWatched) => {
+                                if (isWatched && !countedWatch) {
+                                    setCountedWatch(true)
+                                    return apiClient.increaseMovieWatchCount(movieId)
+                                }
+                            })
+                    }
+                    if (episode) {
+                        return apiClient.setEpisodeWatchProgress(episodeId, progressSeconds, duration, countedWatch)
+                            .then((isWatched) => {
+                                if (isWatched && !countedWatch) {
+                                    setCountedWatch(true)
+                                    return apiClient.increaseShowEpisodeWatchCount(episodeId)
+                                }
+                            })
+                    }
                 }
             }
         }
@@ -164,19 +181,10 @@ export default function PlayMediaPage() {
         const duration = durationRef.current
         onProgress(duration).then(() => {
             if (playingQueue) {
-                let currentItem = playingQueue.content[playingQueue.progress]
                 return apiClient.updatePlayingQueue(
                     source = playingQueue.source,
                     progress = playingQueue.progress + 1
                 )
-                    .then(() => {
-                        if (currentItem.kind == 'e') {
-                            return apiClient.increaseShowEpisodeWatchCount(currentItem.id)
-                        }
-                        else if (currentItem.kind == 'm') {
-                            return apiClient.increaseMovieWatchCount(currentItem.id)
-                        }
-                    })
                     .then(() => {
                         routes.replace(routes.playMedia, { playingQueueSource })
                     })

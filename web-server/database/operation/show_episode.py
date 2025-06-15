@@ -301,8 +301,6 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
             dm.Watched.show_episode_id == episode_id
         ).delete()
         db.commit()
-        if is_watched:
-            increase_show_episode_watch_count(ticket=ticket,show_episode_id=episode_id)
         if is_watched and not shelf_watched and not show_watched and not season_watched:
             watched_episodes = (
                 db.query(dm.Watched).filter(
@@ -377,6 +375,7 @@ def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchPro
     episode = get_show_episode_by_id(ticket=ticket,episode_id=watch_progress.show_episode_id)
     if not episode:
         return False
+    is_watched = False
     with DbSession() as db:
         db.query(dm.WatchProgress).filter(
                 dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
@@ -387,6 +386,7 @@ def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchPro
         if watch_percent <= config.watch_progress_unwatched_threshold:
             set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=False)
         elif watch_percent >= config.watch_progress_watched_threshold:
+            is_watched = True
             set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=True)
         else:
             dbm = dm.WatchProgress()
@@ -397,7 +397,7 @@ def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchPro
             db.add(dbm)
             db.commit()
             db.refresh(dbm)
-    return True
+    return is_watched
 
 def make_show_episode_watch_count(cduid:int,show_episode_id:int):
     dbm = dm.WatchCount()

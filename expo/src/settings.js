@@ -24,7 +24,8 @@ class Config {
         this.clientDevBuildNumber = 1
         this.useNullVideoView = false
         this.debugVideoView = false
-        this.debounceMilliseconds = 1000
+        this.debounceMilliseconds = 700
+        this.progressMinDeltaSeconds = 5
     }
 }
 
