@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Dimensions, Modal, TouchableOpacity, Platform, View } from 'react-native'
+import { Dimensions, Modal, TouchableOpacity, Platform, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAppContext } from '../app-context'
 import SnowVideoControls from './snow-video-controls'
@@ -7,7 +7,7 @@ import { useDebouncedCallback } from 'use-debounce'
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
 
-const styles = StyleSheet.create({
+const styles = {
     videoOverlay: {
         backgroundColor: 'transparent',
         width: windowWidth,
@@ -28,14 +28,13 @@ const styles = StyleSheet.create({
     dark: {
         backgroundColor: 'black',
     }
-})
+}
 
 export default function SnowVideoPlayer(props) {
     const { config } = useAppContext()
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
-    const [SubMenu, setSubMenu] = React.useState(null)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
     const [seekToSeconds, setSeekToSeconds] = React.useState(0)
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
@@ -141,7 +140,7 @@ export default function SnowVideoPlayer(props) {
         }
         setSeekToSeconds(progressSeconds)
         setProgressSeconds(progressSeconds)
-    }, 350)
+    }, config.debounceMilliseconds)
 
     let controlToggleButton = null
     if (isReady) {

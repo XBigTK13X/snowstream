@@ -51,14 +51,14 @@ import SnowTrackSelector from './comp/snow-track-selector'
 import SnowTextButton from './comp/snow-text-button'
 import SnowUpdateMediaButton from './comp/snow-update-media-button'
 
-const Styles = StyleSheet.create({
+const Styles = {
     box: {
         padding: 5,
         margin: 5,
         width: '100%',
         height: '100%',
     },
-})
+}
 
 const getWindowHeight = () => {
     return Dimensions.get('window').height

@@ -1,23 +1,29 @@
 import React from 'react'
 
 
-import { Platform, Image, TouchableOpacity, Pressable, View } from 'react-native';
+import { Platform, Image, TouchableOpacity } from 'react-native';
 import SnowText from './snow-text'
 
 const missingPosterImage = '../../assets/images/app/missing-poster.jpeg'
 const missingScreencapImage = '../../assets/images/app/missing-screencap.jpeg'
 
 
-const mult = 0.75
+
+
+let mult = 0.75
+
+if (Platform.isTV) {
+    mult = 0.5
+}
 
 const styles = {
     wrapper: {
         height: 300 * mult,
         width: 200 * mult,
         margin: 10,
-        padding: 10,
+        marginLeft: 'auto',
+        marginRight: 'auto',
         marginBottom: 0,
-        alignContent: 'center',
         backgroundColor: 'rgb(219, 158, 44)',
         borderWidth: 5,
         borderColor: 'rgb(219, 158, 44)',
@@ -40,12 +46,14 @@ const styles = {
     image: {
         height: 215 * mult,
         width: 150 * mult,
-        borderWidth: 5,
+        borderWidth: 2,
         borderColor: '#272727',
         backgroundColor: '#272727',
+        marginTop: 5,
+        marginLeft: 'auto',
+        marginRight: 'auto',
         marginBottom: 10,
-        marginLeft: 5,
-        borderRadius: 5
+        borderRadius: 6
     },
     imageWide: {
         height: 90 * mult,
