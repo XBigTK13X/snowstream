@@ -5,6 +5,8 @@ import { config } from './settings'
 import { routes } from './routes'
 import { Modal, View } from 'react-native'
 import { ApiClient } from './api-client'
+
+import SnowGrid from './comp/snow-grid'
 import SnowText from './comp/snow-text'
 import SnowTextButton from './comp/snow-text-button'
 
@@ -149,7 +151,9 @@ export function AppContextProvider(props) {
                     <SnowText>Unable to communicate with Snowstream.</SnowText>
                     <SnowText>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</SnowText>
                     <View>
-                        <SnowTextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
+                        <SnowGrid itemsPerRow={1}>
+                            <SnowTextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
+                        </SnowGrid>
                     </View>
                 </View>
             </Modal>
