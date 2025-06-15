@@ -19,6 +19,7 @@ class JobMediaScope:
         self.update_images = parse(raw_job_input,'update_images')
         self.update_metadata = parse(raw_job_input,'update_metadata')
         self.is_subjob = parse(raw_job_input,'is_subjob')
+        self.skip_existing = parse(raw_job_input,'skip_existing')
 
     def is_unscoped(self):
         return self.target_kind == None
@@ -47,3 +48,6 @@ class JobMediaScope:
         if not self.metadata_source or self.metadata_source == 'thetvdb':
             return ThetvdbProvider(self.job_id)
         return ThemoviedbProvider(self.job_id)
+
+    def skip_existing_media(self):
+        return self.skip_existing == True

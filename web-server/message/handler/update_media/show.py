@@ -7,14 +7,16 @@ class Show(MediaUpdater):
     def __init__(self,job_id,scope):
         super().__init__(job_id,"Show",scope)
         db.op.update_job(job_id=self.job_id, message=f"Updating media for show {scope.target_id}")
+        self.media_provider = scope.get_show_media_provider()
         self.show_id = scope.target_id
         self.metadata_id = scope.metadata_id
+        self.show = self.db.op.get_show_by_id(ticket=self.ticket,show_id=self.show_id)
+
+    def has_nfo(self):
+        return len(self.show.metadata_files) > 0
 
     def read_local_info(self):
-        self.show = self.db.op.get_show_by_id(ticket=self.ticket,show_id=self.show_id)
-        if not self.show:
-            return None
-        if len(self.show.metadata_files) > 0:
+        if self.has_nfo():
             self.show_nfo_file = self.show.metadata_files[0]
             self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.show_nfo_file.xml_content)
         else:
@@ -61,6 +63,9 @@ class Show(MediaUpdater):
             )
             self.db.op.create_show_metadata_file(show_id=self.show.id,metadata_file_id=self.show_nfo_file.id)
 
+    def get_image_path(self):
+        return os.path.join(self.show.directory,'poster.jpg')
+
     # Legacy images are
     # banner.jpg
     # backdrop.jpg
@@ -71,7 +76,7 @@ class Show(MediaUpdater):
         images = self.media_provider.get_show_images(metadata_id=self.metadata_id)
         if not images:
             return False
-        local_path = os.path.join(self.show.directory,'poster.jpg')
+        local_path = self.get_image_path()
         if self.download_image(image_url=images['poster'],local_path=local_path):
             if not self.db.op.get_image_file_by_path(local_path=local_path):
                 image_file = self.db.op.create_image_file(

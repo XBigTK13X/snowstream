@@ -7,19 +7,19 @@ class ShowSeason(MediaUpdater):
     def __init__(self, job_id, scope):
         super().__init__(job_id, "ShowSeason",scope)
         db.op.update_job(job_id=self.job_id, message=f"Updating media for season {scope.target_id}")
+        self.media_provider = scope.get_show_media_provider()
         self.show_season_id = scope.target_id
         self.metadata_id = scope.metadata_id
         self.season_order = scope.season_order
         self.is_subjob = scope.is_subjob
+        self.show_season = self.db.op.get_show_season_by_id(ticket=self.ticket,season_id=self.show_season_id)
+        self.episodes = self.db.op.get_show_episode_list_by_season(ticket=self.ticket,show_season_id=self.show_season_id)
+
+    def has_nfo(self):
+        return len(self.show_season.metadata_files) > 0
 
     def read_local_info(self):
-        self.show_season = self.db.op.get_show_season_by_id(ticket=self.ticket,season_id=self.show_season_id)
-        if not self.show_season:
-            return None
-        self.episodes = self.db.op.get_show_episode_list_by_season(ticket=self.ticket,show_season_id=self.show_season_id)
-        if not self.episodes:
-            return None
-        if len(self.show_season.metadata_files) > 0:
+        if self.has_nfo():
             self.season_nfo_file = self.show_season.metadata_files[0]
             self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.season_nfo_file.xml_content)
         else:
@@ -68,6 +68,9 @@ class ShowSeason(MediaUpdater):
                 metadata_file_id=self.season_nfo_file.id
             )
 
+    def get_image_path(self):
+        return os.path.join(self.show_season.directory,'poster.jpg')
+
     # Legacy images are
     # poster.jpg
     def download_images(self):
@@ -75,9 +78,9 @@ class ShowSeason(MediaUpdater):
             show_metadata_id=self.metadata_id,
             season_order=self.season_order
         )
-        local_path = os.path.join(self.show_season.directory,'poster.jpg')
         if not images:
             return False
+        local_path = self.get_image_path()
         if self.download_image(image_url=images['poster'],local_path=local_path):
             if not self.db.op.get_image_file_by_path(local_path=local_path):
                 image_file = self.db.op.create_image_file(
@@ -92,17 +95,18 @@ class ShowSeason(MediaUpdater):
 
 
     def schedule_subjobs(self,update_images:bool,update_metadata:bool):
-        for episode in self.episodes:
-            create_child_job(name='update_media_files',payload={
-                'metadata_id': self.metadata_id,
-                'target_kind': 'episode',
-                'target_id': episode.id,
-                'season_order': self.show_season.season_order_counter,
-                'episode_order': episode.episode_order_counter,
-                'update_images': update_images,
-                'update_metadata': update_metadata,
-                'is_subjob': True
-            })
+        if self.episodes:
+            for episode in self.episodes:
+                create_child_job(name='update_media_files',payload={
+                    'metadata_id': self.metadata_id,
+                    'target_kind': 'episode',
+                    'target_id': episode.id,
+                    'season_order': self.show_season.season_order_counter,
+                    'episode_order': episode.episode_order_counter,
+                    'update_images': update_images,
+                    'update_metadata': update_metadata,
+                    'is_subjob': True
+                })
         if not self.is_subjob:
             create_child_job(name='scan_shelves_content',payload={
                     'metadata_id': self.metadata_id,

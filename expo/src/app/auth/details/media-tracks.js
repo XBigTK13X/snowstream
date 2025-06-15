@@ -120,8 +120,10 @@ export default function MediaTracksPage(props) {
                         kind={props.mediaKind}
                         updateMediaJob={(details) => {
                             const mediaDetails = props.getUpdateMediaJobDetails(localParams)
-                            const combinedDetails = { ...details, mediaDetails }
-                            apiClient.createJobUpdateMediaFiles(combinedDetails)
+                            const combinedDetails = { ...details, ...mediaDetails }
+                            combinedDetails.updateMetadata = details.metadata
+                            combinedDetails.updateImages = details.images
+                            return apiClient.createJobUpdateMediaFiles(combinedDetails)
                         }} />
                 </C.SnowGrid>
                 {versionPicker}

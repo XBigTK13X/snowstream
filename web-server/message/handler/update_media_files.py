@@ -38,15 +38,10 @@ def handle(scope):
         db.op.update_job(job_id=scope.job_id, message=f"Unhandled target of kind {scope.target}")
         return False
 
-    handler.read_local_info()
+    if scope.update_metadata and (not handler.has_nfo() or not scope.skip_existing_media()):
+        handler.download_metadata()
 
-    handler.read_remote_info()
-
-    if scope.update_metadata:
-        handler.merge_remote_into_local()
-        handler.save_info_to_local()
-
-    if scope.update_images:
+    if scope.update_images and (not handler.has_images() or not scope.skip_existing_media()):
         handler.download_images()
 
     handler.schedule_subjobs(update_images=scope.update_images,update_metadata=scope.update_metadata)

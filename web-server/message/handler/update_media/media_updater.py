@@ -1,3 +1,4 @@
+import os
 from db import db
 from log import log
 import nfo
@@ -14,15 +15,24 @@ class FileStub:
 
 class MediaUpdater:
     def __init__(self, job_id, kind, scope):
+        self.scope = scope
         self.job_id = job_id
         self.kind = kind
-        self.media_provider = scope.get_media_provider()
         self.db = db
         self.nfo = nfo
         self.ticket = db.model.Ticket()
         self.log = log
         self.config = config
         self.FileStub = FileStub
+        self.metadata = None
+
+    def has_images(self):
+        return os.path.exists(self.get_image_path())
+
+    def download_metadata(self):
+        self.read_local_info()
+        self.merge_remote_into_local()
+        self.save_info_to_local()
 
     def download_image(self,image_url,local_path):
         if not image_url:
@@ -36,6 +46,12 @@ class MediaUpdater:
             return True
         return False
 
+    def get_image_path(self):
+        pass
+
+    def has_nfo(self):
+        pass
+
     def read_local_info(self):
         pass
 
@@ -46,6 +62,9 @@ class MediaUpdater:
         pass
 
     def save_info_to_local(self):
+        pass
+
+    def has_images(self):
         pass
 
     def download_images(self):

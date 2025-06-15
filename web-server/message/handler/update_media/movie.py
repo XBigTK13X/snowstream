@@ -6,14 +6,16 @@ class Movie(MediaUpdater):
     def __init__(self,job_id,scope):
         super().__init__(job_id, "Movie",scope)
         db.op.update_job(job_id=self.job_id, message=f"Updating media for movie {scope.target_id}")
+        self.media_provider = scope.get_movie_media_provider()
         self.movie_id = scope.target_id
         self.metadata_id = scope.metadata_id
+        self.movie = self.db.op.get_movie_by_id(ticket=self.ticket,movie_id=self.movie_id)
+
+    def has_nfo(self):
+        return len(self.movie.metadata_files) > 0
 
     def read_local_info(self):
-        self.movie = self.db.op.get_movie_by_id(ticket=self.ticket,movie_id=self.movie_id)
-        if not self.movie:
-            return None
-        if len(self.movie.metadata_files) > 0:
+        if self.has_nfo():
             self.movie_nfo_file = self.movie.metadata_files[0]
             self.local_nfo_dict = self.nfo.nfo_xml_to_dict(self.movie_nfo_file.xml_content)
         else:
@@ -59,6 +61,9 @@ class Movie(MediaUpdater):
                 xml_content=self.new_nfo_xml
             )
             self.db.op.create_movie_metadata_file(movie_id=self.movie.id,metadata_file_id=self.movie_nfo_file.id)
+
+    def get_image_path(self):
+        return os.path.join(self.movie.directory,'folder.jpg')
 
     # Legacy images
     # backgroup.jpg
