@@ -161,6 +161,27 @@ def auth_required(router):
             )
             return not is_watched
 
+    @router.post("/shelf/watched",tags=['Shelf'])
+    def set_shelf_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        movie_shelf_id: int=None,
+        show_shelf_id: int=None,
+        is_watched: bool=False
+    ):
+        if movie_shelf_id:
+            return db.op.set_movie_shelf_watched(
+                ticket=auth_user.ticket,
+                shelf_id=movie_shelf_id,
+                is_watched=is_watched
+            )
+        if show_shelf_id:
+            return db.op.set_show_shelf_watched(
+                ticket=auth_user.ticket,
+                shelf_id=show_shelf_id,
+                is_watched = is_watched
+            )
+
+
     @router.delete("/shelf/{shelf_id}",tags=['Shelf'])
     def delete_shelf(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -353,6 +374,19 @@ def auth_required(router):
             only_watched=True if watched_status == 'Watched' else False
         )
 
+    @router.post("/show/watched",tags=['Show'])
+    def set_show_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        show_id:int,
+        is_watched:bool=True
+    ):
+        return db.op.set_show_watched(
+            ticket=auth_user.ticket,
+            show_id=show_id,
+            is_watched=is_watched
+        )
+
+
     @router.post("/show/watched/toggle",tags=['Show'])
     def toggle_show_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -386,6 +420,18 @@ def auth_required(router):
             only_watched=True if watched_status == 'Watched' else False
         )
 
+    @router.post("/show/season/watched",tags=['Show'])
+    def set_show_season_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        season_id:int,
+        is_watched:bool=True
+    ):
+        return db.op.set_show_season_watched(
+            ticket=auth_user.ticket,
+            season_id=season_id,
+            is_watched=is_watched
+        )
+
     @router.post("/show/season/watched/toggle",tags=['Show'])
     def toggle_show_season_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -414,6 +460,18 @@ def auth_required(router):
             ticket=auth_user.ticket,
             season_id=show_season_id,
             only_watched=True if watched_status == 'Watched' else False
+        )
+
+    @router.post("/show/season/episode/watched",tags=['Show'])
+    def set_show_episode_watched(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        episode_id:int,
+        is_watched:bool=True
+    ):
+        return db.op.set_show_episode_watched(
+            ticket=auth_user.ticket,
+            episode_id=episode_id,
+            is_watched=is_watched
         )
 
     @router.post("/show/season/episode/watched/toggle",tags=['Show'])
