@@ -9,18 +9,22 @@ const styles = {
     grid: {
         padding: 5,
         margin: 0,
-        justifyContent: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
         width: '100%'
     },
     item: {
         flexBasis: '20%'
+    },
+    list: {
+        justifyContent: 'center',
+        width: '100%'
+    },
+    listColumn: {
+        justifyContent: 'center',
     }
 }
 
 export function SnowGrid(props) {
-    if ((!props.items || !props.items.length) && !props.children) {
+    if (!props.items && !props.children) {
         return null
     }
     let itemStyle = [styles.item]
@@ -50,13 +54,20 @@ export function SnowGrid(props) {
     }
     return (
         <View style={gridStyle}>
-            {items.map((item, itemIndex) => {
-                return (
-                    <View key={itemIndex} style={itemStyle}>
-                        {renderItem(item, itemIndex)}
-                    </View>
-                )
-            })}
+            <FlatList
+                key={itemsPerRow}
+                numColumns={itemsPerRow}
+                contentContainerStyle={styles.list}
+                columnWrapperStyle={itemsPerRow === 1 ? null : styles.listColumn}
+                data={items}
+                renderItem={({ item, itemIndex, separators }) => {
+                    return (
+                        <View key={itemIndex} style={itemStyle}>
+                            {renderItem(item, itemIndex)}
+                        </View>
+                    )
+                }}
+            />
         </View >
     )
 }
