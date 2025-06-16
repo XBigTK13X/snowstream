@@ -1,57 +1,46 @@
 import React from 'react'
-import { Platform, View } from 'react-native'
+import {
+    Platform,
+    View,
+    FlatList
+} from 'react-native'
 
 const styles = {
     grid: {
         padding: 5,
         margin: 0,
+        justifyContent: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'center',
         width: '100%'
     },
     item: {
         flexBasis: '20%'
-    },
-}
-
-// TV and Tablet overrides
-if (Platform.OS === 'android') {
-    if (Platform.isTV) {
-
-    }
-    else {
-
     }
 }
 
 export function SnowGrid(props) {
+    if ((!props.items || !props.items.length) && !props.children) {
+        return null
+    }
     let itemStyle = [styles.item]
+    let itemsPerRow = 5
     if (props.itemsPerRow) {
+        itemsPerRow = props.itemsPerRow
         itemStyle.push({ flexBasis: `${100 / props.itemsPerRow}%` })
     }
     let gridStyle = [styles.grid]
     if (props.gridStyle) {
         gridStyle.push(props.gridStyle)
     }
+    let items = props.items
     if (!props.items) {
         // Without this, if a ternary `{x?x:null}` nullable component will leave a gap in the grid
         const children = React.Children.toArray(props.children).filter(child => child !== null)
         if (!children || !children.length) {
             return null
         }
-        return (
-            <View style={gridStyle}>
-                {
-                    children.map((child, childIndex) => {
-                        return (
-                            <View key={childIndex} style={itemStyle}>
-                                {child}
-                            </View>
-                        )
-                    })}
-            </View>
-        )
+        items = children
     }
     let renderItem = (item, itemIndex) => {
         return item
@@ -61,14 +50,14 @@ export function SnowGrid(props) {
     }
     return (
         <View style={gridStyle}>
-            {props.items.map((item, itemIndex) => {
+            {items.map((item, itemIndex) => {
                 return (
                     <View key={itemIndex} style={itemStyle}>
                         {renderItem(item, itemIndex)}
                     </View>
                 )
             })}
-        </View>
+        </View >
     )
 }
 

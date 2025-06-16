@@ -10,16 +10,16 @@ class Config {
             // These are used by the Android clients
             // They are set at compile time (for now)
             //Prod
-            //this.webApiUrl = 'http://beast.9914.us:9063'
+            this.webApiUrl = 'http://beast.9914.us:9063'
 
             //Laptop Dev
             //this.webApiUrl = 'http://192.168.101.30:8000'
 
             //Desktop Dev
-            this.webApiUrl = 'http://192.168.101.10:8000'
+            //this.webApiUrl = 'http://192.168.101.10:8000'
         }
 
-        this.clientVersion = "0.10.5"
+        this.clientVersion = "0.10.6"
         this.clientBuildDate = "June 15, 2025"
         this.clientDevBuildNumber = 1
         this.useNullVideoView = false

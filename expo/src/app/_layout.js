@@ -33,8 +33,7 @@ function Header() {
         return ''
     }
 
-    const renderItem = (item) => {
-        const entry = item
+    const renderItem = (entry) => {
         return <C.SnowTextButton title={entry.title} onPress={routes.func(entry.route)} />
     }
     const buttons = [

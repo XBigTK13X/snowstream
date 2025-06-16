@@ -1,9 +1,7 @@
 import C from '../../../common'
 
 export function WatchableListPage(props) {
-    const { isAdmin, apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
-    const { setMessageDisplay } = C.useAppContext()
+    const { isAdmin, apiClient, routes, setMessageDisplay } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
     const [shelf, setShelf] = C.React.useState(null)
     const [items, setItems] = C.React.useState(null)
@@ -31,7 +29,8 @@ export function WatchableListPage(props) {
             })
         }
     })
-    if (shelf && items) {
+    console.log({ shelf, items })
+    if (shelf && items !== null) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}.`
         if (props.getPageTitle) {
             pageTitle = props.getPageTitle(shelf, items)
