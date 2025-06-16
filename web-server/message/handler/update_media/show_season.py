@@ -108,6 +108,7 @@ class ShowSeason(MediaUpdater):
                     'episode_order': episode.episode_order_counter,
                     'update_images': self.scope.update_images,
                     'update_metadata': self.scope.update_metadata,
+                    'skip_existing': self.scope.skip_existing_media(),
                     'is_subjob': True
                 })
         if not self.is_subjob:

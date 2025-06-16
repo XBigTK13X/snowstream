@@ -67,7 +67,7 @@ class ThetvdbProvider(base.MediaProvider):
         season = [xx for xx in show['tvdb_extended']['seasons'] if int(xx['number']) == int(season_order)][0]
         season['details'] = self.tvdb_client.get_season(id=season['id'])
         season['extended'] = self.tvdb_client.get_season_extended(id=season['id'])
-        season['episodes'] = [xx for xx in self.get_show_episodes(metadata_id=show_metadata_id) if int(xx['seasonNumber']) == int(season_order)]
+        season['episodes'] = [xx for xx in self.get_show_episodes(show_metadata_id=show_metadata_id) if int(xx['seasonNumber']) == int(season_order)]
         db.op.upsert_cached_text(key=cache_key, data=json.dumps(season))
         return season
 

@@ -67,6 +67,10 @@ def get_movie_by_name_and_year(name: str, release_year: int):
             .first()
         )
 
+def get_movie_by_directory(directory:str):
+    with DbSession() as db:
+        return db.query(dm.Movie).filter(dm.Movie.directory == directory).first()
+
 def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
     if not ticket.is_allowed(tag_id=tag_id):
         return None

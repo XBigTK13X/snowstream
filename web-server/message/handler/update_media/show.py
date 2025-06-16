@@ -98,5 +98,6 @@ class Show(MediaUpdater):
                 'season_order': season.season_order_counter,
                 'update_images': self.scope.update_images,
                 'update_metadata': self.scope.update_metadata,
+                'skip_existing': self.scope.skip_existing_media(),
                 'is_subjob': True
             })

@@ -57,6 +57,7 @@ def handle(scope:JobMediaScope):
                     'target_id': movie.id,
                     'update_metadata': True,
                     'update_images': True,
+                    'skip_existing': scope.skip_existing_media(),
                     'is_subjob': True
                 })
             else:
@@ -85,7 +86,8 @@ def handle(scope:JobMediaScope):
                     'target_id': show.id,
                     'update_metadata': True,
                     'update_images': True,
-                    'is_subjob': True
+                    'is_subjob': True,
+                    'skip_existing': scope.skip_existing_media()
                 })
             else:
                 db.op.update_job(job_id=scope.job_id, message=f"Unable to identify {show.directory}")

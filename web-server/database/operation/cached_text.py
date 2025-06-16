@@ -20,7 +20,7 @@ def get_cached_text_by_key(key: str):
         result = db.query(dm.CachedText).filter(dm.CachedText.key == key).first()
         if not result:
             return None
-        if result.updated_at.timestamp() - datetime.now(timezone.utc).timestamp() > result.time_to_live_seconds:
+        if (result.updated_at.timestamp() - datetime.now(timezone.utc).timestamp()) > result.time_to_live_seconds:
             db.query(dm.CachedText).filter(dm.CachedText.key == key).delete()
             db.commit()
             return None

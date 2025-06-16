@@ -53,6 +53,10 @@ def get_show_by_id(ticket:dm.Ticket,show_id: int):
         show = dm.set_primary_images(show)
         return show
 
+def get_show_by_directory(directory:str):
+    with DbSession() as db:
+        return db.query(dm.Show).filter(dm.Show.directory == directory).first()
+
 def add_show_to_shelf(show_id: int, shelf_id: int):
     with DbSession() as db:
         dbm = dm.ShowShelf()
