@@ -44,6 +44,9 @@ export default function SeasonListPage() {
     return (
         <WatchableListPage
             getRemoteId={(item) => {
+                if (!item) {
+                    return null
+                }
                 return item.show.remote_metadata_id
             }}
             kind="Show"

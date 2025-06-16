@@ -42,7 +42,12 @@ export default function EpisodeListPage() {
     }
     return (
         <WatchableListPage
-            getRemoteId={(item) => { return item.season.show.remote_metadata_id }}
+            getRemoteId={(item) => {
+                if (!item) {
+                    return null
+                }
+                return item.season.show.remote_metadata_id
+            }}
             kind="Season"
             getPageTitle={getPageTitle}
             loadItems={loadItems}

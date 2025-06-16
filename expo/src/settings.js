@@ -19,7 +19,7 @@ class Config {
             //this.webApiUrl = 'http://192.168.101.10:8000'
         }
 
-        this.clientVersion = "0.10.6"
+        this.clientVersion = "0.10.8"
         this.clientBuildDate = "June 15, 2025"
         this.clientDevBuildNumber = 1
         this.useNullVideoView = false

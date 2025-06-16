@@ -5,44 +5,52 @@ export function WatchableListPage(props) {
     const localParams = C.useLocalSearchParams()
     const [shelf, setShelf] = C.React.useState(null)
     const [items, setItems] = C.React.useState(null)
+    const [currentStatus, setCurrentStatus] = C.React.useState(localParams.watchStatus || 'Unwatched')
+    const [allWatched, setAllWatched] = C.React.useState(false)
     const shelfId = localParams.shelfId
-    let currentStatus = localParams.watchStatus || 'Unwatched'
     let nextStatus = 'Watched'
     C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(localParams.shelfId).then((response) => {
                 setShelf(response)
             })
-        }
-        if (shelf && !items) {
-            props.loadItems(apiClient, shelfId, currentStatus).then((response) => {
-                setItems(response)
-                if (response.length == 0) {
-                    setMessageDisplay(`Found no items to display.`)
-                }
-                if (response.length == 1) {
-                    setMessageDisplay(`Found ${response.length} item to display.`)
-                }
-                if (response.length > 1) {
-                    setMessageDisplay(`Found ${response.length} items to display.`)
-                }
-            })
+            props.loadItems(apiClient, shelfId, currentStatus)
+                .then((response) => {
+                    if (response.length == 0 && currentStatus === 'Unwatched') {
+                        setMessageDisplay(`Found no unwatched items to display.`)
+                        setCurrentStatus('All')
+                        setAllWatched(true)
+                        return props.loadItems(apiClient, shelfId, 'All')
+                    }
+                    return response
+                })
+                .then((response) => {
+                    setItems(response)
+                    if (response.length == 0) {
+                        setMessageDisplay(`Found no items to display.`)
+                    }
+                    if (response.length == 1) {
+                        setMessageDisplay(`Found ${response.length} item to display.`)
+                    }
+                    if (response.length > 1) {
+                        setMessageDisplay(`Found ${response.length} items to display.`)
+                    }
+                })
         }
     })
-    console.log({ shelf, items })
     if (shelf && items !== null) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}.`
         if (props.getPageTitle) {
             pageTitle = props.getPageTitle(shelf, items)
         }
         const nextWatchedStatus = () => {
-            if (currentStatus == 'Unwatched') {
+            if (currentStatus === 'Unwatched') {
                 nextStatus = 'Watched'
             }
-            if (currentStatus == 'Watched') {
+            if (currentStatus === 'Watched') {
                 nextStatus = 'All'
             }
-            if (currentStatus == 'All') {
+            if (currentStatus === 'All') {
                 nextStatus = 'Unwatched'
             }
             props.refreshList(routes, shelfId, nextStatus)
@@ -101,7 +109,7 @@ export function WatchableListPage(props) {
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
                 <C.SnowGrid itemsPerRow={itemsPerRow}>
-                    <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />
+                    {allWatched ? null : <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />}
                     {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
                     {props.shuffleAll ? <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} /> : null}
                     <C.SnowAdminButton title={`Scan ${props.kind}`} onPress={() => {
