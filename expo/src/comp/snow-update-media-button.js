@@ -30,7 +30,7 @@ export default function SnowUpdateMediaButton(props) {
     }
     const [showRequest, setShowRequest] = React.useState(false)
     const [metadataId, setMetadataId] = React.useState(props.remoteId ? props.remoteId : '')
-    const [metadataSource, setMetadataSource] = React.useState(null)
+    const [metadataSource, setMetadataSource] = React.useState('')
     const [updateMetadata, setUpdateMetadata] = React.useState(true)
     const [updateImages, setUpdateImages] = React.useState(true)
     const [skipExisting, setSkipExisting] = React.useState(false)

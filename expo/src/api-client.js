@@ -387,7 +387,7 @@ export class ApiClient {
     }
 
     toggleShowShelfWatchStatus(shelfId) {
-        return this.post(`/shelf/watched/toggle?show_shelf_id = ${shelfId}`)
+        return this.post(`/shelf/watched/toggle?show_shelf_id=${shelfId}`)
     }
 
     toggleMovieWatchStatus(movieId) {
