@@ -11,7 +11,7 @@ export default function EpisodeListPage() {
         return `Found ${items.length} episodes for ${showName} season ${seasonOrder}`
     }
     const loadItems = (apiClient, shelfId, showPlaylisted) => {
-        return apiClient.getEpisodeList(seasonId)
+        return apiClient.getEpisodeList(shelfId, seasonId)
     }
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleEpisodeWatchStatus(itemId)
@@ -28,12 +28,12 @@ export default function EpisodeListPage() {
         details.seasonOrder = seasonOrder
         apiClient.createJobUpdateMediaFiles(details)
     }
-    const watchAll = (apiClient) => {
-        return apiClient.getPlayingQueue({ seasonId })
+    const watchAll = (apiClient, shelfId) => {
+        return apiClient.getPlayingQueue({ shelfId, seasonId })
     }
 
     const shuffleAll = (apiClient) => {
-        return apiClient.getPlayingQueue({ seasonId, shuffle: true })
+        return apiClient.getPlayingQueue({ shelfId, seasonId, shuffle: true })
     }
     return (
         <WatchableListPage

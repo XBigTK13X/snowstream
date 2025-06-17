@@ -20,13 +20,13 @@ def handle(scope):
         seasons = db.op.get_show_season_list_by_show_id(ticket=ticket,show_Id=scope.target_id)
         for season in seasons:
             metadata_files += season.metadata_files
-        episodes = db.op.get_show_episode_list_by_show(ticket=ticket,show_id=scope.target_id)
+        episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=show.shelf.id,show_id=scope.target_id)
         for episode in episodes:
             metadata_files += episode.metadata_files
     elif scope.is_season():
         season = db.op.get_show_season_by_id(ticket=ticket,season_id=scope.target_id)
         metadata_files = season.metadata_files
-        episodes = db.op.get_show_episode_list_by_season(ticket=ticket,show_season_id=scope.target_id)
+        episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=season.show.shelf.id,show_season_id=scope.target_id)
         for episode in episodes:
             metadata_files += episode.metadata_files
     elif scope.is_episode():

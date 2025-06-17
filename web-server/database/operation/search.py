@@ -26,7 +26,7 @@ def perform_search(ticket:dm.Ticket,query:str):
                 shows = db_show.get_show_list_by_shelf(ticket=ticket, shelf_id=shelf.id, search_query=query)
                 if shows:
                     result['shows'] += shows
-                episodes = db_episode.get_show_episode_list_by_shelf(ticket=ticket, shelf_id=shelf.id, search_query=query)
+                episodes = db_episode.get_show_episode_list(ticket=ticket, shelf_id=shelf.id, search_query=query)
                 if episodes:
                     result['episodes'] += episodes
 

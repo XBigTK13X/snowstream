@@ -41,22 +41,23 @@ export function WatchableListPage(props) {
         }
 
         const toggleWatchedItem = (item) => {
-            props.toggleItemWatched(apiClient, item.id).then((watched) => {
-                props.loadItems(apiClient, shelfId, showPlaylisted).then((response) => {
-                    setItems(response)
-                    setMessageDisplay(`Mark ${item.name} as ${watched ? 'watched' : 'unwatched'}`)
+            return props.toggleItemWatched(apiClient, item.id)
+                .then((watched) => {
+                    return props.loadItems(apiClient, shelfId, showPlaylisted)
                 })
-            })
+                .then((response) => {
+                    setItems(response)
+                })
         }
 
         const watchAll = () => {
-            props.watchAll(apiClient).then(response => {
+            props.watchAll(apiClient, shelfId).then(response => {
                 routes.goto(routes.playMedia, { playingQueueSource: response.source })
             })
         }
 
         const shuffleAll = () => {
-            props.shuffleAll(apiClient).then(response => {
+            props.shuffleAll(apiClient, shelfId).then(response => {
                 routes.goto(routes.playMedia, { playingQueueSource: response.source })
             })
         }

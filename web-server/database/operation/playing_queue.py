@@ -61,6 +61,7 @@ def split_content(csv_content):
 
 def get_playing_queue(
     ticket=dm.Ticket,
+    shelf_id:int=None,
     show_id:int=None,
     show_season_id:int=None,
     tag_id:int=None,
@@ -91,7 +92,7 @@ def get_playing_queue(
         length = 0
         queue_content = ''
         if show_id:
-            episodes = db_episode.get_show_episode_list_by_show(ticket=ticket, show_id=show_id)
+            episodes = db_episode.get_show_episode_list(ticket=ticket, shelf_id=shelf_id,show_id=show_id)
             episodes = [xx for xx in episodes if xx.season.season_order_counter > 0]
             if shuffle:
                 random.shuffle(episodes)
@@ -99,7 +100,7 @@ def get_playing_queue(
             length = len(episodes)
             queue_content = ','.join([f'e-{xx.id}' for xx in episodes])
         elif show_season_id:
-            episodes = db_episode.get_show_episode_list_by_season(ticket=ticket, show_season_id=show_season_id)
+            episodes = db_episode.get_show_episode_list(ticket=ticket, shelf_id=shelf_id, show_season_id=show_season_id)
             if shuffle:
                 random.shuffle(episodes)
                 episodes = sorted(episodes, key=lambda xx:xx.watch_count.amount)
@@ -112,7 +113,7 @@ def get_playing_queue(
                 if entry.model_kind == 'movie':
                     queue_entries.append(entry)
                 elif entry.model_kind == 'show':
-                    episodes = db_episode.get_show_episode_list_by_show(ticket=ticket, show_id=entry.id)
+                    episodes = db_episode.get_show_episode_list(ticket=ticket, shelf_id=shelf_id, show_id=entry.id)
                     for episode in episodes:
                         if episode.season.season_order_counter > 0:
                             queue_entries.append(episode)

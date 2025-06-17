@@ -20,6 +20,7 @@ export function SnowScreencapGrid(props) {
             <View>
                 <SnowImageButton
                     wide={true}
+                    dull={item.watched}
                     shouldFocus={props.shouldFocus && itemIndex === 0}
                     imageUrl={thumbnailUrl}
                     title={item.name}

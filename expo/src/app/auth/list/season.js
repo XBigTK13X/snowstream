@@ -30,12 +30,12 @@ export default function SeasonListPage() {
         apiClient.createJobUpdateMediaFiles(details)
     }
 
-    const watchAll = (apiClient) => {
-        return apiClient.getPlayingQueue({ showId })
+    const watchAll = (apiClient, shelfId) => {
+        return apiClient.getPlayingQueue({ shelfId, showId })
     }
 
-    const shuffleAll = (apiClient) => {
-        return apiClient.getPlayingQueue({ showId, shuffle: true })
+    const shuffleAll = (apiClient, shelfId) => {
+        return apiClient.getPlayingQueue({ shelfId, showId, shuffle: true })
     }
 
     return (

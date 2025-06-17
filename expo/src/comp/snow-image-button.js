@@ -43,6 +43,10 @@ const styles = {
     focused: {
         borderColor: 'green'
     },
+    dull: {
+        backgroundColor: 'rgb(136, 98, 27)',
+        borderColor: 'rgb(136, 98, 27)',
+    },
     image: {
         height: 215 * mult,
         width: 150 * mult,
@@ -108,6 +112,9 @@ export function SnowImageButton(props) {
     }
     if (focused) {
         wrapperStyle.push(styles.focused)
+    }
+    if (props.dull) {
+        wrapperStyle.push(styles.dull)
     }
 
     let placeholder = props.wide ? missingScreencapImage : missingPosterImage

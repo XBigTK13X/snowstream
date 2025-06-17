@@ -437,9 +437,10 @@ def auth_required(router):
     @router.get("/show/season/episode/list",tags=['Show'])
     def get_show_season_episode_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        shelf_id: int,
         show_season_id: int
     ):
-        return db.op.get_show_episode_list_by_season(ticket=auth_user.ticket,show_season_id=show_season_id)
+        return db.op.get_show_episode_list(ticket=auth_user.ticket,shelf_id=shelf_id,show_season_id=show_season_id)
 
     @router.post("/show/season/episode/watched",tags=['Show'])
     def set_show_episode_watched(

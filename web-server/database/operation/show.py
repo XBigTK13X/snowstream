@@ -113,6 +113,21 @@ def get_show_list_by_shelf(
         if search_query:
             query = query.limit(config.search_results_per_shelf_limit)
         shows = query.all()
+
+        watched = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id.in_(ticket.watch_group),
+            dm.Watched.shelf_id == shelf_id,
+            dm.Watched.show_season_id == None,
+            dm.Watched.show_episode_id == None
+        ).distinct(dm.Watched.show_id).all()
+        all_watched = False
+        watch_lookup = {}
+        for watch in watched:
+            if not watch.show_id:
+                all_watched = True
+                break
+            watch_lookup[watch.show_id] = True
+
         results = []
         for show in shows:
             if not show.seasons:
@@ -122,8 +137,21 @@ def get_show_list_by_shelf(
             if not show_playlisted and any('Playlist:' in xx.name for xx in show.tags):
                 continue
             show = dm.set_primary_images(show)
+            if all_watched or show.id in watch_lookup:
+                show.watched = True
+            else:
+                show.watched = False
             results.append(show)
         return results
+
+def get_partial_shelf_show_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool=True):
+    with DbSession() as db:
+        shows = get_show_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
+        if not shows:
+            return []
+        if only_watched:
+            return [xx for xx in shows if xx.watched]
+        return [xx for xx in shows if not xx.watched]
 
 def create_show_image_file(show_id: int, image_file_id: int):
     with DbSession() as db:
@@ -212,26 +240,6 @@ def get_show_shelf_watched(ticket:dm.Ticket,shelf_id:int):
             dm.Watched.show_episode_id == None
         ).first()
         return False if watched == None else True
-
-def get_partial_shelf_show_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool=True):
-    if not ticket.is_allowed(shelf_id=shelf_id):
-        return []
-    with DbSession() as db:
-        shows = get_show_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
-        shelf_watched = get_show_shelf_watched(ticket=ticket,shelf_id=shelf_id)
-        if shelf_watched:
-            return shows if only_watched else []
-        watched_shows = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == shelf_id,
-            dm.Watched.show_id != None,
-            dm.Watched.show_season_id == None,
-            dm.Watched.show_episode_id == None
-        ).distinct(dm.Watched.show_id).all()
-        watched_ids = [xx.show_id for xx in watched_shows]
-        if only_watched:
-            return [xx for xx in shows if xx.id in watched_ids]
-        return [xx for xx in shows if not xx.id in watched_ids]
 
 def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
     with DbSession() as db:

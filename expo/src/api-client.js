@@ -304,8 +304,8 @@ export class ApiClient {
         return this.get('/show/season/list', { show_id: showId })
     }
 
-    getEpisodeList(seasonId) {
-        return this.get('/show/season/episode/list', { show_season_id: seasonId })
+    getEpisodeList(shelfId, seasonId) {
+        return this.get('/show/season/episode/list', { shelf_id: shelfId, show_season_id: seasonId })
     }
 
     getEpisode(episodeId) {
@@ -441,10 +441,10 @@ export class ApiClient {
 
     getPlayingQueue(details) {
         if (details.showId) {
-            return this.get(`/playing/queue?show_id=${details.showId}&shuffle=${!!details.shuffle}`)
+            return this.get(`/playing/queue?shelf_id=${details.shelfId}&show_id=${details.showId}&shuffle=${!!details.shuffle}`)
         }
         else if (details.seasonId) {
-            return this.get(`/playing/queue?show_season_id=${details.seasonId}&shuffle=${!!details.shuffle}`)
+            return this.get(`/playing/queue?shelf_id=${details.shelfId}&show_season_id=${details.seasonId}&shuffle=${!!details.shuffle}`)
         }
         else if (details.tagId) {
             return this.get(`/playing/queue?tag_id=${details.tagId}&shuffle=${!!details.shuffle}`)

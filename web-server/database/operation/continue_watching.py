@@ -88,7 +88,11 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 unwatched_movies += movies
             if shelf.kind == 'Shows':
                 log.info(f"Getting show shelf {shelf.name}")
-                episodes = db_episode.get_show_episode_list_by_shelf(ticket=ticket,shelf_id=shelf.id)
+                episodes = db_episode.get_show_episode_list(
+                    ticket=ticket,
+                    shelf_id=shelf.id,
+                    include_specials=False
+                )
                 log.info(f"Getting watched")
                 watched = (
                     db.query(dm.Watched)
@@ -122,8 +126,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 earliest_unwatched_episodes = {}
                 MAX_COUNTER = 999999999
                 for episode in episodes:
-                    if episode.season.season_order_counter == 0:
-                        continue
                     if not episode.season.show.id in first_episodes:
                         first_episodes[episode.season.show.id] = {'count':MAX_COUNTER, 'episode':None}
                     episode_counter = episode.season.season_order_counter * 1000 + episode.episode_order_counter
