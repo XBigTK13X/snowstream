@@ -246,7 +246,11 @@ def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
         db.refresh(dbm)
         return dbm
 
-def get_partial_show_episode_list(ticket:dm.Ticket,season_id:int,only_watched:bool=True):
+def get_partial_show_episode_list(
+    ticket:dm.Ticket,
+    season_id:int,
+    only_watched:bool=True
+):
     with DbSession() as db:
         episodes = get_show_episode_list_by_season(ticket=ticket,show_season_id=season_id)
         if not episodes:

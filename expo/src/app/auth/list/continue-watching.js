@@ -16,14 +16,13 @@ const styles = {
 
 export function ContinueWatchingListPage(props) {
     const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
-    const { setMessageDisplay } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
+
     const [continueWatchingList, setContinueWatchingList] = C.React.useState(null)
-    const shelfId = localParams.shelfId
     const [tabIndex, setTabIndex] = C.React.useState(0)
     const [tabItems, setTabItems] = C.React.useState([])
     const [resultsEmpty, setResultsEmpty] = C.React.useState(false)
+
     C.React.useEffect(() => {
         if (!continueWatchingList) {
             apiClient.getContinueWatchingList().then((response) => {
@@ -71,7 +70,7 @@ export function ContinueWatchingListPage(props) {
             </C.View>
         )
     }
-    return <C.Text style={{ color: 'white' }}>Loading the continue watching list.</C.Text>
+    return <C.SnowText>Loading the continue watching list.</C.SnowText>
 }
 
 export default ContinueWatchingListPage

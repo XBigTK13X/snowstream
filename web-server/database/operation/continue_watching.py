@@ -1,6 +1,9 @@
 import util
-import database.db_models as dm
+
 from database.sql_alchemy import DbSession
+import database.db_models as dm
+import sqlalchemy.orm as sorm
+
 import database.operation.shelf as db_shelf
 import database.operation.movie as db_movie
 import database.operation.show as db_show
@@ -15,29 +18,41 @@ def get_continue_watching_list(ticket:dm.Ticket):
             .filter(
                 dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
                 dm.WatchProgress.movie_id != None
-            ).all()
+            ).
+            options(
+                sorm.joinedload(dm.WatchProgress.movie)
+                .joinedload(dm.Movie.shelf)
+            )
+            .all()
         )
         if movies_in_progress and len(movies_in_progress) > 0:
             items = []
             for progress in movies_in_progress:
-                movie = db_movie.get_movie_by_id(ticket=ticket,movie_id=progress.movie_id)
+                movie = dm.set_primary_images(progress.movie)
                 items.append(movie)
             results.append({
                 'kind': 'movies_in_progress',
                 'name': 'Movies In Progress',
                 'items': items
             })
+
         episodes_in_progress = (
             db.query(dm.WatchProgress)
             .filter(
                 dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
                 dm.WatchProgress.show_episode_id != None
+            )
+            .options(
+                sorm.joinedload(dm.WatchProgress.show_episode)
+                .joinedload(dm.ShowEpisode.season)
+                .joinedload(dm.ShowSeason.show)
+                .joinedload(dm.Show.shelf)
             ).all()
         )
         if episodes_in_progress and len(episodes_in_progress) > 0:
             items = []
             for progress in episodes_in_progress:
-                episode = db_episode.get_show_episode_by_id(ticket=ticket,episode_id=progress.show_episode_id)
+                episode = dm.set_primary_images(progress.show_episode)
                 items.append(episode)
             results.append({
                 'kind': 'episodes_in_progress',
@@ -52,23 +67,34 @@ def get_continue_watching_list(ticket:dm.Ticket):
         shelves = db_shelf.get_shelf_list(ticket=ticket)
         for shelf in shelves:
             if shelf.kind == 'Movies':
-                movies = db_movie.get_partial_shelf_movie_list(ticket=ticket,shelf_id=shelf.id,only_watched=False)
+                movies = db_movie.get_partial_shelf_movie_list(
+                    ticket=ticket,
+                    shelf_id=shelf.id,
+                    only_watched=False
+                )
                 if not movies:
                     continue
                 unwatched_movies += movies
             if shelf.kind == 'Shows':
-                shows = db_show.get_partial_shelf_show_list(ticket=ticket,shelf_id=shelf.id,only_watched=False)
+                shows = db_show.get_partial_shelf_show_list(
+                    ticket=ticket,
+                    shelf_id=shelf.id,
+                    only_watched=False
+                )
                 if not shows:
                     continue
                 for show in shows:
-                    seasons = db_season.get_partial_show_season_list(ticket=ticket,show_id=show.id,only_watched=False)
-                    if not seasons:
-                        continue
-                    seasons = [xx for xx in seasons if xx.season_order_counter > 0]
+                    seasons = db_season.get_partial_show_season_list(
+                        ticket=ticket,
+                        show_id=show.id,
+                        only_watched=False)
                     if not seasons:
                         continue
                     next_season = seasons[0]
-                    episodes = db_episode.get_partial_show_episode_list(ticket=ticket,season_id=next_season.id,only_watched=False)
+                    episodes = db_episode.get_partial_show_episode_list(
+                        ticket=ticket,
+                        season_id=next_season.id,
+                        only_watched=False)
                     if not episodes:
                         continue
                     next_episode = episodes[0]
