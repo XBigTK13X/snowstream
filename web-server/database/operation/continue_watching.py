@@ -110,8 +110,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
                             earliest_unwatched_episodes[show_id] = {'count': MAX_COUNTER, 'episode': None}
                         if episode_counter < earliest_unwatched_episodes[show_id]['count']:
                             earliest_unwatched_episodes[show_id] = {'count': episode_counter, 'episode': episode}
-                    else:
-                        print(episode.season.show.name)
 
                 log.info(f"Processing unwatched episodes {len(earliest_unwatched_episodes)}")
                 for show_id,entry in earliest_unwatched_episodes.items():
