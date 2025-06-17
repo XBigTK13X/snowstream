@@ -29,7 +29,7 @@ export default function ShelfEditPage() {
     }
 
     const buttons = [
-        { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan }, ,
+        { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan },
         { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
         { name: 'Read Media Files', apiCall: apiClient.createJobReadMediaFiles },
         { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
