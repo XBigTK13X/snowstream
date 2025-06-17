@@ -85,7 +85,7 @@ def get_show_episode_list(
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
-        query = (
+        episodes_query = (
             db.query(dm.ShowEpisode)
             .options(sorm.joinedload(dm.ShowEpisode.video_files))
             .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
@@ -112,38 +112,42 @@ def get_show_episode_list(
                 .contains_eager(dm.Show.tags.of_type(dm.ShowTagAlias))
             )
         )
+        watched_query = db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id.in_(ticket.watch_group),
+            dm.Watched.shelf_id == shelf_id
+        )
         if shelf_id != None:
-            query = query.filter(dm.Shelf.id == shelf_id)
+            episodes_query = episodes_query.filter(dm.Shelf.id == shelf_id)
         if show_id != None:
-            query = query.filter(dm.Show.id == show_id)
+            episodes_query = episodes_query.filter(dm.Show.id == show_id)
+            watched_query = watched_query.filter(dm.Watched.show_id == show_id)
         if show_season_id != None:
-            query = query.filter(dm.ShowSeason.id == show_season_id)
-        if search_query:
-            query = query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
+            episodes_query = episodes_query.filter(dm.ShowSeason.id == show_season_id)
+            watched_query = watched_query.filter(dm.Watched.show_season_id == show_season_id)
+        if search_query != None:
+            episodes_query = episodes_query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
         if not include_specials:
-            query = query.filter(dm.ShowSeason.season_order_counter == 0)
-        episodes = query.order_by(
+            episodes_query = episodes_query.filter(dm.ShowSeason.season_order_counter != 0)
+        episodes = episodes_query.order_by(
+            dm.Show.id,
             dm.ShowSeason.season_order_counter,
             dm.ShowEpisode.episode_order_counter
         ).all()
+        watched = watched_query.all()
 
-        show = episodes[0].season.show
-
-        watched = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == show.shelf.id,
-            dm.Watched.show_id == show.id
-        ).distinct(dm.Watched.show_episode_id).all()
-        all_watched = False
-        watch_lookup = {}
+        shelf_watched = False
+        show_watched = {}
+        season_watched = {}
+        episode_watched = {}
         for watch in watched:
-            if (
-                watch.show_season_id == None or
-                (watch.show_episode_id == None and show_season_id and watch.show_season_id == show_season_id)
-            ):
-                all_watched = True
-                break
-            watch_lookup[watch.show_episode_id] = True
+            if watch.shelf_id != None and watch.show_id == None and watch.show_season_id == None and watch.show_episode_id == None:
+                shelf_watched = True
+            elif watch.show_id != None and watch.show_season_id == None:
+                show_watched[watch.show_id] = True
+            elif watch.show_season_id != None and watch.show_episode_id == None:
+                season_watched[watch.show_season_id] = True
+            else:
+                episode_watched[watch.show_episode_id] = True
 
         results = []
         for episode in episodes:
@@ -151,7 +155,7 @@ def get_show_episode_list(
                 continue
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)
-            if all_watched or episode.id in watch_lookup:
+            if shelf_watched or episode.season.show.id in show_watched or episode.season.id in season_watched or episode.id in episode_watched:
                 episode.watched = True
             else:
                 episode.watched = False

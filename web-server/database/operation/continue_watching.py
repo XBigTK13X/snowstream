@@ -93,64 +93,34 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     shelf_id=shelf.id,
                     include_specials=False
                 )
-                log.info(f"Getting watched")
-                watched = (
-                    db.query(dm.Watched)
-                    .filter(
-                        dm.Watched.shelf_id == shelf.id,
-                        dm.Watched.client_device_user_id.in_(ticket.watch_group)
-                    )
-                )
-                watched_lookup = {
-                    'shelf': {},
-                    'show': {},
-                    'season': {},
-                    'episode': {}
-                }
-                for watch in watched:
-                    if watch.shelf_id:
-                        if watch.show_id:
-                            if watch.show_season_id:
-                                if watch.show_episode_id:
-                                    watched_lookup['episode'][watch.show_episode_id] = True
-                                else:
-                                    watched_lookup['season'][watch.show_season_id] = True
-                            else:
-                                watched_lookup['show'][watch.show_id] = True
-                        else:
-                            watched_lookup['shelf'][watch.shelf_id] = True
-                if shelf.id in watched_lookup['shelf']:
-                    continue
-                log.info(f"Building episode results")
+                log.info(f"Building episode results from {len(episodes)} episodes")
                 first_episodes = {}
                 earliest_unwatched_episodes = {}
                 MAX_COUNTER = 999999999
                 for episode in episodes:
-                    if not episode.season.show.id in first_episodes:
-                        first_episodes[episode.season.show.id] = {'count':MAX_COUNTER, 'episode':None}
-                    episode_counter = episode.season.season_order_counter * 1000 + episode.episode_order_counter
-                    if episode_counter < first_episodes[episode.season.show.id]['count']:
-                        first_episodes[episode.season.show.id] = {'count':episode_counter, 'episode': episode}
+                    show_id = episode.season.show.id
+                    if not show_id in first_episodes:
+                        first_episodes[show_id] = {'count':MAX_COUNTER, 'episode':None}
+                    episode_counter = episode.season.season_order_counter * 10000 + episode.episode_order_counter
+                    if episode_counter < first_episodes[show_id]['count']:
+                        first_episodes[show_id] = {'count':episode_counter, 'episode': episode}
 
-                    if episode.season.show.id in watched_lookup['show']:
-                        continue
-                    if episode.season.id in watched_lookup['season']:
-                        continue
-                    if episode.id in watched_lookup['episode']:
-                        continue
-                    if not episode.season.show.id in earliest_unwatched_episodes:
-                        earliest_unwatched_episodes[episode.season.show.id] = {'count': MAX_COUNTER, 'episode': None}
+                    if not episode.watched:
+                        if not show_id in earliest_unwatched_episodes:
+                            earliest_unwatched_episodes[show_id] = {'count': MAX_COUNTER, 'episode': None}
+                        if episode_counter < earliest_unwatched_episodes[show_id]['count']:
+                            earliest_unwatched_episodes[show_id] = {'count': episode_counter, 'episode': episode}
+                    else:
+                        print(episode.season.show.name)
 
-                    if episode_counter < earliest_unwatched_episodes[episode.season.show.id]['count']:
-                        earliest_unwatched_episodes[episode.season.show.id] = {'count': episode_counter, 'episode': episode}
-
+                log.info(f"Processing unwatched episodes {len(earliest_unwatched_episodes)}")
                 for show_id,entry in earliest_unwatched_episodes.items():
                     first_episode = first_episodes[show_id]['episode']
                     unwatched_episode = entry['episode']
                     if first_episode.id == unwatched_episode.id:
-                        new_shows.append(dm.set_primary_images(unwatched_episode))
+                        new_shows.append(unwatched_episode)
                     else:
-                        new_episodes.append(dm.set_primary_images(unwatched_episode))
+                        new_episodes.append(unwatched_episode)
 
         if new_episodes and len(new_episodes) > 0:
             results.append({
