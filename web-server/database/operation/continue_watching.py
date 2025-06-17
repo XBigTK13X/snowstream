@@ -1,3 +1,4 @@
+from log import log
 import util
 
 from database.sql_alchemy import DbSession
@@ -11,7 +12,9 @@ import database.operation.show_season as db_season
 import database.operation.show_episode as db_episode
 
 def get_continue_watching_list(ticket:dm.Ticket):
+    log.info("Building the continue watching results")
     with DbSession() as db:
+        log.info("Connected to the DB")
         results = []
         movies_in_progress = (
             db.query(dm.WatchProgress)
@@ -25,6 +28,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
             )
             .all()
         )
+        log.info("Queried movies in progress")
         if movies_in_progress and len(movies_in_progress) > 0:
             items = []
             for progress in movies_in_progress:
@@ -35,6 +39,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'name': 'Movies In Progress',
                 'items': items
             })
+        log.info("Built movies in progress results")
 
         episodes_in_progress = (
             db.query(dm.WatchProgress)
@@ -49,6 +54,8 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 .joinedload(dm.Show.shelf)
             ).all()
         )
+
+        log.info("Queried episodes in progress")
         if episodes_in_progress and len(episodes_in_progress) > 0:
             items = []
             for progress in episodes_in_progress:
@@ -60,67 +67,94 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'items': items
             })
 
+        log.info("Built episodes in progress results")
+
         unwatched_movies = []
-        next_episodes = []
-        new_seasons = []
+        new_episodes = []
         new_shows = []
         shelves = db_shelf.get_shelf_list(ticket=ticket)
+        log.info("Got all shelves")
         for shelf in shelves:
             if shelf.kind == 'Movies':
+                log.info(f"Getting movie shelf {shelf.name}")
                 movies = db_movie.get_partial_shelf_movie_list(
                     ticket=ticket,
                     shelf_id=shelf.id,
                     only_watched=False
                 )
+                log.info(f"Loaded {len(movies)} movies")
                 if not movies:
                     continue
                 unwatched_movies += movies
             if shelf.kind == 'Shows':
-                shows = db_show.get_partial_shelf_show_list(
-                    ticket=ticket,
-                    shelf_id=shelf.id,
-                    only_watched=False
+                log.info(f"Getting show shelf {shelf.name}")
+                episodes = db_episode.get_show_episode_list_by_shelf(ticket=ticket,shelf_id=shelf.id)
+                log.info(f"Getting watched")
+                watched = (
+                    db.query(dm.Watched)
+                    .filter(
+                        dm.Watched.shelf_id == shelf.id,
+                        dm.Watched.client_device_user_id.in_(ticket.watch_group)
+                    )
                 )
-                if not shows:
+                watched_lookup = {
+                    'shelf': {},
+                    'show': {},
+                    'season': {},
+                    'episode': {}
+                }
+                for watch in watched:
+                    if watch.shelf_id:
+                        if watch.show_id:
+                            if watch.show_season_id:
+                                if watch.show_episode_id:
+                                    watched_lookup['episode'][watch.show_episode_id] = True
+                                else:
+                                    watched_lookup['season'][watch.show_season_id] = True
+                            else:
+                                watched_lookup['show'][watch.show_id] = True
+                        else:
+                            watched_lookup['shelf'][watch.shelf_id] = True
+                if shelf.id in watched_lookup['shelf']:
                     continue
-                for show in shows:
-                    seasons = db_season.get_partial_show_season_list(
-                        ticket=ticket,
-                        show_id=show.id,
-                        only_watched=False)
-                    if not seasons:
+                log.info(f"Building episode results")
+                first_episodes = {}
+                earliest_unwatched_episodes = {}
+                MAX_COUNTER = 999999999
+                for episode in episodes:
+                    if episode.season.season_order_counter == 0:
                         continue
-                    next_season = seasons[0]
-                    episodes = db_episode.get_partial_show_episode_list(
-                        ticket=ticket,
-                        season_id=next_season.id,
-                        only_watched=False)
-                    if not episodes:
+                    if not episode.season.show.id in first_episodes:
+                        first_episodes[episode.season.show.id] = {'count':MAX_COUNTER, 'episode':None}
+                    episode_counter = episode.season.season_order_counter * 1000 + episode.episode_order_counter
+                    if episode_counter < first_episodes[episode.season.show.id]['count']:
+                        first_episodes[episode.season.show.id] = {'count':episode_counter, 'episode': episode}
+
+                    if episode.season.show.id in watched_lookup['show']:
                         continue
-                    next_episode = episodes[0]
-                    next_episode.poster_image = show.poster_image
-                    next_episode.episode_slug = util.get_episode_slug(next_episode)
-                    if next_season.season_order_counter == 1:
-                        if next_episode.episode_order_counter == 1:
-                            new_shows.append(next_episode)
-                        else:
-                            next_episodes.append(next_episode)
+                    if episode.season.id in watched_lookup['season']:
+                        continue
+                    if episode.id in watched_lookup['episode']:
+                        continue
+                    if not episode.season.show.id in earliest_unwatched_episodes:
+                        earliest_unwatched_episodes[episode.season.show.id] = {'count': MAX_COUNTER, 'episode': None}
+
+                    if episode_counter < earliest_unwatched_episodes[episode.season.show.id]['count']:
+                        earliest_unwatched_episodes[episode.season.show.id] = {'count': episode_counter, 'episode': episode}
+
+                for show_id,entry in earliest_unwatched_episodes.items():
+                    first_episode = first_episodes[show_id]['episode']
+                    unwatched_episode = entry['episode']
+                    if first_episode.id == unwatched_episode.id:
+                        new_shows.append(dm.set_primary_images(unwatched_episode))
                     else:
-                        if next_episode.episode_order_counter == 1:
-                            new_seasons.append(next_episode)
-                        else:
-                            next_episodes.append(next_episode)
-        if next_episodes and len(next_episodes) > 0:
+                        new_episodes.append(dm.set_primary_images(unwatched_episode))
+
+        if new_episodes and len(new_episodes) > 0:
             results.append({
                 'kind': 'next_episodes',
-                'name': "Next Episodes",
-                'items': next_episodes
-            })
-        if new_seasons and len(new_seasons) > 0:
-            results.append({
-                'kind': 'new_seasons',
-                'name': 'Next Seasons',
-                'items': new_seasons
+                'name': "New Episodes",
+                'items': new_episodes
             })
         if new_shows and len(new_shows) > 0:
             results.append({
@@ -134,5 +168,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'name': 'New Movies',
                 'items': unwatched_movies
             })
+
+        log.info("All ready")
 
         return results

@@ -42,7 +42,7 @@ export function WatchableListPage(props) {
 
         const toggleWatchedItem = (item) => {
             props.toggleItemWatched(apiClient, item.id).then((watched) => {
-                props.loadItems(apiClient, shelfId, currentStatus).then((response) => {
+                props.loadItems(apiClient, shelfId, showPlaylisted).then((response) => {
                     setItems(response)
                     setMessageDisplay(`Mark ${item.name} as ${watched ? 'watched' : 'unwatched'}`)
                 })
