@@ -85,7 +85,12 @@ def get_show_list_by_tag_id(ticket:dm.Ticket, tag_id:int):
                 results.append(show)
         return results
 
-def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None):
+def get_show_list_by_shelf(
+    ticket:dm.Ticket,
+    shelf_id: int,
+    search_query:str=None,
+    show_playlisted:bool=True
+):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return None
     with DbSession() as db:
@@ -114,7 +119,7 @@ def get_show_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None)
                 continue
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):
                 continue
-            if search_query == None and any('Playlist:' in xx.name for xx in show.tags):
+            if not show_playlisted and any('Playlist:' in xx.name for xx in show.tags):
                 continue
             show = dm.set_primary_images(show)
             results.append(show)

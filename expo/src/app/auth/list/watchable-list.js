@@ -3,27 +3,19 @@ import C from '../../../common'
 export function WatchableListPage(props) {
     const { isAdmin, apiClient, routes, setMessageDisplay } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
+
     const [shelf, setShelf] = C.React.useState(null)
     const [items, setItems] = C.React.useState(null)
-    const [currentStatus, setCurrentStatus] = C.React.useState(localParams.watchStatus || 'Unwatched')
-    const [allWatched, setAllWatched] = C.React.useState(false)
+
     const shelfId = localParams.shelfId
-    let nextStatus = 'Watched'
+    const showPlaylisted = localParams.showPlaylisted ? localParams.showPlaylisted : false
+
     C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(localParams.shelfId).then((response) => {
                 setShelf(response)
             })
-            props.loadItems(apiClient, shelfId, currentStatus)
-                .then((response) => {
-                    if (response.length == 0 && currentStatus === 'Unwatched') {
-                        setMessageDisplay(`Found no unwatched items to display.`)
-                        setCurrentStatus('All')
-                        setAllWatched(true)
-                        return props.loadItems(apiClient, shelfId, 'All')
-                    }
-                    return response
-                })
+            props.loadItems(apiClient, shelfId, showPlaylisted)
                 .then((response) => {
                     setItems(response)
                     if (response.length == 0) {
@@ -42,18 +34,6 @@ export function WatchableListPage(props) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}.`
         if (props.getPageTitle) {
             pageTitle = props.getPageTitle(shelf, items)
-        }
-        const nextWatchedStatus = () => {
-            if (currentStatus === 'Unwatched') {
-                nextStatus = 'Watched'
-            }
-            if (currentStatus === 'Watched') {
-                nextStatus = 'All'
-            }
-            if (currentStatus === 'All') {
-                nextStatus = 'Unwatched'
-            }
-            props.refreshList(routes, shelfId, nextStatus)
         }
 
         const gotoItem = (item) => {
@@ -109,7 +89,12 @@ export function WatchableListPage(props) {
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
                 <C.SnowGrid itemsPerRow={itemsPerRow}>
-                    {allWatched ? null : <C.SnowTextButton title={'Showing: ' + currentStatus} onPress={nextWatchedStatus} />}
+                    {props.toggleShowPlaylisted ?
+                        <C.SnowTextButton
+                            title={showPlaylisted ? 'Hide Playlisted' : 'Show Playlisted'}
+                            onPress={() => { props.toggleShowPlaylisted(routes, shelfId, !showPlaylisted) }}
+                        /> : null
+                    }
                     {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
                     {props.shuffleAll ? <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} /> : null}
                     <C.SnowAdminButton title={`Scan ${props.kind}`} onPress={() => {

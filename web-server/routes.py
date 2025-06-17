@@ -281,14 +281,12 @@ def auth_required(router):
     def get_movie_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
-        watched_status:str=None
+        show_playlisted:bool=True
     ):
-        if watched_status == 'All' or watched_status == None:
-            return db.op.get_movie_list_by_shelf(ticket=auth_user.ticket,shelf_id=shelf_id)
-        return db.op.get_partial_shelf_movie_list(
+        return db.op.get_movie_list_by_shelf(
             ticket=auth_user.ticket,
             shelf_id=shelf_id,
-            only_watched=True if watched_status == 'Watched' else False
+            show_playlisted=show_playlisted
         )
 
     @router.get("/movie",tags=['Movie'])
@@ -361,17 +359,12 @@ def auth_required(router):
     def get_show_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
-        watched_status:str=None
+        show_playlisted:str=True
     ):
-        if watched_status == 'All' or watched_status == None:
-            return db.op.get_show_list_by_shelf(
-                ticket=auth_user.ticket,
-                shelf_id=shelf_id
-            )
-        return db.op.get_partial_shelf_show_list(
+        return db.op.get_show_list_by_shelf(
             ticket=auth_user.ticket,
             shelf_id=shelf_id,
-            only_watched=True if watched_status == 'Watched' else False
+            show_playlisted=show_playlisted
         )
 
     @router.post("/show/watched",tags=['Show'])
@@ -406,18 +399,11 @@ def auth_required(router):
     @router.get("/show/season/list",tags=['Show'])
     def get_show_season_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        show_id: int,
-        watched_status:str=None
+        show_id: int
     ):
-        if watched_status == 'All' or watched_status == None:
-            return db.op.get_show_season_list_by_show_id(
-                ticket=auth_user.ticket,
-                show_id=show_id
-            )
-        return db.op.get_partial_show_season_list(
+        return db.op.get_show_season_list_by_show_id(
             ticket=auth_user.ticket,
-            show_id=show_id,
-            only_watched=True if watched_status == 'Watched' else False
+            show_id=show_id
         )
 
     @router.post("/show/season/watched",tags=['Show'])
@@ -451,16 +437,9 @@ def auth_required(router):
     @router.get("/show/season/episode/list",tags=['Show'])
     def get_show_season_episode_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        show_season_id: int,
-        watched_status: str
+        show_season_id: int
     ):
-        if watched_status == 'All' or watched_status == None:
-            return db.op.get_show_episode_list_by_season(ticket=auth_user.ticket,show_season_id=show_season_id)
-        return db.op.get_partial_show_episode_list(
-            ticket=auth_user.ticket,
-            season_id=show_season_id,
-            only_watched=True if watched_status == 'Watched' else False
-        )
+        return db.op.get_show_episode_list_by_season(ticket=auth_user.ticket,show_season_id=show_season_id)
 
     @router.post("/show/season/episode/watched",tags=['Show'])
     def set_show_episode_watched(

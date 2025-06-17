@@ -1,11 +1,11 @@
 import { WatchableListPage } from './watchable-list'
 
 export default function ShowListPage() {
-    const loadItems = (apiClient, shelfId, currentStatus) => {
-        return apiClient.getShowList(shelfId, currentStatus)
+    const loadItems = (apiClient, shelfId, showPlaylisted) => {
+        return apiClient.getShowList(shelfId, showPlaylisted)
     }
-    const refreshList = (routes, shelfId, watchStatus) => {
-        routes.goto(routes.showList, { shelfId, watchStatus })
+    const toggleShowPlaylisted = (routes, shelfId, showPlaylisted) => {
+        return routes.replace(routes.showList, { shelfId: shelfId, showPlaylisted })
     }
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleShowWatchStatus(itemId)
@@ -16,16 +16,11 @@ export default function ShowListPage() {
             targetId: shelfId
         })
     }
-    const updateMediaJob = (apiClient, details) => {
-        details.targetKind = 'shelf'
-        details.targetId = details.shelfId
-        apiClient.createJobUpdateMediaFiles(details)
-    }
     return (
         <WatchableListPage
             kind="Shelf"
             loadItems={loadItems}
-            refreshList={refreshList}
+            toggleShowPlaylisted={toggleShowPlaylisted}
             toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
         />

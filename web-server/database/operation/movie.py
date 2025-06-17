@@ -90,7 +90,12 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
                 results.append(movie)
         return results
 
-def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None):
+def get_movie_list_by_shelf(
+    ticket:dm.Ticket,
+    shelf_id: int,
+    search_query:str=None,
+    show_playlisted:bool=True
+):
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
@@ -117,7 +122,7 @@ def get_movie_list_by_shelf(ticket:dm.Ticket,shelf_id: int,search_query:str=None
                 continue
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
                 continue
-            if search_query == None and any('Playlist:' in xx.name for xx in movie.tags):
+            if not show_playlisted and any('Playlist:' in xx.name for xx in movie.tags):
                 continue
             movie = dm.set_primary_images(movie)
             results.append(movie)

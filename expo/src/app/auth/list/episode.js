@@ -4,19 +4,14 @@ import { WatchableListPage } from './watchable-list'
 
 export default function EpisodeListPage() {
     const localParams = C.useLocalSearchParams()
-    const shelfId = localParams.shelfId
-    const showId = localParams.showId
     const showName = localParams.showName
     const seasonId = localParams.seasonId
     const seasonOrder = localParams.seasonOrder
     const getPageTitle = (shelf, items) => {
         return `Found ${items.length} episodes for ${showName} season ${seasonOrder}`
     }
-    const loadItems = (apiClient, shelfId, currentStatus) => {
-        return apiClient.getEpisodeList(seasonId, currentStatus)
-    }
-    const refreshList = (routes, shelfId, watchStatus) => {
-        routes.goto(routes.episodeList, { shelfId, showId, seasonId, watchStatus })
+    const loadItems = (apiClient, shelfId, showPlaylisted) => {
+        return apiClient.getEpisodeList(seasonId)
     }
     const toggleItemWatched = (apiClient, itemId) => {
         return apiClient.toggleEpisodeWatchStatus(itemId)
@@ -51,7 +46,6 @@ export default function EpisodeListPage() {
             kind="Season"
             getPageTitle={getPageTitle}
             loadItems={loadItems}
-            refreshList={refreshList}
             toggleItemWatched={toggleItemWatched}
             gridKind="screencap"
             scanContentsJob={scanContentsJob}

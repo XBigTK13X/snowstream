@@ -3,11 +3,12 @@ import C from '../../../common'
 import { WatchableListPage } from './watchable-list'
 
 export default function MovieListPage() {
-    const loadItems = (apiClient, shelfId, currentStatus) => {
-        return apiClient.getMovieList(shelfId, currentStatus)
+    const loadItems = (apiClient, shelfId, showPlaylisted) => {
+        return apiClient.getMovieList(shelfId, showPlaylisted)
     }
-    const refreshList = (routes, shelfId, watchStatus) => {
-        routes.goto(routes.movieList, { shelfId, watchStatus })
+
+    const toggleShowPlaylisted = (routes, shelfId, showPlaylisted) => {
+        return routes.replace(routes.movieList, { shelfId: shelfId, showPlaylisted })
     }
 
     const toggleItemWatched = (apiClient, itemId) => {
@@ -19,16 +20,11 @@ export default function MovieListPage() {
             targetId: shelfId
         })
     }
-    const updateMediaJob = (apiClient, details) => {
-        details.targetKind = 'shelf'
-        details.targetId = details.shelfId
-        return apiClient.createJobUpdateMediaFiles(details)
-    }
     return (
         <WatchableListPage
             kind="Shelf"
             loadItems={loadItems}
-            refreshList={refreshList}
+            toggleShowPlaylisted={toggleShowPlaylisted}
             toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
         />

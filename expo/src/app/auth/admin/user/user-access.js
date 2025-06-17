@@ -17,7 +17,7 @@ export default function UserEditPage() {
 
     C.React.useEffect(() => {
         if (!userId && localParams.userId) {
-            apiClient.getUser(localParams.userId, true).then((response) => {
+            apiClient.getUser(localParams.userId).then((response) => {
                 setUserId(localParams.userId)
                 if (response.access_tags) {
                     setUserTags(response.access_tags.map(item => item.id))

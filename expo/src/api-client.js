@@ -288,24 +288,24 @@ export class ApiClient {
         return this.get('/shelf', { shelf_id: shelfId })
     }
 
-    getMovieList(shelfId, watchedStatus) {
-        return this.get('/movie/list', { shelf_id: shelfId, watched_status: watchedStatus })
+    getMovieList(shelfId, showPlaylisted) {
+        return this.get('/movie/list', { shelf_id: shelfId, show_playlisted: showPlaylisted })
     }
 
     getMovie(movieId) {
         return this.get('/movie', { movie_id: movieId })
     }
 
-    getShowList(shelfId, watchedStatus) {
-        return this.get('/show/list', { shelf_id: shelfId, watched_status: watchedStatus })
+    getShowList(shelfId, showPlaylisted) {
+        return this.get('/show/list', { shelf_id: shelfId, show_playlisted: showPlaylisted })
     }
 
-    getSeasonList(showId, watchedStatus) {
-        return this.get('/show/season/list', { show_id: showId, watched_status: watchedStatus })
+    getSeasonList(showId) {
+        return this.get('/show/season/list', { show_id: showId })
     }
 
-    getEpisodeList(seasonId, watchedStatus) {
-        return this.get('/show/season/episode/list', { show_season_id: seasonId, watched_status: watchedStatus })
+    getEpisodeList(seasonId) {
+        return this.get('/show/season/episode/list', { show_season_id: seasonId })
     }
 
     getEpisode(episodeId) {
@@ -316,7 +316,7 @@ export class ApiClient {
         return this.get('/user/list')
     }
 
-    getUser(userId, includeAccess) {
+    getUser(userId) {
         return this.get('/user', { user_id: userId })
     }
 
