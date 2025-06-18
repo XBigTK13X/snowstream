@@ -34,22 +34,48 @@ def update_show_episode_name(show_episode_id:int,name:str):
         db.commit()
         return episode
 
+def query_eager_load_show_episode(query):
+    return (
+        query
+            .options(sorm.selectinload(dm.ShowEpisode.video_files))
+            .options(sorm.selectinload(dm.ShowEpisode.video_files))
+            .options(sorm.selectinload(dm.ShowEpisode.metadata_files))
+            .options(sorm.selectinload(dm.ShowEpisode.image_files))
+            .options(
+                sorm.selectinload(dm.ShowEpisode.season)
+                .selectinload(dm.ShowSeason.show)
+                .selectinload(dm.Show.shelf)
+            )
+            .options(
+                sorm.selectinload(dm.ShowEpisode.season)
+                .selectinload(dm.ShowSeason.show)
+                .selectinload(dm.Show.shelf)
+            )
+            .options(
+                sorm.selectinload(dm.ShowEpisode.season)
+                .selectinload(dm.ShowSeason.show)
+                .selectinload(dm.Show.image_files)
+            )
+            .options(sorm.selectinload(dm.ShowEpisode.tags.of_type(dm.ShowEpisodeTagAlias)))
+            .options(
+                sorm.selectinload(dm.ShowEpisode.season)
+                .selectinload(dm.ShowSeason.show)
+                .selectinload(dm.Show.tags.of_type(dm.ShowTagAlias))
+            )
+            .options(sorm.selectinload(dm.ShowEpisode.season)
+                .selectinload(dm.ShowSeason.tags.of_type(dm.ShowSeasonTagAlias)
+            )
+        )
+    )
+
 def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
     with DbSession() as db:
         query = (
             db.query(dm.ShowEpisode)
             .filter(dm.ShowEpisode.id == episode_id)
-            .options(sorm.joinedload(dm.ShowEpisode.video_files))
-            .options(sorm.joinedload(dm.ShowEpisode.image_files))
-            .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
-            .options(sorm.joinedload(dm.ShowEpisode.tags))
-            .options(
-                sorm.joinedload(dm.ShowEpisode.season)
-                .joinedload(dm.ShowSeason.show)
-                .joinedload(dm.Show.shelf)
-            )
-            .options(sorm.joinedload(dm.ShowEpisode.watch_count))
+
         )
+        query = query_eager_load_show_episode(query)
         episode = query.first()
         season = db_season.get_show_season_by_id(ticket=ticket,season_id=episode.season.id)
         if not season:
@@ -62,7 +88,6 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
         episode = dm.set_primary_images(episode)
         episode.episode_slug = util.get_episode_slug(episode)
         return episode
-
 
 def get_show_episode_by_season_order(show_season_id: int, episode_order_counter: int):
     with DbSession() as db:
@@ -85,46 +110,31 @@ def get_show_episode_list(
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
-        episodes_query = (
-            db.query(dm.ShowEpisode)
-            .options(
-                sorm.joinedload(dm.ShowEpisode.season)
-                .joinedload(dm.ShowSeason.show)
-                .joinedload(dm.Show.shelf)
-            )
-            .options(sorm.joinedload(dm.ShowEpisode.video_files))
-            .options(sorm.joinedload(dm.ShowEpisode.video_files))
-            .options(sorm.joinedload(dm.ShowEpisode.metadata_files))
-            .options(sorm.joinedload(dm.ShowEpisode.image_files))
-            .options(sorm.joinedload(dm.ShowEpisode.tags.of_type(dm.ShowEpisodeTagAlias)))
-        )
+        episodes_query = query_eager_load_show_episode(db.query(dm.ShowEpisode))
+        if search_query:
+            episodes_query = episodes_query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
+        query_results = episodes_query.all()
+
+        episodes = []
+        for result in query_results:
+            if shelf_id != None and result.season.show and result.season.show.shelf and result.season.show.shelf.id != shelf_id:
+                continue
+            if show_id != None and result.season.show.id != show_id:
+                continue
+            if show_season_id != None and result.season.id != show_season_id:
+                continue
+            if not include_specials and result.season.season_order_counter == 0:
+                continue
+            episodes.append(result)
+
         watched_query = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
             dm.Watched.shelf_id == shelf_id
         )
-        if shelf_id != None:
-            print(f"Shelf filter [{shelf_id}]")
-            episodes_query = episodes_query.filter(dm.Shelf.id == shelf_id)
         if show_id != None:
-            print(f"Show filter [{show_id}]")
-            episodes_query = episodes_query.filter(dm.Show.id == show_id)
             watched_query = watched_query.filter(dm.Watched.show_id == show_id)
         if show_season_id != None:
-            print(f"Season filter [{show_season_id}]")
-            episodes_query = episodes_query.filter(dm.ShowSeason.id == show_season_id)
             watched_query = watched_query.filter(dm.Watched.show_season_id == show_season_id)
-        if search_query != None:
-            print(f"query - {search_query}")
-            episodes_query = episodes_query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
-        if not include_specials:
-            print("Don't count specials")
-            episodes_query = episodes_query.filter(dm.ShowSeason.season_order_counter != 0)
-        episodes = episodes_query.order_by(
-            dm.Show.id,
-            dm.ShowSeason.season_order_counter,
-            dm.ShowEpisode.episode_order_counter
-        ).all()
-
         watched = watched_query.all()
         shelf_watched = False
         show_watched = {}
@@ -143,7 +153,6 @@ def get_show_episode_list(
         results = []
         for episode in episodes:
             if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
-                print(f"Not allowed to access! {episode.season.show.name} S{episode.season.season_order_counter}E{episode.episode_order_counter}")
                 continue
             episode = dm.set_primary_images(episode)
             episode.episode_slug = util.get_episode_slug(episode)

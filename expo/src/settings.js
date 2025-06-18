@@ -9,8 +9,8 @@ class Config {
         catch {
             // These are used by the Android clients
             // They are set at compile time (for now)
-            //this.webApiUrl = 'http://beast.9914.us:9063' //Prod
-            this.webApiUrl = 'http://192.168.101.10:8000' //Desktop Dev
+            this.webApiUrl = 'http://beast.9914.us:9063' //Prod
+            //this.webApiUrl = 'http://192.168.101.10:8000' //Desktop Dev
         }
 
         this.clientVersion = "0.10.10"

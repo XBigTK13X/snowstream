@@ -59,7 +59,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
         if episodes_in_progress and len(episodes_in_progress) > 0:
             items = []
             for progress in episodes_in_progress:
-                episode = dm.set_primary_images(progress.show_episode)
+                episode.poster_image = episode.season.show.poster_image
                 items.append(episode)
             results.append({
                 'kind': 'episodes_in_progress',
@@ -68,6 +68,8 @@ def get_continue_watching_list(ticket:dm.Ticket):
             })
 
         log.info("Built episodes in progress results")
+
+        show_posters = {}
 
         unwatched_movies = []
         new_episodes = []
@@ -115,6 +117,10 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 for show_id,entry in earliest_unwatched_episodes.items():
                     first_episode = first_episodes[show_id]['episode']
                     unwatched_episode = entry['episode']
+                    unwatched_episode.name = unwatched_episode.season.show.name
+                    if not unwatched_episode.season.show.id in show_posters:
+                        show_posters[unwatched_episode.season.show.id] = dm.set_primary_images(unwatched_episode.season.show).poster_image
+                    unwatched_episode.poster_image = unwatched_episode.season.show.poster_image
                     if first_episode.id == unwatched_episode.id:
                         new_shows.append(unwatched_episode)
                     else:

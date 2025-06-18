@@ -1,6 +1,6 @@
 import C from '../common'
 export default function SignInPage() {
-    const { session, routes } = C.useAppContext()
+    const { session, routes, config } = C.useAppContext()
     if (session) {
         return <C.Redirect href={routes.landing} />
     }
@@ -9,6 +9,7 @@ export default function SignInPage() {
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
     const [password, setPassword] = C.React.useState("")
+    const [serverUrl, setServerUrl] = C.React.useState(config.webApiUrl)
 
     C.React.useEffect(() => {
         if (!users) {
