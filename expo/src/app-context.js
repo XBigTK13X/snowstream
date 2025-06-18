@@ -88,6 +88,7 @@ export function AppContextProvider(props) {
     const [isAdmin, setIsAdmin] = React.useState(false)
     const [displayName, setDisplayName] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
+    const [serverUrl, setServerUrl] = React.useState(config.webApiUrl)
 
     React.useEffect(() => {
         if (!apiClient) {
@@ -96,8 +97,22 @@ export function AppContextProvider(props) {
             const storedAdmin = getStoredValue('isAdmin')
             setIsAdmin(storedAdmin)
             setDisplayName(getStoredValue('displayName'))
+            const storedWebApiUrl = getStoredValue('webApiUrl')
+            if (storedWebApiUrl) {
+                setServerUrl(storedWebApiUrl)
+            }
             setIsLoading(false)
-            setApiClient(new ApiClient(storedSession, storedAdmin, onApiError, logout))
+            let client = null
+            if (serverUrl || storedWebApiUrl) {
+                client = new ApiClient(
+                    serverUrl ? serverUrl : storedWebApiUrl,
+                    storedSession,
+                    storedAdmin,
+                    onApiError,
+                    logout
+                )
+            }
+            setApiClient(client)
         }
     })
 
@@ -105,6 +120,11 @@ export function AppContextProvider(props) {
         if (!apiError) {
             setApiError(err)
         }
+    }
+
+    const setWebApiUrl = (webApiUrl) => {
+        setStoredValue('webApiUrl', webApiUrl)
+        setApiClient(null)
     }
 
     const login = (username, password) => {
@@ -175,7 +195,8 @@ export function AppContextProvider(props) {
         message,
         setMessageDisplay: setMessage,
         signIn: login,
-        signOut: logout
+        signOut: logout,
+        setWebApiUrl
     }
 
     return (

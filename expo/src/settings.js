@@ -1,6 +1,8 @@
 class Config {
     constructor() {
         this.webApiUrl = null
+        this.vondoomWebApiUrl = 'http://192.168.101.10:8000' //Desktop
+        this.beastWebApiUrl = 'http://beast.9914.us:9063' //Prod
         try {
             // This is only used in the web client
             // It gets token swapped in by a server environment variable
@@ -9,8 +11,7 @@ class Config {
         catch {
             // These are used by the Android clients
             // They are set at compile time (for now)
-            this.webApiUrl = 'http://beast.9914.us:9063' //Prod
-            //this.webApiUrl = 'http://192.168.101.10:8000' //Desktop Dev
+            this.webApiUrl = this.beastWebApiUrl
         }
 
         this.clientVersion = "0.10.10"

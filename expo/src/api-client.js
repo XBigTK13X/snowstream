@@ -1,14 +1,13 @@
 import axios from 'axios'
-import { config } from './settings'
 import DeviceInfo from 'react-native-device-info';
 import { UAParser } from 'ua-parser-js'
 import { Platform } from 'react-native'
 
 export class ApiClient {
-    constructor(authToken, isAdmin, onApiError, onLogout) {
+    constructor(webApiUrl, authToken, isAdmin, onApiError, onLogout) {
         this.authToken = authToken
         this.hasAdmin = isAdmin
-        this.baseURL = config.webApiUrl + '/api'
+        this.baseURL = webApiUrl + '/api'
         this.onApiError = onApiError
         this.apiErrorSent = false
         let self = this
@@ -78,8 +77,8 @@ export class ApiClient {
         }
     }
 
-    createClient(authToken) {
-        this.baseURL = config.webApiUrl + '/api'
+    createClient(webApiUrl, authToken) {
+        this.baseURL = webApiUrl + '/api'
         this.httpClient = axios.create({
             baseURL: this.baseURL,
         })

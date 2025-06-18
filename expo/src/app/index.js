@@ -1,15 +1,14 @@
 import C from '../common'
 export default function SignInPage() {
-    const { session, routes, config } = C.useAppContext()
+    const { session, routes, setWebApiUrl } = C.useAppContext()
     if (session) {
         return <C.Redirect href={routes.landing} />
     }
-    const { apiClient, signIn } = C.useAppContext()
+    const { apiClient, signIn, config } = C.useAppContext()
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
     const [password, setPassword] = C.React.useState("")
-    const [serverUrl, setServerUrl] = C.React.useState(config.webApiUrl)
 
     C.React.useEffect(() => {
         if (!users) {
@@ -70,8 +69,10 @@ export default function SignInPage() {
     }
 
     let userList = null
+    let selectServer = null
     if (users && !user) {
         let renderItem = (item) => {
+            console.log({ item })
             return <C.SnowTextButton
                 title={item.username}
                 onPress={() => { selectUser(item) }}
@@ -80,11 +81,17 @@ export default function SignInPage() {
         userList = (
             <C.SnowGrid items={users} renderItem={renderItem} />
         )
+        selectServer = (
+            <C.SnowGrid itemsPerRow={4}>
+                <C.SnowTextButton title="Beast" onPress={() => { setWebApiUrl(config.beastWebApiUrl) }} />
+                <C.SnowTextButton title="Vondoom" onPress={() => { setWebApiUrl(config.vondoomWebApiUrl) }} />
+            </C.SnowGrid>
+        )
     }
-
     return (
         <C.View>
             {userList}
+            {selectServer}
             {passwordForm}
             <C.SnowLabel>{errors ? 'Errors: ' + JSON.stringify(errors) : ""}</C.SnowLabel>
         </C.View>
