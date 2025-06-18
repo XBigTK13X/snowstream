@@ -11,12 +11,12 @@ export default function SignInPage() {
     const [password, setPassword] = C.React.useState("")
 
     C.React.useEffect(() => {
-        if (!users) {
+        if (!users && apiClient) {
             apiClient.getUserList().then((response) => {
                 setUsers(response)
             })
         }
-    }, [])
+    })
 
     const selectUser = (user) => {
         if (user.has_password) {
@@ -55,6 +55,8 @@ export default function SignInPage() {
 
 
     let passwordForm = null
+    let userList = null
+    let selectServer = null
     if (users && user && user.has_password) {
         passwordForm = (
             <C.View>
@@ -66,26 +68,35 @@ export default function SignInPage() {
                 </C.SnowGrid>
             </C.View>
         )
+    } else {
+        selectServer = (
+            <C.View>
+                <C.SnowLabel>Choose a server to use.</C.SnowLabel>
+                <C.SnowGrid itemsPerRow={4} >
+                    <C.SnowTextButton title="Beast" onPress={() => { setUsers(null); setWebApiUrl(config.beastWebApiUrl) }} />
+                    <C.SnowTextButton title="Vondoom" onPress={() => { setUsers(null); setWebApiUrl(config.vondoomWebApiUrl) }} />
+                </C.SnowGrid>
+            </C.View>
+        )
     }
 
-    let userList = null
-    let selectServer = null
+
     if (users && !user) {
         let renderItem = (item) => {
-            console.log({ item })
+            if (!item.username) {
+                return null
+            }
             return <C.SnowTextButton
                 title={item.username}
                 onPress={() => { selectUser(item) }}
             />
         }
         userList = (
-            <C.SnowGrid items={users} renderItem={renderItem} />
-        )
-        selectServer = (
-            <C.SnowGrid itemsPerRow={4}>
-                <C.SnowTextButton title="Beast" onPress={() => { setWebApiUrl(config.beastWebApiUrl) }} />
-                <C.SnowTextButton title="Vondoom" onPress={() => { setWebApiUrl(config.vondoomWebApiUrl) }} />
-            </C.SnowGrid>
+            <C.View style={{ marginBottom: 200 }}>
+                <C.SnowHeader>Select a user to login.</C.SnowHeader>
+                <C.SnowGrid items={users} renderItem={renderItem} />
+            </C.View>
+
         )
     }
     return (

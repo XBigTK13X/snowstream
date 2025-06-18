@@ -4,11 +4,10 @@ import { UAParser } from 'ua-parser-js'
 import { Platform } from 'react-native'
 
 export class ApiClient {
-    constructor(webApiUrl, authToken, isAdmin, onApiError, onLogout) {
-        this.authToken = authToken
-        this.hasAdmin = isAdmin
-        this.baseURL = webApiUrl + '/api'
-        this.onApiError = onApiError
+    constructor(details) {
+        this.webApiUrl = details.webApiUrl
+        this.hasAdmin = details.isAdmin
+        this.onApiError = details.onApiError
         this.apiErrorSent = false
         let self = this
 
@@ -21,14 +20,15 @@ export class ApiClient {
         this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
         this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
         this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
+        this.login = this.login.bind(this)
 
-        this.createClient(self.authToken)
+        this.createClient(details)
 
         this.handleError = (err) => {
             console.log(err)
             if (err) {
                 if (err.response && err.response.status === 401) {
-                    onLogout()
+                    details.onLogout()
                 }
                 if (err.code && err.code === 'ERR_NETWORK') {
                     if (!self.apiErrorSent) {
@@ -77,13 +77,9 @@ export class ApiClient {
         }
     }
 
-    createClient(webApiUrl, authToken) {
-        this.baseURL = webApiUrl + '/api'
-        this.httpClient = axios.create({
-            baseURL: this.baseURL,
-        })
-
-        this.authToken = authToken
+    createClient(details) {
+        this.baseURL = details.webApiUrl + '/api'
+        this.authToken = details.authToken
 
         if (this.authToken) {
             this.httpClient = axios.create({
@@ -91,6 +87,10 @@ export class ApiClient {
                 headers: {
                     Authorization: 'Bearer ' + this.authToken,
                 },
+            })
+        } else {
+            this.httpClient = axios.create({
+                baseURL: this.baseURL,
             })
         }
     }
@@ -132,7 +132,7 @@ export class ApiClient {
                             self.authToken = data.data.access_token
                             self.permissions = data.data.permissions
                             self.hasAdmin = self.permissions.includes('admin')
-                            self.createClient(self.authToken)
+                            self.createClient({ webApiUrl: self.webApiUrl, authToken: self.authToken })
                             self.displayName = data.data.display_name
                         }
                         return resolve({

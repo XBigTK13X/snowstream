@@ -63,7 +63,7 @@ if (C.Platform.OS === 'android') {
 
 
 function Footer() {
-    const { displayName, config } = C.useAppContext()
+    const { displayName, config, apiClient } = C.useAppContext()
     let authedInfo = 'Not logged in.'
     if (displayName) {
         authedInfo = `Logged in as [${displayName}]`
@@ -72,7 +72,7 @@ function Footer() {
         <C.View style={styles.footer}>
             <C.Text>{'\n'}</C.Text>
             <C.SnowText>
-                snowstream client v{config.clientVersion} talking to server at [{config.webApiUrl}] - {authedInfo}
+                snowstream client v{config.clientVersion}. {apiClient ? `Talking to server at [${apiClient.webApiUrl}].` : null} {authedInfo}
             </C.SnowText>
         </C.View>
     )

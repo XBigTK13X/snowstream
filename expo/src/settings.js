@@ -9,13 +9,13 @@ class Config {
             this.webApiUrl = SNOWSTREAM_WEB_API_URL
         }
         catch {
-            // These are used by the Android clients
-            // They are set at compile time (for now)
+            // This is used by the Android clients
+            // This is the default value, set at compile time
             this.webApiUrl = this.beastWebApiUrl
         }
 
-        this.clientVersion = "0.10.10"
-        this.clientBuildDate = "June 16, 2025"
+        this.clientVersion = "0.11.1"
+        this.clientBuildDate = "June 17, 2025"
         this.clientDevBuildNumber = 1
         this.useNullVideoView = false
         this.debugVideoView = false
