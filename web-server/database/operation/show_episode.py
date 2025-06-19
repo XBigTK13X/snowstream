@@ -41,16 +41,6 @@ def sql_row_to_api_result(row):
     episode.watched = row.watched == '1'
     episode.id = row.episode_id
     episode.episode_order_counter = row.episode_order
-    episode.season = dm.Stub()
-    episode.season.model_kind = 'show_season'
-    episode.season.id = row.season_id
-    episode.season.season_order_counter = row.season_order
-    episode.season.show = dm.Stub()
-    episode.season.show.model_kind = 'show'
-    episode.season.show.id = row.show_id
-    episode.season.show.shelf = dm.Stub()
-    episode.season.show.shelf.model_kind = 'shelf'
-    episode.season.show.shelf.id = row.shelf_id
     image_file = dm.Stub()
     image_file.id = row.image_id
     image_file.local_path = row.image_local_path
@@ -67,7 +57,37 @@ def sql_row_to_api_result(row):
     metadata_file.local_path = row.metadata_local_path
     episode.metadata_files = [metadata_file]
 
+    episode.season = dm.Stub()
+    episode.season.model_kind = 'show_season'
+    episode.season.id = row.season_id
+    episode.season.season_order_counter = row.season_order
+
+    episode.season.show = dm.Stub()
+    episode.season.show.model_kind = 'show'
+    episode.season.show.id = row.show_id
+    episode.season.show.name = row.show_name
+    show_image_file = dm.Stub()
+    show_image_file.id = row.show_image_id
+    show_image_file.local_path = row.show_image_local_path
+    show_image_file.web_path = row.show_image_web_path
+    show_image_file.kind = row.show_image_kind
+    show_image_file.thumbnail_web_path = row.show_image_thumbnail_web_path
+    episode.season.show.image_files = [show_image_file]
+
+    episode.season.show.shelf = dm.Stub()
+    episode.season.show.shelf.model_kind = 'shelf'
+    episode.season.show.shelf.id = row.shelf_id
+
     return episode
+
+def set_primary_images(stub:dm.Stub):
+    stub = dm.set_primary_images(stub)
+    stub.season.show = dm.set_primary_images(stub.season.show)
+    if not stub.screencap_image:
+        stub.screencap_image = stub.season.show.screencap_image
+    if not stub.poster_image:
+        stub.poster_image = stub.season.show.poster_image
+    return stub
 
 def get_episodes_skip_orm(
     ticket:dm.Ticket,
@@ -80,7 +100,8 @@ def get_episodes_skip_orm(
     first:bool=None
 ):
     with DbSession() as db:
-        # If requesting unwatched, filter on that and limit results per group to 1
+        # TODO If requesting unwatched, filter on that and limit results per group to 1
+        # TODO Filter content by tags
         watch_group = ','.join([str(xx) for xx in ticket.watch_group])
         raw_query =f'''
         select
@@ -102,7 +123,12 @@ def get_episodes_skip_orm(
             episode_video.id as video_id,
             episode_video.network_path as video_network_path,
             episode_metadata.id as metadata_id,
-            episode_metadata.local_path as metadata_local_path
+            episode_metadata.local_path as metadata_local_path,
+            show_image.id as show_image_id,
+            show_image.local_path as show_image_local_path,
+            show_image.web_path as show_image_web_path,
+            show_image.kind as show_image_kind,
+            show_image.thumbnail_web_path as show_image_thumbnail_web_path
         from show_episode as episode
         join show_season as season on season.id = episode.show_season_id
         join show as show on show.id = season.show_id
@@ -119,6 +145,8 @@ def get_episodes_skip_orm(
         join video_file as episode_video on sevf.video_file_id = episode_video.id
         left join show_episode_metadata_file as semf on semf.show_episode_id = episode.id
         join metadata_file as episode_metadata on semf.metadata_file_id = episode_metadata.id
+        left join show_image_file as sif on sif.show_id = show.id
+        join image_file as show_image on sif.image_file_id = show_image.id
         where 1=1
         '''
         if shelf_id:
@@ -162,16 +190,22 @@ def get_episodes_skip_orm(
             model = sql_row_to_api_result(xx)
             is_dupe_episode = False
             if not model.id in dedupe_ep:
-                if first == True:
-                    return model
+                if len(results) > 0:
+                    results[-1] = set_primary_images(results[-1])
+                    if first == True:
+                        return results[0]
                 dedupe_ep[model.id] = True
                 results.append(model)
             else:
                 is_dupe_episode = True
+            if not model.season.show.image_files[0].id in dedupe_images:
+                dedupe_images[model.season.show.image_files[0].id] = True
+                if is_dupe_episode:
+                    results[-1].season.show.image_files.append(model.season.show.image_files[0])
             if not model.image_files[0].id in dedupe_images:
                 dedupe_images[model.image_files[0].id] = True
                 if is_dupe_episode:
-                    results[-1].images_files.append(model.image_files[0])
+                    results[-1].image_files.append(model.image_files[0])
             if not model.video_files[0].id in dedupe_video:
                 dedupe_video[model.video_files[0].id] = True
                 if is_dupe_episode:
@@ -180,6 +214,7 @@ def get_episodes_skip_orm(
                 dedupe_metadata[model.metadata_files[0].id] = True
                 if is_dupe_episode:
                     results[-1].metadata_files.append(model.metadata_files[0])
+        results[-1] = set_primary_images(results[-1])
         return results
 
 def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
