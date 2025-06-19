@@ -170,6 +170,7 @@ def get_episodes_skip_orm(
             and season.season_order_counter != 0
             '''
         if search_query:
+            search_query = search_query.replace("'","''")
             raw_query += f'''
             and episode.name ilike '%{search_query}%'
             '''
@@ -214,7 +215,8 @@ def get_episodes_skip_orm(
                 dedupe_metadata[model.metadata_files[0].id] = True
                 if is_dupe_episode:
                     results[-1].metadata_files.append(model.metadata_files[0])
-        results[-1] = set_primary_images(results[-1])
+        if len(results) > 0:
+            results[-1] = set_primary_images(results[-1])
         return results
 
 def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):

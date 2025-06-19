@@ -1,6 +1,6 @@
 #! /bin/bash
 
-script/prod-build-web-client.sh
+# script/prod-build-web-client.sh
 
 docker build -t xbigtk13x/snowstream .
 

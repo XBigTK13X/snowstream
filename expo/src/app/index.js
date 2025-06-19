@@ -92,7 +92,7 @@ export default function SignInPage() {
             />
         }
         userList = (
-            <C.View style={{ marginBottom: 200 }}>
+            <C.View>
                 <C.SnowHeader>Select a user to login.</C.SnowHeader>
                 <C.SnowGrid items={users} renderItem={renderItem} />
             </C.View>

@@ -37,6 +37,8 @@ RUN mkdir -p /usr/share/nginx/html/transcode
 
 COPY ./web-server/requirements.txt /app/requirements.txt
 
+WORKDIR /app
+
 RUN pip install -r /app/requirements.txt
 
 COPY ./web-server /app
@@ -54,8 +56,6 @@ RUN chmod -R 777 /app/script
 RUN chmod -R 777 /app/docker
 
 RUN mkdir /docker-entrypoint-initdb.d
-
-WORKDIR /app
 
 ENTRYPOINT []
 

@@ -42,7 +42,7 @@ docker run -d \
     -v $(pwd)/.docker-volume/logs:/app/logs \
     -v $(pwd)/.docker-volume/postgresql:/var/lib/postgresql/data \
     -v $(pwd)/.docker-volume/rabbitmq:/var/lib/rabbitmq \
-    -v $(pwd)/web-server/.snowstream/thumbnail:/mnt/.snowstream/thumbnail \
+    -v $(pwd)/web-server/.snowstream:/mnt/.snowstream \
     -v /mnt/j-media/tv:/mnt/j-media/tv \
     -v /mnt/j-media/photo:/mnt/j-media/photo \
     -v /mnt/m-media/movie:/mnt/m-media/movie \
@@ -50,4 +50,6 @@ docker run -d \
 
 sleep 12
 
-script/db-migrate.sh
+if [ -z "$1" ]; then
+    script/db-migrate.sh
+fi
