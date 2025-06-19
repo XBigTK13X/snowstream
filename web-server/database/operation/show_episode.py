@@ -38,7 +38,7 @@ def update_show_episode_name(show_episode_id:int,name:str):
 def sql_row_to_api_result(row):
     episode = dm.Stub()
     episode.model_kind = 'show_episode'
-    episode.watched = row.watched == '1'
+    episode.watched = row.episode_watched == 1
     episode.id = row.episode_id
     episode.episode_order_counter = row.episode_order
 
@@ -102,17 +102,30 @@ def get_episodes_skip_orm(
     show_episode_id:int=None,
     include_specials:int=None,
     search_query:str=None,
-    first:bool=None
+    watched:bool=None,
+    first_per_show:bool=None,
+    first_result:bool=None
 ):
     with DbSession() as db:
+        # https://stackoverflow.com/questions/4662464/how-to-select-only-the-first-rows-for-each-unique-value-of-a-column
         # TODO If requesting unwatched, filter on that and limit results per group to 1
         # TODO Filter content by tags
+        print(ticket.cduid)
+        print(ticket.watch_group)
         watch_group = ','.join([str(xx) for xx in ticket.watch_group])
+        print(watch_group)
+        if search_query:
+            search_query = search_query.replace("'","''")
         raw_query =f'''
         select
+            {f'''
+                row_number() over(
+                partition by show.id
+                order by season.season_order_count, episode.episode_order_counter
+            ) AS show_episode_number,''' if first_per_show else ''}
             episode.id as episode_id,
             episode.name as episode_name,
-            cast(case when watched.id is null then 0 else 1 end as bit) as watched,
+            cast(case when watched.id is null then 0 else 1 end as integer) as episode_watched,
             episode.episode_order_counter as episode_order,
 
             episode.show_season_id as season_id,
@@ -146,9 +159,15 @@ def get_episodes_skip_orm(
 
         from show_episode as episode
         join show_season as season on season.id = episode.show_season_id
+            {f' and episode.id = {show_episode_id}' if show_episode_id else ''}
+            {f" and episode.name ilike '%{search_query}%'" if search_query else ''}
+            {f' and season.season_order_counter != 0' if not include_specials else ''}
         join show as show on show.id = season.show_id
+            {f' and season.id = {show_season_id}' if show_season_id else ''}
         join show_shelf as show_shelf on show_shelf.show_id = show.id
+            {f' and show.id = {show_id}' if show_id else ''}
         join shelf as shelf on show_shelf.shelf_id = shelf.id
+            {f' and shelf.id = {shelf_id}' if shelf_id else ''}
         left join watched as watched on (
             watched.client_device_user_id in ({watch_group}) and watched.shelf_id = shelf.id and (
                 watched.show_id = show.id or watched.show_season_id = season.id or watched.show_episode_id = episode.id
@@ -163,39 +182,12 @@ def get_episodes_skip_orm(
         left join show_image_file as sif on sif.show_id = show.id
         join image_file as show_image on sif.image_file_id = show_image.id
         where 1=1
-        '''
-        if shelf_id:
-            raw_query += f'''
-            and shelf.id = {shelf_id}
-            '''
-        if show_episode_id:
-            raw_query += f'''
-            and episode.id = {show_episode_id}
-            '''
-        if show_season_id:
-            raw_query += f'''
-            and season.id = {show_season_id}
-            '''
-        if show_id:
-            raw_query += f'''
-            and show.id = {show_id}
-            '''
-        if not include_specials:
-            raw_query += f'''
-            and season.season_order_counter != 0
-            '''
-        if search_query:
-            search_query = search_query.replace("'","''")
-            raw_query += f'''
-            and episode.name ilike '%{search_query}%'
-            '''
-        raw_query += f'''
+        {f" and cast(case when watched.id is null then 0 else 1 end as integer) = 0" if watched == False else ''}
+        {f" and cast(case when watched.id is null then 0 else 1 end as integer) = 1" if watched == True else ''}
+        {f" and show_episode_number = 1" if first_per_show else ''}
         order by show.name,season.season_order_counter,episode.episode_order_counter
+            {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
         '''
-        if search_query:
-            raw_query += f'''
-            limit {config.search_results_per_shelf_limit}
-            '''
         cursor = db.execute(sql_text(raw_query))
         dedupe_ep = {}
         dedupe_images = {}
@@ -208,12 +200,14 @@ def get_episodes_skip_orm(
             if not model.id in dedupe_ep:
                 if len(results) > 0:
                     results[-1] = set_primary_images(results[-1])
-                    if first == True:
+                    if first_result == True:
                         return results[0]
                 dedupe_ep[model.id] = True
                 results.append(model)
             else:
                 is_dupe_episode = True
+                if results[-1].watched or model.watched:
+                    results[-1].watched = True
             if not model.season.show.image_files[0].id in dedupe_images:
                 dedupe_images[model.season.show.image_files[0].id] = True
                 if is_dupe_episode:
@@ -232,7 +226,7 @@ def get_episodes_skip_orm(
                     results[-1].metadata_files.append(model.metadata_files[0])
         if len(results) > 0:
             results[-1] = set_primary_images(results[-1])
-        if first == True:
+        if first_result == True:
             return results[0]
         return results
 
@@ -241,7 +235,7 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
         return get_episodes_skip_orm(
             ticket=ticket,
             show_episode_id=episode_id,
-            first=True
+            first_result=True
         )
 
 def get_show_episode_by_season_order(show_season_id: int, episode_order_counter: int):
@@ -260,7 +254,9 @@ def get_show_episode_list(
     show_id:int=None,
     show_season_id:int=None,
     search_query:str=None,
-    include_specials:bool=True
+    watched:bool=None,
+    include_specials:bool=True,
+    first_per_show:bool=False
 ):
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
@@ -270,8 +266,10 @@ def get_show_episode_list(
             shelf_id=shelf_id,
             show_id=show_id,
             show_season_id=show_season_id,
+            watched=watched,
             search_query=search_query,
-            include_specials=include_specials
+            include_specials=include_specials,
+            first_per_show=first_per_show
         )
         # if search_query:
         #     episodes_query = episodes_query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
@@ -412,8 +410,8 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
         shelf_watched = db_show.get_show_shelf_watched(ticket=ticket,shelf_id=shelf_id)
         show_watched = db_show.get_show_watched(ticket=ticket,show_id=show.id)
         season_watched = db_season.get_show_season_watched(ticket=ticket,season_id=season.id)
-        episodes = get_show_episode_list(ticket=ticket,shelf_id=shelf_id,show_season_id=season.id)
-        if not episodes:
+        season_episodes = get_show_episode_list(ticket=ticket,shelf_id=shelf_id,show_season_id=season.id)
+        if not season_episodes:
             return False
         db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
@@ -429,7 +427,7 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
                     dm.Watched.show_episode_id != None
                 ).distinct(dm.Watched.show_episode_id).all()
             )
-            if len(watched_episodes) == len(episodes) - 1:
+            if len(watched_episodes) == len(season_episodes) - 1:
                 db_season.set_show_season_watched(ticket=ticket,season_id=season.id,is_watched=True)
                 return True
             else:
@@ -446,12 +444,12 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
         if not is_watched:
             if shelf_watched:
                 db_show.set_show_shelf_watched(ticket=ticket,shelf_id=shelf_id,is_watched=False)
-            elif show_watched:
+            if show_watched:
                 db_show.set_show_watched(ticket=ticket,show_id=show.id,is_watched=False)
-            elif season_watched:
+            if season_watched:
                 db_season.set_show_season_watched(ticket=ticket,season_id=season.id,is_watched=False)
                 episodes_watched = []
-                for other_episode in episodes:
+                for other_episode in season_episodes:
                     if other_episode.id == episode.id:
                         continue
                     episodes_watched.append({
