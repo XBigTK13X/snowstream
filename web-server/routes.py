@@ -469,16 +469,13 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         episode_id:int
     ):
-        is_watched = db.op.get_show_episode_watched(
-            ticket=auth_user.ticket,
-            episode_id=episode_id
-        )
+        episode = db.op.get_show_episode_by_id(ticket=auth_user.ticket,episode_id=episode_id)
         db.op.set_show_episode_watched(
             ticket=auth_user.ticket,
             episode_id=episode_id,
-            is_watched=not is_watched
+            is_watched=not episode.watched
         )
-        return not is_watched
+        return not episode.watched
 
     @router.post("/show/season/episode/watch_count",tags=['Show'])
     def increase_show_episode_watch_count(
@@ -495,7 +492,6 @@ def auth_required(router):
         episode = db.op.get_show_episode_by_id(ticket=auth_user.ticket,episode_id=episode_id)
         if not episode:
             return None
-        episode.watched = db.op.get_show_episode_watched(ticket=auth_user.ticket,episode_id=episode_id)
         episode.has_extras = False
         episode.has_versions = False
         for ii in range(0,len(episode.video_files)):

@@ -41,6 +41,7 @@ def sql_row_to_api_result(row):
     episode.watched = row.watched == '1'
     episode.id = row.episode_id
     episode.episode_order_counter = row.episode_order
+
     image_file = dm.Stub()
     image_file.id = row.image_id
     image_file.local_path = row.image_local_path
@@ -48,10 +49,14 @@ def sql_row_to_api_result(row):
     image_file.kind = row.image_kind
     image_file.thumbnail_web_path = row.image_thumbnail_web_path
     episode.image_files = [image_file]
+
     video_file = dm.Stub()
     video_file.id = row.video_id
     video_file.web_path = row.video_network_path
+    video_file.ffprobe_pruned_json = row.video_ffprobe
+    video_file.version = row.video_version
     episode.video_files = [video_file]
+
     metadata_file = dm.Stub()
     metadata_file.id = row.metadata_id
     metadata_file.local_path = row.metadata_local_path
@@ -106,29 +111,39 @@ def get_episodes_skip_orm(
         raw_query =f'''
         select
             episode.id as episode_id,
-            episode.show_season_id as season_id,
             episode.name as episode_name,
-            season.season_order_counter as season_order,
+            cast(case when watched.id is null then 0 else 1 end as bit) as watched,
             episode.episode_order_counter as episode_order,
+
+            episode.show_season_id as season_id,
+            season.season_order_counter as season_order,
+
             show.id as show_id,
             show.name as show_name,
+
             shelf.id as shelf_id,
             shelf.name as shelf_name,
-            cast(case when watched.id is null then 0 else 1 end as bit) as watched,
+
             episode_image.id as image_id,
             episode_image.local_path as image_local_path,
             episode_image.web_path as image_web_path,
             episode_image.kind as image_kind,
             episode_image.thumbnail_web_path as image_thumbnail_web_path,
+
             episode_video.id as video_id,
             episode_video.network_path as video_network_path,
+            episode_video.ffprobe_pruned_json as video_ffprobe,
+            episode_video.version as video_version,
+
             episode_metadata.id as metadata_id,
             episode_metadata.local_path as metadata_local_path,
+
             show_image.id as show_image_id,
             show_image.local_path as show_image_local_path,
             show_image.web_path as show_image_web_path,
             show_image.kind as show_image_kind,
             show_image.thumbnail_web_path as show_image_thumbnail_web_path
+
         from show_episode as episode
         join show_season as season on season.id = episode.show_season_id
         join show as show on show.id = season.show_id
@@ -217,6 +232,8 @@ def get_episodes_skip_orm(
                     results[-1].metadata_files.append(model.metadata_files[0])
         if len(results) > 0:
             results[-1] = set_primary_images(results[-1])
+        if first == True:
+            return results[0]
         return results
 
 def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
@@ -449,26 +466,6 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
                 return False
 
     return is_watched
-
-def get_show_episode_watched(ticket:dm.Ticket,episode_id:int):
-    episode = get_show_episode_by_id(ticket=ticket,episode_id=episode_id)
-    if not episode:
-        return False
-    season = db_season.get_show_season_by_id(ticket=ticket,season_id=episode.season.id)
-    if not season:
-        return False
-    season_watched = db_season.get_show_season_watched(ticket=ticket,season_id=season.id)
-    if season_watched:
-        return True
-    with DbSession() as db:
-        watched = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id == ticket.cduid,
-            dm.Watched.shelf_id == season.show.shelf.id,
-            dm.Watched.show_id == season.show.id,
-            dm.Watched.show_season_id == season.id,
-            dm.Watched.show_episode_id == episode_id
-        ).first()
-        return False if watched == None else True
 
 def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
     if not watch_progress.played_seconds:
