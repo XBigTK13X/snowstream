@@ -5,6 +5,7 @@ from database.sql_alchemy import DbSession
 from log import log
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
+from sqlalchemy import text as sql_text
 from settings import config
 import database.operation.show as db_show
 import database.operation.show_season as db_season
@@ -34,60 +35,105 @@ def update_show_episode_name(show_episode_id:int,name:str):
         db.commit()
         return episode
 
-def query_eager_load_show_episode(query):
-    return (
-        query
-            .options(sorm.selectinload(dm.ShowEpisode.video_files))
-            .options(sorm.selectinload(dm.ShowEpisode.video_files))
-            .options(sorm.selectinload(dm.ShowEpisode.metadata_files))
-            .options(sorm.selectinload(dm.ShowEpisode.image_files))
-            .options(
-                sorm.selectinload(dm.ShowEpisode.season)
-                .selectinload(dm.ShowSeason.show)
-                .selectinload(dm.Show.shelf)
-            )
-            .options(
-                sorm.selectinload(dm.ShowEpisode.season)
-                .selectinload(dm.ShowSeason.show)
-                .selectinload(dm.Show.shelf)
-            )
-            .options(
-                sorm.selectinload(dm.ShowEpisode.season)
-                .selectinload(dm.ShowSeason.show)
-                .selectinload(dm.Show.image_files)
-            )
-            .options(sorm.selectinload(dm.ShowEpisode.tags.of_type(dm.ShowEpisodeTagAlias)))
-            .options(
-                sorm.selectinload(dm.ShowEpisode.season)
-                .selectinload(dm.ShowSeason.show)
-                .selectinload(dm.Show.tags.of_type(dm.ShowTagAlias))
-            )
-            .options(sorm.selectinload(dm.ShowEpisode.season)
-                .selectinload(dm.ShowSeason.tags.of_type(dm.ShowSeasonTagAlias)
+def sql_row_to_api_result(row:dict):
+    episode = dm.Stub()
+    episode.model_kind = 'show_episode'
+    episode.watched = row['watched'] == '1'
+    episode.id = row['episode_id']
+    episode.episode_order_counter = row['episode_order']
+    episode.season = dm.Stub()
+    episode.season.model_kind = 'show_season'
+    episode.season.id = row['season_id']
+    episode.season.season_order_counter = row['season_order']
+    episode.season.show = dm.Stub()
+    episode.season.show.model_kind = 'show'
+    episode.season.show.id = row['show_id']
+    episode.season.show.shelf = dm.Stub()
+    episode.season.show.shelf.model_kind = 'shelf'
+    episode.season.show.shelf.id = row['shelf_id']
+    return episode
+
+def get_episodes_skip_orm(
+    ticket:dm.Ticket,
+    shelf_id:int=None,
+    show_id:int=None,
+    show_season_id:int=None,
+    show_episode_id:int=None,
+    include_specials:int=None,
+    search_query:str=None,
+    first:bool=None
+):
+    with DbSession() as db:
+        # If requesting unwatched, filter on that and limit results per group to 1
+        watch_group = ','.join([str(xx) for xx in ticket.watch_group])
+        raw_query =f'''
+        select
+            episode.id as episode_id,
+            episode.show_season_id as season_id,
+            episode.name as episode_name,
+            season.season_order_counter as season_order,
+            episode.episode_order_counter as episode_order,
+            show.id as show_id,
+            show.name as show_name,
+            shelf.id as shelf_id,
+            shelf.name as shelf_name,
+            cast(case when watched.id is null then 0 else 1 end as bit) as watched
+        from show_episode as episode
+        join show_season as season on season.id = episode.show_season_id
+        join show as show on show.id = season.show_id
+        join show_shelf as show_shelf on show_shelf.show_id = show.id
+        join shelf as shelf on show_shelf.shelf_id = shelf.id
+        left join watched as watched on (
+            watched.client_device_user_id in ({watch_group}) and watched.shelf_id = shelf.id and (
+                watched.show_id = show.id or watched.show_season_id = season.id or watched.show_episode_id = episode.id
             )
         )
-    )
+        where 1=1
+        '''
+        if shelf_id:
+            raw_query += f'''
+            and shelf.id = {shelf_id}
+            '''
+        if show_episode_id:
+            raw_query += f'''
+            and episode.id = {show_episode_id}
+            '''
+        if show_season_id:
+            raw_query += f'''
+            and season.id = {show_season_id}
+            '''
+        if show_id:
+            raw_query += f'''
+            and show.id = {show_id}
+            '''
+        if not include_specials:
+            raw_query += f'''
+            and season.season_order_counter != 0
+            '''
+        if search_query:
+            raw_query += f'''
+            and episode.name ilike '%{search_query}%'
+            '''
+        raw_query += f'''
+        order by show.name,season.season_order_counter,episode.episode_order_counter
+        '''
+        if search_query:
+            raw_query += f'''
+            limit {config.search_results_per_shelf_limit}
+            '''
+        cursor = db.execute(sql_text(raw_query))
+        results = [sql_row_to_api_result(dict(xx._mapping)) for xx in cursor]
+        if first == True:
+            return results[0]
+        return results
 
 def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
     with DbSession() as db:
-        query = (
-            db.query(dm.ShowEpisode)
-            .filter(dm.ShowEpisode.id == episode_id)
-
+        return get_episodes_skip_orm(
+            ticket=ticket,
+            show_episode_id=episode_id,
+            first=True
         )
-        query = query_eager_load_show_episode(query)
-        episode = query.first()
-        season = db_season.get_show_season_by_id(ticket=ticket,season_id=episode.season.id)
-        if not season:
-            return None
-        if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
-            return None
-        show = db_show.get_show_by_id(ticket=ticket,show_id=season.show_id)
-        episode.show = show
-        episode.season.name = util.get_season_title(episode.season)
-        episode = dm.set_primary_images(episode)
-        episode.episode_slug = util.get_episode_slug(episode)
-        return episode
 
 def get_show_episode_by_season_order(show_season_id: int, episode_order_counter: int):
     with DbSession() as db:
@@ -110,22 +156,28 @@ def get_show_episode_list(
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
-        episodes_query = query_eager_load_show_episode(db.query(dm.ShowEpisode))
-        if search_query:
-            episodes_query = episodes_query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
-        query_results = episodes_query.all()
-
-        episodes = []
-        for result in query_results:
-            if shelf_id != None and result.season.show and result.season.show.shelf and result.season.show.shelf.id != shelf_id:
-                continue
-            if show_id != None and result.season.show.id != show_id:
-                continue
-            if show_season_id != None and result.season.id != show_season_id:
-                continue
-            if not include_specials and result.season.season_order_counter == 0:
-                continue
-            episodes.append(result)
+        return get_episodes_skip_orm(
+            ticket=ticket,
+            shelf_id=shelf_id,
+            show_id=show_id,
+            show_season_id=show_season_id,
+            search_query=search_query,
+            include_specials=include_specials
+        )
+        # if search_query:
+        #     episodes_query = episodes_query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
+        # if shelf_id:
+        #     episodes_query = episodes_query.filter(dm.ShowEpisode.season.show.shelf.id == shelf_id)
+        # if show_id:
+        #     episodes_query = episodes_query.filter(dm.ShowEpisode.season.show.id == show_id)
+        # if not include_specials:
+        #     episodes_query = episodes_query.filter(dm.ShowEpisode.season.season_order_counter != 0)
+        episodes = eager_load_episodes(
+            shelf_id=shelf_id,
+            show_id=show_id,
+            show_season_id=show_season_id,
+            include_specials=include_specials
+        )
 
         watched_query = db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),

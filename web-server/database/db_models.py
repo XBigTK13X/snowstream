@@ -21,6 +21,10 @@ def set_primary_images(model):
                 screencap_is_meta = '/metadata/' in image_file.local_path
     return model
 
+class Stub:
+    def __init__(self):
+        pass
+
 class User(BaseModel):
     @sorm.reconstructor
     def init_on_load(self):
