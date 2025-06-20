@@ -52,13 +52,14 @@ export function ContinueWatchingListPage(props) {
     if (continueWatchingList && tabItems) {
         let tabButtons = continueWatchingList.map((entry, entryIndex) => {
             const selected = entryIndex === tabIndex
+            const tabTitle = `${entry.name} [${entry.items.length}]`
             return (
                 <C.SnowTextButton
                     key={entryIndex}
                     selected={selected}
                     style={styles.column}
                     onPress={() => { loadTab(entry, entryIndex) }}
-                    title={entry.name} />
+                    title={tabTitle} />
             )
         })
         return (

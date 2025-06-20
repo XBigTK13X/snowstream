@@ -79,33 +79,33 @@ class Ticket:
     ):
         print(self.tag_ids)
         print(tag_ids)
-        if stream_source_id:
+        if stream_source_id != None:
             if self.stream_source_ids == None:
                 return True
-            else:
-                return stream_source_id in self.stream_source_ids
-        if tag_id:
+            return stream_source_id in self.stream_source_ids
+        if tag_id != None:
             if self.tag_ids == None:
                 return True
-            else:
-                return tag_id in self.tag_ids
-        if shelf_id:
+            return tag_id in self.tag_ids
+        if shelf_id != None:
             if self.shelf_ids == None:
                 return True
-            else:
-                return shelf_id in self.shelf_ids
-        if tag_ids:
+            return shelf_id in self.shelf_ids
+        if tag_ids != None:
             if self.tag_ids == None:
                 return True
-            else:
-                for allowed_tag_id in self.tag_ids:
-                    if allowed_tag_id in tag_ids:
-                        return True
+            if not tag_ids:
                 return False
-        if tag_provider:
+            for allowed_tag_id in self.tag_ids:
+                if allowed_tag_id in tag_ids:
+                    return True
+            return False
+        if tag_provider != None:
             if self.tag_ids == None:
                 return True
             tag_ids = tag_provider()
+            if not tag_ids:
+                return False
             for allowed_tag_id in self.tag_ids:
                 if allowed_tag_id in tag_ids:
                     return True
