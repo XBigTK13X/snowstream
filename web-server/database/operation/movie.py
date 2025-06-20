@@ -4,6 +4,7 @@ from database.sql_alchemy import DbSession
 from log import log
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
+from sqlalchemy import text as sql_text
 from settings import config
 
 def create_movie(name: str, release_year: int, directory: str):
@@ -90,23 +91,161 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
                 results.append(movie)
         return results
 
+def sql_row_to_api_result(row):
+    movie = dm.Stub()
+    movie.id = row.movie_id
+    movie.name = row.movie_name
+    movie.watched = row.movie_watched != None
+
+    image_file = dm.Stub()
+    image_file.id = row.image_id
+    image_file.local_path = row.image_local_path
+    image_file.web_path = row.image_web_path
+    image_file.kind = row.image_kind
+    image_file.thumbnail_web_path = row.image_thumbnail_web_path
+    movie.image_files = [image_file]
+
+    video_file = dm.Stub()
+    video_file.id = row.video_id
+    video_file.web_path = row.video_network_path
+    video_file.ffprobe_pruned_json = row.video_ffprobe
+    video_file.version = row.video_version
+    movie.video_files = [video_file]
+
+    metadata_file = dm.Stub()
+    metadata_file.id = row.metadata_id
+    metadata_file.local_path = row.metadata_local_path
+    movie.metadata_files = [metadata_file]
+
+    movie.shelf = dm.Stub()
+    movie.shelf.id = row.shelf_id
+    movie.shelf.name = row.shelf_name
+
+    movie.tag = dm.Stub()
+    movie.tag.id = row.tag_id
+    movie.tag.name = row.tag_name
+    movie.tags = [movie.tag]
+
+    return movie
+
 def get_movie_list_by_shelf(
     ticket:dm.Ticket,
     shelf_id:int = None,
     search_query:str = None,
-    show_playlisted:bool = True
+    show_playlisted:bool = True,
+    only_watched:bool = None,
+    only_unwatched:bool = None
 ):
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
-        query = (
-            db.query(dm.Movie)
-            .join(dm.MovieShelf)
-            .options(sorm.joinedload(dm.Movie.image_files))
-            .options(sorm.joinedload(dm.Movie.metadata_files))
-            .options(sorm.joinedload(dm.Movie.video_files))
-            .options(sorm.joinedload(dm.Movie.shelf))
+        watch_group = ','.join([str(xx) for xx in ticket.watch_group])
+        if search_query:
+            search_query = search_query.replace("'","''")
+        raw_query = f'''
+        select
+
+        movie.id as movie_id,
+        movie.name as movie_name,
+        array_agg(watched.id) as movie_watched,
+
+        shelf.id as shelf_id,
+        shelf.name as shelf_name,
+
+        array_agg(movie_image.id) as image_id,
+        array_agg(movie_image.local_path) as image_local_path,
+        array_agg(movie_image.web_path) as image_web_path,
+        array_agg(movie_image.kind) as image_kind,
+        array_agg(movie_image.thumbnail_web_path) as image_thumbnail_web_path,
+
+        array_agg(movie_video.id) as video_id,
+        array_agg(movie_video.network_path) as video_network_path,
+        array_agg(movie_video.ffprobe_pruned_json) as video_ffprobe,
+        array_agg(movie_video.version) as video_version,
+
+        array_agg(movie_metadata.id) as metadata_id,
+        array_agg(movie_metadata.local_path) as metadata_local_path,
+
+        array_agg(tag.name) as tag_name,
+        array_agg(tag.id) as tag_id
+
+        from movie as movie
+        join movie_shelf as ms on ms.movie_id = movie.id
+            {f" and movie.name ilike '%{search_query}%'" if search_query else ''}
+        join shelf as shelf on shelf.id = ms.shelf_id
+            {f' and shelf.id = {shelf_id}' if shelf_id else ''}
+        left join watched as watched on (
+            watched.client_device_user_id in ({watch_group})
+            and watched.shelf_id = shelf.id
+            and (watched.movie_id is null or watched.movie_id = movie.id)
         )
+        left join movie_image_file as mif on mif.movie_id = movie.id
+        join image_file as movie_image on mif.image_file_id = movie_image.id
+        left join movie_video_file as mvf on mvf.movie_id = movie.id
+        join video_file as movie_video on mvf.video_file_id = movie_video.id
+        left join movie_metadata_file as mmf on mmf.movie_id = movie.id
+        join metadata_file as movie_metadata on mmf.metadata_file_id = movie_metadata.id
+        left join movie_tag as mt on mt.movie_id = movie.id
+        join tag as tag on tag.id = mt.tag_id
+        where 1=1
+            {f" and watched.id is null" if only_unwatched else ''}
+            {f" and watched.id is not null" if only_watched else ''}
+        group by
+            movie.id,
+            movie.name,
+            shelf.id,
+            shelf.name
+        order by
+            movie.name
+        {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
+        '''
+
+        cursor = db.execute(sql_text(raw_query))
+        log.info("DEBUG -- Cursor generated movies")
+        dedupe_ep = {}
+        dedupe_images = {}
+        dedupe_metadata = {}
+        dedupe_video = {}
+        dedupe_tag = {}
+        results = []
+        log.info("DEBUG -- Deduplicating results")
+        raw_result_count = 0
+        for xx in cursor:
+            raw_result_count += 1
+            model = sql_row_to_api_result(row=xx)
+            is_dupe_movie = False
+            if not model.id in dedupe_ep:
+                if len(results) > 0:
+                    results[-1] = dm.set_primary_images(results[-1])
+                dedupe_ep[model.id] = True
+                results.append(model)
+            else:
+                is_dupe_movie = True
+            image_key = model.image_files[0].id
+            if model.image_files and not image_key in dedupe_images:
+                dedupe_images[image_key] = True
+                if is_dupe_movie:
+                    results[-1].image_files.append(model.image_files[0])
+            video_key = model.video_files[0].id
+            if model.video_files and not video_key in dedupe_video:
+                dedupe_video[video_key] = True
+                if is_dupe_movie:
+                    results[-1].video_files.append(model.video_files[0])
+            metadata_key = model.metadata_files[0].id
+            if model.metadata_files and not metadata_key in dedupe_metadata:
+                dedupe_metadata[metadata_key] = True
+                if is_dupe_movie:
+                    results[-1].metadata_files.append(model.metadata_files[0])
+            tag_key = f'{model.id}-{model.tags[0].id}'
+            if model.tags and not tag_key in dedupe_tag:
+                dedupe_tag[tag_key] = True
+                if is_dupe_movie:
+                    results[-1].tags.append(model.tags[0])
+        log.info(f"DEBUG -- Handling return conditions for {raw_result_count} raw items")
+        if len(results) > 0:
+            results[-1] = dm.set_primary_images(results[-1])
+        return results
+
         if search_query:
             query = query.filter(dm.Movie.name.ilike(f'%{search_query}%'))
         query = query.options(sorm.joinedload(dm.Movie.tags))

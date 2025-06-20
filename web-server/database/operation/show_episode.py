@@ -41,6 +41,7 @@ def sql_row_to_api_result(row,load_episode_files):
     episode.watched = row.episode_watched != None
     episode.id = row.episode_id
     episode.episode_order_counter = row.episode_order
+    episode.name = row.episode_name
 
     if load_episode_files:
         image_file = dm.Stub()
@@ -113,6 +114,8 @@ def get_episodes_skip_orm(
     first_result:bool=None,
     load_episode_files:bool=True
 ):
+    if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
+        return []
     log.info("DEBUG -- Generating the episode list query")
     with DbSession() as db:
         # TODO If requesting unwatched, filter on that and limit results per group to 1
@@ -123,51 +126,52 @@ def get_episodes_skip_orm(
         log.info("DEBUG -- Ready to fill in the query template")
         raw_query =f'''
         select
-            episode.id as episode_id,
-            episode.name as episode_name,
-            watched.id as episode_watched,
-            episode.episode_order_counter as episode_order,
 
-            episode.show_season_id as season_id,
-            season.season_order_counter as season_order,
+        episode.id as episode_id,
+        episode.name as episode_name,
+        watched.id as episode_watched,
+        episode.episode_order_counter as episode_order,
 
-            show.id as show_id,
-            show.name as show_name,
+        episode.show_season_id as season_id,
+        season.season_order_counter as season_order,
 
-            shelf.id as shelf_id,
-            shelf.name as shelf_name,
+        show.id as show_id,
+        show.name as show_name,
 
-            {"""
-            episode_image.id as image_id,
-            episode_image.local_path as image_local_path,
-            episode_image.web_path as image_web_path,
-            episode_image.kind as image_kind,
-            episode_image.thumbnail_web_path as image_thumbnail_web_path,
+        shelf.id as shelf_id,
+        shelf.name as shelf_name,
 
-            episode_video.id as video_id,
-            episode_video.network_path as video_network_path,
-            episode_video.ffprobe_pruned_json as video_ffprobe,
-            episode_video.version as video_version,
+        {"""
+        episode_image.id as image_id,
+        episode_image.local_path as image_local_path,
+        episode_image.web_path as image_web_path,
+        episode_image.kind as image_kind,
+        episode_image.thumbnail_web_path as image_thumbnail_web_path,
 
-            episode_metadata.id as metadata_id,
-            episode_metadata.local_path as metadata_local_path,
-            """ if load_episode_files else ''}
+        episode_video.id as video_id,
+        episode_video.network_path as video_network_path,
+        episode_video.ffprobe_pruned_json as video_ffprobe,
+        episode_video.version as video_version,
 
-            show_image.id as show_image_id,
-            show_image.local_path as show_image_local_path,
-            show_image.web_path as show_image_web_path,
-            show_image.kind as show_image_kind,
-            show_image.thumbnail_web_path as show_image_thumbnail_web_path
+        episode_metadata.id as metadata_id,
+        episode_metadata.local_path as metadata_local_path,
+        """ if load_episode_files else ''}
+
+        show_image.id as show_image_id,
+        show_image.local_path as show_image_local_path,
+        show_image.web_path as show_image_web_path,
+        show_image.kind as show_image_kind,
+        show_image.thumbnail_web_path as show_image_thumbnail_web_path
 
         from show_episode as episode
         join show_season as season on season.id = episode.show_season_id
             {f' and episode.id = {show_episode_id}' if show_episode_id else ''}
             {f" and episode.name ilike '%{search_query}%'" if search_query else ''}
             {f' and season.season_order_counter != 0' if not include_specials else ''}
-        join show as show on show.id = season.show_id
             {f' and season.id = {show_season_id}' if show_season_id else ''}
-        join show_shelf as show_shelf on show_shelf.show_id = show.id
+        join show as show on show.id = season.show_id
             {f' and show.id = {show_id}' if show_id else ''}
+        join show_shelf as show_shelf on show_shelf.show_id = show.id
         join shelf as shelf on show_shelf.shelf_id = shelf.id
             {f' and shelf.id = {shelf_id}' if shelf_id else ''}
         left join watched as watched on (
@@ -196,11 +200,11 @@ def get_episodes_skip_orm(
             show.name,
             season.season_order_counter,
             episode.episode_order_counter
-            {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
+        {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
         '''
         log.info("DEBUG -- Executing the built query")
         cursor = db.execute(sql_text(raw_query))
-        log.info("DEBUG -- Cursor generated")
+        log.info(f"DEBUG -- Cursor generated shows only_watched[{only_watched}] only_unwatched[{only_unwatched}]")
         dedupe_ep = {}
         dedupe_images = {}
         dedupe_metadata = {}
