@@ -23,7 +23,7 @@ export function SnowPosterGrid(props) {
 
         return <SnowImageButton
             wide={false}
-            dull={item.watched}
+            dull={!props.disableWatched && item.watched}
             shouldFocus={props.shouldFocus && itemIndex === 0}
             imageUrl={thumbnailUrl}
             onPress={() => { props.onPress ? props.onPress(item) : routes.gotoItem(item) }}

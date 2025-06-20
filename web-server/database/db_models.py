@@ -10,6 +10,8 @@ def set_primary_images(model):
     model.poster_image = None
     screencap_is_meta = False
     poster_is_meta = False
+    if not model.image_files:
+        return model
     for image_file in model.image_files:
         if not model.poster_image or poster_is_meta:
             if 'poster' in image_file.kind:

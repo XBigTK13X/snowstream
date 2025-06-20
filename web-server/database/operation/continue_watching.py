@@ -75,10 +75,10 @@ def get_continue_watching_list(ticket:dm.Ticket):
         new_episodes = []
         new_shows = []
         shelves = db_shelf.get_shelf_list(ticket=ticket)
-        log.info("Got all shelves")
+        log.info("DEBUG -- Got all shelves")
         for shelf in shelves:
             if shelf.kind == 'Movies':
-                log.info(f"Getting movie shelf {shelf.name}")
+                log.info(f"DEBUG -- Getting movie shelf {shelf.name}")
                 movies = db_movie.get_partial_shelf_movie_list(
                     ticket=ticket,
                     shelf_id=shelf.id,
@@ -89,25 +89,27 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     continue
                 unwatched_movies += movies
             if shelf.kind == 'Shows':
-                log.info(f"Getting show shelf {shelf.name} episodes")
+                log.info(f"DEBUG -- Getting show shelf {shelf.name} episodes")
                 first_lookup = {}
                 first_episodes = db_episode.get_show_episode_list(
                     ticket=ticket,
                     shelf_id=shelf.id,
                     include_specials=False,
-                    watched=False,
-                    first_per_show=True
+                    first_per_show=True,
+                    load_episode_files=False
                 )
                 for episode in first_episodes:
                     first_lookup[episode.season.show.id] = episode
+
                 unwatched_episodes = db_episode.get_show_episode_list(
                     ticket=ticket,
                     shelf_id=shelf.id,
                     include_specials=False,
-                    watched=True,
-                    first_per_show=False
+                    only_watched=True,
+                    first_per_show=True,
+                    load_episode_files=False
                 )
-                log.info(f"Building episode results from {len(unwatched_episodes)} unwatched episodes")
+                log.info(f"DEBUG -- Building episode results from {len(unwatched_episodes)} unwatched episodes")
                 for episode in unwatched_episodes:
                     if episode.season.show.id in first_lookup:
                         new_shows.append(episode)
