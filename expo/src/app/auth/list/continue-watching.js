@@ -70,7 +70,7 @@ export function ContinueWatchingListPage(props) {
             </C.View>
         )
     }
-    return <C.SnowText>Loading the continue watching list.</C.SnowText>
+    return <C.SnowLabel>Loading the continue watching list. This will take a few seconds.</C.SnowLabel>
 }
 
 export default ContinueWatchingListPage

@@ -173,12 +173,11 @@ def get_episodes_skip_orm(
         left join watched as watched on (
             watched.client_device_user_id in ({watch_group})
             and watched.shelf_id = shelf.id
-            and (
-                watched.show_id = show.id
-                and (watched.show_season_id is null or watched.show_season_id = season.id)
-                and (watched.show_episode_id is null or watched.show_episode_id = episode.id)
-            )
+            and watched.show_id = show.id
+            and (watched.show_season_id is null or watched.show_season_id = season.id)
+            and (watched.show_episode_id is null or watched.show_episode_id = episode.id)
         )
+
         {'''
         left join show_episode_image_file as seif on seif.show_episode_id = episode.id
         join image_file as episode_image on seif.image_file_id = episode_image.id
@@ -187,11 +186,12 @@ def get_episodes_skip_orm(
         left join show_episode_metadata_file as semf on semf.show_episode_id = episode.id
         join metadata_file as episode_metadata on semf.metadata_file_id = episode_metadata.id
         ''' if load_episode_files else ''}
+
         left join show_image_file as sif on sif.show_id = show.id
         join image_file as show_image on sif.image_file_id = show_image.id
         where 1=1
         {f" and watched.id is null" if only_unwatched else ''}
-        {f" and watched.id is not null" if only_watched == True else ''}
+        {f" and watched.id is not null" if only_watched else ''}
         order by
             show.name,
             season.season_order_counter,
@@ -221,8 +221,6 @@ def get_episodes_skip_orm(
                 results.append(model)
             else:
                 is_dupe_episode = True
-                if results[-1].watched or model.watched:
-                    results[-1].watched = True
             if not model.season.show.image_files[0].id in dedupe_images:
                 dedupe_images[model.season.show.image_files[0].id] = True
                 if is_dupe_episode:
@@ -439,23 +437,23 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
         shelf_watched = db_show.get_show_shelf_watched(ticket=ticket,shelf_id=shelf_id)
         show_watched = db_show.get_show_watched(ticket=ticket,show_id=show.id)
         season_watched = db_season.get_show_season_watched(ticket=ticket,season_id=season.id)
-        season_episodes = get_show_episode_list(ticket=ticket,shelf_id=shelf_id,show_season_id=season.id)
+        season_episodes = get_show_episode_list(
+            ticket=ticket,
+            shelf_id=shelf_id,
+            show_season_id=season.id
+        )
         if not season_episodes:
             return False
         db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
+            dm.Watched.shelf_id == shelf_id,
+            dm.Watched.show_id == show.id,
+            dm.Watched.show_season_id == season.id,
             dm.Watched.show_episode_id == episode_id
         ).delete()
         db.commit()
-        if is_watched and not shelf_watched and not show_watched and not season_watched:
-            watched_episodes = (
-                db.query(dm.Watched).filter(
-                    dm.Watched.shelf_id == shelf_id,
-                    dm.Watched.show_id == show.id,
-                    dm.Watched.show_season_id == season.id,
-                    dm.Watched.show_episode_id != None
-                ).distinct(dm.Watched.show_episode_id).all()
-            )
+        if is_watched and not season_watched:
+            watched_episodes = [xx for xx in season_episodes if xx.watched]
             if len(watched_episodes) == len(season_episodes) - 1:
                 db_season.set_show_season_watched(ticket=ticket,season_id=season.id,is_watched=True)
                 return True
@@ -468,29 +466,23 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
                 dbm.show_episode_id = episode_id
                 db.add(dbm)
                 db.commit()
-                db.refresh(dbm)
                 return True
-        if not is_watched:
-            if shelf_watched:
-                db_show.set_show_shelf_watched(ticket=ticket,shelf_id=shelf_id,is_watched=False)
-            if show_watched:
-                db_show.set_show_watched(ticket=ticket,show_id=show.id,is_watched=False)
-            if season_watched:
-                db_season.set_show_season_watched(ticket=ticket,season_id=season.id,is_watched=False)
-                episodes_watched = []
-                for other_episode in season_episodes:
-                    if other_episode.id == episode.id:
-                        continue
-                    episodes_watched.append({
-                        'show_episode_id': other_episode.id,
-                        'show_season_id': season.id,
-                        'show_id': show.id,
-                        'shelf_id': shelf_id,
-                        'client_device_user_id': ticket.cduid
-                    })
-                db.bulk_insert_mappings(dm.Watched,episodes_watched)
-                db.commit()
-                return False
+        if not is_watched and season_watched:
+            db_season.set_show_season_watched(ticket=ticket,season_id=season.id,is_watched=False)
+            episodes_watched = []
+            for other_episode in season_episodes:
+                if other_episode.id == episode.id:
+                    continue
+                episodes_watched.append({
+                    'show_episode_id': other_episode.id,
+                    'show_season_id': season.id,
+                    'show_id': show.id,
+                    'shelf_id': shelf_id,
+                    'client_device_user_id': ticket.cduid
+                })
+            db.bulk_insert_mappings(dm.Watched,episodes_watched)
+            db.commit()
+            return False
 
     return is_watched
 

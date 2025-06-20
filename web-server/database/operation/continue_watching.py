@@ -105,13 +105,14 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     ticket=ticket,
                     shelf_id=shelf.id,
                     include_specials=False,
-                    only_watched=True,
+                    only_unwatched=True,
                     first_per_show=True,
                     load_episode_files=False
                 )
                 log.info(f"DEBUG -- Building episode results from {len(unwatched_episodes)} unwatched episodes")
                 for episode in unwatched_episodes:
-                    if episode.season.show.id in first_lookup:
+                    #print(f'{episode.season.show.name} -> S{episode.season.season_order_counter} E{episode.episode_order_counter} watched[{episode.watched}]')
+                    if episode.season.show.id in first_lookup and first_lookup[episode.season.show.id].id == episode.id:
                         new_shows.append(episode)
                     else:
                         new_episodes.append(episode)

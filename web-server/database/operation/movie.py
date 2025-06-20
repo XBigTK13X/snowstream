@@ -146,15 +146,6 @@ def get_movie_list_by_shelf(
             results.append(movie)
         return results
 
-def get_partial_shelf_movie_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool=True):
-    with DbSession() as db:
-        movies = get_movie_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
-        if not movies:
-            return []
-        if only_watched:
-            return [xx for xx in movies if xx.watched]
-        return [xx for xx in movies if not xx.watched]
-
 def create_movie_video_file(movie_id: int, video_file_id: int):
     with DbSession() as db:
         dbm = dm.MovieVideoFile()
@@ -246,14 +237,8 @@ def set_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
             dbm.shelf_id = shelf_id
             db.add(dbm)
             db.commit()
-            db.refresh(dbm)
-            return dbm
-        else:
-            db.query(dm.Watched).filter(
-                dm.Watched.client_device_user_id.in_(ticket.watch_group),
-                dm.Watched.shelf_id == shelf_id
-            ).delete()
-            db.commit()
+            return True
+        return False
 
 def get_movie_shelf_watched(ticket:dm.Ticket,shelf_id:int):
     if not ticket.is_allowed(shelf_id=shelf_id):
@@ -277,12 +262,14 @@ def set_movie_watched(ticket:dm.Ticket, movie_id:int, is_watched:bool=True):
         movies = get_movie_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
         if not movies:
             return False
+        db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id.in_(ticket.watch_group),
+            dm.Watched.shelf_id == shelf_id,
+            dm.Watched.movie_id == movie_id
+        ).delete()
+        db.commit()
         if is_watched and not shelf_watched:
-            watched_movies = db.query(dm.Watched).filter(
-                dm.Watched.client_device_user_id.in_(ticket.watch_group),
-                dm.Watched.shelf_id == shelf_id,
-                dm.Watched.movie_id != None,
-            ).distinct(dm.Watched.movie_id).all()
+            watched_movies = [xx for xx in movies if xx.watched]
             if len(watched_movies) == len(movies) - 1:
                 set_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id,is_watched=True)
                 return True
@@ -307,14 +294,6 @@ def set_movie_watched(ticket:dm.Ticket, movie_id:int, is_watched:bool=True):
                     'client_device_user_id': ticket.cduid
                 })
             db.bulk_insert_mappings(dm.Watched,movies_watched)
-            db.commit()
-            return False
-        if not is_watched and not shelf_watched:
-            db.query(dm.Watched).filter(
-                dm.Watched.client_device_user_id.in_(ticket.watch_group),
-                dm.Watched.shelf_id == shelf_id,
-                dm.Watched.movie_id == movie_id
-            ).delete()
             db.commit()
             return False
     return is_watched

@@ -4,6 +4,12 @@
 
 https://docs.sqlalchemy.org/en/20/orm/queryguide/inheritance.html
 
+## Worflows - Revisiting during continue watching troubleshooting
+
+In all things, not being in the Watched table means unwatched.
+
+It usually makes sense to delete all child watched rows when unwatching the parent.
+
 ## Workflows
 First Pass Thoughts
   1. Tracking Next Up episodes
@@ -43,7 +49,7 @@ Second Pass Thoughts
     - Is it a movie shelf?
       - Delete all movies from shelf listed in Watched table
       - Insert shelf entry in Watched table
-    
+
     - Is it a movie?
       - If shelf not in Watched
         - Insert movie into Watched
@@ -100,7 +106,7 @@ Second Pass Thoughts
         - Insert every show other than this one into watched
       - Otherwise
         - Delete show from Watched table
-    
+
     - Is it a season?
       - If shelf in Watched
         - Delete shelf
@@ -138,7 +144,7 @@ Second Pass Thoughts
         - Watched
       - Is the show in the table?
         - Watched
-      
+
     - Is it a show season?
       - Is the shelf in the table?
         - Watched

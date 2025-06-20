@@ -144,15 +144,6 @@ def get_show_list_by_shelf(
             results.append(show)
         return results
 
-def get_partial_shelf_show_list(ticket:dm.Ticket,shelf_id:int,only_watched:bool=True):
-    with DbSession() as db:
-        shows = get_show_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
-        if not shows:
-            return []
-        if only_watched:
-            return [xx for xx in shows if xx.watched]
-        return [xx for xx in shows if not xx.watched]
-
 def create_show_image_file(show_id: int, image_file_id: int):
     with DbSession() as db:
         dbm = dm.ShowImageFile()
@@ -219,14 +210,8 @@ def set_show_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
             dbm.shelf_id = shelf_id
             db.add(dbm)
             db.commit()
-            db.refresh(dbm)
-            return dbm
-        else:
-            db.query(dm.Watched).filter(
-                dm.Watched.client_device_user_id == ticket.cduid,
-                dm.Watched.shelf_id == shelf_id
-            ).delete()
-            db.commit()
+            return True
+        return False
 
 def get_show_shelf_watched(ticket:dm.Ticket,shelf_id:int):
     if not ticket.is_allowed(shelf_id=shelf_id):
@@ -251,6 +236,12 @@ def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
             return False
         shelf_watched = get_show_shelf_watched(ticket=ticket,shelf_id=shelf_id)
         shows = get_show_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
+        db.query(dm.Watched).filter(
+            dm.Watched.client_device_user_id.in_(ticket.watch_group),
+            dm.Watched.shelf_id == shelf_id,
+            dm.Watched.show_id == show_id
+        ).delete()
+        db.commit()
         if is_watched and not shelf_watched:
             watched_shows = db.query(dm.Watched).filter(
                 dm.Watched.client_device_user_id.in_(ticket.watch_group),
@@ -269,7 +260,6 @@ def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
                 dbm.show_id = show_id
                 db.add(dbm)
                 db.commit()
-                db.refresh(dbm)
                 return True
         if not is_watched and shelf_watched:
             set_show_shelf_watched(ticket=ticket,shelf_id=shelf_id,is_watched=False)
@@ -283,14 +273,6 @@ def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
                     'client_device_user_id': ticket.cduid
                 })
             db.bulk_insert_mappings(dm.Watched,shows_watched)
-            db.commit()
-            return False
-        if not is_watched and not shelf_watched:
-            db.query(dm.Watched).filter(
-                dm.Watched.client_device_user_id.in_(ticket.watch_group),
-                dm.Watched.shelf_id == shelf_id,
-                dm.Watched.show_id == show_id
-            ).delete()
             db.commit()
             return False
     return is_watched
