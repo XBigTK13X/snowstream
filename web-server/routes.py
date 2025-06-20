@@ -286,7 +286,8 @@ def auth_required(router):
         return db.op.get_movie_list_by_shelf(
             ticket=auth_user.ticket,
             shelf_id=shelf_id,
-            show_playlisted=show_playlisted
+            show_playlisted=show_playlisted,
+            load_files=False
         )
 
     @router.get("/movie",tags=['Movie'])

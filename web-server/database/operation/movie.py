@@ -91,40 +91,76 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
                 results.append(movie)
         return results
 
-def sql_row_to_api_result(row):
+def sql_row_to_api_result(row,load_files:bool=True):
     movie = dm.Stub()
+    movie.model_kind = 'movie'
     movie.id = row.movie_id
     movie.name = row.movie_name
-    movie.watched = row.movie_watched != None
-
-    image_file = dm.Stub()
-    image_file.id = row.image_id
-    image_file.local_path = row.image_local_path
-    image_file.web_path = row.image_web_path
-    image_file.kind = row.image_kind
-    image_file.thumbnail_web_path = row.image_thumbnail_web_path
-    movie.image_files = [image_file]
-
-    video_file = dm.Stub()
-    video_file.id = row.video_id
-    video_file.web_path = row.video_network_path
-    video_file.ffprobe_pruned_json = row.video_ffprobe
-    video_file.version = row.video_version
-    movie.video_files = [video_file]
-
-    metadata_file = dm.Stub()
-    metadata_file.id = row.metadata_id
-    metadata_file.local_path = row.metadata_local_path
-    movie.metadata_files = [metadata_file]
+    movie.watched = any(xx != None for xx in row.movie_watched_list)
 
     movie.shelf = dm.Stub()
     movie.shelf.id = row.shelf_id
     movie.shelf.name = row.shelf_name
 
-    movie.tag = dm.Stub()
-    movie.tag.id = row.tag_id
-    movie.tag.name = row.tag_name
-    movie.tags = [movie.tag]
+    movie.image_files = []
+    screencap_is_meta = False
+    poster_is_meta = False
+    movie.poster_image = None
+    movie.screencap_image = None
+    movie.has_images = False
+    for ii in range(0,len(row.image_id_list)):
+        movie.has_images = True
+        image_file = dm.Stub()
+        image_file.id = row.image_id_list[ii]
+        image_file.local_path = row.image_local_path_list[ii]
+        image_file.web_path = row.image_web_path_list[ii]
+        image_file.kind = row.image_kind_list[ii]
+        image_file.thumbnail_web_path = row.image_thumbnail_web_path_list[ii]
+        if not movie.screencap_image or screencap_is_meta:
+            if not movie.poster_image or poster_is_meta:
+                if 'poster' in image_file.kind:
+                    movie.poster_image = image_file
+                    poster_is_meta = '/metadata/' in image_file.local_path
+            if 'screencap' in image_file.kind:
+                movie.screencap_image = image_file
+                screencap_is_meta = '/metadata/' in image_file.local_path
+        if load_files:
+            movie.image_files.append(image_file)
+
+    movie.video_files = []
+    if load_files:
+        for ii in range(0,len(row.video_id_list)):
+            video_file = dm.Stub()
+            video_file.id = row.video_id_list[ii]
+            video_file.web_path = row.video_network_path_list[ii]
+            video_file.ffprobe_pruned_json = row.video_ffprobe_list[ii]
+            video_file.version = row.video_version_list[ii]
+            movie.video_files.append(video_file)
+
+    movie.metadata_files = []
+    if load_files:
+        for ii in range(0,len(row.metadata_id_list)):
+            metadata_file = dm.Stub()
+            metadata_file.id = row.metadata_id_list[ii]
+            metadata_file.local_path = row.metadata_local_path_list[ii]
+            movie.metadata_files.append(metadata_file)
+
+    movie.tags = []
+    movie.tag_ids = []
+    movie.tag_names = []
+    tag_dedupe = {}
+    for ii in range(0,len(row.tag_id_list)):
+        if row.tag_id_list[ii] == None:
+            continue
+        tag = dm.Stub()
+        if row.tag_id_list[ii] in tag_dedupe:
+            continue
+        tag.id = row.tag_id_list[ii]
+        movie.tag_ids.append(tag.id)
+        tag.name = row.tag_name_list[ii]
+        movie.tag_names.append(tag.name)
+        movie.tags.append(tag)
+        tag_dedupe[row.tag_id_list[ii]] = True
 
     return movie
 
@@ -133,6 +169,7 @@ def get_movie_list_by_shelf(
     shelf_id:int = None,
     search_query:str = None,
     show_playlisted:bool = True,
+    load_files:bool = True,
     only_watched:bool = None,
     only_unwatched:bool = None
 ):
@@ -147,27 +184,29 @@ def get_movie_list_by_shelf(
 
         movie.id as movie_id,
         movie.name as movie_name,
-        array_agg(watched.id) as movie_watched,
+        array_agg(watched.id) as movie_watched_list,
 
         shelf.id as shelf_id,
         shelf.name as shelf_name,
 
-        array_agg(movie_image.id) as image_id,
-        array_agg(movie_image.local_path) as image_local_path,
-        array_agg(movie_image.web_path) as image_web_path,
-        array_agg(movie_image.kind) as image_kind,
-        array_agg(movie_image.thumbnail_web_path) as image_thumbnail_web_path,
+        array_agg(movie_image.id) as image_id_list,
+        array_agg(movie_image.local_path) as image_local_path_list,
+        array_agg(movie_image.web_path) as image_web_path_list,
+        array_agg(movie_image.kind) as image_kind_list,
+        array_agg(movie_image.thumbnail_web_path) as image_thumbnail_web_path_list,
 
-        array_agg(movie_video.id) as video_id,
-        array_agg(movie_video.network_path) as video_network_path,
-        array_agg(movie_video.ffprobe_pruned_json) as video_ffprobe,
-        array_agg(movie_video.version) as video_version,
+        {'''
+        array_agg(movie_video.id) as video_id_list,
+        array_agg(movie_video.network_path) as video_network_path_list,
+        array_agg(movie_video.ffprobe_pruned_json) as video_ffprobe_list,
+        array_agg(movie_video.version) as video_version_list,
 
-        array_agg(movie_metadata.id) as metadata_id,
-        array_agg(movie_metadata.local_path) as metadata_local_path,
+        array_agg(movie_metadata.id) as metadata_id_list,
+        array_agg(movie_metadata.local_path) as metadata_local_path_list,
+        ''' if load_files else ''}
 
-        array_agg(tag.name) as tag_name,
-        array_agg(tag.id) as tag_id
+        array_agg(tag.name) as tag_name_list,
+        array_agg(tag.id) as tag_id_list
 
         from movie as movie
         join movie_shelf as ms on ms.movie_id = movie.id
@@ -181,12 +220,14 @@ def get_movie_list_by_shelf(
         )
         left join movie_image_file as mif on mif.movie_id = movie.id
         join image_file as movie_image on mif.image_file_id = movie_image.id
+        {'''
         left join movie_video_file as mvf on mvf.movie_id = movie.id
         join video_file as movie_video on mvf.video_file_id = movie_video.id
         left join movie_metadata_file as mmf on mmf.movie_id = movie.id
         join metadata_file as movie_metadata on mmf.metadata_file_id = movie_metadata.id
+        ''' if load_files else ''}
         left join movie_tag as mt on mt.movie_id = movie.id
-        join tag as tag on tag.id = mt.tag_id
+        left join tag as tag on tag.id = mt.tag_id
         where 1=1
             {f" and watched.id is null" if only_unwatched else ''}
             {f" and watched.id is not null" if only_watched else ''}
@@ -202,48 +243,22 @@ def get_movie_list_by_shelf(
 
         cursor = db.execute(sql_text(raw_query))
         log.info("DEBUG -- Cursor generated movies")
-        dedupe_ep = {}
-        dedupe_images = {}
-        dedupe_metadata = {}
-        dedupe_video = {}
-        dedupe_tag = {}
         results = []
         log.info("DEBUG -- Deduplicating results")
         raw_result_count = 0
         for xx in cursor:
             raw_result_count += 1
-            model = sql_row_to_api_result(row=xx)
-            is_dupe_movie = False
-            if not model.id in dedupe_ep:
-                if len(results) > 0:
-                    results[-1] = dm.set_primary_images(results[-1])
-                dedupe_ep[model.id] = True
-                results.append(model)
-            else:
-                is_dupe_movie = True
-            image_key = model.image_files[0].id
-            if model.image_files and not image_key in dedupe_images:
-                dedupe_images[image_key] = True
-                if is_dupe_movie:
-                    results[-1].image_files.append(model.image_files[0])
-            video_key = model.video_files[0].id
-            if model.video_files and not video_key in dedupe_video:
-                dedupe_video[video_key] = True
-                if is_dupe_movie:
-                    results[-1].video_files.append(model.video_files[0])
-            metadata_key = model.metadata_files[0].id
-            if model.metadata_files and not metadata_key in dedupe_metadata:
-                dedupe_metadata[metadata_key] = True
-                if is_dupe_movie:
-                    results[-1].metadata_files.append(model.metadata_files[0])
-            tag_key = f'{model.id}-{model.tags[0].id}'
-            if model.tags and not tag_key in dedupe_tag:
-                dedupe_tag[tag_key] = True
-                if is_dupe_movie:
-                    results[-1].tags.append(model.tags[0])
+            model = sql_row_to_api_result(row=xx,load_files=load_files)
+            if not model.has_images:
+                continue
+            if not ticket.is_allowed(tag_ids=model.tag_ids):
+                print("Movie not allowed"+model.name)
+                continue
+            if show_playlisted == False and any('Playlist:' in xx for xx in model.tag_names):
+                continue
+            results.append(model)
+
         log.info(f"DEBUG -- Handling return conditions for {raw_result_count} raw items")
-        if len(results) > 0:
-            results[-1] = dm.set_primary_images(results[-1])
         return results
 
         if search_query:

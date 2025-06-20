@@ -79,10 +79,11 @@ def get_continue_watching_list(ticket:dm.Ticket):
         for shelf in shelves:
             if shelf.kind == 'Movies':
                 log.info(f"DEBUG -- Getting movie shelf {shelf.name}")
-                movies = db_movie.get_partial_shelf_movie_list(
+                movies = db_movie.get_movie_list_by_shelf(
                     ticket=ticket,
                     shelf_id=shelf.id,
-                    only_watched=False
+                    only_unwatched=True,
+                    load_files=False
                 )
                 log.info(f"Loaded {len(movies)} movies")
                 if not movies:

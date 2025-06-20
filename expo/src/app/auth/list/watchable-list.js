@@ -8,7 +8,7 @@ export function WatchableListPage(props) {
     const [items, setItems] = C.React.useState(null)
 
     const shelfId = localParams.shelfId
-    const showPlaylisted = localParams.showPlaylisted ? localParams.showPlaylisted : false
+    const showPlaylisted = localParams.showPlaylisted ? localParams.showPlaylisted === 'true' : false
 
     C.React.useEffect(() => {
         if (!shelf) {
@@ -86,14 +86,16 @@ export function WatchableListPage(props) {
             itemsPerRow = 3
         }
 
+        console.log({ showPlaylisted })
+
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
                 <C.SnowGrid itemsPerRow={itemsPerRow}>
                     {props.toggleShowPlaylisted ?
                         <C.SnowTextButton
-                            title={showPlaylisted ? 'Hide Playlisted' : 'Show Playlisted'}
-                            onPress={() => { props.toggleShowPlaylisted(routes, shelfId, !showPlaylisted) }}
+                            title={showPlaylisted == true ? 'Hide Playlisted' : 'Show Playlisted'}
+                            onPress={() => { props.toggleShowPlaylisted(routes, shelfId, showPlaylisted === true ? false : true) }}
                         /> : null
                     }
                     {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
