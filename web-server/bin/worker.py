@@ -41,7 +41,8 @@ def start():
         log.info('')
         payload = json.loads(body)
         job_id = payload["job_id"]
-        db.op.update_job(job_id=job_id,message=f"Message received. {message.read.count()} messages remain in queue.")
+        user = 'unknown' if 'auth_user' in payload else payload['auth_user']
+        db.op.update_job(job_id=job_id,message=f"Message received from {user}. {message.read.count()} messages remain in queue.")
         db.op.update_job(job_id=job_id,message="\n"+json.dumps(payload,indent=4))
         if "kind" in payload:
             db.op.update_job(

@@ -43,18 +43,19 @@ const setStoredValue = (key, value) => {
 }
 
 const getStoredValue = (key) => {
+    let value = null
     if (Platform.OS === 'web') {
-        return localStorage.getItem(key)
+        value = localStorage.getItem(key)
     } else {
         value = SecureStore.getItem(key)
-        if (value === 'true') {
-            return true
-        }
-        if (value === 'false') {
-            return false
-        }
-        return value
     }
+    if (value === 'true') {
+        return true
+    }
+    if (value === 'false') {
+        return false
+    }
+    return value
 }
 
 const AppContext = React.createContext({
@@ -180,7 +181,7 @@ export function AppContextProvider(props) {
         session,
         isLoading,
         apiClient,
-        isAdmin: isAdmin,
+        isAdmin,
         displayName,
         message,
         setMessageDisplay: setMessage,

@@ -76,8 +76,10 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         jobRequest: am.JobRequest,
     ):
+        if not auth_user.is_admin():
+            return False
         job = db.op.create_job(kind=jobRequest.name,input=jobRequest.input)
-        message.write.send(job_id=job.id, kind=jobRequest.name, input=jobRequest.input)
+        message.write.send(job_id=job.id, kind=jobRequest.name, input=jobRequest.input, auth_user=auth_user)
         return job
 
     @router.get("/job",tags=['Job'])

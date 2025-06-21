@@ -38,7 +38,7 @@ function Header() {
     }
     const buttons = [
         { title: 'Home', route: routes.landing },
-        { title: 'Options', route: routes.options },
+        //{ title: 'Options', route: routes.options },
         { title: 'Sign Out', route: routes.signOut },
     ]
     if (isAdmin) {

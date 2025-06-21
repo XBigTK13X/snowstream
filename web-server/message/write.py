@@ -7,10 +7,10 @@ import pika
 PERSISTENT_DELIVERY_MODE = 2
 
 
-def send(job_id: int, kind: str = None, input: dict = None):
+def send(job_id: int, kind: str = None, input: dict = None, auth_user = None):
     if kind == None:
         raise Exception("message kind is required when calling message.send()")
-    payload = {"kind": kind, 'input': input}
+    payload = {"kind": kind, 'input': input, 'auth_user': auth_user.username}
     payload["job_id"] = job_id
     connection, channel = message.connect.create()
     channel.basic_publish(
