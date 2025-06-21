@@ -156,7 +156,7 @@ def find_shelf_content_without_video_files():
     with DbSession() as db:
         ticket = dm.Ticket()
         with DbSession() as db:
-            movies = db_movie.get_movie_list_by_shelf(ticket=ticket)
+            movies = db_movie.get_movie_list(ticket=ticket)
             for movie in movies:
                 if not movie.video_files:
                     results.append(movie.directory)

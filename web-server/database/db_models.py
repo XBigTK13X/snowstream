@@ -77,8 +77,6 @@ class Ticket:
         tag_ids:list[int]=None,
         tag_provider=None
     ):
-        print(self.tag_ids)
-        print(tag_ids)
         if stream_source_id != None:
             if self.stream_source_ids == None:
                 return True

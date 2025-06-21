@@ -283,7 +283,7 @@ def auth_required(router):
         shelf_id: int,
         show_playlisted:bool=True
     ):
-        return db.op.get_movie_list_by_shelf(
+        return db.op.get_movie_list(
             ticket=auth_user.ticket,
             shelf_id=shelf_id,
             show_playlisted=show_playlisted,

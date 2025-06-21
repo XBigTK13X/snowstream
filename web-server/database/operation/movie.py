@@ -96,13 +96,15 @@ def sql_row_to_api_result(row,load_files:bool=True):
     movie.model_kind = 'movie'
     movie.id = row.movie_id
     movie.name = row.movie_name
-    movie.watched = any(xx != None for xx in row.movie_watched_list)
+    movie.watched = bool(row.movie_watched_list)
 
     movie.shelf = dm.Stub()
     movie.shelf.id = row.shelf_id
     movie.shelf.name = row.shelf_name
 
     movie.image_files = []
+    movie.video_files = []
+    movie.metadata_files = []
     screencap_is_meta = False
     poster_is_meta = False
     movie.poster_image = None
@@ -127,7 +129,7 @@ def sql_row_to_api_result(row,load_files:bool=True):
         if load_files:
             movie.image_files.append(image_file)
 
-    movie.video_files = []
+
     if load_files:
         for ii in range(0,len(row.video_id_list)):
             video_file = dm.Stub()
@@ -137,8 +139,6 @@ def sql_row_to_api_result(row,load_files:bool=True):
             video_file.version = row.video_version_list[ii]
             movie.video_files.append(video_file)
 
-    movie.metadata_files = []
-    if load_files:
         for ii in range(0,len(row.metadata_id_list)):
             metadata_file = dm.Stub()
             metadata_file.id = row.metadata_id_list[ii]
@@ -164,7 +164,7 @@ def sql_row_to_api_result(row,load_files:bool=True):
 
     return movie
 
-def get_movie_list_by_shelf(
+def get_movie_list(
     ticket:dm.Ticket,
     shelf_id:int = None,
     search_query:str = None,
@@ -184,7 +184,7 @@ def get_movie_list_by_shelf(
 
         movie.id as movie_id,
         movie.name as movie_name,
-        array_agg(watched.id) as movie_watched_list,
+        array_remove(array_agg(watched.id),NULL) as movie_watched_list,
 
         shelf.id as shelf_id,
         shelf.name as shelf_name,
@@ -205,8 +205,8 @@ def get_movie_list_by_shelf(
         array_agg(movie_metadata.local_path) as metadata_local_path_list,
         ''' if load_files else ''}
 
-        array_agg(tag.name) as tag_name_list,
-        array_agg(tag.id) as tag_id_list
+        array_remove(array_agg(tag.name),NULL) as tag_name_list,
+        array_remove(array_agg(tag.id),NULL) as tag_id_list
 
         from movie as movie
         join movie_shelf as ms on ms.movie_id = movie.id
@@ -232,10 +232,10 @@ def get_movie_list_by_shelf(
             {f" and watched.id is null" if only_unwatched else ''}
             {f" and watched.id is not null" if only_watched else ''}
         group by
-            movie.id,
-            movie.name,
             shelf.id,
-            shelf.name
+            shelf.name,
+            movie.id,
+            movie.name
         order by
             movie.name
         {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
@@ -244,7 +244,7 @@ def get_movie_list_by_shelf(
         cursor = db.execute(sql_text(raw_query))
         log.info("DEBUG -- Cursor generated movies")
         results = []
-        log.info("DEBUG -- Deduplicating results")
+        log.info("DEBUG -- App level filtering of results")
         raw_result_count = 0
         for xx in cursor:
             raw_result_count += 1
@@ -252,52 +252,12 @@ def get_movie_list_by_shelf(
             if not model.has_images:
                 continue
             if not ticket.is_allowed(tag_ids=model.tag_ids):
-                print("Movie not allowed"+model.name)
                 continue
             if show_playlisted == False and any('Playlist:' in xx for xx in model.tag_names):
                 continue
             results.append(model)
 
         log.info(f"DEBUG -- Handling return conditions for {raw_result_count} raw items")
-        return results
-
-        if search_query:
-            query = query.filter(dm.Movie.name.ilike(f'%{search_query}%'))
-        query = query.options(sorm.joinedload(dm.Movie.tags))
-        if shelf_id != None:
-            query = query.filter(dm.MovieShelf.shelf_id == shelf_id)
-        query = query.order_by(dm.Movie.name)
-        if search_query:
-            query = query.limit(config.search_results_per_shelf_limit)
-        movies = query.all()
-        watched = (
-            db.query(dm.Watched)
-            .filter(
-                dm.Watched.client_device_user_id.in_(ticket.watch_group),
-                dm.Watched.shelf_id == shelf_id
-            ).all()
-        )
-        all_watched = False
-        watch_lookup = {}
-        for watch in watched:
-            if watch.shelf_id and not watch.movie_id:
-                all_watched = True
-                break
-            watch_lookup[watch.movie_id] = True
-        results = []
-        for movie in movies:
-            if not movie.video_files:
-                continue
-            if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
-                continue
-            if not show_playlisted and any('Playlist:' in xx.name for xx in movie.tags):
-                continue
-            movie = dm.set_primary_images(movie)
-            if all_watched or movie.id in watch_lookup:
-                movie.watched = True
-            else:
-                movie.watched = False
-            results.append(movie)
         return results
 
 def create_movie_video_file(movie_id: int, video_file_id: int):
@@ -413,7 +373,7 @@ def set_movie_watched(ticket:dm.Ticket, movie_id:int, is_watched:bool=True):
             return False
         shelf_id = movie.shelf.id
         shelf_watched = get_movie_shelf_watched(ticket=ticket,shelf_id=shelf_id)
-        movies = get_movie_list_by_shelf(ticket=ticket,shelf_id=shelf_id)
+        movies = get_movie_list(ticket=ticket,shelf_id=shelf_id)
         if not movies:
             return False
         db.query(dm.Watched).filter(

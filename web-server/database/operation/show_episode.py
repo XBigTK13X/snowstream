@@ -38,35 +38,10 @@ def update_show_episode_name(show_episode_id:int,name:str):
 def sql_row_to_api_result(row,load_episode_files):
     episode = dm.Stub()
     episode.model_kind = 'show_episode'
-    episode.watched = row.episode_watched != None
     episode.id = row.episode_id
     episode.episode_order_counter = row.episode_order
     episode.name = row.episode_name
-
-    if load_episode_files:
-        image_file = dm.Stub()
-        image_file.id = row.image_id
-        image_file.local_path = row.image_local_path
-        image_file.web_path = row.image_web_path
-        image_file.kind = row.image_kind
-        image_file.thumbnail_web_path = row.image_thumbnail_web_path
-        episode.image_files = [image_file]
-
-        video_file = dm.Stub()
-        video_file.id = row.video_id
-        video_file.web_path = row.video_network_path
-        video_file.ffprobe_pruned_json = row.video_ffprobe
-        video_file.version = row.video_version
-        episode.video_files = [video_file]
-
-        metadata_file = dm.Stub()
-        metadata_file.id = row.metadata_id
-        metadata_file.local_path = row.metadata_local_path
-        episode.metadata_files = [metadata_file]
-    else:
-        episode.image_files = None
-        episode.metadata_files = None
-        episode.video_files = None
+    episode.watched = bool(row.episode_watched_list)
 
     episode.season = dm.Stub()
     episode.season.model_kind = 'show_season'
@@ -77,30 +52,84 @@ def sql_row_to_api_result(row,load_episode_files):
     episode.season.show.model_kind = 'show'
     episode.season.show.id = row.show_id
     episode.season.show.name = row.show_name
-    show_image_file = dm.Stub()
-    show_image_file.id = row.show_image_id
-    show_image_file.local_path = row.show_image_local_path
-    show_image_file.web_path = row.show_image_web_path
-    show_image_file.kind = row.show_image_kind
-    show_image_file.thumbnail_web_path = row.show_image_thumbnail_web_path
-    episode.season.show.image_files = [show_image_file]
 
     episode.season.show.shelf = dm.Stub()
     episode.season.show.shelf.model_kind = 'shelf'
     episode.season.show.shelf.id = row.shelf_id
 
+    episode.image_files = []
+    episode.video_files = []
+    episode.metadata_files = []
+    screencap_is_meta = False
+    poster_is_meta = False
+    episode.poster_image = None
+    episode.screencap_image = None
+    episode.has_images = False
+    image_ids = row.show_image_id_list
+    image_local_paths = row.show_image_local_path_list
+    image_web_paths = row.show_image_web_path_list
+    image_kinds = row.show_image_kind_list
+    image_thumbnail_web_paths = row.show_image_thumbnail_web_path_list
+    if load_episode_files:
+        image_ids += row.image_id_list
+        image_local_paths += row.image_local_path_list
+        image_web_paths += row.image_web_path_list
+        image_kinds += row.image_kind_list
+        image_thumbnail_web_paths += row.image_thumbnail_web_path_list
+
+    for ii in range(0,len(image_ids)):
+        episode.has_images = True
+        image_file = dm.Stub()
+        image_file.id = image_ids[ii]
+        image_file.local_path = image_local_paths[ii]
+        image_file.web_path = image_web_paths[ii]
+        image_file.kind = image_kinds[ii]
+        image_file.thumbnail_web_path = image_thumbnail_web_paths[ii]
+        if not episode.screencap_image or screencap_is_meta:
+            if not episode.poster_image or poster_is_meta:
+                if 'poster' in image_file.kind:
+                    episode.poster_image = image_file
+                    poster_is_meta = '/metadata/' in image_file.local_path
+            if 'screencap' in image_file.kind:
+                episode.screencap_image = image_file
+                screencap_is_meta = '/metadata/' in image_file.local_path
+        episode.image_files.append(image_file)
+
+    if load_episode_files:
+        for ii in range(0,len(row.video_id_list)):
+            video_file = dm.Stub()
+            video_file.id = row.video_id_list[ii]
+            video_file.web_path = row.video_network_path_list[ii]
+            video_file.ffprobe_pruned_json = row.video_ffprobe_list[ii]
+            video_file.version = row.video_version_list[ii]
+            episode.video_files.append(video_file)
+
+        for ii in range(0,len(row.metadata_id_list)):
+            metadata_file = dm.Stub()
+            metadata_file.id = row.metadata_id_list[ii]
+            metadata_file.local_path = row.metadata_local_path_list[ii]
+            episode.metadata_files.append(metadata_file)
+
+    episode.tags = []
+    episode.tag_ids = []
+    episode.tag_names = []
+    tag_ids = row.episode_tag_id_list + row.season_tag_id_list + row.show_tag_id_list
+    tag_names = row.episode_tag_name_list + row.season_tag_name_list + row.show_tag_name_list
+    tag_dedupe = {}
+    for ii in range(0,len(tag_ids)):
+        tag = dm.Stub()
+        if tag_ids[ii] in tag_dedupe:
+            continue
+        tag.id = tag_ids[ii]
+        episode.tag_ids.append(tag.id)
+        tag.name = tag_names[ii]
+        episode.tag_names.append(tag.name)
+        episode.tags.append(tag)
+        tag_dedupe[tag_ids[ii]] = True
+
     return episode
 
-def set_primary_images(stub:dm.Stub):
-    stub = dm.set_primary_images(stub)
-    stub.season.show = dm.set_primary_images(stub.season.show)
-    if not stub.screencap_image:
-        stub.screencap_image = stub.season.show.screencap_image
-    if not stub.poster_image:
-        stub.poster_image = stub.season.show.poster_image
-    return stub
-
-def get_episodes_skip_orm(
+def get_show_episode_list(
     ticket:dm.Ticket,
     shelf_id:int=None,
     show_id:int=None,
@@ -112,7 +141,8 @@ def get_episodes_skip_orm(
     only_unwatched:bool=None,
     first_per_show:bool=None,
     first_result:bool=None,
-    load_episode_files:bool=True
+    load_episode_files:bool=True,
+    show_playlisted:bool=True
 ):
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
@@ -129,10 +159,10 @@ def get_episodes_skip_orm(
 
         episode.id as episode_id,
         episode.name as episode_name,
-        watched.id as episode_watched,
         episode.episode_order_counter as episode_order,
+        array_remove(array_agg(watched.id),NULL) as episode_watched_list,
 
-        episode.show_season_id as season_id,
+        season.id as season_id,
         season.season_order_counter as season_order,
 
         show.id as show_id,
@@ -142,26 +172,33 @@ def get_episodes_skip_orm(
         shelf.name as shelf_name,
 
         {"""
-        episode_image.id as image_id,
-        episode_image.local_path as image_local_path,
-        episode_image.web_path as image_web_path,
-        episode_image.kind as image_kind,
-        episode_image.thumbnail_web_path as image_thumbnail_web_path,
+        array_remove(array_agg(episode_image.id),NULL) as image_id_list,
+        array_remove(array_agg(episode_image.local_path),NULL) as image_local_path_list,
+        array_remove(array_agg(episode_image.web_path),NULL) as image_web_path_list,
+        array_remove(array_agg(episode_image.kind),NULL) as image_kind_list,
+        array_remove(array_agg(episode_image.thumbnail_web_path),NULL) as image_thumbnail_web_path_list,
 
-        episode_video.id as video_id,
-        episode_video.network_path as video_network_path,
-        episode_video.ffprobe_pruned_json as video_ffprobe,
-        episode_video.version as video_version,
+        array_agg(episode_video.id) as video_id_list,
+        array_agg(episode_video.network_path) as video_network_path_list,
+        array_agg(episode_video.ffprobe_pruned_json) as video_ffprobe_list,
+        array_agg(episode_video.version) as video_version_list,
 
-        episode_metadata.id as metadata_id,
-        episode_metadata.local_path as metadata_local_path,
+        array_agg(episode_metadata.id) as metadata_id_list,
+        array_agg(episode_metadata.local_path) as metadata_local_path_list,
         """ if load_episode_files else ''}
 
-        show_image.id as show_image_id,
-        show_image.local_path as show_image_local_path,
-        show_image.web_path as show_image_web_path,
-        show_image.kind as show_image_kind,
-        show_image.thumbnail_web_path as show_image_thumbnail_web_path
+        array_remove(array_agg(show_image.id),NULL) as show_image_id_list,
+        array_remove(array_agg(show_image.local_path),NULL) as show_image_local_path_list,
+        array_remove(array_agg(show_image.web_path),NULL) as show_image_web_path_list,
+        array_remove(array_agg(show_image.kind),NULL) as show_image_kind_list,
+        array_remove(array_agg(show_image.thumbnail_web_path),NULL) as show_image_thumbnail_web_path_list,
+
+        array_remove(array_agg(show_tag.name),NULL) as show_tag_name_list,
+        array_remove(array_agg(show_tag.id),NULL) as show_tag_id_list,
+        array_remove(array_agg(season_tag.name),NULL) as season_tag_name_list,
+        array_remove(array_agg(season_tag.id),NULL) as season_tag_id_list,
+        array_remove(array_agg(episode_tag.name),NULL) as episode_tag_name_list,
+        array_remove(array_agg(episode_tag.id),NULL) as episode_tag_id_list
 
         from show_episode as episode
         join show_season as season on season.id = episode.show_season_id
@@ -193,9 +230,28 @@ def get_episodes_skip_orm(
 
         left join show_image_file as sif on sif.show_id = show.id
         join image_file as show_image on sif.image_file_id = show_image.id
+
+        left join show_tag as st on st.show_id = show.id
+        left join tag as show_tag on show_tag.id = st.tag_id
+        left join show_season_tag as sst on sst.show_season_id = season.id
+        left join tag as season_tag on season_tag.id = sst.tag_id
+        left join show_episode_tag as setag on setag.show_episode_id = episode.id
+        left join tag as episode_tag on episode_tag.id = setag.tag_id
+
         where 1=1
         {f" and watched.id is null" if only_unwatched else ''}
         {f" and watched.id is not null" if only_watched else ''}
+        group by
+            shelf.id,
+            shelf.name,
+            show.id,
+            show.name,
+            season.id,
+            season.season_order_counter,
+            episode.episode_order_counter,
+            episode.id,
+            episode.name
+
         order by
             show.name,
             season.season_order_counter,
@@ -205,46 +261,20 @@ def get_episodes_skip_orm(
         log.info("DEBUG -- Executing the built query")
         cursor = db.execute(sql_text(raw_query))
         log.info(f"DEBUG -- Cursor generated shows only_watched[{only_watched}] only_unwatched[{only_unwatched}]")
-        dedupe_ep = {}
-        dedupe_images = {}
-        dedupe_metadata = {}
-        dedupe_video = {}
         results = []
-        log.info("DEBUG -- Deduplicating results")
+        log.info("DEBUG -- App level filtering of results")
         raw_result_count = 0
         for xx in cursor:
             raw_result_count += 1
             model = sql_row_to_api_result(row=xx,load_episode_files=load_episode_files)
-            is_dupe_episode = False
-            if not model.id in dedupe_ep:
-                if len(results) > 0:
-                    results[-1] = set_primary_images(results[-1])
-                    if first_result == True:
-                        return results[0]
-                dedupe_ep[model.id] = True
-                results.append(model)
-            else:
-                is_dupe_episode = True
-            if not model.season.show.image_files[0].id in dedupe_images:
-                dedupe_images[model.season.show.image_files[0].id] = True
-                if is_dupe_episode:
-                    results[-1].season.show.image_files.append(model.season.show.image_files[0])
-            if load_episode_files:
-                if model.image_files and not model.image_files[0].id in dedupe_images:
-                    dedupe_images[model.image_files[0].id] = True
-                    if is_dupe_episode:
-                        results[-1].image_files.append(model.image_files[0])
-                if model.video_files and not model.video_files[0].id in dedupe_video:
-                    dedupe_video[model.video_files[0].id] = True
-                    if is_dupe_episode:
-                        results[-1].video_files.append(model.video_files[0])
-                if model.metadata_files and not model.metadata_files[0].id in dedupe_metadata:
-                    dedupe_metadata[model.metadata_files[0].id] = True
-                    if is_dupe_episode:
-                        results[-1].metadata_files.append(model.metadata_files[0])
+            if not model.has_images:
+                continue
+            if not ticket.is_allowed(tag_ids=model.tag_ids):
+                continue
+            if show_playlisted == False and any('Playlist:' in xx for xx in model.tag_names):
+                continue
+            results.append(model)
         log.info(f"DEBUG -- Handling return conditions for {raw_result_count} raw items")
-        if len(results) > 0:
-            results[-1] = set_primary_images(results[-1])
         if first_per_show:
             hits = {}
             episodes = []
@@ -259,7 +289,7 @@ def get_episodes_skip_orm(
 
 def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
     with DbSession() as db:
-        return get_episodes_skip_orm(
+        return get_show_episode_list(
             ticket=ticket,
             show_episode_id=episode_id,
             first_result=True
@@ -274,85 +304,6 @@ def get_show_episode_by_season_order(show_season_id: int, episode_order_counter:
             .filter(dm.ShowEpisode.episode_order_counter == episode_order_counter)
             .first()
         )
-
-def get_show_episode_list(
-    ticket:dm.Ticket,
-    shelf_id:int=None,
-    show_id:int=None,
-    show_season_id:int=None,
-    search_query:str=None,
-    only_watched:bool=None,
-    only_unwatched:bool=None,
-    load_episode_files:bool=True,
-    include_specials:bool=True,
-    first_per_show:bool=False
-):
-    if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
-        return []
-    with DbSession() as db:
-        return get_episodes_skip_orm(
-            ticket=ticket,
-            shelf_id=shelf_id,
-            show_id=show_id,
-            show_season_id=show_season_id,
-            only_watched=only_watched,
-            only_unwatched=only_unwatched,
-            search_query=search_query,
-            load_episode_files=load_episode_files,
-            include_specials=include_specials,
-            first_per_show=first_per_show
-        )
-        # if search_query:
-        #     episodes_query = episodes_query.filter(dm.ShowEpisode.name.ilike(f'%{search_query}%')).limit(config.search_results_per_shelf_limit)
-        # if shelf_id:
-        #     episodes_query = episodes_query.filter(dm.ShowEpisode.season.show.shelf.id == shelf_id)
-        # if show_id:
-        #     episodes_query = episodes_query.filter(dm.ShowEpisode.season.show.id == show_id)
-        # if not include_specials:
-        #     episodes_query = episodes_query.filter(dm.ShowEpisode.season.season_order_counter != 0)
-        episodes = eager_load_episodes(
-            shelf_id=shelf_id,
-            show_id=show_id,
-            show_season_id=show_season_id,
-            include_specials=include_specials
-        )
-
-        watched_query = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == shelf_id
-        )
-        if show_id != None:
-            watched_query = watched_query.filter(dm.Watched.show_id == show_id)
-        if show_season_id != None:
-            watched_query = watched_query.filter(dm.Watched.show_season_id == show_season_id)
-        watched = watched_query.all()
-        shelf_watched = False
-        show_watched = {}
-        season_watched = {}
-        episode_watched = {}
-        for watch in watched:
-            if watch.shelf_id != None and watch.show_id == None and watch.show_season_id == None and watch.show_episode_id == None:
-                shelf_watched = True
-            elif watch.show_id != None and watch.show_season_id == None:
-                show_watched[watch.show_id] = True
-            elif watch.show_season_id != None and watch.show_episode_id == None:
-                season_watched[watch.show_season_id] = True
-            else:
-                episode_watched[watch.show_episode_id] = True
-
-        results = []
-        for episode in episodes:
-            if not ticket.is_allowed(tag_provider=episode.get_tag_ids):
-                continue
-            episode = dm.set_primary_images(episode)
-            episode.episode_slug = util.get_episode_slug(episode)
-            if shelf_watched or episode.season.show.id in show_watched or episode.season.id in season_watched or episode.id in episode_watched:
-                episode.watched = True
-            else:
-                episode.watched = False
-            results.append(episode)
-        return results
-
 
 def create_show_episode_video_file(show_episode_id: int, video_file_id: int):
     with DbSession() as db:
