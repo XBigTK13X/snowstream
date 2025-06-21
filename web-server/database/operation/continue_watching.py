@@ -75,22 +75,18 @@ def get_continue_watching_list(ticket:dm.Ticket):
         new_episodes = []
         new_shows = []
         shelves = db_shelf.get_shelf_list(ticket=ticket)
-        log.info("DEBUG -- Got all shelves")
         for shelf in shelves:
             if shelf.kind == 'Movies':
-                log.info(f"DEBUG -- Getting movie shelf {shelf.name}")
                 movies = db_movie.get_movie_list(
                     ticket=ticket,
                     shelf_id=shelf.id,
                     only_unwatched=True,
                     load_files=False
                 )
-                log.info(f"Loaded {len(movies)} movies")
                 if not movies:
                     continue
                 unwatched_movies += movies
             if shelf.kind == 'Shows':
-                log.info(f"DEBUG -- Getting show shelf {shelf.name} episodes")
                 first_lookup = {}
                 first_episodes = db_episode.get_show_episode_list(
                     ticket=ticket,
@@ -110,9 +106,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     first_per_show=True,
                     load_episode_files=False
                 )
-                log.info(f"DEBUG -- Building episode results from {len(unwatched_episodes)} unwatched episodes")
                 for episode in unwatched_episodes:
-                    #print(f'{episode.season.show.name} -> S{episode.season.season_order_counter} E{episode.episode_order_counter} watched[{episode.watched}]')
                     if episode.season.show.id in first_lookup and first_lookup[episode.season.show.id].id == episode.id:
                         new_shows.append(episode)
                     else:

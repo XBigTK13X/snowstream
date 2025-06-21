@@ -146,16 +146,14 @@ def get_show_episode_list(
 ):
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
-    log.info("DEBUG -- Generating the episode list query")
     with DbSession() as db:
-        # TODO If requesting unwatched, filter on that and limit results per group to 1
-        # TODO Filter content by tags
         watch_group = ','.join([str(xx) for xx in ticket.watch_group])
         if search_query:
             search_query = search_query.replace("'","''")
-        log.info("DEBUG -- Ready to fill in the query template")
         raw_query =f'''
         select
+
+        {f'distinct on (show.name)' if first_per_show else ''}
 
         episode.id as episode_id,
         episode.name as episode_name,
@@ -251,18 +249,15 @@ def get_show_episode_list(
             episode.episode_order_counter,
             episode.id,
             episode.name
-
         order by
             show.name,
             season.season_order_counter,
             episode.episode_order_counter
         {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
+        {f'limit 1' if first_result else ''}
         '''
-        log.info("DEBUG -- Executing the built query")
         cursor = db.execute(sql_text(raw_query))
-        log.info(f"DEBUG -- Cursor generated shows only_watched[{only_watched}] only_unwatched[{only_unwatched}]")
         results = []
-        log.info("DEBUG -- App level filtering of results")
         raw_result_count = 0
         for xx in cursor:
             raw_result_count += 1
@@ -274,15 +269,6 @@ def get_show_episode_list(
             if show_playlisted == False and any('Playlist:' in xx for xx in model.tag_names):
                 continue
             results.append(model)
-        log.info(f"DEBUG -- Handling return conditions for {raw_result_count} raw items")
-        if first_per_show:
-            hits = {}
-            episodes = []
-            for result in results:
-                if not result.season.show.id in hits:
-                    hits[result.season.show.id] = True
-                    episodes.append(result)
-            return episodes
         if first_result == True:
             return results[0]
         return results

@@ -242,9 +242,7 @@ def get_movie_list(
         '''
 
         cursor = db.execute(sql_text(raw_query))
-        log.info("DEBUG -- Cursor generated movies")
         results = []
-        log.info("DEBUG -- App level filtering of results")
         raw_result_count = 0
         for xx in cursor:
             raw_result_count += 1
@@ -257,7 +255,6 @@ def get_movie_list(
                 continue
             results.append(model)
 
-        log.info(f"DEBUG -- Handling return conditions for {raw_result_count} raw items")
         return results
 
 def create_movie_video_file(movie_id: int, video_file_id: int):
