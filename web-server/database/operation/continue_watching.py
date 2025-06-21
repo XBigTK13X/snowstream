@@ -69,10 +69,9 @@ def get_continue_watching_list(ticket:dm.Ticket):
 
         log.info("Built episodes in progress results")
 
-        show_posters = {}
-
         unwatched_movies = []
         new_episodes = []
+        new_seasons = []
         new_shows = []
         shelves = db_shelf.get_shelf_list(ticket=ticket)
         for shelf in shelves:
@@ -107,25 +106,35 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     load_episode_files=False
                 )
                 for episode in unwatched_episodes:
-                    if episode.season.show.id in first_lookup and first_lookup[episode.season.show.id].id == episode.id:
+                    first_episode = first_lookup[episode.season.show.id]
+                    if first_episode.id == episode.id:
                         new_shows.append(episode)
                     else:
-                        new_episodes.append(episode)
+                        if episode.episode_order_counter > 1:
+                            new_episodes.append(episode)
+                        else:
+                            new_seasons.append(episode)
 
 
-        if new_episodes and len(new_episodes) > 0:
+        if new_episodes:
             results.append({
                 'kind': 'next_episodes',
                 'name': "New Episodes",
                 'items': new_episodes
             })
-        if new_shows and len(new_shows) > 0:
+        if new_seasons:
+            results.append({
+                'kind': 'new_seasons',
+                'name': "New Seasons",
+                'items': new_seasons
+            })
+        if new_shows:
             results.append({
                 'kind': 'new_shows',
                 'name': 'New Shows',
                 'items': new_shows
             })
-        if unwatched_movies and len(unwatched_movies) > 0:
+        if unwatched_movies:
             results.append({
                 'kind': 'new_movies',
                 'name': 'New Movies',

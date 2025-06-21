@@ -119,15 +119,6 @@ class Tag(BaseModel):
     id: int | None = None
     name: str
 
-class WatchedStatus(BaseModel):
-    is_watched: bool
-    shelf_id: int | None = None
-    movie_id: int | None = None
-    show_id: int | None = None
-    show_season_id: int | None = None
-    show_episode_id: int | None = None
-    streamable_id: int | None = None
-
 class WatchProgress(BaseModel):
     show_episode_id: int  | None = None
     movie_id: int  | None = None

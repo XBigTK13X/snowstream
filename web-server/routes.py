@@ -318,12 +318,13 @@ def auth_required(router):
     @router.post("/movie/watched",tags=['Movie'])
     def set_movie_watched(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        status:am.WatchedStatus
+        movie_id:int,
+        is_watched:bool=True
     ):
         return db.op.set_movie_watched(
             ticket=auth_user.ticket,
-            movie_id=status.movie_id,
-            is_watched=status.is_watched
+            movie_id=movie_id,
+            is_watched=is_watched
         )
 
     @router.post("/movie/watched/toggle",tags=['Movie'])
