@@ -110,8 +110,12 @@ def sql_row_to_api_result(row,load_files:bool=True):
     movie.poster_image = None
     movie.screencap_image = None
     movie.has_images = False
+    dedupe = {}
     for ii in range(0,len(row.image_id_list)):
         movie.has_images = True
+        if f'i-{row.image_local_path_list[ii]}' in dedupe:
+            continue
+        dedupe[f'i-{row.image_local_path_list[ii]}'] = 1
         image_file = dm.Stub()
         image_file.id = row.image_id_list[ii]
         image_file.local_path = row.image_local_path_list[ii]
@@ -132,6 +136,9 @@ def sql_row_to_api_result(row,load_files:bool=True):
 
     if load_files:
         for ii in range(0,len(row.video_id_list)):
+            if f'v-{row.video_id_list[ii]}' in dedupe:
+                continue
+            dedupe[f'v-{row.video_id_list[ii]}'] = 1
             video_file = dm.Stub()
             video_file.id = row.video_id_list[ii]
             video_file.web_path = row.video_network_path_list[ii]
@@ -140,6 +147,9 @@ def sql_row_to_api_result(row,load_files:bool=True):
             movie.video_files.append(video_file)
 
         for ii in range(0,len(row.metadata_id_list)):
+            if f'm-{row.metadata_id_list[ii]}' in dedupe:
+                continue
+            dedupe[f'm-{row.metadata_id_list[ii]}'] = 1
             metadata_file = dm.Stub()
             metadata_file.id = row.metadata_id_list[ii]
             metadata_file.local_path = row.metadata_local_path_list[ii]
@@ -195,7 +205,7 @@ def get_movie_list(
         array_agg(movie_image.kind) as image_kind_list,
         array_agg(movie_image.thumbnail_web_path) as image_thumbnail_web_path_list,
 
-        {'''
+        {"""
         array_agg(movie_video.id) as video_id_list,
         array_agg(movie_video.network_path) as video_network_path_list,
         array_agg(movie_video.ffprobe_pruned_json) as video_ffprobe_list,
@@ -203,7 +213,7 @@ def get_movie_list(
 
         array_agg(movie_metadata.id) as metadata_id_list,
         array_agg(movie_metadata.local_path) as metadata_local_path_list,
-        ''' if load_files else ''}
+        """ if load_files else ""}
 
         array_remove(array_agg(tag.name),NULL) as tag_name_list,
         array_remove(array_agg(tag.id),NULL) as tag_id_list
@@ -219,13 +229,13 @@ def get_movie_list(
             and (watched.movie_id is null or watched.movie_id = movie.id)
         )
         left join movie_image_file as mif on mif.movie_id = movie.id
-        join image_file as movie_image on mif.image_file_id = movie_image.id
-        {'''
+        left join image_file as movie_image on mif.image_file_id = movie_image.id
+        {"""
         left join movie_video_file as mvf on mvf.movie_id = movie.id
-        join video_file as movie_video on mvf.video_file_id = movie_video.id
+        left join video_file as movie_video on mvf.video_file_id = movie_video.id
         left join movie_metadata_file as mmf on mmf.movie_id = movie.id
-        join metadata_file as movie_metadata on mmf.metadata_file_id = movie_metadata.id
-        ''' if load_files else ''}
+        left join metadata_file as movie_metadata on mmf.metadata_file_id = movie_metadata.id
+        """ if load_files else ""}
         left join movie_tag as mt on mt.movie_id = movie.id
         left join tag as tag on tag.id = mt.tag_id
         where 1=1

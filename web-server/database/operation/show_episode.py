@@ -77,8 +77,13 @@ def sql_row_to_api_result(row,load_episode_files):
         image_kinds += row.image_kind_list
         image_thumbnail_web_paths += row.image_thumbnail_web_path_list
 
+    dedupe = {}
+
     for ii in range(0,len(image_ids)):
         episode.has_images = True
+        if f'i-{image_ids[ii]}' in dedupe:
+            continue
+        dedupe[f'i-{image_ids[ii]}'] = 1
         image_file = dm.Stub()
         image_file.id = image_ids[ii]
         image_file.local_path = image_local_paths[ii]
@@ -97,14 +102,20 @@ def sql_row_to_api_result(row,load_episode_files):
 
     if load_episode_files:
         for ii in range(0,len(row.video_id_list)):
+            if f'v-{row.video_id_list[ii]}' in dedupe:
+                continue
+            dedupe[f'v-{row.video_id_list[ii]}'] = 1
             video_file = dm.Stub()
             video_file.id = row.video_id_list[ii]
-            video_file.web_path = row.video_network_path_list[ii]
+            video_file.network_path = row.video_network_path_list[ii]
             video_file.ffprobe_pruned_json = row.video_ffprobe_list[ii]
             video_file.version = row.video_version_list[ii]
             episode.video_files.append(video_file)
 
         for ii in range(0,len(row.metadata_id_list)):
+            if f'm-{row.metadata_id_list[ii]}' in dedupe:
+                continue
+            dedupe[f'm-{row.metadata_id_list[ii]}'] = 1
             metadata_file = dm.Stub()
             metadata_file.id = row.metadata_id_list[ii]
             metadata_file.local_path = row.metadata_local_path_list[ii]
@@ -117,9 +128,10 @@ def sql_row_to_api_result(row,load_episode_files):
     tag_names = row.episode_tag_name_list + row.season_tag_name_list + row.show_tag_name_list
     tag_dedupe = {}
     for ii in range(0,len(tag_ids)):
-        tag = dm.Stub()
-        if tag_ids[ii] in tag_dedupe:
+        if f't-{tag_ids[ii]}' in dedupe:
             continue
+        dedupe[f't-{tag_ids[ii]}'] = 1
+        tag = dm.Stub()
         tag.id = tag_ids[ii]
         episode.tag_ids.append(tag.id)
         tag.name = tag_names[ii]
@@ -217,17 +229,17 @@ def get_show_episode_list(
             and (watched.show_episode_id is null or watched.show_episode_id = episode.id)
         )
 
-        {'''
+        {"""
         left join show_episode_image_file as seif on seif.show_episode_id = episode.id
-        join image_file as episode_image on seif.image_file_id = episode_image.id
+        left join image_file as episode_image on seif.image_file_id = episode_image.id
         left join show_episode_video_file as sevf on sevf.show_episode_id = episode.id
-        join video_file as episode_video on sevf.video_file_id = episode_video.id
+        left join video_file as episode_video on sevf.video_file_id = episode_video.id
         left join show_episode_metadata_file as semf on semf.show_episode_id = episode.id
-        join metadata_file as episode_metadata on semf.metadata_file_id = episode_metadata.id
-        ''' if load_episode_files else ''}
+        left join metadata_file as episode_metadata on semf.metadata_file_id = episode_metadata.id
+        """ if load_episode_files else ""}
 
         left join show_image_file as sif on sif.show_id = show.id
-        join image_file as show_image on sif.image_file_id = show_image.id
+        left join image_file as show_image on sif.image_file_id = show_image.id
 
         left join show_tag as st on st.show_id = show.id
         left join tag as show_tag on show_tag.id = st.tag_id
@@ -262,7 +274,7 @@ def get_show_episode_list(
         for xx in cursor:
             raw_result_count += 1
             model = sql_row_to_api_result(row=xx,load_episode_files=load_episode_files)
-            if not model.has_images:
+            if not model.has_images and not show_season_id:
                 continue
             if not ticket.is_allowed(tag_ids=model.tag_ids):
                 continue

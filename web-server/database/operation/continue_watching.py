@@ -12,9 +12,7 @@ import database.operation.show_season as db_season
 import database.operation.show_episode as db_episode
 
 def get_continue_watching_list(ticket:dm.Ticket):
-    log.info("Building the continue watching results")
     with DbSession() as db:
-        log.info("Connected to the DB")
         results = []
         movies_in_progress = (
             db.query(dm.WatchProgress)
@@ -28,8 +26,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
             )
             .all()
         )
-        log.info("Queried movies in progress")
-        if movies_in_progress and len(movies_in_progress) > 0:
+        if movies_in_progress:
             items = []
             for progress in movies_in_progress:
                 movie = dm.set_primary_images(progress.movie)
@@ -39,7 +36,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'name': 'Movies In Progress',
                 'items': items
             })
-        log.info("Built movies in progress results")
 
         episodes_in_progress = (
             db.query(dm.WatchProgress)
@@ -54,9 +50,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 .joinedload(dm.Show.shelf)
             ).all()
         )
-
-        log.info("Queried episodes in progress")
-        if episodes_in_progress and len(episodes_in_progress) > 0:
+        if episodes_in_progress:
             items = []
             for progress in episodes_in_progress:
                 episode.poster_image = episode.season.show.poster_image
@@ -66,8 +60,6 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'name': 'Episodes In Progress',
                 'items': items
             })
-
-        log.info("Built episodes in progress results")
 
         unwatched_movies = []
         new_episodes = []
@@ -140,7 +132,5 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 'name': 'New Movies',
                 'items': unwatched_movies
             })
-
-        log.info("All ready")
 
         return results

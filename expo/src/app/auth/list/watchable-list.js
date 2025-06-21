@@ -8,7 +8,10 @@ export function WatchableListPage(props) {
     const [items, setItems] = C.React.useState(null)
 
     const shelfId = localParams.shelfId
-    const showPlaylisted = localParams.showPlaylisted ? localParams.showPlaylisted === 'true' : false
+    const [showPlaylisted, setShowPlaylisted] = C.React.useState(
+        localParams.showPlaylisted ? localParams.showPlaylisted === 'true' : false
+    )
+    const [togglePlaylistedEnabled, setTogglePlaylistedEnabled] = C.React.useState(true)
 
     C.React.useEffect(() => {
         if (!shelf) {
@@ -19,7 +22,17 @@ export function WatchableListPage(props) {
                 .then((response) => {
                     setItems(response)
                     if (response.length == 0) {
-                        setMessageDisplay(`Found no items to display.`)
+                        if (!showPlaylisted) {
+                            setTogglePlaylistedEnabled(false)
+                            setShowPlaylisted(true)
+                            props.loadItems(apiClient, shelfId, true)
+                                .then((response) => {
+                                    setItems(response)
+                                })
+                        }
+                        else {
+                            setMessageDisplay(`Found no items to display.`)
+                        }
                     }
                     if (response.length == 1) {
                         setMessageDisplay(`Found ${response.length} item to display.`)
@@ -92,7 +105,7 @@ export function WatchableListPage(props) {
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
                 <C.SnowGrid itemsPerRow={itemsPerRow}>
-                    {props.toggleShowPlaylisted ?
+                    {(togglePlaylistedEnabled && props.toggleShowPlaylisted) ?
                         <C.SnowTextButton
                             title={showPlaylisted == true ? 'Hide Playlisted' : 'Show Playlisted'}
                             onPress={() => { props.toggleShowPlaylisted(routes, shelfId, showPlaylisted === true ? false : true) }}
