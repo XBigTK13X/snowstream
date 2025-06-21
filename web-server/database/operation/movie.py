@@ -91,12 +91,13 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
                 results.append(movie)
         return results
 
-def sql_row_to_api_result(row,load_files:bool=True):
+def sql_row_to_api_result(row,load_files,watch_group):
     movie = dm.Stub()
     movie.model_kind = 'movie'
     movie.id = row.movie_id
     movie.name = row.movie_name
-    movie.watched = bool(row.movie_watched_list)
+    if watch_group:
+        movie.watched = bool(row.movie_watched_list)
 
     movie.shelf = dm.Stub()
     movie.shelf.id = row.shelf_id
@@ -141,7 +142,9 @@ def sql_row_to_api_result(row,load_files:bool=True):
             dedupe[f'v-{row.video_id_list[ii]}'] = 1
             video_file = dm.Stub()
             video_file.id = row.video_id_list[ii]
+            video_file.kind = row.video_kind_list[ii]
             video_file.web_path = row.video_network_path_list[ii]
+            video_file.local_path = row.video_local_path_list[ii]
             video_file.ffprobe_pruned_json = row.video_ffprobe_list[ii]
             video_file.version = row.video_version_list[ii]
             movie.video_files.append(video_file)
@@ -152,6 +155,8 @@ def sql_row_to_api_result(row,load_files:bool=True):
             dedupe[f'm-{row.metadata_id_list[ii]}'] = 1
             metadata_file = dm.Stub()
             metadata_file.id = row.metadata_id_list[ii]
+            metadata_file.kind = row.metadata_kind_list[ii]
+            metadata_file.xml_content = row.metadata_xml_content_list[ii]
             metadata_file.local_path = row.metadata_local_path_list[ii]
             movie.metadata_files.append(metadata_file)
 
@@ -186,7 +191,9 @@ def get_movie_list(
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
-        watch_group = ','.join([str(xx) for xx in ticket.watch_group])
+        watch_group = None
+        if ticket.watch_group:
+            watch_group = ','.join([str(xx) for xx in ticket.watch_group])
         if search_query:
             search_query = search_query.replace("'","''")
         raw_query = f'''
@@ -194,7 +201,7 @@ def get_movie_list(
 
         movie.id as movie_id,
         movie.name as movie_name,
-        array_remove(array_agg(watched.id),NULL) as movie_watched_list,
+        {'array_remove(array_agg(watched.id),NULL) as movie_watched_list,' if watch_group else ''}
 
         shelf.id as shelf_id,
         shelf.name as shelf_name,
@@ -207,12 +214,16 @@ def get_movie_list(
 
         {"""
         array_agg(movie_video.id) as video_id_list,
+        array_agg(movie_video.kind) as video_kind_list,
+        array_agg(movie_video.local_path) as video_local_path_list,
         array_agg(movie_video.network_path) as video_network_path_list,
         array_agg(movie_video.ffprobe_pruned_json) as video_ffprobe_list,
         array_agg(movie_video.version) as video_version_list,
 
         array_agg(movie_metadata.id) as metadata_id_list,
+        array_agg(movie_metadata.kind) as metadata_kind_list,
         array_agg(movie_metadata.local_path) as metadata_local_path_list,
+        array_agg(movie_metadata.xml_content) as metadata_xml_content_list,
         """ if load_files else ""}
 
         array_remove(array_agg(tag.name),NULL) as tag_name_list,
@@ -223,6 +234,7 @@ def get_movie_list(
             {f" and movie.name ilike '%{search_query}%'" if search_query else ''}
         join shelf as shelf on shelf.id = ms.shelf_id
             {f' and shelf.id = {shelf_id}' if shelf_id else ''}
+        {f"""
         left join watched as watched on (
             watched.client_device_user_id in ({watch_group})
             and watched.shelf_id = shelf.id
@@ -230,6 +242,7 @@ def get_movie_list(
         )
         left join movie_image_file as mif on mif.movie_id = movie.id
         left join image_file as movie_image on mif.image_file_id = movie_image.id
+        """ if watch_group else ""}
         {"""
         left join movie_video_file as mvf on mvf.movie_id = movie.id
         left join video_file as movie_video on mvf.video_file_id = movie_video.id
@@ -239,8 +252,8 @@ def get_movie_list(
         left join movie_tag as mt on mt.movie_id = movie.id
         left join tag as tag on tag.id = mt.tag_id
         where 1=1
-            {f" and watched.id is null" if only_unwatched else ''}
-            {f" and watched.id is not null" if only_watched else ''}
+            {f" and watched.id is null" if only_unwatched and watch_group else ''}
+            {f" and watched.id is not null" if only_watched and watch_group else ''}
         group by
             shelf.id,
             shelf.name,
@@ -256,7 +269,11 @@ def get_movie_list(
         raw_result_count = 0
         for xx in cursor:
             raw_result_count += 1
-            model = sql_row_to_api_result(row=xx,load_files=load_files)
+            model = sql_row_to_api_result(
+                row=xx,
+                load_files=load_files,
+                watch_group=watch_group
+            )
             if not model.has_images:
                 continue
             if not ticket.is_allowed(tag_ids=model.tag_ids):

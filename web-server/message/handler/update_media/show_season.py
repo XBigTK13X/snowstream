@@ -34,7 +34,7 @@ class ShowSeason(MediaUpdater):
 
     def read_remote_info(self):
         self.metadata = self.media_provider.get_season_info(show_metadata_id=self.metadata_id, season_order=self.season_order)
-        self.metadata = self.metadata.to_snowstream_season(self.metadata)
+        self.metadata = self.media_provider.to_snowstream_season(self.metadata)
         return self.metadata
 
     def merge_remote_into_local(self):

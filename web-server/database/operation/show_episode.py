@@ -35,13 +35,15 @@ def update_show_episode_name(show_episode_id:int,name:str):
         db.commit()
         return episode
 
-def sql_row_to_api_result(row,load_episode_files):
+def sql_row_to_api_result(row,load_episode_files,watch_group):
     episode = dm.Stub()
     episode.model_kind = 'show_episode'
     episode.id = row.episode_id
     episode.episode_order_counter = row.episode_order
+    episode.episode_end_order_counter = row.episode_end_order
     episode.name = row.episode_name
-    episode.watched = bool(row.episode_watched_list)
+    if watch_group:
+        episode.watched = bool(row.episode_watched_list)
 
     episode.season = dm.Stub()
     episode.season.model_kind = 'show_season'
@@ -107,7 +109,9 @@ def sql_row_to_api_result(row,load_episode_files):
             dedupe[f'v-{row.video_id_list[ii]}'] = 1
             video_file = dm.Stub()
             video_file.id = row.video_id_list[ii]
+            video_file.local_path = row.video_local_path_list[ii]
             video_file.network_path = row.video_network_path_list[ii]
+            video_file.kind = row.video_kind_list[ii]
             video_file.ffprobe_pruned_json = row.video_ffprobe_list[ii]
             video_file.version = row.video_version_list[ii]
             episode.video_files.append(video_file)
@@ -118,7 +122,9 @@ def sql_row_to_api_result(row,load_episode_files):
             dedupe[f'm-{row.metadata_id_list[ii]}'] = 1
             metadata_file = dm.Stub()
             metadata_file.id = row.metadata_id_list[ii]
+            metadata_file.kind = row.metadata_kind_list[ii]
             metadata_file.local_path = row.metadata_local_path_list[ii]
+            metadata_file.xml_content = row.metadata_xml_content_list[ii]
             episode.metadata_files.append(metadata_file)
 
     episode.tags = []
@@ -159,7 +165,9 @@ def get_show_episode_list(
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
-        watch_group = ','.join([str(xx) for xx in ticket.watch_group])
+        watch_group = None
+        if ticket.watch_group:
+            watch_group = ','.join([str(xx) for xx in ticket.watch_group])
         if search_query:
             search_query = search_query.replace("'","''")
         raw_query =f'''
@@ -170,7 +178,8 @@ def get_show_episode_list(
         episode.id as episode_id,
         episode.name as episode_name,
         episode.episode_order_counter as episode_order,
-        array_remove(array_agg(watched.id),NULL) as episode_watched_list,
+        episode.episode_end_order_counter as episode_end_order,
+        {"array_remove(array_agg(watched.id),NULL) as episode_watched_list," if watch_group else ""}
 
         season.id as season_id,
         season.season_order_counter as season_order,
@@ -189,12 +198,16 @@ def get_show_episode_list(
         array_remove(array_agg(episode_image.thumbnail_web_path),NULL) as image_thumbnail_web_path_list,
 
         array_agg(episode_video.id) as video_id_list,
+        array_agg(episode_video.kind) as video_kind_list,
+        array_agg(episode_video.local_path) as video_local_path_list,
         array_agg(episode_video.network_path) as video_network_path_list,
         array_agg(episode_video.ffprobe_pruned_json) as video_ffprobe_list,
         array_agg(episode_video.version) as video_version_list,
 
         array_agg(episode_metadata.id) as metadata_id_list,
+        array_agg(episode_metadata.kind) as metadata_kind_list,
         array_agg(episode_metadata.local_path) as metadata_local_path_list,
+        array_agg(episode_metadata.xml_content) as metadata_xml_content_list,
         """ if load_episode_files else ''}
 
         array_remove(array_agg(show_image.id),NULL) as show_image_id_list,
@@ -221,6 +234,7 @@ def get_show_episode_list(
         join show_shelf as show_shelf on show_shelf.show_id = show.id
         join shelf as shelf on show_shelf.shelf_id = shelf.id
             {f' and shelf.id = {shelf_id}' if shelf_id else ''}
+        {f"""
         left join watched as watched on (
             watched.client_device_user_id in ({watch_group})
             and watched.shelf_id = shelf.id
@@ -228,7 +242,7 @@ def get_show_episode_list(
             and (watched.show_season_id is null or watched.show_season_id = season.id)
             and (watched.show_episode_id is null or watched.show_episode_id = episode.id)
         )
-
+        """ if watch_group else ""}
         {"""
         left join show_episode_image_file as seif on seif.show_episode_id = episode.id
         left join image_file as episode_image on seif.image_file_id = episode_image.id
@@ -249,8 +263,8 @@ def get_show_episode_list(
         left join tag as episode_tag on episode_tag.id = setag.tag_id
 
         where 1=1
-        {f" and watched.id is null" if only_unwatched else ''}
-        {f" and watched.id is not null" if only_watched else ''}
+        {f" and watched.id is null" if only_unwatched and watch_group else ''}
+        {f" and watched.id is not null" if only_watched and watch_group else ''}
         group by
             shelf.id,
             shelf.name,
@@ -259,6 +273,7 @@ def get_show_episode_list(
             season.id,
             season.season_order_counter,
             episode.episode_order_counter,
+            episode.episode_end_order_counter,
             episode.id,
             episode.name
         order by
@@ -273,7 +288,11 @@ def get_show_episode_list(
         raw_result_count = 0
         for xx in cursor:
             raw_result_count += 1
-            model = sql_row_to_api_result(row=xx,load_episode_files=load_episode_files)
+            model = sql_row_to_api_result(
+                row=xx,
+                load_episode_files=load_episode_files,
+                watch_group=watch_group
+            )
             if not model.has_images and not show_season_id:
                 continue
             if not ticket.is_allowed(tag_ids=model.tag_ids):

@@ -25,10 +25,6 @@ class MediaUpdater:
         self.FileStub = FileStub
         self.metadata = None
 
-    def download_metadata(self):
-        self.read_local_info()
-        self.merge_remote_into_local()
-        self.save_info_to_local()
 
     def download_image(self,image_url:str,local_path:str):
         if not image_url:

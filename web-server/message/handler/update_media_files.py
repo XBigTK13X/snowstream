@@ -42,7 +42,10 @@ def handle(scope):
         if handler.has_nfo() and scope.skip_existing_media():
             db.op.update_job(job_id=scope.job_id, message=f"Not overwriting existing metadata")
         else:
-            handler.download_metadata()
+            handler.read_remote_info()
+            handler.read_local_info()
+            handler.merge_remote_into_local()
+            handler.save_info_to_local()
 
     if scope.update_images:
         if handler.has_images() and scope.skip_existing_media():
