@@ -44,7 +44,10 @@ export default function PlaylistDetailsPage() {
                 <C.SnowTextButton title="Watch All" onPress={watchAll} />
                 <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
             </C.SnowGrid>
-            <C.SnowPosterGrid items={playlistItems} />
+            <C.SnowPosterGrid
+                items={playlistItems}
+                onLongPress={apiClient.toggleItemWatched}
+            />
         </C.FillView>
     )
 }

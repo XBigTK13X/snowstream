@@ -16,6 +16,7 @@ export function ContinueWatchingListPage(props) {
 
     const [continueWatchingList, setContinueWatchingList] = C.React.useState(null)
     const [tabIndex, setTabIndex] = C.React.useState(0)
+    const [tabKind, setTabKind] = C.React.useState(null)
     const [tabItems, setTabItems] = C.React.useState([])
     const [resultsEmpty, setResultsEmpty] = C.React.useState(false)
 
@@ -25,6 +26,7 @@ export function ContinueWatchingListPage(props) {
                 setContinueWatchingList(response)
                 if (response.length) {
                     setTabItems(response[0].items)
+                    setTabKind(response[0].kind)
                     setTabIndex(0)
                 } else {
                     setResultsEmpty(true)
@@ -43,6 +45,7 @@ export function ContinueWatchingListPage(props) {
 
     const loadTab = (tabEntry, tabIndex) => {
         setTabIndex(tabIndex)
+        setTabKind(tabEntry.kind)
         setTabItems(tabEntry.items)
     }
     if (continueWatchingList && tabItems) {
@@ -58,12 +61,38 @@ export function ContinueWatchingListPage(props) {
                     title={tabTitle} />
             )
         })
+        const markWatched = (item) => {
+            if (tabKind === 'in_progress') {
+                if (item.model_kind === 'movie') {
+                    return apiClient.setItemWatched(item)
+                }
+                else if (item.model_kind === 'show_episode') {
+                    return apiClient.setItemWatched(item)
+                }
+            }
+            else if (tabKind === 'new_shows') {
+                return apiClient.setItemWatched({ id: item.season.show.id, model_kind: 'show' })
+            }
+            else if (tabKind === 'new_seasons') {
+                return apiClient.setItemWatched({ id: item.season.id, model_kind: 'show_season' })
+            }
+            else if (tabKind === 'next_episodes') {
+                return apiClient.setItemWatched(item)
+            }
+            else if (tabKind === 'new_movies') {
+                return apiClient.setItemWatched(item)
+            }
+        }
         return (
             <C.FillView>
                 <C.View style={styles.columns}>
                     {tabButtons}
                 </C.View>
-                <C.SnowPosterGrid disableWatched items={tabItems} />
+                <C.SnowPosterGrid
+                    disableWatched
+                    items={tabItems}
+                    onLongPress={markWatched}
+                />
             </C.FillView>
         )
     }

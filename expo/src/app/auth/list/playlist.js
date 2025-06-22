@@ -21,9 +21,11 @@ export default function PlaylistListPage() {
     }
 
     return <C.SnowGrid items={playlistList} renderItem={(item) => {
-        return <C.SnowTextButton title={item.name} onPress={routes.func(routes.playlistDetails, {
-            tagId: item.id,
-            tagName: item.name
-        })} />
+        return <C.SnowTextButton
+            title={item.name}
+            onPress={routes.func(routes.playlistDetails, {
+                tagId: item.id,
+                tagName: item.name
+            })} />
     }} />
 }

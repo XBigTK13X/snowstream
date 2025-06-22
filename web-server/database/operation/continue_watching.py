@@ -115,7 +115,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
         if new_episodes:
             results.append({
                 'kind': 'next_episodes',
-                'name': "New Episodes",
+                'name': "Next Episodes",
                 'items': new_episodes
             })
         if new_seasons:

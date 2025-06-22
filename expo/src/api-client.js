@@ -12,6 +12,7 @@ export class ApiClient {
         let self = this
 
         // Only functions that get passed around as higher order functions need to be bound
+        this.login = this.login.bind(this)
         // An example of this is the job runner
         this.createScopedJob = this.createScopedJob.bind(this)
         this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
@@ -20,7 +21,16 @@ export class ApiClient {
         this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
         this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
         this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
-        this.login = this.login.bind(this)
+        // Another example is the watched status setters used by onLongPress event handlers
+        this.toggleItemWatched = this.toggleItemWatched.bind(this)
+        this.toggleMovieShelfWatchStatus = this.toggleMovieShelfWatchStatus.bind(this)
+        this.toggleMovieWatchStatus = this.toggleMovieWatchStatus.bind(this)
+        this.toggleShowShelfWatchStatus = this.toggleShowShelfWatchStatus.bind(this)
+        this.toggleEpisodeWatchStatus = this.toggleEpisodeWatchStatus.bind(this)
+        this.toggleSeasonWatchStatus = this.toggleSeasonWatchStatus.bind(this)
+        this.toggleShowWatchStatus = this.toggleShowWatchStatus.bind(this)
+        this.setItemWatched = this.setItemWatched.bind(this)
+        this.setItemUnwatched = this.setItemUnwatched.bind(this)
 
         this.createClient(details)
 
@@ -479,6 +489,44 @@ export class ApiClient {
 
     getSessionList() {
         return this.get('/session/list')
+    }
+
+    toggleItemWatched(item) {
+        if (item.model_kind === 'movie') {
+            return this.toggleMovieWatchStatus(item.id)
+        }
+        else if (item.model_kind === 'show') {
+            return this.toggleShowWatchStatus(item.id)
+        }
+        else if (item.model_kind === 'show_season') {
+            return this.toggleSeasonWatchStatus(item.id)
+        }
+        else if (item.model_kind === 'show_episode') {
+            return this.toggleEpisodeWatchStatus(item.id)
+        }
+    }
+
+    setItemWatchedStatus(item, isWatched) {
+        if (item.model_kind === 'movie') {
+            return this.post(`/movie/watched?movie_id=${item.id}&is_watched=${isWatched}`)
+        }
+        else if (item.model_kind === 'show') {
+            return this.post(`/show/watched?show_id=${item.id}&is_watched=${isWatched}`)
+        }
+        else if (item.model_kind === 'show_season') {
+            return this.post(`/show/season/watched?season_id=${item.id}&is_watched=${isWatched}`)
+        }
+        else if (item.model_kind === 'show_episode') {
+            return this.post(`/show/season/episode/watched?episode_id=${item.id}&is_watched=${isWatched}`)
+        }
+    }
+
+    setItemWatched(item) {
+        return this.setItemWatchedStatus(item, true)
+    }
+
+    setItemUnwatched(item) {
+        return this.setItemWatchedStatus(item, false)
     }
 
     debug() {
