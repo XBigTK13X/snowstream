@@ -49,6 +49,7 @@ function Header() {
                 {isAdmin ? <C.SnowTextButton title="Admin" onPress={routes.func(routes.admin.dashboard)} /> : null}
                 <C.SnowTextButton title="Info" onPress={routes.func(routes.info)} />
             </C.SnowGrid>
+            <C.View style={styles.hr} />
         </C.View>
     )
 }
@@ -71,9 +72,6 @@ export default function RootLayout() {
             <AppContextProvider>
                 <C.View style={styles.page}>
                     <Header />
-                    <C.View
-                        style={styles.hr}
-                    />
                     <C.Slot />
                 </C.View>
             </AppContextProvider>

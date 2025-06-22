@@ -21,7 +21,7 @@ source_handlers = {
 
 def generate_streamable_m3u(job_id:int):
     db.op.update_job(job_id=job_id, message="Generating streamable M3U content")
-    stream_sources = db.op.get_stream_source_list(ticket=db.model.Ticket(),streamables=True)
+    stream_sources = db.op.get_stream_source_list(ticket=db.model.Ticket(ignore_watch_group=True),streamables=True)
 
     m3u = "#EXTM3U"
     stream_count = 0
@@ -77,7 +77,7 @@ def handle(scope):
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a stream_sources_refresh job")
     db.op.update_job(job_id=scope.job_id, message="Removing existing streamable schedule info")
     db.sql.truncate("streamable_schedule")
-    stream_sources = db.op.get_stream_source_list(ticket=db.model.Ticket(),streamables=True)
+    stream_sources = db.op.get_stream_source_list(ticket=db.model.Ticket(ignore_watch_group=True),streamables=True)
     refresh_results = {}
     for stream_source in stream_sources:
         db.op.update_job(job_id=scope.job_id, message="Refreshing stream source " + stream_source.kind)

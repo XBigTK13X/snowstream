@@ -154,7 +154,7 @@ def purge_missing_metadata_file_records():
 def find_shelf_content_without_video_files():
     results = []
     with DbSession() as db:
-        ticket = dm.Ticket()
+        ticket = dm.Ticket(ignore_watch_group=True)
         with DbSession() as db:
             movies = db_movie.get_movie_list(ticket=ticket)
             for movie in movies:
