@@ -14,20 +14,39 @@ def perform_search(ticket:dm.Ticket,query:str):
     result = {}
     with DbSession() as db:
         shelves = db_shelf.get_shelf_list(ticket=ticket)
-        result['movies'] = []
-        result['shows'] = []
-        result['episodes'] = []
+        results = []
+        movie_results = []
+        show_results = []
+        episode_results = []
         for shelf in shelves:
             if shelf.kind == 'Movies':
                 movies = db_movie.get_movie_list(ticket=ticket, shelf_id=shelf.id, search_query=query)
                 if movies:
-                    result['movies'] += movies
+                    movie_results += movies
             elif shelf.kind == 'Shows':
                 shows = db_show.get_show_list_by_shelf(ticket=ticket, shelf_id=shelf.id, search_query=query)
                 if shows:
-                    result['shows'] += shows
+                    show_results += shows
                 episodes = db_episode.get_show_episode_list(ticket=ticket, shelf_id=shelf.id, search_query=query)
                 if episodes:
-                    result['episodes'] += episodes
+                    episode_results += episodes
 
-    return result
+        if movie_results:
+            results.append({
+                'kind': 'movies',
+                'name': 'Movies',
+                'items': movie_results
+            })
+        if show_results:
+            results.append({
+                'kind': 'shows',
+                'name': 'Shows',
+                'items': show_results
+            })
+        if episode_results:
+            results.append({
+                'kind': 'episodes',
+                'name': 'Episodes',
+                'items': episode_results
+            })
+    return results
