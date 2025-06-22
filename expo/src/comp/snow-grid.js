@@ -59,14 +59,18 @@ export function SnowGrid(props) {
         <View style={gridStyle}>
             <FlatList
                 key={itemsPerRow}
+                keyExtractor={(item) => { return item.id }}
                 numColumns={itemsPerRow}
                 contentContainerStyle={styles.list}
                 columnWrapperStyle={itemsPerRow === 1 ? null : styles.listColumn}
                 data={items}
-                renderItem={({ item, itemIndex, separators }) => {
+                onViewableItemsChanged={(items) => {
+                    console.log(items)
+                }}
+                renderItem={({ item, index, separators }) => {
                     return (
-                        <View key={itemIndex} style={itemStyle}>
-                            {renderItem(item, itemIndex)}
+                        <View key={index} style={itemStyle}>
+                            {renderItem(item, index)}
                         </View>
                     )
                 }}
