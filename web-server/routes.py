@@ -363,7 +363,7 @@ def auth_required(router):
     def get_show_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         shelf_id: int,
-        show_playlisted:str=True
+        show_playlisted:bool=True
     ):
         return db.op.get_show_list_by_shelf(
             ticket=auth_user.ticket,

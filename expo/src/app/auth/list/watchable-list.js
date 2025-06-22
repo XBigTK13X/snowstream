@@ -85,19 +85,7 @@ export function WatchableListPage(props) {
             remoteId = props.getRemoteId(items[0])
         }
 
-        let itemsPerRow = 1
-        if (props.watchAll && props.shuffleAll) {
-            itemsPerRow = 3
-        }
-        else if (!props.watchAll && !props.shuffleAll) {
-            itemsPerRow = 1
-        }
-        else {
-            itemsPerRow = 2
-        }
-        if (isAdmin) {
-            itemsPerRow = 3
-        }
+        let itemsPerRow = 4
 
         return (
             <C.FillView>
