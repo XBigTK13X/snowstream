@@ -1,5 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
+import SnowHeader from './snow-header'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
 
@@ -29,17 +30,15 @@ styles.button = {
     button: styles.column
 }
 
-const buttonStyles = {
-    wrapper: styles.column
-}
-
 function TrackList(props) {
     if (!props.tracks) {
         return null
     }
     return (
         <View style={styles.rows}>
-            <SnowText heading style={styles.row}>{props.title} ({props.tracks.length})</SnowText>
+            <SnowHeader style={styles.row}>
+                {props.title} ({props.tracks.length})
+            </SnowHeader>
             <View style={styles.columns}>
                 {props.tracks.map((track, trackKey) => {
                     return (

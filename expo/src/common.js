@@ -31,6 +31,7 @@ import { useDebouncedCallback } from 'use-debounce';
 // TVFocusGuideView docs
 
 import util from './util'
+import { StaticStyle, DynamicStyle } from './snow-style'
 
 import { useAppContext } from './app-context'
 
@@ -70,6 +71,7 @@ export default {
     useNavigation,
     useRouter,
     util,
+    DynamicStyle,
     FillView,
     Image,
     Link,
@@ -95,6 +97,7 @@ export default {
     SnowUpdateMediaButton,
     SnowVideoControls,
     SnowVideoPlayer,
+    StaticStyle,
     Stack,
     Text,
     TouchableOpacity,

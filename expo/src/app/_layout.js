@@ -5,14 +5,14 @@ import * as NavigationBar from 'expo-navigation-bar'
 const styles = {
     safeArea: {
         padding: 10,
-        backgroundColor: '#000000',
+        backgroundColor: C.StaticStyle.color.background,
         flex: 1
     },
     header: {
         width: '100%'
     },
     hr: {
-        borderBottomColor: 'rgba(219, 158, 44, .5)',
+        borderBottomColor: C.StaticStyle.color.coreDark,
         borderBottomWidth: 2,
     },
     page: {

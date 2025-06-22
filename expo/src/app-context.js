@@ -6,13 +6,14 @@ import { routes } from './routes'
 import { Modal, View } from 'react-native'
 import { ApiClient } from './api-client'
 
+import { StaticStyle } from './snow-style'
 import SnowGrid from './comp/snow-grid'
 import SnowText from './comp/snow-text'
 import SnowTextButton from './comp/snow-text-button'
 
 const styles = {
     prompt: {
-        backgroundColor: 'black',
+        backgroundColor: StaticStyle.color.background,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

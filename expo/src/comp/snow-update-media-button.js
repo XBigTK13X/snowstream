@@ -6,7 +6,7 @@ import {
 
 import SnowTextButton from './snow-text-button'
 import { useAppContext } from '../app-context'
-import SnowText from './snow-text'
+import { StaticStyle } from '../snow-style'
 import SnowInput from './snow-input'
 import SnowLabel from './snow-label'
 import SnowGrid from './snow-grid'
@@ -15,7 +15,7 @@ import SnowHeader from './snow-header'
 
 const styles = {
     prompt: {
-        backgroundColor: 'black',
+        backgroundColor: StaticStyle.color.background,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

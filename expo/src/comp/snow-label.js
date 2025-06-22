@@ -1,9 +1,10 @@
 import { Text } from 'react-native'
+import { StaticStyle } from '../snow-style'
 
 const styles = {
     label: {
-        fontSize: 26,
-        color: 'white',
+        fontSize: StaticStyle.fontSize.label,
+        color: StaticStyle.color.text,
         margin: 10,
         padding: 10
     }

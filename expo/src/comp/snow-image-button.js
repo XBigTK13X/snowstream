@@ -1,58 +1,52 @@
 import React from 'react'
-
-
 import { Platform, Image, TouchableOpacity } from 'react-native';
 import SnowText from './snow-text'
+import { StaticStyle, DynamicStyle } from '../snow-style'
 
 const missingPosterImage = '../../assets/images/app/missing-poster.jpeg'
 const missingScreencapImage = '../../assets/images/app/missing-screencap.jpeg'
+// TODO hiddenPoster / hiddenScreencap
 
 
-
-
-let mult = 0.75
-
-if (Platform.isTV) {
-    mult = 0.5
-}
+const dyn = DynamicStyle()
 
 const styles = {
     wrapper: {
-        height: 300 * mult,
-        width: 200 * mult,
+        height: dyn.imageButton.wrapper.normal.height,
+        width: dyn.imageButton.wrapper.normal.width,
         margin: 10,
         marginLeft: 'auto',
         marginRight: 'auto',
         marginBottom: 0,
-        backgroundColor: 'rgb(219, 158, 44)',
+        backgroundColor: StaticStyle.color.core,
         borderWidth: 5,
-        borderColor: 'rgb(219, 158, 44)',
+        borderColor: StaticStyle.color.core,
         borderRadius: 5,
     },
     wrapperWide: {
-        height: 170 * mult,
-        width: 200 * mult
+        height: dyn.imageButton.wrapper.wide.height,
+        width: dyn.imageButton.wrapper.wide.width,
     },
     wrapperSquare: {
-        height: 250 * mult,
-        width: 250 * mult
+        height: dyn.imageButton.wrapper.square.height,
+        width: dyn.imageButton.wrapper.square.width
     },
     selected: {
-        borderColor: 'white'
+        borderColor: StaticStyle.color.active
     },
     focused: {
-        borderColor: 'green'
+        borderColor: StaticStyle.color.hover
     },
     dull: {
-        backgroundColor: 'rgb(136, 98, 27)',
-        borderColor: 'rgb(136, 98, 27)',
+        backgroundColor: StaticStyle.color.coreDark,
+        borderColor: StaticStyle.color.coreDark,
     },
     image: {
-        height: 215 * mult,
-        width: 150 * mult,
+        height: dyn.imageButton.image.normal.height,
+        width: dyn.imageButton.image.normal.width,
         borderWidth: 2,
-        borderColor: '#272727',
-        backgroundColor: '#272727',
+        borderColor: StaticStyle.color.outlineDark,
+        backgroundColor: StaticStyle.color.outlineDark,
         marginTop: 5,
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -60,26 +54,25 @@ const styles = {
         borderRadius: 6
     },
     imageWide: {
-        height: 90 * mult,
-        width: 150 * mult,
+        height: dyn.imageButton.image.wide.height,
+        width: dyn.imageButton.image.wide.width,
     },
     imageSquare: {
-        height: 200 * mult,
-        width: 200 * mult
+        height: dyn.imageButton.image.square.height,
+        width: dyn.imageButton.image.square.width,
     },
     text: {
         height: 80,
-        color: '#272727',
-        fontSize: 20 * mult,
+        color: StaticStyle.color.outlineDark,
+        fontSize: dyn.imageButton.fontSize.normal,
         padding: 0,
         margin: 0,
+        marginTop: dyn.imageButton.textBox.marginTop,
         textAlign: 'center'
     },
-}
-
-if (Platform.OS === 'android') {
-    styles.text.height = 80
-    styles.text.marginTop = -10
+    smallText: {
+        fontSize: dyn.imageButton.fontSize.small
+    }
 }
 
 export function SnowImageButton(props) {
@@ -94,7 +87,7 @@ export function SnowImageButton(props) {
 
     let fontStyle = [styles.text]
     if (props.title && props.title.length > 20) {
-        fontStyle.push({ fontSize: 15 * mult })
+        fontStyle.push(styles.smallText)
     }
 
     const wrapperStyle = [styles.wrapper]

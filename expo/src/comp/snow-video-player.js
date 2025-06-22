@@ -3,6 +3,7 @@ import { Dimensions, Modal, TouchableOpacity, Platform, View } from 'react-nativ
 import { useRouter } from 'expo-router'
 import { useAppContext } from '../app-context'
 import SnowVideoControls from './snow-video-controls'
+import { StaticStyle } from '../snow-style'
 import { useDebouncedCallback } from 'use-debounce'
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
@@ -16,17 +17,14 @@ const styles = {
     videoView: {
         width: windowWidth,
         height: windowHeight,
-        backgroundColor: 'black',
-    },
-    controlsModal: {
-        backgroundColor: 'rgba(0,0,0,0.1)'
+        backgroundColor: StaticStyle.color.background,
     },
     videoControls: {
         width: windowWidth,
         height: windowHeight
     },
     dark: {
-        backgroundColor: 'black',
+        backgroundColor: StaticStyle.color.background,
     }
 }
 

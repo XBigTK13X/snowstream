@@ -1,39 +1,45 @@
 import React from 'react'
 
 
-import { Platform, Image, TouchableOpacity, Pressable, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import SnowText from './snow-text'
+import { StaticStyle, DynamicStyle } from '../snow-style'
 
+
+const dyn = DynamicStyle()
 
 const styles = {
     wrapper: {
         margin: 10,
         padding: 10,
-        height: 40,
+        height: dyn.textButton.wrapper.normal.height,
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        backgroundColor: 'rgb(219, 158, 44)',
+        backgroundColor: StaticStyle.color.core,
         borderWidth: 5,
-        borderColor: 'rgb(219, 158, 44)',
+        borderColor: StaticStyle.color.core,
         borderRadius: 5
     },
     selected: {
-        borderColor: 'white'
+        borderColor: StaticStyle.color.active
     },
     focused: {
-        borderColor: 'green'
+        borderColor: StaticStyle.color.hover
     },
     disabled: {
         opacity: 0.5
     },
     text: {
-        fontSize: 16,
+        fontSize: dyn.textButton.fontSize.normal,
         padding: 0,
         margin: 0,
         textAlign: 'center',
-        height: 15
+        height: dyn.textButton.textBox.height
     },
+    smallText: {
+        fontSize: dyn.textButton.fontSize.small
+    }
 }
 
 export function SnowTextButton(props) {
@@ -61,7 +67,7 @@ export function SnowTextButton(props) {
 
     let textStyle = [styles.text]
     if (props.title.length > 20) {
-        textStyle.push({ fontSize: 12 })
+        textStyle.push(styles.smallText)
     }
 
     return (
