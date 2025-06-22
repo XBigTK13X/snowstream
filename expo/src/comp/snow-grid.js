@@ -1,25 +1,25 @@
 import React from 'react'
 import {
-    Platform,
     View,
     FlatList
 } from 'react-native'
 
 const styles = {
     grid: {
-        padding: 5,
-        margin: 0,
-        width: '100%'
+        padding: 5
+    },
+    mainGrid: {
+        flex: 1
     },
     item: {
         flexBasis: '20%'
     },
     list: {
-        justifyContent: 'center',
-        width: '100%'
+        justifyContent: 'space-evenly',
+        marginRight: 10
     },
     listColumn: {
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
     }
 }
 
@@ -36,6 +36,9 @@ export function SnowGrid(props) {
     let gridStyle = [styles.grid]
     if (props.gridStyle) {
         gridStyle.push(props.gridStyle)
+    }
+    if (props.mainGrid) {
+        gridStyle.push(styles.mainGrid)
     }
     let items = props.items
     if (!props.items) {
@@ -68,7 +71,7 @@ export function SnowGrid(props) {
                     )
                 }}
             />
-        </View >
+        </View>
     )
 }
 

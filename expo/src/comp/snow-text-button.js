@@ -7,10 +7,8 @@ import SnowText from './snow-text'
 
 const styles = {
     wrapper: {
-        flex: 1,
         margin: 10,
-        padding: 10,
-        paddingTop: 15,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
@@ -32,12 +30,9 @@ const styles = {
         fontSize: 16,
         padding: 0,
         margin: 0,
-        textAlign: 'center'
+        textAlign: 'center',
+        height: 15
     },
-}
-
-if (Platform.OS === 'android') {
-    styles.text.height = 30
 }
 
 export function SnowTextButton(props) {
@@ -50,16 +45,16 @@ export function SnowTextButton(props) {
         }
     }, [])
 
-    const style = [styles.wrapper]
+    const wrapperStyle = [styles.wrapper]
     if (props.disabled) {
-        style.push(styles.disabled)
+        wrapperStyle.push(styles.disabled)
     }
     else {
         if (props.selected) {
-            style.push(styles.selected)
+            wrapperStyle.push(styles.selected)
         }
         if (focused) {
-            style.push(styles.focused)
+            wrapperStyle.push(styles.focused)
         }
     }
 
@@ -77,7 +72,7 @@ export function SnowTextButton(props) {
             onLongPress={props.onLongPress}
             onFocus={() => { setFocused(true) }}
             onBlur={() => { setFocused(false) }}
-            style={style}
+            style={wrapperStyle}
             disabled={props.disabled}>
             <SnowText style={textStyle}>{props.title}</SnowText>
         </TouchableOpacity>

@@ -1,11 +1,5 @@
 import C from '../../common'
 
-const styles = {
-    fill: {
-        flex: 1,
-        backgroundColor: 'black'
-    }
-}
 
 export default function AuthPageLayout() {
     const { isLoading, routes, session } = C.useAppContext();
@@ -19,8 +13,6 @@ export default function AuthPageLayout() {
     }
 
     return (
-        <C.View style={styles.fill}>
-            <C.Slot style={styles.fill} />
-        </C.View>
+        <C.Slot />
     )
 }

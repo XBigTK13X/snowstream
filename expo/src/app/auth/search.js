@@ -17,19 +17,19 @@ export default function SearchPage() {
     let grids = null
     if (searchResults) {
         grids = (
-            <C.View>
+            <C.FillView>
                 <C.SnowPosterGrid title="Movies" items={searchResults.movies} />
                 <C.SnowPosterGrid title="Shows" items={searchResults.shows} />
                 <C.SnowScreencapGrid title="Episodes" items={searchResults.episodes} />
-            </C.View>
+            </C.FillView>
         )
     }
 
     return (
-        <C.View>
+        <C.FillView>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput value={queryText} onChangeText={setQueryText} onSubmit={executeQuery} />
             {grids}
-        </C.View>
+        </C.FillView>
     )
 }

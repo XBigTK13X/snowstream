@@ -2,15 +2,11 @@ import C from '../../../common'
 
 const styles = {
     columns: {
-        flexBasis: '100%',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'center',
-        flex: 1
+        justifyContent: 'center'
     },
     column: {
-        flex: 3,
-        flexBasis: '33%'
     }
 }
 
@@ -63,12 +59,12 @@ export function ContinueWatchingListPage(props) {
             )
         })
         return (
-            <C.View>
+            <C.FillView>
                 <C.View style={styles.columns}>
                     {tabButtons}
                 </C.View>
                 <C.SnowPosterGrid disableWatched items={tabItems} />
-            </C.View>
+            </C.FillView>
         )
     }
     return <C.SnowLabel>Loading the continue watching list. This will take a few seconds.</C.SnowLabel>

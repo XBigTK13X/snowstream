@@ -1,4 +1,4 @@
-import { Platform, View } from 'react-native'
+import FillView from './fill-view'
 import SnowGrid from './snow-grid'
 import SnowImageButton from './snow-image-button'
 import SnowLabel from './snow-label'
@@ -32,10 +32,15 @@ export function SnowPosterGrid(props) {
         />
     }
     return (
-        <View>
+        <FillView>
             {props.title ? <SnowLabel>{props.title} ({props.items.length})</SnowLabel> : null}
-            <SnowGrid items={props.items} renderItem={renderItem} itemsPerRow={8} />
-        </View>
+            <SnowGrid
+                mainGrid
+                items={props.items}
+                renderItem={renderItem}
+                itemsPerRow={7}
+            />
+        </FillView>
     )
 }
 

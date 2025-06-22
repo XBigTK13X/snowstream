@@ -23,6 +23,7 @@ export var routes = {
     continueWatching: '/auth/list/continue-watching',
     episodeDetails: '/auth/details/episode',
     episodeList: '/auth/list/episode',
+    info: '/info',
     keepsakeDetails: '/auth/details/keepsake',
     keepsakeList: '/auth/list/keepsake',
     landing: '/auth/landing',

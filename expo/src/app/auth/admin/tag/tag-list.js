@@ -17,7 +17,6 @@ export default function TagListPage() {
             return (
                 <C.SnowTextButton
                     shouldFocus={itemIndex === 0}
-                    style={C.Styles.box}
                     title={item.name}
                     onPress={routes.func(routes.admin.tagEdit, { tagId: item.id })}
                 />

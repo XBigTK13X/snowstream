@@ -99,10 +99,8 @@ export function WatchableListPage(props) {
             itemsPerRow = 3
         }
 
-        console.log({ showPlaylisted })
-
         return (
-            <C.View>
+            <C.FillView>
                 <C.SnowText>{pageTitle}</C.SnowText>
                 <C.SnowGrid itemsPerRow={itemsPerRow}>
                     {(togglePlaylistedEnabled && props.toggleShowPlaylisted) ?
@@ -126,8 +124,12 @@ export function WatchableListPage(props) {
                             }}
                         /> : null}
                 </C.SnowGrid>
-                <Grid shouldFocus onPress={gotoItem} onLongPress={toggleWatchedItem} items={items} />
-            </C.View >
+                <Grid
+                    shouldFocus
+                    onPress={gotoItem}
+                    onLongPress={toggleWatchedItem}
+                    items={items} />
+            </C.FillView>
         )
     }
     return <C.SnowText>Loading items from shelf {localParams.shelfId}.</C.SnowText>

@@ -24,7 +24,6 @@ export default function ShelfListPage() {
             return (
                 <C.SnowTextButton
                     shouldFocus={itemIndex === 0}
-                    style={C.Styles.box}
                     title={destination.name}
                     onPress={routes.func(routes.admin.shelfEdit, { shelfId: destination.id })}
                 />

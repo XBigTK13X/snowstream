@@ -38,13 +38,13 @@ export default function PlaylistDetailsPage() {
     }
 
     return (
-        <C.View>
+        <C.FillView>
             <C.SnowText>Found {playlistItems.length} items from playlist {tagName}.</C.SnowText>
             <C.SnowGrid itemsPerRow={2}>
                 <C.SnowTextButton title="Watch All" onPress={watchAll} />
                 <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
             </C.SnowGrid>
             <C.SnowPosterGrid items={playlistItems} />
-        </C.View>
+        </C.FillView>
     )
 }

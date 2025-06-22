@@ -19,7 +19,6 @@ export default function StreamSourceListPage() {
             return (
                 <C.SnowTextButton
                     shouldFocus={itemIndex === 0}
-                    style={C.Styles.box}
                     title={streamSource.name}
                     onPress={routes.func(routes.admin.streamSourceEdit, {
                         streamSourceId: streamSource.id,

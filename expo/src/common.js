@@ -19,8 +19,6 @@ import {
     Linking,
     Modal,
     Platform,
-    ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     TVFocusGuideView,
@@ -35,6 +33,8 @@ import { useDebouncedCallback } from 'use-debounce';
 import util from './util'
 
 import { useAppContext } from './app-context'
+
+import FillView from './comp/fill-view'
 
 import SnowAdminButton from './comp/snow-admin-button'
 import SnowImageButton from './comp/snow-image-button'
@@ -53,15 +53,6 @@ import SnowTrackSelector from './comp/snow-track-selector'
 import SnowTextButton from './comp/snow-text-button'
 import SnowUpdateMediaButton from './comp/snow-update-media-button'
 
-const Styles = {
-    box: {
-        padding: 5,
-        margin: 5,
-        width: '100%',
-        height: '100%',
-    },
-}
-
 const getWindowHeight = () => {
     return Dimensions.get('window').height
 }
@@ -79,6 +70,7 @@ export default {
     useNavigation,
     useRouter,
     util,
+    FillView,
     Image,
     Link,
     Linking,
@@ -86,7 +78,6 @@ export default {
     Platform,
     React,
     Redirect,
-    ScrollView,
     Slot,
     SnowAdminButton,
     SnowDropdown,
@@ -105,8 +96,6 @@ export default {
     SnowVideoControls,
     SnowVideoPlayer,
     Stack,
-    Styles,
-    StyleSheet,
     Text,
     TouchableOpacity,
     TVFocusGuideView,
