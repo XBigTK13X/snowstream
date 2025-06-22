@@ -42,8 +42,11 @@ def sql_row_to_api_result(row,load_episode_files,watch_group):
     episode.episode_order_counter = row.episode_order
     episode.episode_end_order_counter = row.episode_end_order
     episode.name = row.episode_name
+    episode.watch_count = dm.Stub()
+    episode.watch_count.amount = 0
     if watch_group:
         episode.watched = bool(row.episode_watched_list)
+        episode.watch_count.amount = row.episode_watch_count_list[0] if row.episode_watch_count_list else 0
 
     episode.season = dm.Stub()
     episode.season.model_kind = 'show_season'
@@ -180,6 +183,7 @@ def get_show_episode_list(
         episode.episode_order_counter as episode_order,
         episode.episode_end_order_counter as episode_end_order,
         {"array_remove(array_agg(watched.id),NULL) as episode_watched_list," if watch_group else ""}
+        {"array_remove(array_agg(watch_count.amount),NULL) as episode_watch_count_list," if watch_group else ""}
 
         season.id as season_id,
         season.season_order_counter as season_order,
@@ -261,6 +265,11 @@ def get_show_episode_list(
         left join tag as season_tag on season_tag.id = sst.tag_id
         left join show_episode_tag as setag on setag.show_episode_id = episode.id
         left join tag as episode_tag on episode_tag.id = setag.tag_id
+        {f"""
+        left join watch_count as watch_count on
+            watch_count.client_device_user_id in ({watch_group})
+            and watch_count.show_episode_id = episode.id
+        """ if watch_group else ""}
 
         where 1=1
         {f" and watched.id is null" if only_unwatched and watch_group else ''}

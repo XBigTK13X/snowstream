@@ -96,14 +96,14 @@ def get_playing_queue(
             episodes = [xx for xx in episodes if xx.season.season_order_counter > 0]
             if shuffle:
                 random.shuffle(episodes)
-                episodes = sorted(episodes, key=lambda xx:xx.watch_count.amount)
+                episodes = sorted(episodes, key=lambda xx:xx.watch_count.amount if xx.watch_count else 0)
             length = len(episodes)
             queue_content = ','.join([f'e-{xx.id}' for xx in episodes])
         elif show_season_id:
             episodes = db_episode.get_show_episode_list(ticket=ticket, shelf_id=shelf_id, show_season_id=show_season_id)
             if shuffle:
                 random.shuffle(episodes)
-                episodes = sorted(episodes, key=lambda xx:xx.watch_count.amount)
+                episodes = sorted(episodes, key=lambda xx:xx.watch_count.amount if xx.watch_count else 0)
             length = len(episodes)
             queue_content = ','.join([f'e-{xx.id}' for xx in episodes])
         elif tag_id:
@@ -119,7 +119,7 @@ def get_playing_queue(
                             queue_entries.append(episode)
             if shuffle:
                 random.shuffle(queue_entries)
-                queue_entries = sorted(queue_entries, key=lambda xx:xx.watch_count.amount)
+                queue_entries = sorted(queue_entries, key=lambda xx:xx.watch_count.amount if xx.watch_count else 0)
             items = []
             for entry in queue_entries:
                 items.append(f'm-{entry.id}' if entry.model_kind == 'movie' else f'e-{entry.id}')

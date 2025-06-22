@@ -86,7 +86,8 @@ routes.gotoItem = (item) => {
     else if (item.model_kind === 'show') {
         routes.goto(routes.seasonList, {
             shelfId: item.shelf.id,
-            showId: item.id
+            showId: item.id,
+            showName: item.name
         })
     }
     else if (item.model_kind === 'show_season') {

@@ -81,6 +81,7 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
             .join(dm.MovieShelf)
             .options(sorm.joinedload(dm.Movie.shelf))
             .options(sorm.joinedload(dm.Movie.tags))
+            .options(sorm.joinedload(dm.Movie.watch_count))
             .order_by(dm.Movie.release_year)
             .all()
         )

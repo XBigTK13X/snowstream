@@ -8,6 +8,7 @@ import SnowText from './snow-text'
 const styles = {
     wrapper: {
         margin: 10,
+        padding: 10,
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',
