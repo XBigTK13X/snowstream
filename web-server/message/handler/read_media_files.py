@@ -17,7 +17,7 @@ def handle(scope):
     elif scope.is_show():
         show = db.op.get_show_by_id(ticket=ticket,show_id=scope.target_id)
         metadata_files = show.metadata_files
-        seasons = db.op.get_show_season_list_by_show_id(ticket=ticket,show_Id=scope.target_id)
+        seasons = db.op.get_show_season_list_by_show_id(ticket=ticket,show_id=scope.target_id)
         for season in seasons:
             metadata_files += season.metadata_files
         episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=show.shelf.id,show_id=scope.target_id)
