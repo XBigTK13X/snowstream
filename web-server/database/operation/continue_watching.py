@@ -7,13 +7,13 @@ import sqlalchemy.orm as sorm
 
 import database.operation.shelf as db_shelf
 import database.operation.movie as db_movie
-import database.operation.show as db_show
-import database.operation.show_season as db_season
 import database.operation.show_episode as db_episode
 
 def get_continue_watching_list(ticket:dm.Ticket):
     with DbSession() as db:
         results = []
+        skip_movie = {}
+        in_progress = []
         movies_in_progress = (
             db.query(dm.WatchProgress)
             .filter(
@@ -27,16 +27,13 @@ def get_continue_watching_list(ticket:dm.Ticket):
             .all()
         )
         if movies_in_progress:
-            items = []
             for progress in movies_in_progress:
                 movie = dm.set_primary_images(progress.movie)
-                items.append(movie)
-            results.append({
-                'kind': 'movies_in_progress',
-                'name': 'Movies In Progress',
-                'items': items
-            })
+                skip_movie[movie.id] = True
+                in_progress.append(movie)
 
+
+        skip_episode = {}
         episodes_in_progress = (
             db.query(dm.WatchProgress)
             .filter(
@@ -51,14 +48,19 @@ def get_continue_watching_list(ticket:dm.Ticket):
             ).all()
         )
         if episodes_in_progress:
-            items = []
             for progress in episodes_in_progress:
-                episode.poster_image = episode.season.show.poster_image
-                items.append(episode)
+                episode = progress.show_episode
+                skip_episode[episode.id] = True
+                show = episode.season.show
+                show = dm.set_primary_images(show)
+                progress.show_episode.poster_image = show.poster_image
+                in_progress.append(episode)
+
+        if in_progress:
             results.append({
-                'kind': 'episodes_in_progress',
-                'name': 'Episodes In Progress',
-                'items': items
+                'kind': 'in_progress',
+                'name': 'In Progress',
+                'items': in_progress
             })
 
         unwatched_movies = []
@@ -76,7 +78,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 )
                 if not movies:
                     continue
-                unwatched_movies += movies
+                unwatched_movies += [xx for xx in movies if not xx.id in skip_movie]
             if shelf.kind == 'Shows':
                 first_lookup = {}
                 first_episodes = db_episode.get_show_episode_list(
@@ -98,6 +100,8 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     load_episode_files=False
                 )
                 for episode in unwatched_episodes:
+                    if episode.id in skip_episode:
+                        continue
                     first_episode = first_lookup[episode.season.show.id]
                     if first_episode.id == episode.id:
                         new_shows.append(episode)
