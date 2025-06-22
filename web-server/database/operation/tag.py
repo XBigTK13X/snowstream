@@ -39,7 +39,8 @@ def get_tag_list(ticket:dm.Ticket=None):
     with DbSession() as db:
         query = db.query(dm.Tag)
         if ticket != None and ticket.tag_ids != None:
-            query = query.filter(dm.Tag.id.in_(ticket.tag_ids)).order_by(dm.Tag.name)
+            query = query.filter(dm.Tag.id.in_(ticket.tag_ids))
+        query = query.order_by(dm.Tag.name)
         return query.all()
 
 def delete_tag_by_id(tag_id:int):

@@ -42,10 +42,12 @@ def get_stream_source_by_id(ticket:dm.Ticket,stream_source_id: int):
             db.query(dm.StreamSource)
             .options(sorm.joinedload(dm.StreamSource.streamables))
             .options(sorm.joinedload(dm.StreamSource.tags))
-            .filter(dm.StreamSource.id == stream_source_id).first()
+            .filter(dm.StreamSource.id == stream_source_id)
+            .first()
         )
         if not ticket.is_allowed(tag_provider=stream_source.get_tag_ids):
             return None
+        stream_source.streamables = sorted(stream_source.streamables,key=lambda xx:xx.name)
         return stream_source
 
 def get_stream_source_by_url(url: str):
