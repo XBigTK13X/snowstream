@@ -134,7 +134,7 @@ def get_show_list_by_shelf(
                 continue
             if not ticket.is_allowed(tag_provider=show.get_tag_ids):
                 continue
-            if not show_playlisted and any('Playlist:' in xx.name for xx in show.tags):
+            if show_playlisted == False and any('Playlist:' in xx.name for xx in show.tags):
                 continue
             show = dm.set_primary_images(show)
             if all_watched or show.id in watch_lookup:

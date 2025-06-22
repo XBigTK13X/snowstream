@@ -112,7 +112,11 @@ export default function MediaTracksPage(props) {
                 <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
                 <C.SnowGrid itemsPerRow={3}>
-                    <C.SnowTextButton title="Play" onPress={routes.func(routes.playMedia, combinedPlayDestination)} />
+                    <C.SnowTextButton
+                        shouldFocus
+                        title="Play"
+                        onPress={routes.func(routes.playMedia, combinedPlayDestination)}
+                    />
                     {mainFeatureButton}
                     <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
                     <C.SnowTextButton title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
