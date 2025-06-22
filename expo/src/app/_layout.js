@@ -46,7 +46,7 @@ function Header() {
             <C.SnowGrid>
                 <C.SnowTextButton title="Home" onPress={routes.func(routes.landing)} />
                 <C.SnowTextButton title="Sign Out" onPress={routes.func(routes.signOut)} />
-                {isAdmin ? <C.SnowTextButton title={entry.title} onPress={routes.func(routes.admin.dashboard)} /> : null}
+                {isAdmin ? <C.SnowTextButton title="Admin" onPress={routes.func(routes.admin.dashboard)} /> : null}
                 <C.SnowTextButton title="Info" onPress={routes.func(routes.info)} />
             </C.SnowGrid>
         </C.View>
