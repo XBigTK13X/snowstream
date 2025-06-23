@@ -26,7 +26,7 @@ export default function JobDetailsPage() {
             <C.SnowText>{job.input_json ? job.input_json : 'None'}</C.SnowText>
             <C.SnowLabel>Logs</C.SnowLabel>
             {job.logs.map((log, logIndex) => {
-                return <C.SnowText key={logIndex} stretch>{log}</C.SnowText>
+                return <C.SnowText key={logIndex}>{log}</C.SnowText>
             })}
         </C.View>
     )

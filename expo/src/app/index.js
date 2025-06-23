@@ -93,7 +93,7 @@ export default function SignInPage() {
         }
         userList = (
             <C.View>
-                <C.SnowHeader>Select a user to login.</C.SnowHeader>
+                <C.SnowLabel>Select a user to login.</C.SnowLabel>
                 <C.SnowGrid items={users} renderItem={renderItem} />
             </C.View>
 

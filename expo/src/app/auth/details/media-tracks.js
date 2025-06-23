@@ -107,11 +107,9 @@ export default function MediaTracksPage(props) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
         return (
-            <C.View>
+            <C.FillView scroll>
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
-                <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
-                <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
-                <C.SnowGrid itemsPerRow={3}>
+                <C.SnowGrid itemsPerRow={3} substantial>
                     <C.SnowTextButton
                         shouldFocus
                         title="Play"
@@ -134,16 +132,19 @@ export default function MediaTracksPage(props) {
                             return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
                         }} />
                 </C.SnowGrid>
-                {versionPicker}
-                {extraPicker}
-                <C.SnowLabel>Video File: {videoFile.name}</C.SnowLabel>
-                <C.SnowTrackSelector
-                    tracks={videoFile.tracks.inspection.scored_tracks}
-                    selectTrack={selectTrack}
-                    audioTrack={audioTrack}
-                    subtitleTrack={subtitleTrack}
-                />
-            </C.View>
+                <C.View scroll>
+                    {versionPicker}
+                    {extraPicker}
+                    <C.SnowTrackSelector
+                        tracks={videoFile.tracks.inspection.scored_tracks}
+                        selectTrack={selectTrack}
+                        audioTrack={audioTrack}
+                        subtitleTrack={subtitleTrack}
+                    />
+                </C.View>
+                <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
+                <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
+            </C.FillView>
         )
     }
     return (

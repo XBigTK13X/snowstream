@@ -3,25 +3,18 @@ import { Text } from 'react-native'
 import { StaticStyle } from '../snow-style'
 
 const textStyle = {
-    color: StaticStyle.color.text,
-    margin: 10,
-    padding: 10,
-    height: StaticStyle.textBox.normal.height
+    color: StaticStyle.color.text
 }
 
-const dynamicHeightStyle = {
-    color: StaticStyle.color.text,
+const normalStyle = {
     margin: 10,
     padding: 10
 }
 
 export function SnowText(props) {
-    let styles = []
-    if (props.stretch) {
-        styles.push(dynamicHeightStyle)
-    }
-    else {
-        styles.push(textStyle)
+    let styles = [textStyle]
+    if (!props.shrink) {
+        styles.push(normalStyle)
     }
     if (props.style) {
         styles.push(props.style)

@@ -58,6 +58,7 @@ export function SnowGrid(props) {
     return (
         <View style={gridStyle}>
             <FlatList
+                disableVirtualization={props.substantial}
                 numColumns={itemsPerRow}
                 contentContainerStyle={styles.list}
                 columnWrapperStyle={itemsPerRow === 1 ? null : styles.listColumn}

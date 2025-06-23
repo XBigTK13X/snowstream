@@ -5,6 +5,7 @@ import Slider from '@react-native-community/slider';
 import util from '../util'
 import { useAppContext } from '../app-context'
 
+import FillView from './fill-view'
 import SnowTrackSelector from './snow-track-selector'
 import SnowText from './snow-text';
 import SnowTextButton from './snow-text-button'
@@ -53,7 +54,7 @@ export default function SnowVideoControls(props) {
     const durationDisplay = util.secondsToTimestamp(props.durationSeconds)
     return (
         (
-            <View style={styles.rows}>
+            <FillView style={styles.rows}>
                 <SnowText>{props.videoTitle}</SnowText>
                 <Slider
                     style={styles.row}
@@ -82,7 +83,7 @@ export default function SnowVideoControls(props) {
                     audioTrack={props.audioTrack}
                     subtitleTrack={props.subtitleTrack}
                 />
-            </View >
+            </FillView >
         )
     )
 }

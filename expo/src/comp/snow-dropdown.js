@@ -31,7 +31,7 @@ export function SnowDropdown(props) {
             onPress={() => { choose(item.index ? item.index : itemIndex) }} />
     }
 
-    return <SnowGrid items={props.options} renderItem={renderItem} />
+    return <SnowGrid substantial items={props.options} renderItem={renderItem} />
 }
 
 export default SnowDropdown

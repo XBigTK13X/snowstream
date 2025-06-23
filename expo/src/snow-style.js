@@ -14,11 +14,6 @@ export const StaticStyle = {
     fontSize: {
         header: 40,
         label: 26
-    },
-    textBox: {
-        normal: {
-            height: 50
-        }
     }
 }
 

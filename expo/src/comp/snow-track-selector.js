@@ -1,6 +1,5 @@
 import React from 'react'
 import { View } from 'react-native'
-import SnowHeader from './snow-header'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
 
@@ -12,7 +11,9 @@ const styles = {
         alignItems: 'flex-start'
     },
     row: {
-        flexBasis: '100%'
+        flexBasis: '100%',
+        margin: 0,
+        padding: 0
     },
     columns: {
         flexBasis: '100%',
@@ -36,9 +37,9 @@ function TrackList(props) {
     }
     return (
         <View style={styles.rows}>
-            <SnowHeader style={styles.row}>
+            <SnowText style={styles.row}>
                 {props.title} ({props.tracks.length})
-            </SnowHeader>
+            </SnowText>
             <View style={styles.columns}>
                 {props.tracks.map((track, trackKey) => {
                     return (

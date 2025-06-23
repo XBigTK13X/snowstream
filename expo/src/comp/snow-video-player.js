@@ -20,8 +20,7 @@ const styles = {
         backgroundColor: StaticStyle.color.background,
     },
     videoControls: {
-        width: windowWidth,
-        height: windowHeight
+        flex: 1
     },
     dark: {
         backgroundColor: StaticStyle.color.background,
@@ -202,19 +201,17 @@ export default function SnowVideoPlayer(props) {
                 visible={controlsVisible}
                 transparent
             >
-                <View style={styles.videoControls}>
-                    <SnowVideoControls
-                        videoTitle={props.videoTitle}
-                        hideControls={hideControls}
-                        selectTrack={props.selectTrack}
-                        audioTrack={props.audioIndex}
-                        subtitleTrack={props.subtitleIndex}
-                        tracks={props.tracks}
-                        progressSeconds={progressSeconds}
-                        durationSeconds={props.durationSeconds}
-                        onSeek={onSeek}
-                    />
-                </View>
+                <SnowVideoControls
+                    videoTitle={props.videoTitle}
+                    hideControls={hideControls}
+                    selectTrack={props.selectTrack}
+                    audioTrack={props.audioIndex}
+                    subtitleTrack={props.subtitleIndex}
+                    tracks={props.tracks}
+                    progressSeconds={progressSeconds}
+                    durationSeconds={props.durationSeconds}
+                    onSeek={onSeek}
+                />
             </Modal>
         </View >
     )
