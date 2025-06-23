@@ -25,11 +25,11 @@ export default function UserListPage() {
 
         }
         return (
-            <C.View >
+            <C.FillView scroll >
                 <C.SnowTextButton title="Create New User" onPress={routes.func(routes.admin.userEdit)} />
                 <C.SnowText>{users.length} users found</C.SnowText>
                 <C.SnowGrid items={users} renderItem={renderItem} />
-            </C.View>
+            </C.FillView>
         )
     }
 

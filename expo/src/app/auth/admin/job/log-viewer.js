@@ -25,13 +25,13 @@ export default function LogViewerPage() {
     }
 
     return (
-        <C.View>
+        <C.FillView scroll>
             <C.SnowGrid items={logPaths} renderItem={(item, itemIndex) => {
                 return <C.SnowTextButton title={item} onPress={() => {
                     loadLog(itemIndex)
                 }} />
             }} />
             <C.SnowText>{logContent}</C.SnowText>
-        </C.View>
+        </C.FillView>
     )
 }

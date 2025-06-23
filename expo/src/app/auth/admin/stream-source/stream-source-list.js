@@ -27,11 +27,11 @@ export default function StreamSourceListPage() {
             )
         }
         return (
-            <C.View >
+            <C.FillView scroll >
                 <C.SnowTextButton title="Create New Stream Source" onPress={routes.func(routes.admin.streamSourceEdit)} />
                 <C.SnowText>{streamSources.length} stream sources found</C.SnowText>
                 <C.SnowGrid items={streamSources} renderItem={renderItem} />
-            </C.View>
+            </C.FillView>
         )
     }
 

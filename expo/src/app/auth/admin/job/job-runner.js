@@ -49,7 +49,7 @@ export default function ShelfEditPage() {
     }
 
     return (
-        <C.View>
+        <C.FillView scroll>
             <C.SnowGrid
                 itemsPerRow={3}
                 items={buttons}
@@ -74,6 +74,6 @@ export default function ShelfEditPage() {
                 <C.SnowLabel>Update Metadata</C.SnowLabel>
                 <C.SnowInput onChangeText={setUpdateMetadata} value={updateMetadata} />
             </C.SnowGrid>
-        </C.View>
+        </C.FillView>
     )
 }

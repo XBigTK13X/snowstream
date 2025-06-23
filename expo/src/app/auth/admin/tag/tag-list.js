@@ -23,11 +23,11 @@ export default function TagListPage() {
             )
         }
         return (
-            <C.View >
+            <C.FillView scroll >
                 <C.SnowTextButton title="Create New Tag" onPress={routes.func(routes.admin.tagEdit)} />
                 <C.SnowText>{tags.length} tags found</C.SnowText>
                 <C.SnowGrid items={tags} renderItem={renderItem} />
-            </C.View>
+            </C.FillView>
         )
     }
 

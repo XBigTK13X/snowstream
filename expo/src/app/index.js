@@ -59,24 +59,24 @@ export default function SignInPage() {
     let selectServer = null
     if (users && user && user.has_password) {
         passwordForm = (
-            <C.View>
+            <C.FillView>
                 <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
                 <C.SnowInput secureTextEntry onSubmit={login} shouldFocus onChangeText={setPassword} value={password} />
                 <C.SnowGrid itemsPerRow={2} >
                     <C.SnowTextButton title="Login" onPress={login} />
                     <C.SnowTextButton title="Cancel" onPress={cancel} />
                 </C.SnowGrid>
-            </C.View>
+            </C.FillView>
         )
     } else {
         selectServer = (
-            <C.View>
+            <C.FillView>
                 <C.SnowLabel>Choose a server to use.</C.SnowLabel>
                 <C.SnowGrid itemsPerRow={4} >
                     <C.SnowTextButton title="Beast" onPress={() => { setUsers(null); setWebApiUrl(config.beastWebApiUrl) }} />
                     <C.SnowTextButton title="Vondoom" onPress={() => { setUsers(null); setWebApiUrl(config.vondoomWebApiUrl) }} />
                 </C.SnowGrid>
-            </C.View>
+            </C.FillView>
         )
     }
 
@@ -92,19 +92,19 @@ export default function SignInPage() {
             />
         }
         userList = (
-            <C.View>
+            <C.FillView>
                 <C.SnowLabel>Select a user to login.</C.SnowLabel>
                 <C.SnowGrid items={users} renderItem={renderItem} />
-            </C.View>
+            </C.FillView>
 
         )
     }
     return (
-        <C.View>
+        <C.FillView>
             {userList}
             {selectServer}
             {passwordForm}
             <C.SnowLabel>{errors ? 'Errors: ' + JSON.stringify(errors) : ""}</C.SnowLabel>
-        </C.View>
+        </C.FillView>
     )
 }
