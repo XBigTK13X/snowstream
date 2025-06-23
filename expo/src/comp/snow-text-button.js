@@ -66,7 +66,7 @@ export function SnowTextButton(props) {
     }
 
     let textStyle = [styles.text]
-    if (props.title.length > 20) {
+    if (props.title.length > 16) {
         textStyle.push(styles.smallText)
     }
 

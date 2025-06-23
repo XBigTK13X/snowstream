@@ -1,10 +1,12 @@
 import { TextInput } from 'react-native'
 
+import { StaticStyle } from '../snow-style'
+
 export function SnowInput(props) {
     return <TextInput
         style={{
             border: 'solid white 2px',
-            backgroundColor: 'rgb(219, 158, 44)',
+            backgroundColor: StaticStyle.color.core,
             color: 'white',
             margin: 10,
             padding: 10

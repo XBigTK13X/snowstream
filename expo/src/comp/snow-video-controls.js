@@ -3,6 +3,7 @@ import { Modal, View } from 'react-native'
 import Slider from '@react-native-community/slider';
 
 import util from '../util'
+import { StaticStyle } from '../snow-style'
 import { useAppContext } from '../app-context'
 
 import FillView from './fill-view'
@@ -21,7 +22,7 @@ const styles = {
         flexDirection: 'row',
         flexWrap: 'wrap',
         padding: 60,
-        backgroundColor: 'rgba(0,0,0,0.6)'
+        backgroundColor: StaticStyle.color.transparentDark
     },
 
     row: {
@@ -47,7 +48,7 @@ const styles = {
 
     prompt: {
         flex: 1,
-        backgroundColor: 'rgb(0,0,0)'
+        backgroundColor: StaticStyle.color.background
     }
 }
 

@@ -9,7 +9,8 @@ export const StaticStyle = {
         hover: 'rgb(119, 139, 255)',
         core: 'rgb(219, 158, 44)',
         coreDark: 'rgb(136, 98, 27)',
-        outlineDark: 'rgb(63, 63, 63)'
+        outlineDark: 'rgb(63, 63, 63)',
+        transparentDark: 'rgba(0,0,0,0.6)'
     },
     fontSize: {
         header: 40,
