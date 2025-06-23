@@ -36,6 +36,7 @@ export default function SnowVideoPlayer(props) {
     const [progressSeconds, setProgressSeconds] = React.useState(null)
     const [seekToSeconds, setSeekToSeconds] = React.useState(0)
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
+    const [logs, setLogs] = React.useState([])
     const router = useRouter()
 
 
@@ -54,6 +55,16 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
+    const addLog = (logEvent) => {
+        try {
+            logs.push(JSON.stringify(logEvent))
+            setLogs(logs)
+        }
+        catch {
+
+        }
+    }
+
     const onVideoUpdate = (info) => {
         if (config.debugVideoPlayer) {
             console.log({ info })
@@ -66,6 +77,8 @@ export default function SnowVideoPlayer(props) {
                     if (props.onProgress) {
                         props.onProgress(info.data.currentTime)
                     }
+                } else {
+                    addLog(info)
                 }
                 if (info.data.playbackFinished) {
                     if (props.onComplete) {
@@ -75,7 +88,7 @@ export default function SnowVideoPlayer(props) {
             }
         }
 
-        if (info && info.kind && info.kind === 'mpvevent') {
+        else if (info && info.kind && info.kind === 'mpvevent') {
             let mpvEvent = info.libmpvEvent
             if (mpvEvent.property) {
                 if (mpvEvent.property === 'time-pos') {
@@ -84,6 +97,9 @@ export default function SnowVideoPlayer(props) {
                         props.onProgress(mpvEvent.value)
                     }
                 }
+                else {
+                    addLog(info)
+                }
                 if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
                     if (props.onComplete) {
                         props.onComplete()
@@ -91,11 +107,19 @@ export default function SnowVideoPlayer(props) {
                 }
             }
         }
-        if (info && info.kind && info.kind === 'nullevent') {
+
+        else if (info && info.kind && info.kind === 'nullevent') {
             const nullEvent = info.nullEvent
             if (nullEvent.progress) {
                 setProgressSeconds(nullEvent.progress)
             }
+            else {
+                addLog(info)
+            }
+        }
+
+        else {
+            addLog(info)
         }
     }
 
@@ -103,6 +127,8 @@ export default function SnowVideoPlayer(props) {
         if (config.debugVideoPlayer) {
             console.log({ err })
         }
+
+        addLog(err)
 
         if (props.onError) {
             if (err && err.kind && err.kind == 'rnv') {
@@ -212,6 +238,7 @@ export default function SnowVideoPlayer(props) {
                     progressSeconds={progressSeconds}
                     durationSeconds={props.durationSeconds}
                     onSeek={onSeek}
+                    logs={logs}
                 />
             </Modal>
         </View >

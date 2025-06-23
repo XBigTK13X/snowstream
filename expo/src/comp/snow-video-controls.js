@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { Modal, View } from 'react-native'
 import Slider from '@react-native-community/slider';
 
 import util from '../util'
@@ -9,6 +9,7 @@ import FillView from './fill-view'
 import SnowTrackSelector from './snow-track-selector'
 import SnowText from './snow-text';
 import SnowTextButton from './snow-text-button'
+import SnowGrid from './snow-grid'
 
 
 function Logs(props) {
@@ -42,6 +43,11 @@ const styles = {
     progress: {
         flexBasis: '100%',
         textAlign: 'center'
+    },
+
+    prompt: {
+        flex: 1,
+        backgroundColor: 'rgb(0,0,0)'
     }
 }
 
@@ -49,9 +55,27 @@ export default function SnowVideoControls(props) {
 
     const { routes } = useAppContext()
 
+    const [showLogs, setShowLogs] = React.useState(false)
+
     const progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
     const progressDisplay = util.secondsToTimestamp(props.progressSeconds)
     const durationDisplay = util.secondsToTimestamp(props.durationSeconds)
+
+    if (showLogs) {
+        return (
+            <Modal style={styles.prompt}>
+                <View style={styles.prompt}>
+                    <SnowGrid itemsPerRow={1}>
+                        <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
+                    </SnowGrid>
+                    <SnowGrid
+                        itemsPerRow={1}
+                        items={props.logs}
+                        renderItem={(log) => { return <SnowText shrink>{log}</SnowText> }} />
+                </View>
+            </Modal>
+        )
+    }
     return (
         (
             <FillView style={styles.rows}>
@@ -70,9 +94,7 @@ export default function SnowVideoControls(props) {
 
                 <View style={styles.columns}>
                     <SnowTextButton shouldFocus={true} title="Resume" onPress={props.hideControls} />
-                    {
-                        //<SnowTextButton title="Logs" onPress={props.hideControls} />
-                    }
+                    <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
                     <SnowTextButton title="Stop" onPress={routes.funcBack()} />
                 </View>
 

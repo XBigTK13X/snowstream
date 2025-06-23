@@ -42,11 +42,15 @@ function TrackList(props) {
             </SnowText>
             <View style={styles.columns}>
                 {props.tracks.map((track, trackKey) => {
+                    let display = track.display
+                    if (display && display.length > 30) {
+                        display = display.substring(0, 30) + '...'
+                    }
                     return (
                         <SnowTextButton
                             key={trackKey}
                             selected={track.relative_index === props.activeTrack}
-                            title={`${track.display} [${track.relative_index}]`}
+                            title={`${display} [${track.relative_index}]`}
                             onPress={() => { props.selectTrack(track) }}
                         />
                     )
