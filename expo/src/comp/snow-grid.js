@@ -58,7 +58,6 @@ export function SnowGrid(props) {
     return (
         <View style={gridStyle}>
             <FlatList
-                key={itemsPerRow}
                 keyExtractor={(item) => { return item.id }}
                 numColumns={itemsPerRow}
                 contentContainerStyle={styles.list}
