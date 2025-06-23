@@ -63,8 +63,9 @@ const styles = {
     },
     text: {
         height: 80,
-        color: StaticStyle.color.outlineDark,
+        color: StaticStyle.color.textDark,
         fontSize: dyn.imageButton.fontSize.normal,
+        fontWeight: 'bold',
         padding: 0,
         margin: 0,
         marginTop: dyn.imageButton.textBox.marginTop,
@@ -86,8 +87,13 @@ export function SnowImageButton(props) {
     }, [])
 
     let fontStyle = [styles.text]
-    if (props.title && props.title.length > 20) {
+    let title = props.title
+    if (title && title.length > 20) {
         fontStyle.push(styles.smallText)
+    }
+
+    if (title && title.length > 40) {
+        title = title.substring(0, 40) + '...'
     }
 
     const wrapperStyle = [styles.wrapper]
@@ -100,14 +106,15 @@ export function SnowImageButton(props) {
         wrapperStyle.push(styles.wrapperSquare)
         imageStyle.push(styles.imageSquare)
     }
+
+    if (props.dull) {
+        wrapperStyle.push(styles.dull)
+    }
     if (props.selected) {
         wrapperStyle.push(styles.selected)
     }
     if (focused) {
         wrapperStyle.push(styles.focused)
-    }
-    if (props.dull) {
-        wrapperStyle.push(styles.dull)
     }
 
     let placeholder = props.wide ? missingScreencapImage : missingPosterImage
@@ -128,7 +135,7 @@ export function SnowImageButton(props) {
                 placeholder={{ uri: placeholder }}
                 contentFit="contain"
                 source={{ uri: props.imageUrl }} />
-            <SnowText style={fontStyle}>{props.title}</SnowText>
+            <SnowText style={fontStyle}>{title}</SnowText>
         </TouchableOpacity>
     )
 }

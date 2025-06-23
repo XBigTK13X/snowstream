@@ -26,14 +26,20 @@ export function SnowPosterGrid(props) {
             dull={!props.disableWatched && item.watched}
             shouldFocus={props.shouldFocus && itemIndex === 0}
             imageUrl={thumbnailUrl}
-            onPress={() => { props.onPress ? props.onPress(item) : routes.gotoItem(item) }}
+            onPress={() => {
+                props.onPress ? props.onPress(item) : routes.gotoItem(item)
+            }}
             onLongPress={longPress}
             title={item.name}
         />
     }
     return (
         <FillView>
-            {props.title ? <SnowLabel>{props.title} ({props.items.length})</SnowLabel> : null}
+            {props.title ?
+                <SnowLabel>
+                    {props.title} ({props.items.length})
+                </SnowLabel>
+                : null}
             <SnowGrid
                 mainGrid
                 items={props.items}

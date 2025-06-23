@@ -64,9 +64,6 @@ export function SnowGrid(props) {
                 contentContainerStyle={styles.list}
                 columnWrapperStyle={itemsPerRow === 1 ? null : styles.listColumn}
                 data={items}
-                onViewableItemsChanged={(items) => {
-                    console.log(items)
-                }}
                 renderItem={({ item, index, separators }) => {
                     return (
                         <View key={index} style={itemStyle}>

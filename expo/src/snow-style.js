@@ -4,11 +4,12 @@ export const StaticStyle = {
     color: {
         background: 'black',
         text: 'white',
+        textDark: 'rgb(22, 22, 22)',
         active: 'white',
-        hover: 'green',
+        hover: 'rgb(119, 139, 255)',
         core: 'rgb(219, 158, 44)',
         coreDark: 'rgb(136, 98, 27)',
-        outlineDark: '#272727'
+        outlineDark: 'rgb(63, 63, 63)'
     },
     fontSize: {
         header: 40,
