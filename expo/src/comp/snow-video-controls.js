@@ -13,10 +13,6 @@ import SnowTextButton from './snow-text-button'
 import SnowGrid from './snow-grid'
 
 
-function Logs(props) {
-    return <View></View>
-}
-
 const styles = {
     rows: {
         flexDirection: 'row',
@@ -64,7 +60,9 @@ export default function SnowVideoControls(props) {
 
     if (showLogs) {
         return (
-            <Modal style={styles.prompt}>
+            <Modal
+                style={styles.prompt}
+                onRequestClose={() => { setShowLogs(false) }}>
                 <View style={styles.prompt}>
                     <SnowGrid itemsPerRow={1}>
                         <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
@@ -73,6 +71,7 @@ export default function SnowVideoControls(props) {
                         itemsPerRow={1}
                         items={props.logs}
                         renderItem={(log) => { return <SnowText shrink>{log}</SnowText> }} />
+                    <SnowText style={{ marginBottom: 100 }}>End of logs</SnowText>
                 </View>
             </Modal>
         )

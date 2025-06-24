@@ -107,7 +107,7 @@ export default function MediaTracksPage(props) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
         return (
-            <C.FillView scroll>
+            <C.FillView>
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
                 <C.SnowGrid itemsPerRow={3} substantial>
                     <C.SnowTextButton
@@ -132,7 +132,7 @@ export default function MediaTracksPage(props) {
                             return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
                         }} />
                 </C.SnowGrid>
-                <C.View scroll>
+                <C.View>
                     {versionPicker}
                     {extraPicker}
                     <C.SnowTrackSelector

@@ -98,7 +98,9 @@ export default function SnowVideoPlayer(props) {
                     }
                 }
                 else {
-                    addLog(info)
+                    if (mpvEvent.property !== 'demuxer-cache-time') {
+                        addLog(info)
+                    }
                 }
                 if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
                     if (props.onComplete) {
@@ -226,6 +228,10 @@ export default function SnowVideoPlayer(props) {
             </Modal >
             <Modal
                 visible={controlsVisible}
+                onRequestClose={() => {
+                    setControlsVisible(false)
+                    setIsPlaying(true)
+                }}
                 transparent
             >
                 <SnowVideoControls

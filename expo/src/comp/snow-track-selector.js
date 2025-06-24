@@ -2,6 +2,8 @@ import React from 'react'
 import { View } from 'react-native'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
+import SnowGrid from './snow-grid'
+import FillView from './fill-view'
 
 const styles = {
     rows: {
@@ -15,32 +17,18 @@ const styles = {
         margin: 0,
         padding: 0
     },
-    columns: {
-        flexBasis: '100%',
-        flexDirection: 'row',
-        flexWrap: 'wrap'
-    },
-    column: {
-        flex: 3,
-        flexBasis: '33%'
-    }
 }
-styles.button = {
-    wrapper: styles.column,
-    container: styles.column,
-    button: styles.column
-}
-
 function TrackList(props) {
     if (!props.tracks) {
         return null
     }
     return (
-        <View style={styles.rows}>
+        <FillView style={styles.rows}>
             <SnowText style={styles.row}>
                 {props.title} ({props.tracks.length})
             </SnowText>
-            <View style={styles.columns}>
+
+            <SnowGrid itemsPerRow={5} gridStyle={styles.row}>
                 {props.tracks.map((track, trackKey) => {
                     let display = track.display
                     if (display && display.length > 30) {
@@ -55,8 +43,8 @@ function TrackList(props) {
                         />
                     )
                 })}
-            </View>
-        </View>
+            </SnowGrid>
+        </FillView>
     )
 }
 
@@ -65,7 +53,7 @@ export default function SnowTrackSelector(props) {
         return null
     }
     return (
-        <View style={styles.rows}>
+        <FillView style={styles.rows}>
             {props.tracks.audio.length ? <TrackList
                 kind="audio"
                 title="Audio"
@@ -80,6 +68,6 @@ export default function SnowTrackSelector(props) {
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}
             /> : null}
-        </View>
+        </FillView>
     )
 }

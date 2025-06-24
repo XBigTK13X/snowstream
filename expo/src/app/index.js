@@ -53,6 +53,11 @@ export default function SignInPage() {
         setUser(null)
     }
 
+    const chooseServer = (server, serverUrl) => {
+        setUsers(null)
+        setWebApiUrl(server, serverUrl)
+    }
+
 
     let passwordForm = null
     let userList = null
@@ -73,8 +78,8 @@ export default function SignInPage() {
             <C.FillView>
                 <C.SnowLabel>Choose a server to use.</C.SnowLabel>
                 <C.SnowGrid itemsPerRow={4} >
-                    <C.SnowTextButton title="Beast" onPress={() => { setUsers(null); setWebApiUrl(config.beastWebApiUrl) }} />
-                    <C.SnowTextButton title="Vondoom" onPress={() => { setUsers(null); setWebApiUrl(config.vondoomWebApiUrl) }} />
+                    <C.SnowTextButton title="Beast" onPress={() => { chooseServer('beast', config.beastWebApiUrl) }} />
+                    <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer('vondoom', config.vondoomWebApiUrl) }} />
                 </C.SnowGrid>
             </C.FillView>
         )
@@ -93,7 +98,7 @@ export default function SignInPage() {
         }
         userList = (
             <C.FillView>
-                <C.SnowLabel>Select a user to login.</C.SnowLabel>
+                <C.SnowLabel>Select a user to login to {apiClient.webApiUrl}.</C.SnowLabel>
                 <C.SnowGrid items={users} renderItem={renderItem} />
             </C.FillView>
 

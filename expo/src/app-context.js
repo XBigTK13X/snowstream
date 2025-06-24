@@ -22,25 +22,31 @@ const styles = {
 }
 
 const setStoredValue = (key, value) => {
-    if (Platform.OS === 'web') {
-        if (value === null) {
-            localStorage.removeItem(key);
-        } else {
-            localStorage.setItem(key, value);
-        }
-    } else {
-        if (value == null) {
-            SecureStore.deleteItemAsync(key);
-        } else {
-            if (value === false) {
-                value = 'false'
+    return new Promise(resolve => {
+        if (Platform.OS === 'web') {
+            if (value === null) {
+                localStorage.removeItem(key);
+                return resolve(true)
+            } else {
+                localStorage.setItem(key, value);
+                return resolve(true)
             }
-            if (value === true) {
-                value = 'true'
+        } else {
+            if (value == null) {
+                SecureStore.deleteItemAsync(key);
+                return resolve(true)
+            } else {
+                if (value === false) {
+                    value = 'false'
+                }
+                if (value === true) {
+                    value = 'true'
+                }
+                SecureStore.setItem(key, value);
+                return resolve(true)
             }
-            SecureStore.setItem(key, value);
         }
-    }
+    })
 }
 
 const getStoredValue = (key) => {
@@ -71,7 +77,8 @@ const AppContext = React.createContext({
     setMessageDisplay: (message) => null,
     signIn: () => null,
     signOut: () => null,
-    useStorageStage: () => null
+    useStorageStage: () => null,
+    setWebApiUrl: () => null
 });
 
 export function useAppContext() {
@@ -85,6 +92,7 @@ export function useAppContext() {
 export function AppContextProvider(props) {
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
+    const [apiClientKey, setApiClientKey] = React.useState(1)
     const [message, setMessage] = React.useState("All is well")
     const [session, setSession] = React.useState(null)
     const [isAdmin, setIsAdmin] = React.useState(false)
@@ -108,6 +116,7 @@ export function AppContextProvider(props) {
                     onApiError: onApiError,
                     onLogout: logout
                 }))
+                setApiClientKey((prev) => { return prev + 1 })
             }
         }
     })
@@ -118,9 +127,12 @@ export function AppContextProvider(props) {
         }
     }
 
-    const setWebApiUrl = (webApiUrl) => {
-        setStoredValue('webApiUrl', webApiUrl)
-        setApiClient(null)
+    const setWebApiUrl = (server, webApiUrl) => {
+        return setStoredValue('webApiUrl', webApiUrl)
+            .then(() => {
+                setApiClient(null)
+                setApiClientKey((prev) => { return prev + 1 })
+            })
     }
 
     const login = (username, password) => {
@@ -133,31 +145,39 @@ export function AppContextProvider(props) {
                     if (loginResponse && loginResponse.failed) {
                         resolve(loginResponse)
                     } else {
-                        setStoredValue('displayName', loginResponse.displayName)
                         setDisplayName(loginResponse.displayName)
-                        setStoredValue('session', loginResponse.authToken);
                         setSession(loginResponse.authToken)
-                        setStoredValue('isAdmin', loginResponse.isAdmin)
                         setIsAdmin(loginResponse.isAdmin)
-                        resolve({ token: loginResponse.authToken })
+                        setStoredValue('displayName', loginResponse.displayName)
+                            .then(() => {
+                                return setStoredValue('session', loginResponse.authToken);
+                            }).then(() => {
+                                return setStoredValue('isAdmin', loginResponse.isAdmin)
+                            }).then(() => {
+                                return resolve({ token: loginResponse.authToken })
+                            })
                     }
                 })
                 .catch((err) => {
                     console.log({ err })
                     apiClient.debug()
+                    return resolve({ failed: err })
                 })
-
         })
     }
 
     const logout = () => {
-        setStoredValue('session', null)
         setSession(null)
-        setStoredValue('displayName', null)
         setDisplayName(null)
-        setStoredValue('isAdmin', null)
         setIsAdmin(false)
-        routes.reset()
+        return setStoredValue('session', null)
+            .then(() => {
+                return setStoredValue('displayName', null)
+            }).then(() => {
+                return setStoredValue('isAdmin', null)
+            }).then(() => {
+                return routes.reset()
+            })
     }
 
     if (apiError) {
