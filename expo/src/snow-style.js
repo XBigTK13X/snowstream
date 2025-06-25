@@ -3,9 +3,9 @@ import { Platform } from 'react-native';
 export const StaticStyle = {
     color: {
         background: 'black',
-        text: 'white',
+        text: 'rgb(235, 235, 235)',
         textDark: 'rgb(22, 22, 22)',
-        active: 'white',
+        active: 'rgb(235, 235, 235)',
         hover: 'rgb(119, 139, 255)',
         core: 'rgb(219, 158, 44)',
         coreDark: 'rgb(136, 98, 27)',

@@ -23,27 +23,29 @@ function TrackList(props) {
         return null
     }
     return (
-        <FillView style={styles.rows}>
-            <SnowText style={styles.row}>
-                {props.title} ({props.tracks.length})
-            </SnowText>
+        <FillView>
+            <View>
+                <SnowText style={styles.row}>
+                    {props.title} ({props.tracks.length})
+                </SnowText>
 
-            <SnowGrid itemsPerRow={5} gridStyle={styles.row}>
-                {props.tracks.map((track, trackKey) => {
-                    let display = track.display
-                    if (display && display.length > 30) {
-                        display = display.substring(0, 30) + '...'
-                    }
-                    return (
-                        <SnowTextButton
-                            key={trackKey}
-                            selected={track.relative_index === props.activeTrack}
-                            title={`${display} [${track.relative_index}]`}
-                            onPress={() => { props.selectTrack(track) }}
-                        />
-                    )
-                })}
-            </SnowGrid>
+                <SnowGrid itemsPerRow={5} gridStyle={styles.row} scroll={false}>
+                    {props.tracks.map((track, trackKey) => {
+                        let display = track.display
+                        if (display && display.length > 30) {
+                            display = display.substring(0, 30) + '...'
+                        }
+                        return (
+                            <SnowTextButton
+                                key={trackKey}
+                                selected={track.relative_index === props.activeTrack}
+                                title={`${display} [${track.relative_index}]`}
+                                onPress={() => { props.selectTrack(track) }}
+                            />
+                        )
+                    })}
+                </SnowGrid>
+            </View>
         </FillView>
     )
 }
@@ -53,21 +55,23 @@ export default function SnowTrackSelector(props) {
         return null
     }
     return (
-        <FillView style={styles.rows}>
-            {props.tracks.audio.length ? <TrackList
-                kind="audio"
-                title="Audio"
-                tracks={props.tracks.audio}
-                selectTrack={props.selectTrack}
-                activeTrack={props.audioTrack}
-            /> : null}
-            {props.tracks.subtitle.length ? <TrackList
-                kind="subtitle"
-                title="Subtitles"
-                tracks={props.tracks.subtitle}
-                selectTrack={props.selectTrack}
-                activeTrack={props.subtitleTrack}
-            /> : null}
+        <FillView>
+            <View>
+                {props.tracks.audio.length ? <TrackList
+                    kind="audio"
+                    title="Audio"
+                    tracks={props.tracks.audio}
+                    selectTrack={props.selectTrack}
+                    activeTrack={props.audioTrack}
+                /> : null}
+                {props.tracks.subtitle.length ? <TrackList
+                    kind="subtitle"
+                    title="Subtitles"
+                    tracks={props.tracks.subtitle}
+                    selectTrack={props.selectTrack}
+                    activeTrack={props.subtitleTrack}
+                /> : null}
+            </View>
         </FillView>
     )
 }

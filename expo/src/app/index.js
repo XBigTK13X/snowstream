@@ -50,6 +50,7 @@ export default function SignInPage() {
     }
 
     const cancel = () => {
+        setPassword('')
         setUser(null)
     }
 

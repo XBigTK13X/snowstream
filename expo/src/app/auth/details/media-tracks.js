@@ -107,9 +107,9 @@ export default function MediaTracksPage(props) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
         return (
-            <C.FillView>
+            <C.FillView scroll>
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
-                <C.SnowGrid itemsPerRow={3} substantial>
+                <C.SnowGrid scroll={false} itemsPerRow={3} substantial>
                     <C.SnowTextButton
                         shouldFocus
                         title="Play"
@@ -132,7 +132,7 @@ export default function MediaTracksPage(props) {
                             return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
                         }} />
                 </C.SnowGrid>
-                <C.View>
+                <C.FillView>
                     {versionPicker}
                     {extraPicker}
                     <C.SnowTrackSelector
@@ -141,9 +141,12 @@ export default function MediaTracksPage(props) {
                         audioTrack={audioTrack}
                         subtitleTrack={subtitleTrack}
                     />
-                </C.View>
-                <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
-                <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
+                </C.FillView>
+                <C.FillView>
+                    <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
+                    <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
+                    <C.SnowText>ffprobe: {videoFile.ffprobe_pruned_json}</C.SnowText>
+                </C.FillView>
             </C.FillView>
         )
     }

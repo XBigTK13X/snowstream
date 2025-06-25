@@ -14,11 +14,9 @@ import SnowGrid from './snow-grid'
 
 
 const styles = {
-    rows: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        padding: 60,
-        backgroundColor: StaticStyle.color.transparentDark
+    background: {
+        backgroundColor: StaticStyle.color.transparentDark,
+        padding: 60
     },
 
     row: {
@@ -43,7 +41,6 @@ const styles = {
     },
 
     prompt: {
-        flex: 1,
         backgroundColor: StaticStyle.color.background
     }
 }
@@ -63,22 +60,25 @@ export default function SnowVideoControls(props) {
             <Modal
                 style={styles.prompt}
                 onRequestClose={() => { setShowLogs(false) }}>
-                <View style={styles.prompt}>
-                    <SnowGrid itemsPerRow={1}>
+                <FillView scroll style={styles.prompt}>
+                    <SnowGrid scroll={false} itemsPerRow={1}>
                         <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
                     </SnowGrid>
                     <SnowGrid
+                        scroll={false}
                         itemsPerRow={1}
                         items={props.logs}
                         renderItem={(log) => { return <SnowText shrink>{log}</SnowText> }} />
-                    <SnowText style={{ marginBottom: 100 }}>End of logs</SnowText>
-                </View>
+                    <SnowGrid scroll={false} itemsPerRow={1}>
+                        <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
+                    </SnowGrid>
+                </FillView>
             </Modal>
         )
     }
     return (
         (
-            <FillView style={styles.rows}>
+            <FillView scroll style={styles.background}>
                 <SnowText>{props.videoTitle}</SnowText>
                 <Slider
                     style={styles.row}

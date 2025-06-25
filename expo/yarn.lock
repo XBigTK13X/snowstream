@@ -4118,10 +4118,10 @@ react-native-is-edge-to-edge@^1.1.6, react-native-is-edge-to-edge@^1.1.7:
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz#28947688f9fafd584e73a4f935ea9603bd9b1939"
   integrity sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==
 
-react-native-libmpv@0.6.6:
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/react-native-libmpv/-/react-native-libmpv-0.6.6.tgz#bd65a05222f9e1881e4c6960de5d7965149789de"
-  integrity sha512-1+F6yAnEoU7HAWzB8Sv+01Vdjeuqcs0o0XapqRuV9YlMYhP2sGUqNvhxZeXc44JxGVecib+GiGdZkQj7BAA+gw==
+react-native-libmpv@0.6.8:
+  version "0.6.8"
+  resolved "https://registry.yarnpkg.com/react-native-libmpv/-/react-native-libmpv-0.6.8.tgz#242285505adc37d433972177c426fc48811ed66a"
+  integrity sha512-/+Lw81QJvdkM3qhVM6kQtjURstyn/m8es8/AseuoMZhV2bwgaLa48Z59Lirjg+mesGkcC+rVvULK5gXDdsOvwg==
 
 react-native-safe-area-context@5.4.0:
   version "5.4.0"

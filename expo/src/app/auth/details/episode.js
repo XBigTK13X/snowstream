@@ -4,7 +4,7 @@ import MediaTracksPage from './media-tracks'
 
 export default function EpisodeDetailsPage() {
 
-    return <MediaTracksPage
+    return (<MediaTracksPage
         mediaKind="Episode"
         getRemoteMetadataId={(media) => {
             return media.season.show.remote_metadata_id
@@ -69,5 +69,5 @@ export default function EpisodeDetailsPage() {
                 episodeOrder: localParams.episodeOrder
             }
         }}
-    />
+    />)
 }

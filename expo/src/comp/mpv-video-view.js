@@ -19,11 +19,11 @@ export default function MpvVideoView(props) {
             props.onReady()
         }
         if (!cleanup) {
-            Libmpv.setOptionString("vf", "no")
-            Libmpv.setOptionString("af", "no")
-            Libmpv.setOptionString("cache", "no")
-            Libmpv.setOptionString("cache-secs", "0")
-            Libmpv.setOptionString("demuxer-readahead-secs", 0)
+            // https://mpv.io/manual/master/#property-manipulation
+            Libmpv.command("set|vf|no")
+            Libmpv.command("set|af|no")
+            Libmpv.command("set|cache-secs|5")
+            Libmpv.command("set|demuxer-readahead-secs|5")
             navigation.addListener('beforeRemove', (e) => {
                 Libmpv.cleanup()
             })
