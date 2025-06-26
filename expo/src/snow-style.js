@@ -5,7 +5,7 @@ export const StaticStyle = {
         background: 'black',
         text: 'rgb(235, 235, 235)',
         textDark: 'rgb(22, 22, 22)',
-        active: 'rgb(235, 235, 235)',
+        active: 'rgb(150, 150, 150)',
         hover: 'rgb(119, 139, 255)',
         core: 'rgb(219, 158, 44)',
         coreDark: 'rgb(136, 98, 27)',

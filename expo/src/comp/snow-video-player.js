@@ -39,6 +39,8 @@ export default function SnowVideoPlayer(props) {
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
     const [logs, setLogs] = React.useState([])
     const [initialSeekComplete, setInitialSeekComplete] = React.useState(false)
+    const [subtitleFontSize, setSubtitleFontSize] = React.useState(38) // MPV default font size
+    const [subtitleColor, setSubtitleColor] = React.useState({ shade: 1.0, alpha: 1.0 })
 
 
     let VideoView = null
@@ -243,6 +245,8 @@ export default function SnowVideoPlayer(props) {
                         subtitleIndex={props.subtitleIndex}
                         audioIndex={props.audioIndex}
                         seekToSeconds={seekToSeconds}
+                        subtitleFontSize={subtitleFontSize}
+                        subtitleColor={subtitleColor}
                     />
                     {controlToggleButton}
                 </View>
@@ -266,6 +270,8 @@ export default function SnowVideoPlayer(props) {
                     durationSeconds={props.durationSeconds}
                     onSeek={onSeek}
                     logs={logs}
+                    setSubtitleFontSize={setSubtitleFontSize}
+                    setSubtitleColor={setSubtitleColor}
                 />
             </Modal>
         </View >

@@ -6,6 +6,7 @@ const uhd = {
     height: 2160
 }
 
+// https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
     const navigation = useNavigation()
     let libmpv = require('react-native-libmpv')
@@ -19,7 +20,6 @@ export default function MpvVideoView(props) {
             props.onReady()
         }
         if (!cleanup) {
-            // https://mpv.io/manual/master/#property-manipulation
             Libmpv.command("set|vf|no")
             Libmpv.command("set|af|no")
             Libmpv.command("set|cache-secs|5")
@@ -30,6 +30,14 @@ export default function MpvVideoView(props) {
             setCleanup(true)
         }
     })
+
+    React.useEffect(() => {
+        Libmpv.command(`set|sub-font-size|${props.subtitleFontSize}`)
+    }, [props.subtitleFontSize])
+
+    React.useEffect(() => {
+        Libmpv.command(`set|sub-color|${props.subtitleColor.shade}/${props.subtitleColor.alpha}`)
+    }, [props.subtitleColor])
 
     return (
         <LibmpvVideo

@@ -23,14 +23,6 @@ const styles = {
         flexBasis: '100%'
     },
 
-    columns: {
-        flexBasis: '100%',
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        height: 80
-    },
-
     column: {
         flex: 1
     },
@@ -92,11 +84,40 @@ export default function SnowVideoControls(props) {
                 />
                 <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
 
-                <View style={styles.columns}>
+                <SnowGrid scroll={false} itemsPerRow={3}>
                     <SnowTextButton shouldFocus={true} title="Resume" onPress={props.hideControls} />
                     <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
                     <SnowTextButton title="Stop" onPress={routes.funcBack()} />
-                </View>
+                </SnowGrid>
+                <SnowGrid scroll={false} itemsPerRow={4}>
+                    <SnowTextButton title="Sub Smaller" onPress={() => {
+                        props.setSubtitleFontSize(fontSize => { return fontSize - 4 })
+                    }} />
+                    <SnowTextButton title="Sub Bigger" onPress={() => {
+                        props.setSubtitleFontSize(fontSize => { return fontSize + 4 })
+                    }} />
+                    <SnowTextButton title="Sub Darker" onPress={() => {
+                        props.setSubtitleColor(fontColor => {
+                            newColor = { ...fontColor }
+                            newColor.shade -= 0.1;
+                            if (newColor.shade < 0) {
+                                newColor.shade = 0.0
+                            }
+                            return newColor
+                        })
+                    }} />
+                    <SnowTextButton title="Sub Lighter" onPress={() => {
+                        props.setSubtitleColor(fontColor => {
+                            newColor = { ...fontColor }
+                            newColor.shade += 0.1;
+                            if (newColor.shade > 1.0) {
+                                newColor.shade = 1.0
+                            }
+                            return newColor
+                        })
+                    }}
+                    />
+                </SnowGrid>
 
                 <SnowTrackSelector
                     style={styles.row}
