@@ -46,6 +46,8 @@ def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
             .options(sorm.joinedload(dm.Movie.metadata_files))
             .options(sorm.joinedload(dm.Movie.shelf))
             .options(sorm.joinedload(dm.Movie.watch_count))
+            .options(sorm.joinedload(dm.Movie.in_progress))
+            .filter(dm.WatchProgress.client_device_user_id.in_(ticket.watch_group))
         )
 
         movie = query.first()

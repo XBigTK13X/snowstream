@@ -30,15 +30,32 @@ const styles = {
 
 export default function SnowVideoPlayer(props) {
     const { config } = useAppContext()
+    const router = useRouter()
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
-    const [seekToSeconds, setSeekToSeconds] = React.useState(0)
+    const [seekToSeconds, setSeekToSeconds] = React.useState(null)
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
     const [logs, setLogs] = React.useState([])
-    const router = useRouter()
+    const [initialSeekComplete, setInitialSeekComplete] = React.useState(false)
 
+
+    let VideoView = null
+    let playerKind = null
+    if (config.useNullVideoView) {
+        VideoView = require('./null-video-view').default
+    }
+    else {
+        if (Platform.OS !== 'web') {
+            VideoView = require('./mpv-video-view').default
+            playerKind = 'mpv'
+        }
+        else {
+            VideoView = require('./rnv-video-view').default
+            playerKind = 'rnv'
+        }
+    }
 
     const showControls = () => {
         setControlsVisible(true)
@@ -70,6 +87,22 @@ export default function SnowVideoPlayer(props) {
             console.log({ info })
         }
 
+
+        if (props.initialSeekSeconds && !initialSeekComplete) {
+            if (playerKind === 'mpv') {
+                if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('audio ready') !== -1) {
+                    setInitialSeekComplete(true)
+                    immediateSeek(0, props.initialSeekSeconds)
+                }
+            }
+            else if (playerKind === 'rnv') {
+                if (info && info.kind === 'rnvevent' && info.data.event === 'onReady') {
+                    setInitialSeekComplete(true)
+                    immediateSeek(0, props.initialSeekSeconds)
+                }
+            }
+        }
+
         if (info && info.kind && info.kind === 'rnvevent') {
             if (info.data) {
                 if (info.data.currentTime) {
@@ -77,8 +110,6 @@ export default function SnowVideoPlayer(props) {
                     if (props.onProgress) {
                         props.onProgress(info.data.currentTime)
                     }
-                } else {
-                    addLog(info)
                 }
                 if (info.data.playbackFinished) {
                     if (props.onComplete) {
@@ -86,8 +117,8 @@ export default function SnowVideoPlayer(props) {
                     }
                 }
             }
+            addLog(info)
         }
-
         else if (info && info.kind && info.kind === 'mpvevent') {
             let mpvEvent = info.libmpvEvent
             if (mpvEvent.property) {
@@ -109,7 +140,6 @@ export default function SnowVideoPlayer(props) {
                 }
             }
         }
-
         else if (info && info.kind && info.kind === 'nullevent') {
             const nullEvent = info.nullEvent
             if (nullEvent.progress) {
@@ -149,13 +179,10 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
-    const onVideoReady = () => {
-        setIsReady(true)
-        setIsPlaying(true)
-    }
-
-    const onSeek = useDebouncedCallback((progressPercent) => {
-        const progressSeconds = (progressPercent / 100) * props.durationSeconds
+    const immediateSeek = (progressPercent, progressSeconds) => {
+        if (!progressSeconds) {
+            progressSeconds = (progressPercent / 100) * props.durationSeconds
+        }
         if (progressPercent >= 100) {
             setCompleteOnResume(true)
         } else {
@@ -166,7 +193,14 @@ export default function SnowVideoPlayer(props) {
         }
         setSeekToSeconds(progressSeconds)
         setProgressSeconds(progressSeconds)
-    }, config.debounceMilliseconds)
+    }
+
+    const onVideoReady = () => {
+        setIsReady(true)
+        setIsPlaying(true)
+    }
+
+    const onSeek = useDebouncedCallback(immediateSeek, config.debounceMilliseconds)
 
     let controlToggleButton = null
     if (isReady) {
@@ -175,19 +209,6 @@ export default function SnowVideoPlayer(props) {
                 style={styles.videoOverlay}
                 onPress={showControls} />
         )
-    }
-
-    let VideoView = null
-    if (config.useNullVideoView) {
-        VideoView = require('./null-video-view').default
-    }
-    else {
-        if (Platform.OS !== 'web') {
-            VideoView = require('./mpv-video-view').default
-        }
-        else {
-            VideoView = require('./rnv-video-view').default
-        }
     }
 
 

@@ -66,6 +66,7 @@ export default function RnvVideoView(props) {
             onEnd={() => { props.onUpdate({ kind: 'rnvevent', data: { playbackFinished: true } }) }}
             onError={onError}
             onProgress={(data) => { props.onUpdate({ kind: 'rnvevent', data: data }) }}
+            onReadyForDisplay={(data) => { props.onUpdate({ kind: 'rnvevent', data: { 'event': 'onReady', data: data } }) }}
             selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
             selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
         />

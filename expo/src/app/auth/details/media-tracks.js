@@ -1,5 +1,4 @@
 import C from '../../../common'
-import SnowDropdown from '../../../comp/snow-dropdown';
 
 export default function MediaTracksPage(props) {
     const { apiClient } = C.useAppContext();
@@ -52,7 +51,7 @@ export default function MediaTracksPage(props) {
         }
     }
     if (shelf && media) {
-        const watchTitle = media.watched ? "Set Status to Unwatched" : "Set Status to Watched"
+        const watchTitle = media.watched ? "Mark Unwatched (hold)" : "Mark Watched (hold)"
         const playDestination = {
             videoFileIndex: videoFileIndex,
             audioTrack: audioTrack,
@@ -106,13 +105,31 @@ export default function MediaTracksPage(props) {
         else if (props.getRemoteMetadataId) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
+        let playTitle = 'Play'
+        let resumeControls = null
+        let playFocus = true
+        if (media.in_progress && media.in_progress.played_seconds) {
+            playFocus = false
+            playTitle = 'Play from Start'
+            const resumePlayDestination = {
+                ...combinedPlayDestination, ...{ seekToSeconds: media.in_progress.played_seconds }
+            }
+            resumeControls = (
+                <C.SnowTextButton
+                    shouldFocus
+                    title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
+                    onPress={routes.func(routes.playMedia, resumePlayDestination)}
+                />
+            )
+        }
         return (
             <C.FillView scroll>
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
                 <C.SnowGrid scroll={false} itemsPerRow={3} substantial>
+                    {resumeControls}
                     <C.SnowTextButton
-                        shouldFocus
-                        title="Play"
+                        shouldFocus={playFocus}
+                        title={playTitle}
                         onPress={routes.func(routes.playMedia, combinedPlayDestination)}
                     />
                     {mainFeatureButton}

@@ -7,6 +7,7 @@ export default function PlayMediaPage() {
     const shelfId = localParams.shelfId
     const streamableId = localParams.streamableId
     const videoFileIndex = localParams.videoFileIndex
+    const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
 
     const [episodeId, setEpisodeId] = C.React.useState(localParams.episodeId)
     const [movieId, setMovieId] = C.React.useState(localParams.movieId)
@@ -26,7 +27,7 @@ export default function PlayMediaPage() {
     const [tracks, setTracks] = C.React.useState(null)
     const [videoTitle, setVideoTitle] = C.React.useState("")
     const [countedWatch, setCountedWatch] = C.React.useState(false)
-    const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(0)
+    const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(initialSeekSeconds)
 
     const durationRef = C.React.useRef(durationSeconds)
 
@@ -227,6 +228,7 @@ export default function PlayMediaPage() {
                 onProgress={onProgress}
                 onComplete={onComplete}
                 durationSeconds={durationSeconds}
+                initialSeekSeconds={initialSeekSeconds}
             />
         )
     }

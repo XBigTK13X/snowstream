@@ -47,6 +47,8 @@ def sql_row_to_api_result(row,load_episode_files,watch_group):
     if watch_group:
         episode.watched = bool(row.episode_watched_list)
         episode.watch_count.amount = row.episode_watch_count_list[0] if row.episode_watch_count_list else 0
+        episode.in_progress = dm.Stub()
+        episode.in_progress.played_seconds = row.episode_in_progress_list[0] if row.episode_in_progress_list else None
 
     episode.season = dm.Stub()
     episode.season.model_kind = 'show_season'
@@ -184,6 +186,7 @@ def get_show_episode_list(
         episode.episode_end_order_counter as episode_end_order,
         {"array_remove(array_agg(watched.id),NULL) as episode_watched_list," if watch_group else ""}
         {"array_remove(array_agg(watch_count.amount),NULL) as episode_watch_count_list," if watch_group else ""}
+        {"array_remove(array_agg(watch_progress.played_seconds),NULL) as episode_in_progress_list," if watch_group else ""}
 
         season.id as season_id,
         season.season_order_counter as season_order,
@@ -245,6 +248,12 @@ def get_show_episode_list(
             and watched.show_id = show.id
             and (watched.show_season_id is null or watched.show_season_id = season.id)
             and (watched.show_episode_id is null or watched.show_episode_id = episode.id)
+        )
+        """ if watch_group else ""}
+        {f"""
+        left join watch_progress as watch_progress on (
+            watch_progress.client_device_user_id in ({watch_group})
+            and watch_progress.show_episode_id = episode.id
         )
         """ if watch_group else ""}
         {"""
