@@ -1,14 +1,9 @@
-import util
 import database.db_models as dm
 import api_models as am
 from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 from sqlalchemy import text as sql_text
 from settings import config
-import database.operation.show as db_show
-import database.operation.show_season as db_season
 
 SeasonTags = sorm.aliased(dm.Tag)
 
@@ -244,10 +239,7 @@ def get_show_episode_list(
         {f"""
         left join watched as watched on (
             watched.client_device_user_id in ({watch_group})
-            and watched.shelf_id = shelf.id
-            and watched.show_id = show.id
-            and (watched.show_season_id is null or watched.show_season_id = season.id)
-            and (watched.show_episode_id is null or watched.show_episode_id = episode.id)
+            and watched.show_episode_id = episode.id
         )
         """ if watch_group else ""}
         {f"""
@@ -413,68 +405,36 @@ def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
         return dbm
 
 def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=True):
+    episode = get_show_episode_by_id(ticket=ticket,episode_id=episode_id)
+    if not episode:
+        return False
     with DbSession() as db:
-        episode = get_show_episode_by_id(ticket=ticket,episode_id=episode_id)
-        if not episode:
-            return False
-        season = db_season.get_show_season_by_id(ticket=ticket,season_id=episode.season.id)
-        if not season:
-            return False
-        show = db_show.get_show_by_id(ticket=ticket,show_id=season.show.id)
-        if not show:
-            return False
-        shelf_id = show.shelf.id
-        shelf_watched = db_show.get_show_shelf_watched(ticket=ticket,shelf_id=shelf_id)
-        show_watched = db_show.get_show_watched(ticket=ticket,show_id=show.id)
-        season_watched = db_season.get_show_season_watched(ticket=ticket,season_id=season.id)
-        season_episodes = get_show_episode_list(
-            ticket=ticket,
-            shelf_id=shelf_id,
-            show_season_id=season.id
-        )
-        if not season_episodes:
-            return False
         db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == shelf_id,
-            dm.Watched.show_id == show.id,
-            dm.Watched.show_season_id == season.id,
             dm.Watched.show_episode_id == episode_id
         ).delete()
         db.commit()
-        if is_watched and not season_watched:
-            watched_episodes = [xx for xx in season_episodes if xx.watched]
-            if len(watched_episodes) == len(season_episodes) - 1:
-                db_season.set_show_season_watched(ticket=ticket,season_id=season.id,is_watched=True)
-                return True
-            else:
-                dbm = dm.Watched()
-                dbm.client_device_user_id = ticket.cduid
-                dbm.shelf_id = shelf_id
-                dbm.show_id = show.id
-                dbm.show_season_id = season.id
-                dbm.show_episode_id = episode_id
-                db.add(dbm)
-                db.commit()
-                return True
-        if not is_watched and season_watched:
-            db_season.set_show_season_watched(ticket=ticket,season_id=season.id,is_watched=False)
-            episodes_watched = []
-            for other_episode in season_episodes:
-                if other_episode.id == episode.id:
-                    continue
-                episodes_watched.append({
-                    'show_episode_id': other_episode.id,
-                    'show_season_id': season.id,
-                    'show_id': show.id,
-                    'shelf_id': shelf_id,
-                    'client_device_user_id': ticket.cduid
-                })
-            db.bulk_insert_mappings(dm.Watched,episodes_watched)
+        if is_watched:
+            dbm = dm.Watched()
+            dbm.client_device_user_id = ticket.cduid
+            dbm.show_episode_id = episode_id
+            db.add(dbm)
             db.commit()
-            return False
-
+            return True
     return is_watched
+
+def set_show_episode_list_watched(ticket:dm.Ticket, episode_ids:list[int]):
+    with DbSession() as db:
+        episodes_watched = []
+        for episode_id in episode_ids:
+            episodes_watched.append({
+                'client_device_user_id': ticket.cduid,
+                'show_episode_id': episode_id
+            })
+        db.bulk_insert_mappings(dm.Watched,episodes_watched)
+        db.commit()
+        return True
+    return False
 
 def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
     if not watch_progress.played_seconds:

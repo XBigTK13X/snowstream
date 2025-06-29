@@ -1,12 +1,8 @@
 import util
 import database.db_models as dm
-import api_models as am
 from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
 import sqlalchemy.orm as sorm
-from settings import config
-import database.operation.show as db_show
+import database.operation.show_episode as db_episode
 
 def create_show_season(show_id: int, season_order_counter: int, directory: str):
     with DbSession() as db:
@@ -66,17 +62,17 @@ def get_show_season_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
         return results
 
 def get_show_season_list_by_show_id(ticket:dm.Ticket,show_id: int):
-    show = db_show.get_show_by_id(ticket=ticket,show_id=show_id)
-    if not show:
+    show_episodes = db_episode.get_show_episode_list(ticket=ticket,show_id=show_id,load_episode_files=False)
+    if not show_episodes:
         return None
     with DbSession() as db:
         query = (
             db.query(dm.ShowSeason)
+            .filter(dm.ShowSeason.show_id == show_id)
             .options(
                 sorm.joinedload(dm.ShowSeason.show)
                 .joinedload(dm.Show.shelf)
             )
-            .filter(dm.ShowSeason.show_id == show_id)
         )
         query = (
             query.options(sorm.joinedload(dm.ShowSeason.image_files))
@@ -88,33 +84,16 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket,show_id: int):
                 .all()
         )
 
-        watched = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == show.shelf.id,
-            dm.Watched.show_id == show.id,
-            dm.Watched.show_episode_id == None
-        ).distinct(dm.Watched.show_season_id).all()
-        all_watched = False
-        watch_lookup = {}
-        for watch in watched:
-            if watch.show_season_id == None:
-                all_watched = True
-                break
-            watch_lookup[watch.show_season_id] = True
-
         results = []
         for show_season in show_seasons:
             if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
                 continue
             season = dm.set_primary_images(show_season)
             if not season.poster_image:
-                season.poster_image = show.poster_image
-                season.screencap_image = show.screencap_image
+                season.poster_image = show_season.show.poster_image
+                season.screencap_image = show_season.show.screencap_image
             season.name = util.get_season_title(season)
-            if all_watched or show_season.id in watch_lookup:
-                season.watched = True
-            else:
-                season.watched = False
+            season.watched = all(xx.watched or xx.season_id != season.id for xx in show_episodes)
             results.append(season)
         return results
 
@@ -173,71 +152,21 @@ def upsert_show_season_tag(show_season_id: int, tag_id: int):
         return dbm
 
 def set_show_season_watched(ticket:dm.Ticket,season_id:int,is_watched:bool=True):
+    episodes = db_episode.get_show_episode_list(ticket=ticket,show_season_id=season_id,load_episode_files=False)
+    episode_ids = [xx.id for xx in episodes]
     with DbSession() as db:
-        season = get_show_season_by_id(ticket=ticket,season_id=season_id)
-        if not season:
-            return False
-        show = db_show.get_show_by_id(ticket=ticket,show_id=season.show_id)
-        if not show:
-            return False
-        seasons = get_show_season_list_by_show_id(ticket=ticket,show_id=show.id)
-        if not seasons:
-            return False
-        shelf_id = show.shelf.id
-        shelf_watched = db_show.get_show_shelf_watched(ticket=ticket,shelf_id=shelf_id)
-        show_watched = db_show.get_show_watched(ticket=ticket,show_id=show.id)
         db.query(dm.Watched).filter(
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == shelf_id,
-            dm.Watched.show_id == show.id,
-            dm.Watched.show_season_id == season_id
+            dm.Watched.show_episode_id.in_(episode_ids)
         ).delete()
         db.commit()
-        if is_watched and not show_watched:
-            watched_seasons = [xx for xx in seasons if xx.watched]
-            if len(watched_seasons) == len(seasons) - 1:
-                db_show.set_show_watched(ticket=ticket,show_id=show.id,is_watched=True)
-                return True
-            else:
-                dbm = dm.Watched()
-                dbm.client_device_user_id = ticket.cduid
-                dbm.shelf_id = shelf_id
-                dbm.show_id = show.id
-                dbm.show_season_id = season_id
-                db.add(dbm)
-                db.commit()
-                db.refresh(dbm)
-                return True
-        if not is_watched and show_watched:
-            db_show.set_show_watched(ticket=ticket,show_id=show.id,is_watched=False)
-            seasons_watched = []
-            for other_season in seasons:
-                if other_season.id == season_id:
-                    continue
-                seasons_watched.append({
-                    'show_season_id': other_season.id,
-                    'show_id': show.id,
-                    'shelf_id': shelf_id,
-                    'client_device_user_id': ticket.cduid
-                })
-            db.bulk_insert_mappings(dm.Watched,seasons_watched)
-            db.commit()
-            return False
+        if is_watched:
+            return db_episode.set_show_episode_list_watched(ticket=ticket,episode_ids=episode_ids)
     return is_watched
 
 def get_show_season_watched(ticket:dm.Ticket,season_id:int):
     season = get_show_season_by_id(ticket=ticket,season_id=season_id)
     if not season:
         return False
-    show_watched = db_show.get_show_watched(ticket=ticket,show_id=season.show.id)
-    if show_watched:
-        return True
-    with DbSession() as db:
-        watched = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == season.show.shelf.id,
-            dm.Watched.show_id == season.show.id,
-            dm.Watched.show_season_id == season_id,
-            dm.Watched.show_episode_id == None
-        ).first()
-        return False if watched == None else True
+    episodes = db_episode.get_show_episode_list(ticket=ticket,show_season_id=season_id,load_episode_files=False)
+    return all(xx.watched for xx in episodes)
