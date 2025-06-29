@@ -1,3 +1,4 @@
+from log import log
 import database.db_models as dm
 import api_models as am
 from database.sql_alchemy import DbSession
@@ -30,7 +31,12 @@ def update_show_episode_name(show_episode_id:int,name:str):
         db.commit()
         return episode
 
-def sql_row_to_api_result(row,load_episode_files,watch_group):
+def sql_row_to_api_result(
+        row,
+        watch_group = None,
+        load_episode_files=True,
+        trim_episode_files=False
+):
     episode = dm.Stub()
     episode.model_kind = 'show_episode'
     episode.id = row.episode_id
@@ -145,6 +151,11 @@ def sql_row_to_api_result(row,load_episode_files,watch_group):
         episode.tags.append(tag)
         tag_dedupe[tag_ids[ii]] = True
 
+    if trim_episode_files:
+        del episode.metadata_files
+        del episode.video_files
+        del episode.image_files
+
     return episode
 
 def get_show_episode_list(
@@ -158,10 +169,15 @@ def get_show_episode_list(
     only_watched:bool=None,
     only_unwatched:bool=None,
     first_per_show:bool=None,
+    first_per_season:bool=None,
     first_result:bool=None,
     load_episode_files:bool=True,
+    trim_episode_files:bool=False,
     show_playlisted:bool=True
 ):
+    if first_per_show and first_per_season:
+        log.error("Only first_per_show OR first_per_season can be used to retrieve an episode list")
+        return []
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
     with DbSession() as db:
@@ -174,6 +190,7 @@ def get_show_episode_list(
         select
 
         {f'distinct on (show.name)' if first_per_show else ''}
+        {f'distinct on (season.season_order_counter)' if first_per_season else ''}
 
         episode.id as episode_id,
         episode.name as episode_name,
@@ -287,7 +304,7 @@ def get_show_episode_list(
             episode.id,
             episode.name
         order by
-            show.name,
+            {f"show.name," if not first_per_season else ""}
             season.season_order_counter,
             episode.episode_order_counter
         {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
@@ -301,6 +318,7 @@ def get_show_episode_list(
             model = sql_row_to_api_result(
                 row=xx,
                 load_episode_files=load_episode_files,
+                trim_episode_files=trim_episode_files,
                 watch_group=watch_group
             )
             if not model.has_images and not show_season_id:

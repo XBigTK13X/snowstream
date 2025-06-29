@@ -32,18 +32,21 @@ def perform_search(ticket:dm.Ticket,query:str):
                     episode_results += episodes
 
         if movie_results:
+            movie_results.sort(key=lambda xx:len(xx.name))
             results.append({
                 'kind': 'movies',
                 'name': 'Movies',
                 'items': movie_results
             })
         if show_results:
+            show_results.sort(key=lambda xx:len(xx.name))
             results.append({
                 'kind': 'shows',
                 'name': 'Shows',
                 'items': show_results
             })
         if episode_results:
+            episode_results.sort(key=lambda xx:len(xx.name))
             results.append({
                 'kind': 'episodes',
                 'name': 'Episodes',

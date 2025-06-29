@@ -90,6 +90,14 @@ def get_show_list_by_shelf(
 ):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return None
+    shelf_episodes = db_episode.get_show_episode_list(
+        ticket=ticket,
+        shelf_id=shelf_id,
+        load_episode_files=False,
+        trim_episode_files=True,
+        first_per_show=True,
+        only_unwatched=True
+    )
     with DbSession() as db:
         query = (
             db.query(dm.Show)
@@ -111,19 +119,9 @@ def get_show_list_by_shelf(
             query = query.limit(config.search_results_per_shelf_limit)
         shows = query.all()
 
-        watched = db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.shelf_id == shelf_id,
-            dm.Watched.show_season_id == None,
-            dm.Watched.show_episode_id == None
-        ).distinct(dm.Watched.show_id).all()
-        all_watched = False
-        watch_lookup = {}
-        for watch in watched:
-            if not watch.show_id:
-                all_watched = True
-                break
-            watch_lookup[watch.show_id] = True
+        show_unwatched = {}
+        for episode in shelf_episodes:
+            show_unwatched[episode.season.show.id] = True
 
         results = []
         for show in shows:
@@ -134,10 +132,16 @@ def get_show_list_by_shelf(
             if show_playlisted == False and any('Playlist:' in xx.name for xx in show.tags):
                 continue
             show = dm.set_primary_images(show)
-            if all_watched or show.id in watch_lookup:
-                show.watched = True
-            else:
-                show.watched = False
+            show.watched = not show.id in show_unwatched
+            del show.image_files
+            del show.metadata_files
+            del show.seasons
+            del show.created_at
+            del show.updated_at
+            del show.tags
+            del show.screencap_image
+            del show.directory
+            del show.release_year
             results.append(show)
         return results
 

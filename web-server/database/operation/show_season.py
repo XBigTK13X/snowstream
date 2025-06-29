@@ -62,9 +62,13 @@ def get_show_season_list_by_shelf(ticket:dm.Ticket,shelf_id:int):
         return results
 
 def get_show_season_list_by_show_id(ticket:dm.Ticket,show_id: int):
-    show_episodes = db_episode.get_show_episode_list(ticket=ticket,show_id=show_id,load_episode_files=False)
-    if not show_episodes:
-        return None
+    unwatched_episodes = db_episode.get_show_episode_list(
+        ticket=ticket,
+        show_id=show_id,
+        load_episode_files=False,
+        only_unwatched=True,
+        first_per_season=True
+    )
     with DbSession() as db:
         query = (
             db.query(dm.ShowSeason)
@@ -78,13 +82,12 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket,show_id: int):
             query.options(sorm.joinedload(dm.ShowSeason.image_files))
             .options(sorm.joinedload(dm.ShowSeason.metadata_files))
         )
-        show_seasons = (
-            query
-                .order_by(dm.ShowSeason.season_order_counter)
-                .all()
-        )
+        show_seasons = query.order_by(dm.ShowSeason.season_order_counter).all()
 
         results = []
+        season_unwatched = {}
+        for episode in unwatched_episodes:
+            season_unwatched[episode.season.id] = True
         for show_season in show_seasons:
             if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
                 continue
@@ -93,7 +96,7 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket,show_id: int):
                 season.poster_image = show_season.show.poster_image
                 season.screencap_image = show_season.show.screencap_image
             season.name = util.get_season_title(season)
-            season.watched = all(xx.watched or xx.season_id != season.id for xx in show_episodes)
+            season.watched = not season.id in season_unwatched
             results.append(season)
         return results
 
