@@ -166,7 +166,7 @@ export function AppContextProvider(props) {
         })
     }
 
-    const logout = () => {
+    const logout = (removeApiUrl) => {
         setSession(null)
         setDisplayName(null)
         setIsAdmin(false)
@@ -176,6 +176,17 @@ export function AppContextProvider(props) {
             }).then(() => {
                 return setStoredValue('isAdmin', null)
             }).then(() => {
+                return new Promise(resolve => {
+                    if (removeApiUrl) {
+                        return setStoredValue('webApiUrl', null).then(() => {
+                            setApiClient(null)
+                            return resolve()
+                        })
+                    }
+                    return resolve()
+                })
+            })
+            .then(() => {
                 return routes.reset()
             })
     }
@@ -187,8 +198,9 @@ export function AppContextProvider(props) {
                     <SnowText>Unable to communicate with Snowstream.</SnowText>
                     <SnowText>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</SnowText>
                     <View>
-                        <SnowGrid itemsPerRow={1}>
+                        <SnowGrid itemsPerRow={2}>
                             <SnowTextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
+                            <SnowTextButton title="Change Server" onPress={() => { logout(true) }} />
                         </SnowGrid>
                     </View>
                 </View>

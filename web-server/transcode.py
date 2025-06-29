@@ -11,6 +11,7 @@ from db import db
 from database import db_models as dm
 from settings import config
 import ffmpeg
+import traceback
 
 class Transcode:
     def __init__(self):
@@ -112,11 +113,23 @@ class Transcode:
         self.close(transcode_session=transcode_session)
 
     def close(self, transcode_session:dm.TranscodeSession=None,transcode_session_id:int=None):
-        if transcode_session_id:
-            transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
-        os.kill(transcode_session.process_id, signal.SIGTERM)
-        shutil.rmtree(transcode_session.transcode_directory,ignore_errors=True)
-        db.op.delete_transcode_session(transcode_session_id=transcode_session.id)
+        try:
+            if transcode_session_id:
+                transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
+            try:
+                os.kill(transcode_session.process_id, signal.SIGTERM)
+            except Exception as e:
+                log.error(f"{traceback.format_exc()}")
+                log.error(f"Unable to close transcode session {transcode_session.process_id}")
+            try:
+                shutil.rmtree(transcode_session.transcode_directory,ignore_errors=True)
+            except Exception as e:
+                log.error(f"{traceback.format_exc()}")
+                log.error(f"Unable to close transcode session {transcode_session.process_id}")
+            db.op.delete_transcode_session(transcode_session_id=transcode_session.id)
+        except Exception as e:
+            log.error(f"{traceback.format_exc()}")
+            log.error(f"Unable to close transcode session {transcode_session.process_id}")
 
     def cleanup(self):
         transcode_sessions = db.op.get_transcode_session_list()

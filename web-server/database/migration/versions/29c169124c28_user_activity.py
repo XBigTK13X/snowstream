@@ -64,7 +64,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("created_at", sa.DateTime, nullable=False),
         sa.Column("updated_at", sa.DateTime, nullable=False),
-        
+
         sa.Column(
             "client_device_user_id",
             sa.Integer,
@@ -123,7 +123,7 @@ def upgrade() -> None:
             sa.ForeignKey("streamable.id"),
             nullable=True,
         ),
-        sa.Column('amount', sa.Integer)        
+        sa.Column('amount', sa.Integer)
     )
 
     op.create_table(

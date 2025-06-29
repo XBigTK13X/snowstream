@@ -10,6 +10,14 @@ In all things, not being in the Watched table means unwatched.
 
 It usually makes sense to delete all child watched rows when unwatching the parent.
 
+Design Flaw:
+  If a show is marked watched, and a new episode is added, then the show's new episode doesn't get marked unwatched
+  Same with shelf->movie, season, etc.
+Maybe only track things at video_file granularity, so episode and movie.
+That way, a new episode being added to the library by default will show it as unwatched to all users
+Otherwise on shelf scan, I would need to iterate through all users, grab the latest cduid for each, and manually call unwatch on the new episode/movie.
+
+
 ## Workflows
 First Pass Thoughts
   1. Tracking Next Up episodes
