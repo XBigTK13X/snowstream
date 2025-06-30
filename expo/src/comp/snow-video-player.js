@@ -88,7 +88,6 @@ export default function SnowVideoPlayer(props) {
             console.log({ info })
         }
 
-
         if (props.initialSeekSeconds && !initialSeekComplete) {
             if (playerKind === 'mpv') {
                 if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('audio ready') !== -1) {
