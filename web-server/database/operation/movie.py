@@ -41,16 +41,18 @@ def get_movie_by_id(ticket:dm.Ticket,movie_id: int):
         query = (
             db.query(dm.Movie)
             .filter(dm.Movie.id == movie_id)
+            .options(sorm.joinedload(dm.Movie.shelf))
             .options(sorm.joinedload(dm.Movie.video_files))
             .options(sorm.joinedload(dm.Movie.image_files))
             .options(sorm.joinedload(dm.Movie.metadata_files))
             .options(sorm.joinedload(dm.Movie.shelf))
             .options(sorm.joinedload(dm.Movie.watch_count))
             .options(sorm.joinedload(dm.Movie.in_progress))
-            .filter(dm.WatchProgress.client_device_user_id.in_(ticket.watch_group))
         )
 
         movie = query.first()
+        if not movie:
+            return None
         if not ticket.is_allowed(shelf_id=movie.shelf.id):
             return None
         if not ticket.is_allowed(tag_provider=movie.get_tag_ids):

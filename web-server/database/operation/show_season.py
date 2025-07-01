@@ -77,9 +77,7 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket,show_id: int):
                 sorm.joinedload(dm.ShowSeason.show)
                 .joinedload(dm.Show.shelf)
             )
-        )
-        query = (
-            query.options(sorm.joinedload(dm.ShowSeason.image_files))
+            .options(sorm.joinedload(dm.ShowSeason.image_files))
             .options(sorm.joinedload(dm.ShowSeason.metadata_files))
         )
         show_seasons = query.order_by(dm.ShowSeason.season_order_counter).all()
@@ -92,9 +90,10 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket,show_id: int):
             if not ticket.is_allowed(tag_provider=show_season.get_tag_ids):
                 continue
             season = dm.set_primary_images(show_season)
+            show = dm.set_primary_images(show_season.show)
             if not season.poster_image:
-                season.poster_image = show_season.show.poster_image
-                season.screencap_image = show_season.show.screencap_image
+                season.poster_image = show.poster_image
+                season.screencap_image = show.screencap_image
             season.name = util.get_season_title(season)
             season.watched = not season.id in season_unwatched
             results.append(season)
