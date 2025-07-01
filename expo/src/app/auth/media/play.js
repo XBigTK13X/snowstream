@@ -18,7 +18,7 @@ export default function PlayMediaPage() {
     const [episode, setEpisode] = C.React.useState(null)
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
     const [videoUrl, setVideoUrl] = C.React.useState(null)
-    const [transcode, setTranscode] = C.React.useState(false)
+    const [transcode, setTranscode] = C.React.useState(localParams.transcode ? localParams.transcode : false)
     const [transcodeReady, setTranscodeReady] = C.React.useState(false)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
@@ -35,7 +35,11 @@ export default function PlayMediaPage() {
         // TODO This is where the playing queue needs to determine a videoFileIndex
         const videoFile = videoHolder.video_files[videoFileIndex ? videoFileIndex : 0]
         if (transcode) {
-            apiClient.createVideoFileTranscodeSession(videoFile.id, audioTrackIndex, subtitleTrackIndex).then((transcodeSession) => {
+            apiClient.createVideoFileTranscodeSession(
+                videoFile.id,
+                audioTrackIndex,
+                subtitleTrackIndex
+            ).then((transcodeSession) => {
                 setVideoUrl(transcodeSession.transcode_url)
                 setTranscodeReady(true)
             })
@@ -207,7 +211,7 @@ export default function PlayMediaPage() {
     if (transcode && !transcodeReady) {
         return (
             <C.View>
-                <C.SnowText>This video cannot be played direcly on this device.</C.SnowText>
+                <C.SnowText>This video cannot be played directly on this device.</C.SnowText>
                 <C.SnowText>Please wait a few moments while the server transcodes it to a supported format.</C.SnowText>
             </C.View>
         )

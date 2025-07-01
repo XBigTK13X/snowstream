@@ -6,20 +6,28 @@ import copy
 import os
 import datetime
 
-def transcode_command(input_url:str, stream_port:int, audio_track_index:int, subtitle_track_index:int):
-    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream'
+def transcode_command(
+    input_url:str,
+    stream_port:int,
+    audio_track_index:int=None,
+    subtitle_track_index:int=None
+):
+    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.flv'
     command =  f'ffmpeg  -i "{input_url}"'
     if config.transcode_dialect == 'nvidia':
-        command += f' -c:v h264_nvenc'
+        command += f' -c:v h264_nvenc -cq 25'
     elif config.transcode_dialect == 'quicksync':
-        command += f' -c:v h264_sql'
-    if subtitle_track_index:
-        command += f' -vf "subtitles=\'{input_url}\':si={subtitle_track_index}"'
-    command += f' -c:a libvorbis'
-    if audio_track_index:
+        command += f' -c:v h264_qsv -global_quality 25 -look_ahead 1'
+    command += f' -filter_complex "format=yuv420p;'
+    if subtitle_track_index != None:
+        command += f'subtitles=\'{input_url}\':si={subtitle_track_index}'
+        # TODO Apply client-side subtitle style changes to the burn in subtitles
+        command += f":force_style='FontName=Arial,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BackColour=&HA0000000,BorderStyle=4,Fontsize=18'\""
+    command += f' -c:a aac'
+    if audio_track_index != None:
         command += f' -map 0:v:0'
         command += f' -map 0:a:{audio_track_index}'
-    command += f' -f webm -listen 1'
+    command += f' -f flv -listen 1'
     command += f' "{streaming_url}"'
     log.info(command)
     return command,streaming_url

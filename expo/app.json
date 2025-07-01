@@ -39,6 +39,7 @@
     "icon": "./assets/icon/icon.png",
     "name": "snowstream",
     "slug": "snowstream",
+    "orientation": "landscape",
     "androidNavigationBar": {
       "visible": "sticky-immersive"
     },

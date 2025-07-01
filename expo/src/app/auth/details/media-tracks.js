@@ -58,8 +58,6 @@ export default function MediaTracksPage(props) {
             subtitleTrack: subtitleTrack,
             shelfId: shelfId
         }
-        const mediaDestination = props.getPlayDestination(localParams)
-        const combinedPlayDestination = { ...playDestination, ...mediaDestination }
         let mainFeatureButton = null
         if (media.has_extras) {
             mainFeatureButton = <C.SnowTextButton title="Main Feature" onPress={() => {
@@ -105,6 +103,9 @@ export default function MediaTracksPage(props) {
         else if (props.getRemoteMetadataId) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
+        const mediaDestination = props.getPlayDestination(localParams)
+        const combinedPlayDestination = { ...playDestination, ...mediaDestination }
+        const transcodePlayDestination = { ...combinedPlayDestination, ...{ transcode: true } }
         let playTitle = 'Play'
         let resumeControls = null
         let playFocus = true
@@ -132,6 +133,11 @@ export default function MediaTracksPage(props) {
                         title={playTitle}
                         onPress={routes.func(routes.playMedia, combinedPlayDestination)}
                     />
+                    {/*<C.SnowTextButton
+                        shouldFocus={playFocus}
+                        title="Transcode"
+                        onPress={routes.func(routes.playMedia, transcodePlayDestination)}
+                    />*/}
                     {mainFeatureButton}
                     <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
                     <C.SnowTextButton title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
