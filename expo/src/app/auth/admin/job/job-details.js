@@ -9,10 +9,10 @@ export default function JobDetailsPage() {
     C.React.useEffect(() => {
         if (!job) {
             apiClient.getJob(jobId).then((response) => {
-                if (response && response.length) {
-                    response.reverse()
-                    setJob(response)
+                if (response && response.logs && response.logs.length) {
+                    response.logs.reverse()
                 }
+                setJob(response)
             })
         }
     })

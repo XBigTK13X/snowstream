@@ -84,10 +84,11 @@ export default function SnowVideoControls(props) {
                 />
                 <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
 
-                <SnowGrid scroll={false} itemsPerRow={3}>
+                <SnowGrid scroll={false} itemsPerRow={4}>
                     <SnowTextButton shouldFocus={true} title="Resume" onPress={props.hideControls} />
                     <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
                     <SnowTextButton title="Stop" onPress={routes.funcBack()} />
+                    <SnowTextButton title="Home" onPress={routes.func(routes.landing)} />
                 </SnowGrid>
                 <SnowGrid scroll={false} itemsPerRow={4}>
                     <SnowTextButton title="Sub Smaller" onPress={() => {
