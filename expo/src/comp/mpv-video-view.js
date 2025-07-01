@@ -32,10 +32,12 @@ export default function MpvVideoView(props) {
     })
 
     React.useEffect(() => {
+        Libmpv.command(`set|sub-ass-override|force`)
         Libmpv.command(`set|sub-font-size|${props.subtitleFontSize}`)
     }, [props.subtitleFontSize])
 
     React.useEffect(() => {
+        Libmpv.command(`set|sub-ass-override|force`)
         Libmpv.command(`set|sub-color|${props.subtitleColor.shade}/${props.subtitleColor.alpha}`)
     }, [props.subtitleColor])
 

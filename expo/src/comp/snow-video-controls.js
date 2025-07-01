@@ -100,7 +100,7 @@ export default function SnowVideoControls(props) {
                     <SnowTextButton title="Sub Darker" onPress={() => {
                         props.setSubtitleColor(fontColor => {
                             newColor = { ...fontColor }
-                            newColor.shade -= 0.1;
+                            newColor.shade -= 0.15;
                             if (newColor.shade < 0) {
                                 newColor.shade = 0.0
                             }
@@ -110,7 +110,7 @@ export default function SnowVideoControls(props) {
                     <SnowTextButton title="Sub Lighter" onPress={() => {
                         props.setSubtitleColor(fontColor => {
                             newColor = { ...fontColor }
-                            newColor.shade += 0.1;
+                            newColor.shade += 0.15;
                             if (newColor.shade > 1.0) {
                                 newColor.shade = 1.0
                             }
