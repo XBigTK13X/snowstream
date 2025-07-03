@@ -305,6 +305,8 @@ def auth_required(router):
         movie.has_versions = False
 
         for ii in range(0,len(movie.video_files)):
+            # TODO Proper reading of metadata from either ffprobe or mediainfo on video scan
+            movie.video_files[ii].is_hdr = 'Remux-2160p' in movie.video_files[ii].local_path
             movie.video_files[ii].tracks = json.loads(movie.video_files[ii].ffprobe_pruned_json)
             movie.video_files[ii].absolute_index = ii
             if 'main_feature' in movie.video_files[ii].kind:
@@ -499,6 +501,7 @@ def auth_required(router):
         episode.has_extras = False
         episode.has_versions = False
         for ii in range(0,len(episode.video_files)):
+            episode.video_files[ii].is_hdr = 'Remux-2160p' in episode.video_files[ii].local_path
             episode.video_files[ii].tracks = json.loads(episode.video_files[ii].ffprobe_pruned_json)
             episode.video_files[ii].absolute_index = ii
             if episode.video_files[ii].version:

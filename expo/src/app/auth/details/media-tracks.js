@@ -10,6 +10,8 @@ export default function MediaTracksPage(props) {
     const [audioTrack, setAudioTrack] = C.React.useState(0)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
     const [videoFileIndex, setVideoFileIndex] = C.React.useState(0)
+    const [player, setPlayer] = C.React.useState(C.isWeb ? 'exo' : 'mpv')
+    const [forcePlayer, setForcePlayer] = C.React.useState(null)
 
     const shelfId = localParams.shelfId;
 
@@ -20,6 +22,10 @@ export default function MediaTracksPage(props) {
             })
             props.loadMedia(apiClient, localParams).then((response) => {
                 setMedia(response)
+                if (response.video_files[videoFileIndex].is_hdr) {
+                    setPlayer('exo')
+                    setForcePlayer('exo')
+                }
             })
         }
     })
@@ -48,6 +54,17 @@ export default function MediaTracksPage(props) {
         }
         if (media.video_files[fileIndex].tracks.inspection.scored_tracks['subtitle'].length) {
             setSubtitleTrack(media.video_files[fileIndex].tracks.inspection.scored_tracks['subtitle'][0].relative_index)
+        }
+    }
+
+    const togglePlayer = () => {
+        if (player === 'exo') {
+            setPlayer('mpv')
+            setForcePlayer('mpv')
+        }
+        else {
+            setPlayer('exo')
+            setForcePlayer('exo')
         }
     }
     if (shelf && media) {
@@ -104,7 +121,10 @@ export default function MediaTracksPage(props) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
         const mediaDestination = props.getPlayDestination(localParams)
-        const combinedPlayDestination = { ...playDestination, ...mediaDestination }
+        let combinedPlayDestination = { ...playDestination, ...mediaDestination }
+        if (forcePlayer !== null) {
+            combinedPlayDestination = { ...combinedPlayDestination, ...{ forcePlayer: player } }
+        }
         const transcodePlayDestination = { ...combinedPlayDestination, ...{ transcode: true } }
         let playTitle = 'Play'
         let resumeControls = null
@@ -126,7 +146,7 @@ export default function MediaTracksPage(props) {
         return (
             <C.FillView scroll>
                 <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
-                <C.SnowGrid scroll={false} itemsPerRow={3} substantial>
+                <C.SnowGrid scroll={false} itemsPerRow={2} substantial>
                     {resumeControls}
                     <C.SnowTextButton
                         shouldFocus={playFocus}
@@ -154,6 +174,10 @@ export default function MediaTracksPage(props) {
                             const mediaDetails = props.getUpdateMediaJobDetails(localParams)
                             return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
                         }} />
+                    <C.SnowTextButton
+                        title={`Toggle Player [${player}]`}
+                        onPress={togglePlayer}
+                    />
                 </C.SnowGrid>
                 <C.FillView>
                     {versionPicker}

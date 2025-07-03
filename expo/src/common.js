@@ -62,9 +62,16 @@ const getWindowWidth = () => {
     return Dimensions.get('window').width
 }
 
+const isWeb = Platform.OS === 'web'
+const isAndroid = Platform.OS === 'android'
+const isTV = Platform.isTV
+
 export default {
     getWindowWidth,
     getWindowHeight,
+    isAndroid,
+    isTV,
+    isWeb,
     useAppContext,
     useDebouncedCallback,
     useLocalSearchParams,

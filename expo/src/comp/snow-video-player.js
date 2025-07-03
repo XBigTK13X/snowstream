@@ -48,13 +48,13 @@ export default function SnowVideoPlayer(props) {
         VideoView = require('./null-video-view').default
     }
     else {
-        if (Platform.OS !== 'web') {
-            VideoView = require('./mpv-video-view').default
-            playerKind = 'mpv'
-        }
-        else {
+        if (Platform.OS === 'web' || props.forceExoPlayer) {
             VideoView = require('./rnv-video-view').default
             playerKind = 'rnv'
+        }
+        else {
+            VideoView = require('./mpv-video-view').default
+            playerKind = 'mpv'
         }
     }
 
@@ -165,6 +165,9 @@ export default function SnowVideoPlayer(props) {
         if (props.onError) {
             if (err && err.kind && err.kind == 'rnv') {
                 if (err.error.code === 4) {
+                    props.onError(err)
+                }
+                if (err.error.code === 24001) {
                     props.onError(err)
                 }
                 else {

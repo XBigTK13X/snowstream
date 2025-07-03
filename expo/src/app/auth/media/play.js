@@ -8,6 +8,7 @@ export default function PlayMediaPage() {
     const streamableId = localParams.streamableId
     const videoFileIndex = localParams.videoFileIndex
     const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
+    const forcePlayer = localParams.forcePlayer
 
     const [episodeId, setEpisodeId] = C.React.useState(localParams.episodeId)
     const [movieId, setMovieId] = C.React.useState(localParams.movieId)
@@ -26,6 +27,7 @@ export default function PlayMediaPage() {
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const [tracks, setTracks] = C.React.useState(null)
     const [videoTitle, setVideoTitle] = C.React.useState("")
+    const [videoIsHdr, setVideoIsHdr] = C.React.useState(false)
     const [countedWatch, setCountedWatch] = C.React.useState(false)
     const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(initialSeekSeconds)
 
@@ -42,6 +44,7 @@ export default function PlayMediaPage() {
             ).then((transcodeSession) => {
                 setVideoUrl(transcodeSession.transcode_url)
                 setTranscodeReady(true)
+                setVideoIsHdr(videoFile.is_hdr)
             })
         } else {
             setTracks(videoFile.tracks.inspection.scored_tracks)
@@ -217,6 +220,17 @@ export default function PlayMediaPage() {
         )
     }
 
+    let forceExo = true
+    if (forcePlayer === 'mpv') {
+        forceExo = false
+    }
+    else if (forcePlayer === 'exo') {
+        forceExo = true
+    }
+    else if (videoIsHdr && forcePlayer !== 'mpv') {
+        forceExo = true
+    }
+
     if (videoUrl) {
         return (
             <C.SnowVideoPlayer
@@ -233,6 +247,7 @@ export default function PlayMediaPage() {
                 onComplete={onComplete}
                 durationSeconds={durationSeconds}
                 initialSeekSeconds={initialSeekSeconds}
+                forceExoPlayer={forceExo}
             />
         )
     }

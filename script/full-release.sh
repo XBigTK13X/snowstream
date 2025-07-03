@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export NODE_ENV="production"
+
 echo "=-=- Building the container image -=-="
 script/docker-build.sh push
 
@@ -14,3 +16,5 @@ echo "=-=- Push the apks up to the file server -=-="
 
 echo "=-=- Deploy the apks to all devices -=-="
 ~/script/remote-adb.py
+
+unset NODE_ENV

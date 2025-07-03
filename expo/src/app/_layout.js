@@ -4,7 +4,7 @@ import * as NavigationBar from 'expo-navigation-bar'
 
 const styles = {
     safeArea: {
-        padding: 10,
+        padding: 30,
         backgroundColor: C.StaticStyle.color.background,
         flex: 1
     },
@@ -21,7 +21,7 @@ const styles = {
 }
 
 function SafeAreaView(props) {
-    if (C.Platform.OS === 'web') {
+    if (C.isWeb) {
         return (
             <C.View style={styles.safeArea}>
                 {props.children}
@@ -63,7 +63,7 @@ function MessageDisplay() {
 }
 
 export default function RootLayout() {
-    if (C.Platform.OS === 'android') {
+    if (C.isAndroid) {
         NavigationBar.setVisibilityAsync('hidden')
     }
 

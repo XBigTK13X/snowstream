@@ -8,7 +8,7 @@ export default function OptionsPage() {
             <C.SnowTextButton
                 title="Download Latest APK"
                 onPress={() => {
-                    if (C.Platform.isTV) {
+                    if (C.isTV) {
                         C.Linking.openURL('https://android.9914.us/snowstream-tv.apk')
                     } else {
                         C.Linking.openURL('https://android.9914.us/snowstream-mobile.apk')

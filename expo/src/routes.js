@@ -70,6 +70,15 @@ routes.funcBack = () => {
 }
 
 routes.reset = () => {
+    // TODO This throws errors on Android
+    // Try instead to pass in a navigator context
+    // The action 'POP_TO_TOP' was not handled by any navigator
+    /*
+    navigation.reset({
+            index: 0,
+            routes: [{ name: 'login' }], // your stack screen name
+        });
+    */
     if (router.canDismiss()) {
         router.dismissAll()
     }

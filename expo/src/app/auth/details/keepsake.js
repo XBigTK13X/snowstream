@@ -38,7 +38,7 @@ export default function KeepsakeDetailsPage() {
     if (zoomedItem) {
         let modalContent = null
         // Full size images cause the app to crash on web if they are in a modal
-        if (C.Platform.OS == 'web') {
+        if (C.isWeb) {
             if (zoomedItem.model_kind === 'image_file') {
                 return (
                     <C.View style={styles.zoomedImage}>

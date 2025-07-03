@@ -1,8 +1,10 @@
 import React from 'react'
 import Video from 'react-native-video';
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
+
+const isWeb = Platform.OS === 'web'
 
 export default function RnvVideoView(props) {
     const videoRef = React.useRef(null);
@@ -11,9 +13,12 @@ export default function RnvVideoView(props) {
     const [seekSeconds, setSeekSeconds] = React.useState(0)
 
     // Workaround for web not allowing videos to autoplay
-    const userClickedPlay = () => {
-        props.onReady()
-        setUserPlayed(true)
+    let userClickedPlay = null
+    if (isWeb) {
+        userClickedPlay = () => {
+            props.onReady()
+            setUserPlayed(true)
+        }
     }
 
     const onError = (err) => {
@@ -24,7 +29,10 @@ export default function RnvVideoView(props) {
     }
 
     React.useEffect(() => {
-        if (!requestTranscode) {
+        if (!isWeb && !props.isReady && props.onReady) {
+            props.onReady()
+        }
+        if (isWeb && !requestTranscode) {
             if (!props.isTranscode && (props.audioIndex !== 0 || props.subtitleIndex !== 0)) {
                 setRequestTranscode(true)
                 onError({ message: 'web video player cannot select tracks', error: { code: 4 } })
@@ -41,20 +49,20 @@ export default function RnvVideoView(props) {
         }
     })
 
-    if (!userPlayed) {
-        return (
-            <View>
-                <SnowTextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
-            </View>
-        )
-    }
-
-    if (!props.isTranscode && (props.audioIndex !== 0 || props.subtitleIndex !== 0)) {
-        return <View><SnowText>Waiting on transcode...</SnowText></View>
-    }
-
-    if (requestTranscode && !props.isTranscode) {
-        return <View><SnowText>Waiting on transcode...</SnowText></View>
+    if (isWeb) {
+        if (!userPlayed) {
+            return (
+                <View>
+                    <SnowTextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
+                </View>
+            )
+        }
+        if (!props.isTranscode && (props.audioIndex !== 0 || props.subtitleIndex !== 0)) {
+            return <View><SnowText>Waiting on transcode...</SnowText></View>
+        }
+        if (requestTranscode && !props.isTranscode) {
+            return <View><SnowText>Waiting on transcode...</SnowText></View>
+        }
     }
 
     return (
@@ -69,6 +77,7 @@ export default function RnvVideoView(props) {
             onReadyForDisplay={(data) => { props.onUpdate({ kind: 'rnvevent', data: { 'event': 'onReady', data: data } }) }}
             selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
             selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
+            useTextureView={false} // This allows HDR video playback without tonemapping on Android/TV
         />
     )
 }
