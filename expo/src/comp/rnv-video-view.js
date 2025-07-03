@@ -6,6 +6,20 @@ import SnowTextButton from './snow-text-button'
 
 const isWeb = Platform.OS === 'web'
 
+const bufferConfig = {
+    minBufferMs: 5000,
+    maxBufferMs: 10000,
+    bufferForPlaybackMs: 2000,
+    bufferForPlaybackAfterRebufferMs: 5000,
+    backBufferDurationMs: 5000,
+    cacheSizeMB: 0,
+    live: {
+        targetOffsetMs: 500,
+    },
+}
+
+// https://docs.thewidlarzgroup.com/react-native-video/component/props
+
 export default function RnvVideoView(props) {
     const videoRef = React.useRef(null);
     const [userPlayed, setUserPlayed] = React.useState(false)
@@ -65,11 +79,31 @@ export default function RnvVideoView(props) {
         }
     }
 
+    const onUpdate = (kind) => {
+        return (payload) => {
+            if (props.onUpdate) {
+                props.onUpdate({
+                    kind: 'rnvevent',
+                    data: {
+                        event: kind,
+                        data: payload
+                    }
+                })
+            }
+        }
+    }
+
     return (
         <Video
-            source={{ uri: props.videoUrl }}
+            source={{
+                uri: props.videoUrl,
+                bufferConfig: bufferConfig
+            }}
             ref={videoRef}
+            fullscreen={true}
             paused={!props.isPlaying}
+            playWhenInactive={true}
+            playInBackground={true}
             muted={!props.isPlaying}
             onEnd={() => { props.onUpdate({ kind: 'rnvevent', data: { playbackFinished: true } }) }}
             onError={onError}
@@ -78,6 +112,30 @@ export default function RnvVideoView(props) {
             selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
             selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
             useTextureView={false} // This allows HDR video playback without tonemapping on Android/TV
+            onAudioBecomingNoisy={onUpdate('onAudioBecomingNoisy')}
+            onAudioFocusChanged={onUpdate('onAudioFocusChanged')}
+            onAudioTracks={onUpdate('onAudioTracks')}
+            onBandwidthUpdate={onUpdate('onBandwidthUpdate')}
+            onBuffer={onUpdate('onBuffer')}
+            onControlsVisibilityChange={onUpdate('onControlsVisibilityChange')}
+            onExternalPlaybackChange={onUpdate('onExternalPlaybackChange')}
+            onFullscreenPlayerWillPresent={onUpdate('onFullscreenPlayerWillPresent')}
+            onFullscreenPlayerDidPresent={onUpdate('onFullscreenPlayerDidPresent')}
+            onFullscreenPlayerWillDismiss={onUpdate('onFullscreenPlayerWillDismiss')}
+            onFullscreenPlayerDidDismiss={onUpdate('onFullscreenPlayerDidDismiss')}
+            onLoad={onUpdate('onLoad')}
+            onLoadStart={onUpdate('onLoadStart')}
+            onPlaybackStateChanged={onUpdate('onPlaybackStateChanged')}
+            onPictureInPictureStatusChanged={onUpdate('onPictureInPictureStatusChanged')}
+            onPlaybackRateChange={onUpdate('onPlaybackRateChange')}
+            onReceiveAdEvent={onUpdate('onReceiveAdEvent')}
+            onRestoreUserInterfaceForPictureInPictureStop={onUpdate('onRestoreUserInterfaceForPictureInPictureStop')}
+            onSeek={onUpdate('onSeek')}
+            onTimedMetadata={onUpdate('onTimedMetadata')}
+            onTextTrackDataChanged={onUpdate('onTextTrackDataChanged')}
+            onTextTracks={onUpdate('onTextTracks')}
+            onVideoTracks={onUpdate('onVideoTracks')}
+            onVolumeChange={onUpdate('onVolumeChange')}
         />
     )
 }
