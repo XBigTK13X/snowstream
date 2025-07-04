@@ -28,8 +28,7 @@ const styles = {
 }
 
 export default function SnowVideoPlayer(props) {
-    const { config } = useAppContext()
-    const router = useRouter()
+    const { config, routes } = useAppContext()
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
@@ -75,6 +74,21 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
+    const resumeVideo = () => {
+        setControlsVisible(false)
+        setIsPlaying(true)
+    }
+
+    const stopVideo = (goHome) => {
+        setControlsVisible(false)
+        setIsPlaying(false)
+        if (goHome) {
+            routes.goto(routes.landing)
+        } else {
+            routes.funcBack()
+        }
+    }
+
     const addLog = (logEvent) => {
         try {
             logs.push(JSON.stringify(logEvent))
@@ -98,7 +112,7 @@ export default function SnowVideoPlayer(props) {
                 }
             }
             else if (playerKind === 'rnv') {
-                if (info && info.kind === 'rnvevent' && info.data.event === 'onReady') {
+                if (info && info.kind === 'rnvevent' && info.data.event === 'onReadyForDisplay') {
                     setInitialSeekComplete(true)
                     immediateSeek(0, props.initialSeekSeconds)
                 }
@@ -116,7 +130,7 @@ export default function SnowVideoPlayer(props) {
                 else {
                     addLog(info)
                 }
-                if (info.data.playbackFinished) {
+                if (info.data.event === 'onEnd') {
                     if (props.onComplete) {
                         props.onComplete()
                     }
@@ -209,16 +223,6 @@ export default function SnowVideoPlayer(props) {
 
     const onSeek = useDebouncedCallback(immediateSeek, config.debounceMilliseconds)
 
-    let controlToggleButton = null
-    if (isReady) {
-        controlToggleButton = (
-            <TouchableOpacity
-                style={styles.videoOverlay}
-                onPress={showControls} />
-        )
-    }
-
-
     if (!props.videoUrl) {
         return null
     }
@@ -230,45 +234,38 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             <VideoView
-                showControls={showControls}
                 windowHeight={windowHeight}
                 windowWidth={windowWidth}
                 videoUrl={props.videoUrl}
                 isPlaying={isPlaying}
                 isReady={isReady}
                 isTranscode={props.isTranscode}
+                seekToSeconds={seekToSeconds}
+                audioIndex={props.audioIndex}
+                subtitleIndex={props.subtitleIndex}
+                subtitleFontSize={subtitleFontSize}
+                subtitleColor={subtitleColor}
                 onUpdate={onVideoUpdate}
                 onError={onVideoError}
                 onReady={onVideoReady}
-                subtitleIndex={props.subtitleIndex}
-                audioIndex={props.audioIndex}
-                seekToSeconds={seekToSeconds}
-                subtitleFontSize={subtitleFontSize}
-                subtitleColor={subtitleColor}
+                showControls={showControls}
             />
-            <Modal
-                visible={controlsVisible}
-                onRequestClose={() => {
-                    setControlsVisible(false)
-                    setIsPlaying(true)
-                }}
-                transparent
-            >
-                <SnowVideoControls
-                    videoTitle={props.videoTitle}
-                    hideControls={hideControls}
-                    selectTrack={props.selectTrack}
-                    audioTrack={props.audioIndex}
-                    subtitleTrack={props.subtitleIndex}
-                    tracks={props.tracks}
-                    progressSeconds={progressSeconds}
-                    durationSeconds={props.durationSeconds}
-                    onSeek={onSeek}
-                    logs={logs}
-                    setSubtitleFontSize={setSubtitleFontSize}
-                    setSubtitleColor={setSubtitleColor}
-                />
-            </Modal>
+            <SnowVideoControls
+                controlsVisible={controlsVisible}
+                videoTitle={props.videoTitle}
+                tracks={props.tracks}
+                audioTrack={props.audioIndex}
+                subtitleTrack={props.subtitleIndex}
+                setSubtitleFontSize={setSubtitleFontSize}
+                setSubtitleColor={setSubtitleColor}
+                progressSeconds={progressSeconds}
+                durationSeconds={props.durationSeconds}
+                onSeek={onSeek}
+                logs={logs}
+                selectTrack={props.selectTrack}
+                hideControls={hideControls}
+                stopVideo={stopVideo}
+            />
         </View >
     )
 }

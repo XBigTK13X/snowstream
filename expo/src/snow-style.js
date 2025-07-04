@@ -15,6 +15,14 @@ export const StaticStyle = {
     fontSize: {
         header: 40,
         label: 26
+    },
+    depth: {
+        video: {
+            wrapper: 700,
+            content: 800,
+            toggle: 900,
+            controls: 1000
+        }
     }
 }
 

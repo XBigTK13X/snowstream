@@ -33,7 +33,9 @@ const styles = {
     },
 
     prompt: {
-        backgroundColor: StaticStyle.color.background
+        backgroundColor: StaticStyle.color.background,
+        zIndex: StaticStyle.depth.video.controls,
+        elevation: StaticStyle.depth.video.controls
     }
 }
 
@@ -70,64 +72,70 @@ export default function SnowVideoControls(props) {
     }
     return (
         (
-            <FillView scroll style={styles.background}>
-                <SnowText>{props.videoTitle}</SnowText>
-                <Slider
-                    style={styles.row}
-                    minimumValue={0}
-                    maximumValue={100}
-                    value={progressPercent}
-                    minimumTrackTintColor="#FFFFFF"
-                    maximumTrackTintColor="#cccccc"
-                    onSlidingComplete={props.onSeek}
-                    onValueChange={props.onSeek}
-                />
-                <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
-
-                <SnowGrid scroll={false} itemsPerRow={4}>
-                    <SnowTextButton shouldFocus={true} title="Resume" onPress={props.hideControls} />
-                    <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
-                    <SnowTextButton title="Stop" onPress={routes.funcBack()} />
-                    <SnowTextButton title="Home" onPress={routes.func(routes.landing)} />
-                </SnowGrid>
-                <SnowGrid scroll={false} itemsPerRow={4}>
-                    <SnowTextButton title="Sub Smaller" onPress={() => {
-                        props.setSubtitleFontSize(fontSize => { return fontSize - 4 })
-                    }} />
-                    <SnowTextButton title="Sub Bigger" onPress={() => {
-                        props.setSubtitleFontSize(fontSize => { return fontSize + 4 })
-                    }} />
-                    <SnowTextButton title="Sub Darker" onPress={() => {
-                        props.setSubtitleColor(fontColor => {
-                            newColor = { ...fontColor }
-                            newColor.shade -= 0.15;
-                            if (newColor.shade < 0) {
-                                newColor.shade = 0.0
-                            }
-                            return newColor
-                        })
-                    }} />
-                    <SnowTextButton title="Sub Lighter" onPress={() => {
-                        props.setSubtitleColor(fontColor => {
-                            newColor = { ...fontColor }
-                            newColor.shade += 0.15;
-                            if (newColor.shade > 1.0) {
-                                newColor.shade = 1.0
-                            }
-                            return newColor
-                        })
-                    }}
+            <Modal
+                transparent
+                visible={props.controlsVisible}
+                onRequestClose={props.stopVideo}
+            >
+                <FillView scroll style={styles.background}>
+                    <SnowText>{props.videoTitle}</SnowText>
+                    <Slider
+                        style={styles.row}
+                        minimumValue={0}
+                        maximumValue={100}
+                        value={progressPercent}
+                        minimumTrackTintColor="#FFFFFF"
+                        maximumTrackTintColor="#cccccc"
+                        onSlidingComplete={props.onSeek}
+                        onValueChange={props.onSeek}
                     />
-                </SnowGrid>
+                    <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
 
-                <SnowTrackSelector
-                    style={styles.row}
-                    tracks={props.tracks}
-                    selectTrack={props.selectTrack}
-                    audioTrack={props.audioTrack}
-                    subtitleTrack={props.subtitleTrack}
-                />
-            </FillView >
+                    <SnowGrid scroll={false} itemsPerRow={4}>
+                        <SnowTextButton shouldFocus={true} title="Resume" onPress={props.hideControls} />
+                        <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
+                        <SnowTextButton title="Stop" onPress={props.stopVideo} />
+                        <SnowTextButton title="Home" onPress={() => { props.stopVideo(true) }} />
+                    </SnowGrid>
+                    <SnowGrid scroll={false} itemsPerRow={4}>
+                        <SnowTextButton title="Sub Smaller" onPress={() => {
+                            props.setSubtitleFontSize(fontSize => { return fontSize - 4 })
+                        }} />
+                        <SnowTextButton title="Sub Bigger" onPress={() => {
+                            props.setSubtitleFontSize(fontSize => { return fontSize + 4 })
+                        }} />
+                        <SnowTextButton title="Sub Darker" onPress={() => {
+                            props.setSubtitleColor(fontColor => {
+                                newColor = { ...fontColor }
+                                newColor.shade -= 0.15;
+                                if (newColor.shade < 0) {
+                                    newColor.shade = 0.0
+                                }
+                                return newColor
+                            })
+                        }} />
+                        <SnowTextButton title="Sub Lighter" onPress={() => {
+                            props.setSubtitleColor(fontColor => {
+                                newColor = { ...fontColor }
+                                newColor.shade += 0.15;
+                                if (newColor.shade > 1.0) {
+                                    newColor.shade = 1.0
+                                }
+                                return newColor
+                            })
+                        }}
+                        />
+                    </SnowGrid>
+
+                    <SnowTrackSelector
+                        style={styles.row}
+                        tracks={props.tracks}
+                        selectTrack={props.selectTrack}
+                        audioTrack={props.audioTrack}
+                        subtitleTrack={props.subtitleTrack}
+                    />
+                </FillView >
+            </Modal>
         )
     )
 }
