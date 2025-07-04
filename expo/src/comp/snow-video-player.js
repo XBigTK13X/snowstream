@@ -58,13 +58,11 @@ export default function SnowVideoPlayer(props) {
     }
 
     const showControls = () => {
-        console.log("Showing controls")
         setControlsVisible(true)
         setIsPlaying(false)
     }
 
-    const hideControls = () => {
-        console.log("Hiding controls")
+    const resumeVideo = () => {
         setControlsVisible(false)
         setIsPlaying(true)
         if (completeOnResume) {
@@ -72,11 +70,6 @@ export default function SnowVideoPlayer(props) {
                 props.onComplete()
             }
         }
-    }
-
-    const resumeVideo = () => {
-        setControlsVisible(false)
-        setIsPlaying(true)
     }
 
     const stopVideo = (goHome) => {
@@ -263,7 +256,7 @@ export default function SnowVideoPlayer(props) {
                 onSeek={onSeek}
                 logs={logs}
                 selectTrack={props.selectTrack}
-                hideControls={hideControls}
+                resumeVideo={resumeVideo}
                 stopVideo={stopVideo}
             />
         </View >

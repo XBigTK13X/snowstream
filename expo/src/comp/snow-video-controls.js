@@ -41,6 +41,10 @@ const styles = {
 
 export default function SnowVideoControls(props) {
 
+    if (!props.controlsVisible) {
+        return null
+    }
+
     const { routes } = useAppContext()
 
     const [showLogs, setShowLogs] = React.useState(false)
@@ -75,7 +79,7 @@ export default function SnowVideoControls(props) {
             <Modal
                 transparent
                 visible={props.controlsVisible}
-                onRequestClose={props.stopVideo}
+                onRequestClose={props.resumeVideo}
             >
                 <FillView scroll style={styles.background}>
                     <SnowText>{props.videoTitle}</SnowText>
@@ -92,7 +96,7 @@ export default function SnowVideoControls(props) {
                     <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
 
                     <SnowGrid scroll={false} itemsPerRow={4}>
-                        <SnowTextButton shouldFocus={true} title="Resume" onPress={props.hideControls} />
+                        <SnowTextButton shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
                         <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
                         <SnowTextButton title="Stop" onPress={props.stopVideo} />
                         <SnowTextButton title="Home" onPress={() => { props.stopVideo(true) }} />

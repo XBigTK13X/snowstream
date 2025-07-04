@@ -171,6 +171,10 @@ export default function RnvVideoView(props) {
                     muted={!props.isPlaying}
                     selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
                     selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
+                    subtitleStyle={{
+                        fontSize: props.subtitleFontSize * .6,
+                        opacity: props.subtitleColor.shade
+                    }}
 
                     // The main events needed by snowstream
                     onError={onError}
@@ -203,6 +207,7 @@ export default function RnvVideoView(props) {
                     onTextTracks={onUpdate('onTextTracks')}
                     onVideoTracks={onUpdate('onVideoTracks')}
                     onVolumeChange={onUpdate('onVolumeChange')}
+
                 />
             </TouchableOpacity>
         </Modal>
