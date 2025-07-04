@@ -18,20 +18,23 @@ export default function PlayMediaPage() {
     const [movie, setMovie] = C.React.useState(null)
     const [episode, setEpisode] = C.React.useState(null)
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
+
     const [videoUrl, setVideoUrl] = C.React.useState(null)
     const [transcode, setTranscode] = C.React.useState(localParams.transcode ? localParams.transcode : false)
     const [transcodeReady, setTranscodeReady] = C.React.useState(false)
-    const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
+    
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
-    const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
+    
     const [tracks, setTracks] = C.React.useState(null)
     const [videoTitle, setVideoTitle] = C.React.useState("")
     const [videoIsHdr, setVideoIsHdr] = C.React.useState(false)
     const [countedWatch, setCountedWatch] = C.React.useState(false)
-    const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(initialSeekSeconds)
 
+    const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const durationRef = C.React.useRef(durationSeconds)
+    const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(initialSeekSeconds)
+    const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
 
     const loadVideoFile = (videoHolder) => {
         // TODO This is where the playing queue needs to determine a videoFileIndex

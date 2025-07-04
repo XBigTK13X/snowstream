@@ -18,7 +18,7 @@ class Config {
         this.clientBuildDate = "July 02, 2025"
         this.clientDevBuildNumber = 1
         this.useNullVideoView = false
-        this.debugVideoView = true
+        this.debugVideoPlayer = false
         this.debounceMilliseconds = 700
         this.progressMinDeltaSeconds = 5
     }

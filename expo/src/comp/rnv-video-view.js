@@ -1,8 +1,12 @@
 import React from 'react'
 import Video from 'react-native-video';
-import { Platform, View } from 'react-native'
+import { ViewType } from 'react-native-video'
+import { Platform, View, TouchableOpacity, Dimensions, Modal } from 'react-native'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
+
+const windowHeight = Dimensions.get('window').height
+const windowWidth = Dimensions.get('window').width
 
 const isWeb = Platform.OS === 'web'
 
@@ -16,6 +20,17 @@ const bufferConfig = {
     live: {
         targetOffsetMs: 500,
     },
+}
+
+const styles = {
+    videoOverlay: {
+        backgroundColor: 'transparent',
+        width: windowWidth,
+        height: windowHeight,
+        zIndex: 3, // works on ios
+        elevation: 3, // works on android
+        position: 'absolute'
+    }
 }
 
 // https://docs.thewidlarzgroup.com/react-native-video/component/props
@@ -94,48 +109,58 @@ export default function RnvVideoView(props) {
     }
 
     return (
-        <Video
-            source={{
-                uri: props.videoUrl,
-                bufferConfig: bufferConfig
-            }}
-            ref={videoRef}
-            fullscreen={true}
-            paused={!props.isPlaying}
-            playWhenInactive={true}
-            playInBackground={true}
-            muted={!props.isPlaying}
-            onEnd={() => { props.onUpdate({ kind: 'rnvevent', data: { playbackFinished: true } }) }}
-            onError={onError}
-            onProgress={(data) => { props.onUpdate({ kind: 'rnvevent', data: data }) }}
-            onReadyForDisplay={(data) => { props.onUpdate({ kind: 'rnvevent', data: { 'event': 'onReady', data: data } }) }}
-            selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
-            selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
-            useTextureView={false} // This allows HDR video playback without tonemapping on Android/TV
-            onAudioBecomingNoisy={onUpdate('onAudioBecomingNoisy')}
-            onAudioFocusChanged={onUpdate('onAudioFocusChanged')}
-            onAudioTracks={onUpdate('onAudioTracks')}
-            onBandwidthUpdate={onUpdate('onBandwidthUpdate')}
-            onBuffer={onUpdate('onBuffer')}
-            onControlsVisibilityChange={onUpdate('onControlsVisibilityChange')}
-            onExternalPlaybackChange={onUpdate('onExternalPlaybackChange')}
-            onFullscreenPlayerWillPresent={onUpdate('onFullscreenPlayerWillPresent')}
-            onFullscreenPlayerDidPresent={onUpdate('onFullscreenPlayerDidPresent')}
-            onFullscreenPlayerWillDismiss={onUpdate('onFullscreenPlayerWillDismiss')}
-            onFullscreenPlayerDidDismiss={onUpdate('onFullscreenPlayerDidDismiss')}
-            onLoad={onUpdate('onLoad')}
-            onLoadStart={onUpdate('onLoadStart')}
-            onPlaybackStateChanged={onUpdate('onPlaybackStateChanged')}
-            onPictureInPictureStatusChanged={onUpdate('onPictureInPictureStatusChanged')}
-            onPlaybackRateChange={onUpdate('onPlaybackRateChange')}
-            onReceiveAdEvent={onUpdate('onReceiveAdEvent')}
-            onRestoreUserInterfaceForPictureInPictureStop={onUpdate('onRestoreUserInterfaceForPictureInPictureStop')}
-            onSeek={onUpdate('onSeek')}
-            onTimedMetadata={onUpdate('onTimedMetadata')}
-            onTextTrackDataChanged={onUpdate('onTextTrackDataChanged')}
-            onTextTracks={onUpdate('onTextTracks')}
-            onVideoTracks={onUpdate('onVideoTracks')}
-            onVolumeChange={onUpdate('onVolumeChange')}
-        />
+        <TouchableOpacity
+            style={styles.videoOverlay}
+            onPress={props.showControls} >
+            <Video
+                source={{
+                    uri: props.videoUrl,
+                    bufferConfig: bufferConfig
+                }}
+                ref={videoRef}
+                fullscreen={false}
+                hideShutterView={true}
+                focusable={true}
+                shutterColor='transparent'
+                viewType={ViewType.SURFACE} // This allows HDR video playback without tonemapping on Android/TV
+                paused={!props.isPlaying}
+                playWhenInactive={true}
+                playInBackground={true}
+                muted={!props.isPlaying}
+
+                onEnd={() => { props.onUpdate({ kind: 'rnvevent', data: { playbackFinished: true } }) }}
+                onError={onError}
+                onProgress={(data) => { props.onUpdate({ kind: 'rnvevent', data: data }) }}
+                onReadyForDisplay={(data) => { props.onUpdate({ kind: 'rnvevent', data: { 'event': 'onReady', data: data } }) }}
+
+                selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
+                selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
+
+                onAudioBecomingNoisy={onUpdate('onAudioBecomingNoisy')}
+                onAudioFocusChanged={onUpdate('onAudioFocusChanged')}
+                onAudioTracks={onUpdate('onAudioTracks')}
+                onBandwidthUpdate={onUpdate('onBandwidthUpdate')}
+                onBuffer={onUpdate('onBuffer')}
+                onControlsVisibilityChange={onUpdate('onControlsVisibilityChange')}
+                onExternalPlaybackChange={onUpdate('onExternalPlaybackChange')}
+                onFullscreenPlayerWillPresent={onUpdate('onFullscreenPlayerWillPresent')}
+                onFullscreenPlayerDidPresent={onUpdate('onFullscreenPlayerDidPresent')}
+                onFullscreenPlayerWillDismiss={onUpdate('onFullscreenPlayerWillDismiss')}
+                onFullscreenPlayerDidDismiss={onUpdate('onFullscreenPlayerDidDismiss')}
+                onLoad={onUpdate('onLoad')}
+                onLoadStart={onUpdate('onLoadStart')}
+                onPlaybackStateChanged={onUpdate('onPlaybackStateChanged')}
+                onPictureInPictureStatusChanged={onUpdate('onPictureInPictureStatusChanged')}
+                onPlaybackRateChange={onUpdate('onPlaybackRateChange')}
+                onReceiveAdEvent={onUpdate('onReceiveAdEvent')}
+                onRestoreUserInterfaceForPictureInPictureStop={onUpdate('onRestoreUserInterfaceForPictureInPictureStop')}
+                onSeek={onUpdate('onSeek')}
+                onTimedMetadata={onUpdate('onTimedMetadata')}
+                onTextTrackDataChanged={onUpdate('onTextTrackDataChanged')}
+                onTextTracks={onUpdate('onTextTracks')}
+                onVideoTracks={onUpdate('onVideoTracks')}
+                onVolumeChange={onUpdate('onVolumeChange')}
+            />
+        </TouchableOpacity>
     )
 }

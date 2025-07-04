@@ -7,6 +7,9 @@ export default function LandingPage(props) {
     const [streamSources, setStreamSources] = C.React.useState(null)
     const { setMessageDisplay } = C.useAppContext()
 
+    // DEBUG - REMOVE
+    return <C.Redirect href={`${routes.movieDetails}?shelfId=1&movieId=651`} />
+
     C.React.useEffect(() => {
         if (!shelves) {
             apiClient.getShelfList().then((response) => {

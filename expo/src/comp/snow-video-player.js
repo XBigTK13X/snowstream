@@ -59,11 +59,13 @@ export default function SnowVideoPlayer(props) {
     }
 
     const showControls = () => {
+        console.log("Showing controls")
         setControlsVisible(true)
         setIsPlaying(false)
     }
 
     const hideControls = () => {
+        console.log("Hiding controls")
         setControlsVisible(false)
         setIsPlaying(true)
         if (completeOnResume) {
@@ -111,13 +113,15 @@ export default function SnowVideoPlayer(props) {
                         props.onProgress(info.data.currentTime)
                     }
                 }
+                else {
+                    addLog(info)
+                }
                 if (info.data.playbackFinished) {
                     if (props.onComplete) {
                         props.onComplete()
                     }
                 }
             }
-            addLog(info)
         }
         else if (info && info.kind && info.kind === 'mpvevent') {
             let mpvEvent = info.libmpvEvent
@@ -219,39 +223,29 @@ export default function SnowVideoPlayer(props) {
         return null
     }
 
-    if (config.debugVideoView) {
+    if (config.debugVideoPlayer) {
         console.log(props.videoUrl)
     }
 
     return (
         <View style={styles.dark}>
-            <Modal
-                onRequestClose={() => {
-                    setControlsVisible(false)
-                    setIsPlaying(false)
-                    router.back()
-                }}
-            >
-                <View style={styles.videoView}>
-                    <VideoView
-                        windowHeight={windowHeight}
-                        windowWidth={windowWidth}
-                        videoUrl={props.videoUrl}
-                        isPlaying={isPlaying}
-                        isReady={isReady}
-                        isTranscode={props.isTranscode}
-                        onUpdate={onVideoUpdate}
-                        onError={onVideoError}
-                        onReady={onVideoReady}
-                        subtitleIndex={props.subtitleIndex}
-                        audioIndex={props.audioIndex}
-                        seekToSeconds={seekToSeconds}
-                        subtitleFontSize={subtitleFontSize}
-                        subtitleColor={subtitleColor}
-                    />
-                    {controlToggleButton}
-                </View>
-            </Modal >
+            <VideoView
+                showControls={showControls}
+                windowHeight={windowHeight}
+                windowWidth={windowWidth}
+                videoUrl={props.videoUrl}
+                isPlaying={isPlaying}
+                isReady={isReady}
+                isTranscode={props.isTranscode}
+                onUpdate={onVideoUpdate}
+                onError={onVideoError}
+                onReady={onVideoReady}
+                subtitleIndex={props.subtitleIndex}
+                audioIndex={props.audioIndex}
+                seekToSeconds={seekToSeconds}
+                subtitleFontSize={subtitleFontSize}
+                subtitleColor={subtitleColor}
+            />
             <Modal
                 visible={controlsVisible}
                 onRequestClose={() => {
