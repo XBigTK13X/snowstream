@@ -1,14 +1,11 @@
 import React from 'react'
 import Video from 'react-native-video';
 import { ViewType } from 'react-native-video'
-import { Platform, View, TouchableOpacity, Dimensions, Modal } from 'react-native'
+import { Platform, View, TouchableOpacity, Modal } from 'react-native'
 import { StaticStyle } from '../snow-style'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
 
-
-const windowHeight = Dimensions.get('window').height
-const windowWidth = Dimensions.get('window').width
 
 const isWeb = Platform.OS === 'web'
 
@@ -24,51 +21,52 @@ const bufferConfig = {
     },
 }
 
-const styles = {
-    touchable: {
-        width: windowWidth,
-        height: windowHeight,
-        zIndex: StaticStyle.depth.video.toggle,
-        elevation: StaticStyle.depth.video.toggle,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'black'
-    },
-    wrapper: {
-        width: windowWidth,
-        height: windowHeight,
-        zIndex: StaticStyle.depth.video.wrapper,
-        elevation: StaticStyle.depth.video.wrapper,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'black'
-    },
-    video: {
-        position: 'absolute',
-        alignSelf: 'center',
-        backgroundColor: 'black',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        zIndex: StaticStyle.depth.video.content,
-        elevation: StaticStyle.depth.video.content
-    },
-}
-
 // https://docs.thewidlarzgroup.com/react-native-video/component/props
 
 export default function RnvVideoView(props) {
+    const styles = {
+        touchable: {
+            width: StaticStyle.window.width(),
+            height: StaticStyle.window.height(),
+            zIndex: StaticStyle.depth.video.toggle,
+            elevation: StaticStyle.depth.video.toggle,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'black'
+        },
+        wrapper: {
+            width: StaticStyle.window.width(),
+            height: StaticStyle.window.height(),
+            zIndex: StaticStyle.depth.video.wrapper,
+            elevation: StaticStyle.depth.video.wrapper,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'black'
+        },
+        video: {
+            width: StaticStyle.window.width(),
+            height: StaticStyle.window.height(),
+            position: 'absolute',
+            alignSelf: 'center',
+            backgroundColor: 'black',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            zIndex: StaticStyle.depth.video.content,
+            elevation: StaticStyle.depth.video.content
+        },
+    }
     const videoRef = React.useRef(null);
     const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
@@ -127,7 +125,7 @@ export default function RnvVideoView(props) {
         }
     }
 
-    const onUpdate = (kind,) => {
+    const onUpdate = (kind) => {
         return (payload) => {
             if (props.onUpdate) {
                 props.onUpdate({
@@ -142,13 +140,11 @@ export default function RnvVideoView(props) {
     }
 
     return (
-
         <Modal
-            onRequestClose={() => {
-                props.showControls()
-            }}
+            onRequestClose={props.stopVideo}
             style={styles.wrapper}>
             <TouchableOpacity
+                transparent
                 hasTVPreferredFocus={props.shouldFocus}
                 style={styles.touchable}
                 onPress={props.showControls}>
@@ -164,7 +160,8 @@ export default function RnvVideoView(props) {
                     fullscreen={false}
                     hideShutterView={true}
                     focusable={true}
-                    shutterColor='transparent'
+                    shutterColor="transparent"
+                    resizeMode="contain"
                     paused={!props.isPlaying}
                     playWhenInactive={false}
                     playInBackground={false}

@@ -43,11 +43,11 @@ export function SnowGrid(props) {
     let items = props.items
     if (!props.items) {
         // Without this, if a ternary `{x?x:null}` nullable component will leave a gap in the grid
-        const children = React.Children.toArray(props.children).filter(child => child !== null)
-        if (!children || !children.length) {
-            return null
-        }
-        items = children
+        items = React.Children.toArray(props.children)
+    }
+    items = items.filter(child => child !== null)
+    if (!items || !items.length) {
+        return null
     }
     let renderItem = (item, itemIndex) => {
         return item

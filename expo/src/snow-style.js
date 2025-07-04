@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, Dimensions } from 'react-native';
 
 export const StaticStyle = {
     color: {
@@ -23,6 +23,10 @@ export const StaticStyle = {
             toggle: 900,
             controls: 1000
         }
+    },
+    window: {
+        height: () => { return Dimensions.get('window').height },
+        width: () => { return Dimensions.get('window').width }
     }
 }
 

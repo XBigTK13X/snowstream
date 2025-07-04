@@ -5,29 +5,26 @@ import { useAppContext } from '../app-context'
 import { StaticStyle } from '../snow-style'
 import SnowVideoControls from './snow-video-controls'
 import { useDebouncedCallback } from 'use-debounce'
-const windowHeight = Dimensions.get('window').height
-const windowWidth = Dimensions.get('window').width
-
-const styles = {
-    videoOverlay: {
-        backgroundColor: 'transparent',
-        width: windowWidth,
-        height: windowHeight,
-    },
-    videoView: {
-        width: windowWidth,
-        height: windowHeight,
-        backgroundColor: StaticStyle.color.background,
-    },
-    videoControls: {
-        flex: 1
-    },
-    dark: {
-        backgroundColor: StaticStyle.color.background,
-    }
-}
 
 export default function SnowVideoPlayer(props) {
+    const styles = {
+        videoOverlay: {
+            backgroundColor: 'transparent',
+            width: StaticStyle.window.width(),
+            height: StaticStyle.window.height(),
+        },
+        videoView: {
+            width: StaticStyle.window.width(),
+            height: StaticStyle.window.height(),
+            backgroundColor: StaticStyle.color.background,
+        },
+        videoControls: {
+            flex: 1
+        },
+        dark: {
+            backgroundColor: StaticStyle.color.background,
+        }
+    }
     const { config, routes } = useAppContext()
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [isPlaying, setIsPlaying] = React.useState(false)
@@ -227,8 +224,8 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             <VideoView
-                windowHeight={windowHeight}
-                windowWidth={windowWidth}
+                windowHeight={StaticStyle.window.height()}
+                windowWidth={StaticStyle.window.width()}
                 videoUrl={props.videoUrl}
                 isPlaying={isPlaying}
                 isReady={isReady}
@@ -242,6 +239,7 @@ export default function SnowVideoPlayer(props) {
                 onError={onVideoError}
                 onReady={onVideoReady}
                 showControls={showControls}
+                stopVideo={stopVideo}
             />
             <SnowVideoControls
                 controlsVisible={controlsVisible}

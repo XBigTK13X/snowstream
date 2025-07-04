@@ -22,10 +22,10 @@ export default function PlayMediaPage() {
     const [videoUrl, setVideoUrl] = C.React.useState(null)
     const [transcode, setTranscode] = C.React.useState(localParams.transcode ? localParams.transcode : false)
     const [transcodeReady, setTranscodeReady] = C.React.useState(false)
-    
+
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
-    
+
     const [tracks, setTracks] = C.React.useState(null)
     const [videoTitle, setVideoTitle] = C.React.useState("")
     const [videoIsHdr, setVideoIsHdr] = C.React.useState(false)
@@ -223,11 +223,8 @@ export default function PlayMediaPage() {
         )
     }
 
-    let forceExo = true
-    if (forcePlayer === 'mpv') {
-        forceExo = false
-    }
-    else if (forcePlayer === 'exo') {
+    let forceExo = false
+    if (forcePlayer === 'exo') {
         forceExo = true
     }
     else if (videoIsHdr && forcePlayer !== 'mpv') {

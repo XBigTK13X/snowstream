@@ -54,21 +54,11 @@ import SnowTrackSelector from './comp/snow-track-selector'
 import SnowTextButton from './comp/snow-text-button'
 import SnowUpdateMediaButton from './comp/snow-update-media-button'
 
-const getWindowHeight = () => {
-    return Dimensions.get('window').height
-}
-
-const getWindowWidth = () => {
-    return Dimensions.get('window').width
-}
-
 const isWeb = Platform.OS === 'web'
 const isAndroid = Platform.OS === 'android'
 const isTV = Platform.isTV
 
 export default {
-    getWindowWidth,
-    getWindowHeight,
     isAndroid,
     isTV,
     isWeb,

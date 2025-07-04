@@ -32,15 +32,19 @@ const styles = {
         textAlign: 'center'
     },
 
-    prompt: {
+    logs: {
         backgroundColor: StaticStyle.color.background,
+        zIndex: StaticStyle.depth.video.controls + 10,
+        elevation: StaticStyle.depth.video.controls + 10
+    },
+    prompt: {
+        backgroundColor: StaticStyle.color.transparentDark,
         zIndex: StaticStyle.depth.video.controls,
         elevation: StaticStyle.depth.video.controls
     }
 }
 
 export default function SnowVideoControls(props) {
-
     if (!props.controlsVisible) {
         return null
     }
@@ -56,9 +60,9 @@ export default function SnowVideoControls(props) {
     if (showLogs) {
         return (
             <Modal
-                style={styles.prompt}
+                style={styles.logs}
                 onRequestClose={() => { setShowLogs(false) }}>
-                <FillView scroll style={styles.prompt}>
+                <FillView scroll style={styles.logs}>
                     <SnowGrid scroll={false} itemsPerRow={1}>
                         <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
                     </SnowGrid>
@@ -77,6 +81,7 @@ export default function SnowVideoControls(props) {
     return (
         (
             <Modal
+                style={styles.prompt}
                 transparent
                 visible={props.controlsVisible}
                 onRequestClose={props.resumeVideo}
