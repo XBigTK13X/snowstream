@@ -7,11 +7,9 @@ export default function LandingPage(props) {
     const [streamSources, setStreamSources] = C.React.useState(null)
     const { setMessageDisplay } = C.useAppContext()
 
-    // DEBUG a specific video
-    //const hdrMovieUrl = `${routes.movieDetails}?shelfId=1&movieId=651`
-    //const animeShowUrl = `${routes.episodeDetails}?shelfId=2&showId=54&seasonId=112&episodeId=2377&showName=Gintama&seasonOrder=2&episodeOrder=3`
-    //return <C.Redirect href={animeShowUrl} />
-
+    if (config.debugVideoUrl) {
+        return <C.Redirect href={config.debugVideoUrl} />
+    }
 
     C.React.useEffect(() => {
         if (!shelves) {
