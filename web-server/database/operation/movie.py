@@ -403,6 +403,10 @@ def set_movie_watched(ticket:dm.Ticket, movie_id:int, is_watched:bool=True):
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
             dm.Watched.movie_id == movie_id
         ).delete()
+        db.query(dm.WatchProgress).filter(
+            dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
+            dm.WatchProgress.movie_id == movie_id
+        ).delete()
         db.commit()
         if is_watched:
             dbm = dm.Watched()

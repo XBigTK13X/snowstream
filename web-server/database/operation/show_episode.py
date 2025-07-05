@@ -431,6 +431,10 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
             dm.Watched.client_device_user_id.in_(ticket.watch_group),
             dm.Watched.show_episode_id == episode_id
         ).delete()
+        db.query(dm.WatchProgress).filter(
+            dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
+            dm.WatchProgress.show_episode_id == episode_id
+        ).delete()
         db.commit()
         if is_watched:
             dbm = dm.Watched()
