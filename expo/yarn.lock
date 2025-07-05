@@ -2634,16 +2634,6 @@ expo-modules-core@2.4.0:
   dependencies:
     invariant "^2.2.4"
 
-expo-navigation-bar@4.2.5:
-  version "4.2.5"
-  resolved "https://registry.yarnpkg.com/expo-navigation-bar/-/expo-navigation-bar-4.2.5.tgz#388f0e6d3a0d9d090f1ef6640db93344195eed39"
-  integrity sha512-yKNr32ByL1ZBIVsiMq1mk5LdvIVW76nxHJYMVGGybIdf0MDCriNnBHCXp0bT6KXxpAlqUncA+9EbGhl15lXPOw==
-  dependencies:
-    "@react-native/normalize-colors" "0.79.3"
-    debug "^4.3.2"
-    react-native-edge-to-edge "1.6.0"
-    react-native-is-edge-to-edge "^1.1.6"
-
 expo-router@5.0.7:
   version "5.0.7"
   resolved "https://registry.yarnpkg.com/expo-router/-/expo-router-5.0.7.tgz#032c1de9d06237664169959f7178a818d7b0e677"
@@ -2675,14 +2665,6 @@ expo-splash-screen@0.30.9:
   integrity sha512-curHUaZxUTZ2dWvz32ao3xPv5mJr1LBqn5V8xm/IULAehB9RGCn8iKiROMN1PYebSG+56vPMuJmBm9P+ayvJpA==
   dependencies:
     "@expo/prebuild-config" "^9.0.6"
-
-expo-status-bar@2.2.3:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-2.2.3.tgz#09385a866732328e0af3b4588c4f349a15fd7cd0"
-  integrity sha512-+c8R3AESBoduunxTJ8353SqKAKpxL6DvcD8VKBuh81zzJyUUbfB4CVjr1GufSJEKsMzNPXZU+HJwXx7Xh7lx8Q==
-  dependencies:
-    react-native-edge-to-edge "1.6.0"
-    react-native-is-edge-to-edge "^1.1.6"
 
 expo@53.0.11:
   version "53.0.11"

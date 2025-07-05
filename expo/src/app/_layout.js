@@ -1,7 +1,6 @@
 import C from '../common'
 import { AppContextProvider } from '../app-context'
-import * as NavigationBar from 'expo-navigation-bar'
-import { StatusBar } from 'react-native'
+import { SystemBars } from "react-native-edge-to-edge";
 
 const styles = {
     safeArea: {
@@ -65,11 +64,8 @@ function MessageDisplay() {
 
 export default function RootLayout() {
     if (C.isAndroid) {
-        StatusBar.setHidden(true)
-        NavigationBar.setVisibilityAsync('hidden')
-        NavigationBar.setBehaviorAsync('overlay-swipe')
+        SystemBars.setHidden(true)
     }
-
     return (
         <SafeAreaView>
             <AppContextProvider>

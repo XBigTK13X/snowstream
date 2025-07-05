@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, TouchableOpacity } from 'react-native'
+import { Modal, TouchableOpacity, Platform } from 'react-native'
 import { useNavigation } from 'expo-router'
 import { StaticStyle } from '../snow-style'
 
@@ -78,7 +78,6 @@ export default function MpvVideoView(props) {
 
     return (
         <Modal
-            navigationBarTranslucent statusBarTranslucent
             onRequestClose={props.stopVideo}
             style={styles.wrapper}>
             <TouchableOpacity
