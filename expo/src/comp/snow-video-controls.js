@@ -105,7 +105,7 @@ export default function SnowVideoControls(props) {
                     <SnowGrid scroll={false} itemsPerRow={4}>
                         <SnowTextButton shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
                         <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
-                        <SnowTextButton title="Stop" onPress={props.stopVideo} />
+                        <SnowTextButton title="Stop" onPress={() => { props.stopVideo() }} />
                         <SnowTextButton title="Home" onPress={() => { props.stopVideo(true) }} />
                     </SnowGrid>
                     <SnowGrid scroll={false} itemsPerRow={4}>

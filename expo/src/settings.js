@@ -24,7 +24,7 @@ class Config {
         this.debugVideoUrl = null;
         const animeUrl = "/auth/details/episode?shelfId=2&showId=54&seasonId=112&episodeId=2377&showName=Gintama&seasonOrder=2&episodeOrder=3"
         const movieUrl = "/auth/details/movie?shelfId=1&movieId=651"
-        this.debugVideoUrl = animeUrl
+        //this.debugVideoUrl = animeUrl
     }
 }
 

@@ -78,12 +78,12 @@ export default function MpvVideoView(props) {
 
     return (
         <Modal
-            onRequestClose={props.stopVideo}
+            onRequestClose={() => { props.stopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity
                 hasTVPreferredFocus={props.shouldFocus}
                 style={styles.touchable}
-                onPress={props.showControls}>
+                onPress={props.pauseVideo}>
                 <LibmpvVideo
                     playUrl={props.videoUrl}
                     isPlaying={props.isPlaying}

@@ -8,6 +8,7 @@ export default function LandingPage(props) {
     const { setMessageDisplay } = C.useAppContext()
 
     if (config.debugVideoUrl) {
+        return <C.SnowTextButton title="Debug Video" onPress={routes.func(config.debugVideoUrl)} />
         return <C.Redirect href={config.debugVideoUrl} />
     }
 

@@ -142,13 +142,13 @@ export default function RnvVideoView(props) {
     return (
         <Modal
             navigationBarTranslucent statusBarTranslucent
-            onRequestClose={props.stopVideo}
+            onRequestClose={() => { props.stopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity
                 transparent
                 hasTVPreferredFocus={props.shouldFocus}
                 style={styles.touchable}
-                onPress={props.showControls}>
+                onPress={props.pauseVideo}>
                 <Video
                     style={styles.video}
                     source={{

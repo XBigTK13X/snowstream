@@ -53,7 +53,7 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
-    const showControls = () => {
+    const pauseVideo = () => {
         setControlsVisible(true)
         setIsPlaying(false)
     }
@@ -73,8 +73,9 @@ export default function SnowVideoPlayer(props) {
         setIsPlaying(false)
         if (goHome) {
             routes.goto(routes.landing)
-        } else {
-            routes.funcBack()
+        }
+        else {
+            routes.back()
         }
     }
 
@@ -237,7 +238,7 @@ export default function SnowVideoPlayer(props) {
                 onUpdate={onVideoUpdate}
                 onError={onVideoError}
                 onReady={onVideoReady}
-                showControls={showControls}
+                pauseVideo={pauseVideo}
                 stopVideo={stopVideo}
             />
             <SnowVideoControls
