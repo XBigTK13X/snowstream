@@ -52,6 +52,7 @@ export default function SnowUpdateMediaButton(props) {
         let question = props.kind ? `Do you want to update this ${props.kind}?` : 'Do you want to update this item?'
         return (
             <Modal
+                navigationBarTranslucent statusBarTranslucent
                 onRequestClose={() => {
                     setShowRequest(false)
                 }}>

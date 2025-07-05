@@ -3,11 +3,6 @@ import { Modal, TouchableOpacity } from 'react-native'
 import { useNavigation } from 'expo-router'
 import { StaticStyle } from '../snow-style'
 
-const uhd = {
-    width: 3840,
-    height: 2160
-}
-
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
     const styles = {
@@ -60,6 +55,8 @@ export default function MpvVideoView(props) {
         if (!cleanup) {
             //Libmpv.command("set|vf|no")
             //Libmpv.command("set|af|no")
+            // Loudness normalization from Snowby
+            Libmpv.command('set|af|acompressor=ratio=4,loudnorm')
             Libmpv.command("set|cache-secs|5")
             Libmpv.command("set|demuxer-readahead-secs|5")
             navigation.addListener('beforeRemove', (e) => {
@@ -81,6 +78,7 @@ export default function MpvVideoView(props) {
 
     return (
         <Modal
+            navigationBarTranslucent statusBarTranslucent
             onRequestClose={props.stopVideo}
             style={styles.wrapper}>
             <TouchableOpacity
@@ -90,8 +88,8 @@ export default function MpvVideoView(props) {
                 <LibmpvVideo
                     playUrl={props.videoUrl}
                     isPlaying={props.isPlaying}
-                    surfaceWidth={uhd.width}
-                    surfaceHeight={uhd.height}
+                    surfaceWidth={StaticStyle.surface.width()}
+                    surfaceHeight={StaticStyle.surface.height()}
                     onLibmpvEvent={(libmpvEvent) => {
                         if (props.onUpdate) {
                             props.onUpdate({ kind: 'mpvevent', libmpvEvent })

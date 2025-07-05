@@ -141,6 +141,7 @@ export default function RnvVideoView(props) {
 
     return (
         <Modal
+            navigationBarTranslucent statusBarTranslucent
             onRequestClose={props.stopVideo}
             style={styles.wrapper}>
             <TouchableOpacity

@@ -80,6 +80,7 @@ export default function KeepsakeDetailsPage() {
         }
         return (
             <C.Modal
+                navigationBarTranslucent statusBarTranslucent
                 onRequestClose={closeModal}
             >
                 <C.TouchableOpacity

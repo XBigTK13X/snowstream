@@ -1,6 +1,5 @@
 import React from 'react'
-import { Dimensions, Modal, TouchableOpacity, Platform, View } from 'react-native'
-import { useRouter } from 'expo-router'
+import { Platform, View } from 'react-native'
 import { useAppContext } from '../app-context'
 import { StaticStyle } from '../snow-style'
 import SnowVideoControls from './snow-video-controls'

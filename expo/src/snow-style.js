@@ -1,5 +1,10 @@
 import { Platform, Dimensions } from 'react-native';
 
+const uhd = {
+    width: 3840,
+    height: 2160
+}
+
 export const StaticStyle = {
     color: {
         background: 'black',
@@ -27,6 +32,10 @@ export const StaticStyle = {
     window: {
         height: () => { return Dimensions.get('window').height },
         width: () => { return Dimensions.get('window').width }
+    },
+    surface: {
+        height: () => { return Platform.isTV ? uhd.height : Dimensions.get('window').height },
+        width: () => { return Platform.isTV ? uhd.width : Dimensions.get('window').width }
     }
 }
 

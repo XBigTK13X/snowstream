@@ -193,7 +193,7 @@ export function AppContextProvider(props) {
 
     if (apiError) {
         return (
-            <Modal>
+            <Modal navigationBarTranslucent statusBarTranslucent>
                 <View style={styles.prompt}>
                     <SnowText>Unable to communicate with Snowstream.</SnowText>
                     <SnowText>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</SnowText>

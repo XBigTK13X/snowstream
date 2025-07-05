@@ -60,6 +60,7 @@ export default function SnowVideoControls(props) {
     if (showLogs) {
         return (
             <Modal
+                navigationBarTranslucent statusBarTranslucent
                 style={styles.logs}
                 onRequestClose={() => { setShowLogs(false) }}>
                 <FillView scroll style={styles.logs}>
@@ -81,6 +82,7 @@ export default function SnowVideoControls(props) {
     return (
         (
             <Modal
+                navigationBarTranslucent statusBarTranslucent
                 style={styles.prompt}
                 transparent
                 visible={props.controlsVisible}

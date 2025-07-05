@@ -45,7 +45,7 @@
     },
     "android": {
       "package": "com.simplepathstudios.snowstream",
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": false
     },
     "ios": {
       "bundleIdentifier": "com.simplepathstudios.snowstream"
