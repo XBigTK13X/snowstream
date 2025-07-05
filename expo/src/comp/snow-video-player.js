@@ -32,7 +32,6 @@ export default function SnowVideoPlayer(props) {
     const [seekToSeconds, setSeekToSeconds] = React.useState(null)
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
     const [logs, setLogs] = React.useState([])
-    const [initialSeekComplete, setInitialSeekComplete] = React.useState(false)
     const [subtitleFontSize, setSubtitleFontSize] = React.useState(38) // MPV default font size
     const [subtitleColor, setSubtitleColor] = React.useState({ shade: 1.0, alpha: 1.0 })
 
@@ -89,22 +88,42 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
+    const immediateSeek = (progressPercent, progressSeconds) => {
+        if (!progressSeconds) {
+            progressSeconds = (progressPercent / 100) * props.durationSeconds
+        }
+        if (progressPercent >= 100) {
+            setCompleteOnResume(true)
+        } else {
+            setCompleteOnResume(false)
+            if (props.onSeek) {
+                props.onSeek(progressSeconds)
+            }
+        }
+        setSeekToSeconds(progressSeconds)
+        setProgressSeconds(progressSeconds)
+    }
+
+    const onSeek = useDebouncedCallback(immediateSeek, config.debounceMilliseconds)
+
     const onVideoUpdate = (info) => {
         if (config.debugVideoPlayer) {
             console.log({ info })
         }
 
-        if (props.initialSeekSeconds && !initialSeekComplete) {
+        if (!props.initialSeekComplete.current && props.initialSeekSeconds) {
             if (playerKind === 'mpv') {
                 if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('audio ready') !== -1) {
-                    setInitialSeekComplete(true)
-                    immediateSeek(0, props.initialSeekSeconds)
+                    setSeekToSeconds(props.initialSeekSeconds)
+                    setProgressSeconds(props.initialSeekSeconds)
+                    props.onReadyToSeek()
                 }
             }
             else if (playerKind === 'rnv') {
                 if (info && info.kind === 'rnvevent' && info.data.event === 'onReadyForDisplay') {
-                    setInitialSeekComplete(true)
-                    immediateSeek(0, props.initialSeekSeconds)
+                    setSeekToSeconds(props.initialSeekSeconds)
+                    setProgressSeconds(props.initialSeekSeconds)
+                    props.onReadyToSeek()
                 }
             }
         }
@@ -190,28 +209,10 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
-    const immediateSeek = (progressPercent, progressSeconds) => {
-        if (!progressSeconds) {
-            progressSeconds = (progressPercent / 100) * props.durationSeconds
-        }
-        if (progressPercent >= 100) {
-            setCompleteOnResume(true)
-        } else {
-            setCompleteOnResume(false)
-            if (props.onSeek) {
-                props.onSeek(progressSeconds)
-            }
-        }
-        setSeekToSeconds(progressSeconds)
-        setProgressSeconds(progressSeconds)
-    }
-
     const onVideoReady = () => {
         setIsReady(true)
         setIsPlaying(true)
     }
-
-    const onSeek = useDebouncedCallback(immediateSeek, config.debounceMilliseconds)
 
     if (!props.videoUrl) {
         return null

@@ -7,8 +7,9 @@ export default function PlayMediaPage() {
     const shelfId = localParams.shelfId
     const streamableId = localParams.streamableId
     const videoFileIndex = localParams.videoFileIndex
-    const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
     const forcePlayer = localParams.forcePlayer
+
+    const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
 
     const [episodeId, setEpisodeId] = C.React.useState(localParams.episodeId)
     const [movieId, setMovieId] = C.React.useState(localParams.movieId)
@@ -33,8 +34,11 @@ export default function PlayMediaPage() {
 
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
     const durationRef = C.React.useRef(durationSeconds)
-    const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(initialSeekSeconds)
+    const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(0)
+    const [initialSeekComplete, setInitialSeekComplete] = C.React.useState(false)
+    const initialSeekRef = C.React.useRef(initialSeekComplete)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
+
 
     const loadVideoFile = (videoHolder) => {
         // TODO This is where the playing queue needs to determine a videoFileIndex
@@ -144,6 +148,15 @@ export default function PlayMediaPage() {
         }
     }
 
+    const onReadyToSeek = () => {
+        if (!initialSeekRef.current) {
+            initialSeekRef.current = true
+            setInitialSeekComplete(true)
+
+            //setProgressSeconds(initialSeekSeconds)
+        }
+    }
+
     const onSeek = (seekedToSeconds) => {
         return onProgress(seekedToSeconds, true)
     }
@@ -246,8 +259,10 @@ export default function PlayMediaPage() {
                 onProgress={onProgress}
                 onComplete={onComplete}
                 durationSeconds={durationSeconds}
-                initialSeekSeconds={initialSeekSeconds}
                 forceExoPlayer={forceExo}
+                initialSeekSeconds={initialSeekSeconds}
+                initialSeekComplete={initialSeekRef}
+                onReadyToSeek={onReadyToSeek}
             />
         )
     }
