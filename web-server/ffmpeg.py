@@ -44,9 +44,15 @@ def path_to_info_json(media_path: str):
     }
 
 class MediaTrack:
+    # mediainfo index is 1 based
+    # ffprobe index is 0 based
+    # mpv uses ffprobe index scheme
     def __init__(self, ffprobe:dict, mediainfo:dict):
         self.track_index = int(mediainfo['StreamOrder'])
         self.codec = mediainfo(['CodecID'])
+        self.size_bits = int(mediainfo['BitRate'])
+        self.language = mediainfo['Language'] if 'Language' in mediainfo else 'Undefined'
+        self.is_default = mediainfo['Default'] if 'Default' in mediainfo else False
 
         if ffprobe['codec_type'] == 'video':
             self.read_video(ffprobe,mediainfo)
@@ -55,36 +61,34 @@ class MediaTrack:
         elif ffprobe['codec_type'] == 'subtitle':
             self.read_subtitle(ffprobe,mediainfo)
 
-        self.codec = None
-        self.subtitle_index = None
-        self.video_index = None
-        self.audio_index = None
-        self.resolution_height = None
-        self.resolution_width = None
-        self.megabits_per_second = None
-        self.title = None
-        self.display = None
-        self.is_forced = None
-        self.is_default = None
-        self.is_closed_caption = None
-
     def read_video(self,ffprobe,mediainfo):
         self.kind = 'video'
         self.video_index = 0
         if '@typeorder' in mediainfo:
-            self.video_index = int(mediainfo['@typeorder'])
+            self.video_index = int(mediainfo['@typeorder'])-1
+        self.resolution_width = mediainfo['Width']
+        self.resolution_height = mediainfo['Height']
+        self.is_hdr = 'HDR Format' in mediainfo
 
     def read_audio(self,ffprobe,mediainfo):
         self.kind = 'audio'
         self.audio_index = 0
         if '@typeorder' in mediainfo:
-            self.audio_index = int(mediainfo['@typeorder'])
+            self.audio_index = int(mediainfo['@typeorder'])-1
+        self.title = mediainfo['Format_Commercial_IfAny']
 
     def read_subtitle(self,ffprobe,mediainfo):
         self.kind = 'subtitle'
         self.subtitle_index = 0
         if '@typeorder' in mediainfo:
-            self.subtitle_index = int(mediainfo['@typeorder'])
+            self.subtitle_index = int(mediainfo['@typeorder'])-1
+        self.is_forced = mediainfo['Forced'] if 'Forced' in mediainfo else False
+        self.is_captioned = False
+        low_title = mediainfo['Title'].lower()
+        if ffprobe['disposition']['captions'] == '1' \
+            or 'cc' in low_title  \
+            or 'caption' in low_title:
+            self.is_captioned = True
 
 def get_snowstream_info(media_path:str):
     command = f'ffprobe -hide_banner -loglevel quiet "{media_path}" -print_format json -show_format -show_streams'
@@ -101,15 +105,23 @@ def get_snowstream_info(media_path:str):
 
     snowstream_info = {
         'duration_seconds': float(raw_ffprobe['format']['duration']),
-        'is_hdr': 'HDR Format' in mediainfo_output,
-        'tracks': []
+        'is_hdr': False,
+        'tracks': {
+            'audio': [],
+            'video': [],
+            'subtitle': []
+        }
     }
 
     for ii in range(0,len(raw_ffprobe['streams'])):
         ff = raw_ffprobe['streams'][ii]
         mi = raw_mediainfo['media']['track'][ii+1]
         track = MediaTrack(ffprobe=ff,mediainfo=mi)
-        snowstream_info['tracks'].append(track)
+        if not track.kind:
+            continue
+        if track.kind == 'video' and track.is_hdr:
+            snowstream_info['is_hdr'] = True
+        snowstream_info['tracks'][track.kind].append(track)
 
     for stream in raw_ffprobe['streams']:
         if stream['codec_type'] == 'video':
