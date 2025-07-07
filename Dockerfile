@@ -3,7 +3,7 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11
 RUN apt update; apt install -y postgresql postgresql-common \
     rabbitmq-server postgresql-client \
     postgresql-contrib supervisor nginx gosu \
-    ffmpeg imagemagick
+    ffmpeg imagemagick mediainfo
 
 # https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(Native-GPU-Support)
 ENV NVIDIA_VISIBLE_DEVICES=all

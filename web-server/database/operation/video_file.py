@@ -45,16 +45,20 @@ def get_video_file_by_path(local_path: str):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.local_path == local_path).first()
 
-def get_or_create_video_file(shelf_id: int, kind: str, local_path: str):
+def get_or_create_video_file(shelf_id: int, kind: str, local_path: str, force_inspection: bool=False):
     video_file = get_video_file_by_path(local_path=local_path)
     if not video_file:
-        ffprobe = json.dumps(ffmpeg.ffprobe_media(local_path)['parsed'])
+        info = ffmpeg.path_to_info_json(media_path=local_path)
         return create_video_file(
             shelf_id=shelf_id,
             kind=kind,
             local_path=local_path,
-            ffprobe_pruned_json=ffprobe
+            snowstream_info_json=info['snowstream_info'],
+            ffprobe_raw_json=info['ffprobe_raw'],
+            mediainfo_raw_json=['mediainfo_raw']
         )
+    #if force_inspection or not video_file.ffprobe_raw_json or not video_file.mediainfo_raw_json:
+
     return video_file
 
 def get_video_file_by_id(video_file_id: int):

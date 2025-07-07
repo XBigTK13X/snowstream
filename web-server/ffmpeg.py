@@ -32,45 +32,92 @@ def transcode_command(
     log.info(command)
     return command,streaming_url
 
+def path_to_info_json(media_path: str):
+    probe = get_snowstream_info(media_path)
+    pruned = json.dumps(probe['snowstream_info'])
+    full = json.dumps(probe['ffprobe_raw'])
+    info = json.dumps(info)
+    return {
+        'mediainfo': info,
+        'ffprobe_full': full,
+        'ffprobe_pruned': pruned
+    }
 
-def ffprobe_media(media_path:str):
-    hash_name = util.string_to_md5(media_path)
-    output_dir = os.path.join(config.ffprobe_dir,hash_name[0],hash_name[1])
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir,exist_ok=True)
-    output_path = os.path.join(output_dir,hash_name+'.json')
-    if os.path.exists(output_path):
-        with open(output_path,'r') as read_handle:
-            return json.loads(read_handle.read())
+class MediaTrack:
+    def __init__(self, ffprobe:dict, mediainfo:dict):
+        self.track_index = int(mediainfo['StreamOrder'])
+        self.codec = mediainfo(['CodecID'])
+
+        if ffprobe['codec_type'] == 'video':
+            self.read_video(ffprobe,mediainfo)
+        elif ffprobe['codec_type'] == 'audio':
+            self.read_audio(ffprobe,mediainfo)
+        elif ffprobe['codec_type'] == 'subtitle':
+            self.read_subtitle(ffprobe,mediainfo)
+
+        self.codec = None
+        self.subtitle_index = None
+        self.video_index = None
+        self.audio_index = None
+        self.resolution_height = None
+        self.resolution_width = None
+        self.megabits_per_second = None
+        self.title = None
+        self.display = None
+        self.is_forced = None
+        self.is_default = None
+        self.is_closed_caption = None
+
+    def read_video(self,ffprobe,mediainfo):
+        self.kind = 'video'
+        self.video_index = 0
+        if '@typeorder' in mediainfo:
+            self.video_index = int(mediainfo['@typeorder'])
+
+    def read_audio(self,ffprobe,mediainfo):
+        self.kind = 'audio'
+        self.audio_index = 0
+        if '@typeorder' in mediainfo:
+            self.audio_index = int(mediainfo['@typeorder'])
+
+    def read_subtitle(self,ffprobe,mediainfo):
+        self.kind = 'subtitle'
+        self.subtitle_index = 0
+        if '@typeorder' in mediainfo:
+            self.subtitle_index = int(mediainfo['@typeorder'])
+
+def get_snowstream_info(media_path:str):
     command = f'ffprobe -hide_banner -loglevel quiet "{media_path}" -print_format json -show_format -show_streams'
     #log.info(command)
     command_output = util.run_cli(command,raw_output=True)
     ffprobe_output = command_output['stdout']
     cleaned = ffprobe_output.replace("�",'')
     raw_ffprobe = json.loads(cleaned)
-    parsed = {'video':[],'audio':[],'subtitle':[],'other':[]}
-    parsed['duration_seconds'] = float(raw_ffprobe['format']['duration'])
-    audio_index = 0
-    video_index = 0
-    subtitle_index = 0
-    absolute_index = 0
+
+    command = f'mediainfo --Output=JSON "{media_path}"'
+    command_output = util.run_cli(command,raw_output=True)
+    mediainfo_output = command_output['stdout']
+    raw_mediainfo = json.loads(mediainfo_output)
+
+    snowstream_info = {
+        'duration_seconds': float(raw_ffprobe['format']['duration']),
+        'is_hdr': 'HDR Format' in mediainfo_output,
+        'tracks': []
+    }
+
+    for ii in range(0,len(raw_ffprobe['streams'])):
+        ff = raw_ffprobe['streams'][ii]
+        mi = raw_mediainfo['media']['track'][ii+1]
+        track = MediaTrack(ffprobe=ff,mediainfo=mi)
+        snowstream_info['tracks'].append(track)
+
     for stream in raw_ffprobe['streams']:
-        entry = {
-            'absolute_index': absolute_index,
-        }
-        if 'codec_name' in stream:
-            entry['codec'] = stream['codec_name']
         if stream['codec_type'] == 'video':
-            entry['relative_index'] = video_index
-            entry['kind'] = 'video'
-            parsed['resolution_width'] = int(stream['width'])
-            parsed['resolution_height'] = int(stream['height'])
+            snowstream_info['resolution_width'] = int(stream['width'])
+            snowstream_info['resolution_height'] = int(stream['height'])
             if 'tags' in stream and 'BPS-eng' in stream['tags']:
                 entry['megabits_per_second'] = float(stream['tags']['BPS-eng']) / 1000.0
-            parsed['video'].append(entry)
-            video_index += 1
         if stream['codec_type'] == 'audio':
-            entry['relative_index'] = audio_index
             entry['display'] = f"{stream['channels']} ch"
             if 'codec_name' in stream and stream['codec_name']:
                  entry['display'] += f' - {stream["codec_name"]}'
@@ -94,10 +141,7 @@ def ffprobe_media(media_path:str):
                 entry['is_forced'] = stream['disposition']['forced'] == '1' or 'force' in entry['title'].lower()
                 entry['is_default'] = stream['disposition']['default'] == '1' or 'default' in entry['title'].lower()
                 entry['is_closed_caption'] = stream['disposition']['captions'] == '1' or 'cc' in entry['title'].lower()  or 'caption' in entry['title'].lower()
-            parsed['audio'].append(entry)
-            audio_index += 1
         if stream['codec_type'] == 'subtitle':
-            entry['relative_index'] = subtitle_index
             entry['display'] = ''
             if 'codec_name' in stream:
                 entry['display'] = f"{stream['codec_name']}"
@@ -121,17 +165,13 @@ def ffprobe_media(media_path:str):
                 entry['is_forced'] = stream['disposition']['forced'] == '1' or 'force' in entry['title'].lower()
                 entry['is_default'] = stream['disposition']['default'] == '1' or 'default' in entry['title'].lower()
                 entry['is_closed_caption'] = stream['disposition']['captions'] == '1' or 'cc' in entry['title'].lower()  or 'caption' in entry['title'].lower()
-            parsed['subtitle'].append(entry)
-            subtitle_index += 1
-        absolute_index += 1
 
-    parsed['inspection'] = inspect_media(media_path=media_path,ffprobe=parsed)
+    snowstream_info['inspection'] = inspect_media(media_path=media_path,ffprobe=snowstream_info)
     result = {
         'ffprobe_raw': raw_ffprobe,
-        'parsed': parsed,
+        'snowstream_info': snowstream_info,
+        'raw_mediainfo': raw_mediainfo
     }
-    with open(output_path,'w') as write_handle:
-        write_handle.write(json.dumps(result, indent=4))
     return result
 
 def score_audio_track(track):

@@ -14,8 +14,8 @@ class Config {
             this.webApiUrl = this.beastWebApiUrl
         }
 
-        this.clientVersion = "0.11.12"
-        this.clientBuildDate = "July 04, 2025"
+        this.clientVersion = "0.12.1"
+        this.clientBuildDate = "July 05, 2025"
         this.clientDevBuildNumber = 1
         this.useNullVideoView = false
         this.debugVideoPlayer = false
