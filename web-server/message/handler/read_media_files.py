@@ -105,7 +105,10 @@ def handle(scope):
             if not scope.skip_existing:
                 # First read fresh mediainfo + ffprobe, then regenerate the snowstream info
                 info = ffmpeg.path_to_info_json(media_path=video_file.local_path)
-                db.op.update_video_file_info(video_file_id=video_file.id,snowstream_info_json=info['snowstream_info'])
+                db.op.update_video_file_info(
+                    video_file_id=video_file.id,
+                    snowstream_info_json=info['snowstream_info']
+                )
             else:
                 # Regenerate the snowstream info without running the file through mediainfo + ffprobe
                 info = ffmpeg.path_to_info_json(

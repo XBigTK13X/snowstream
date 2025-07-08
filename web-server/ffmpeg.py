@@ -36,21 +36,29 @@ class MediaTrack:
     # mediainfo index is 1 based
     # ffprobe index is 0 based
     # mpv uses ffprobe index scheme
-    def __init__(self, ffprobe:dict, mediainfo:dict):
-        self.track_index = int(mediainfo['StreamOrder'])
-        self.codec = mediainfo(['CodecID'])
-        self.format = mediainfo(['Format'])
-        self.size_bits = int(mediainfo['BitRate'])
-        self.language = mediainfo['Language'] if 'Language' in mediainfo else 'Undefined'
-        self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
-        self.title = mediainfo['Title'] if 'Title' in mediainfo else None
+    def __init__(self, media_path: str, ffprobe:dict, mediainfo:dict):
+        try:
+            self.track_index = int(mediainfo['StreamOrder'])
+            self.codec = mediainfo['CodecID']
+            self.format = mediainfo['Format']
+            self.size_bits = int(mediainfo['BitRate']) if 'BitRate' in mediainfo else None
+            self.size_kind = mediainfo['BitRate_Mode'] if 'BitRate_Mode' in mediainfo else None
+            self.language = mediainfo['Language'] if 'Language' in mediainfo else 'Undefined'
+            self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
+            self.title = mediainfo['Title'] if 'Title' in mediainfo else ''
 
-        if ffprobe['codec_type'] == 'video':
-            self.read_video(ffprobe,mediainfo)
-        elif ffprobe['codec_type'] == 'audio':
-            self.read_audio(ffprobe,mediainfo)
-        elif ffprobe['codec_type'] == 'subtitle':
-            self.read_subtitle(ffprobe,mediainfo)
+            if ffprobe['codec_type'] == 'video':
+                self.read_video(ffprobe,mediainfo)
+            elif ffprobe['codec_type'] == 'audio':
+                self.read_audio(ffprobe,mediainfo)
+            elif ffprobe['codec_type'] == 'subtitle':
+                self.read_subtitle(ffprobe,mediainfo)
+        except Exception as e:
+            print(f"Unable to parse media track info for {media_path}")
+            import pprint
+            pprint.pprint(ffprobe)
+            pprint.pprint(mediainfo)
+            raise e
 
     def read_video(self,ffprobe,mediainfo):
         self.kind = 'video'
@@ -76,7 +84,7 @@ class MediaTrack:
         self.audio_index = 0
         if '@typeorder' in mediainfo:
             self.audio_index = int(mediainfo['@typeorder'])-1
-        self.title = mediainfo['Format_Commercial_IfAny']
+        self.format_full = mediainfo['Format_Commercial_IfAny'] if 'Format_Commercial_IfAny' in mediainfo else None
         self.channel_count = int(mediainfo['Channels'])
         self.is_lossless = mediainfo['Compression_Mode'] == 'Lossless'
         self.score = self.score_audio_track(ffprobe,mediainfo)
@@ -111,7 +119,7 @@ class MediaTrack:
             self.subtitle_index = int(mediainfo['@typeorder'])-1
         self.is_forced = mediainfo['Forced'] == 'Yes' if 'Forced' in mediainfo else False
         self.is_captioned = False
-        low_title = mediainfo['Title'].lower()
+        low_title = self.title.lower()
         if ('disposition' in ffprobe and ffprobe['disposition']['captions'] == '1') \
             or 'cc' in low_title  \
             or 'caption' in low_title:
@@ -122,23 +130,27 @@ class MediaTrack:
             self.is_text = False
         self.score = self.score_subtitle_track(ffprobe,mediainfo)
 
-RESOLUTIONS = {
+RESOLUTION_HEIGHTS = {
     2160: 'UHD 2160',
     1080: 'FHD 1080',
     720: 'HD 720',
     480: 'SD 480'
 }
 
+RESOLUTION_WIDTHS = {
+    3840: 'UHD 2160',
+    1920: 'FHD 1080',
+    1280: 'HD 720',
+    640: 'SD 480'
+}
+
 
 def path_to_info_json(media_path: str, ffprobe_json:str = None, mediainfo_json:str=None):
     probe = get_snowstream_info(media_path,ffprobe_existing=ffprobe_json,mediainfo_existing=mediainfo_json)
-    pruned = json.dumps(probe['snowstream_info'])
-    full = json.dumps(probe['ffprobe_raw'])
-    info = json.dumps(info)
     return {
-        'mediainfo': info,
-        'ffprobe_full': full,
-        'ffprobe_pruned': pruned
+        'mediainfo_raw': json.dumps(probe['mediainfo_raw']),
+        'ffprobe_raw': json.dumps(probe['ffprobe_raw']),
+        'snowstream_info': json.dumps(probe['snowstream_info'])
     }
 
 # Originally from snowby
@@ -168,6 +180,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         'is_hdr': False,
         'is_anime': True if '/anime/' in media_path else False,
         'source_kind': 'remux' if 'remux' in media_path.lower() else 'transcode',
+        'size_bits': None,
+        'size_kind': None,
         'tracks': {
             'audio': [],
             'video': [],
@@ -175,25 +189,33 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         }
     }
 
+    if 'OverallBitRate' in raw_mediainfo['media']['track'][0]:
+        snowstream_info['size_bits'] = int(raw_mediainfo['media']['track'][0]['OverallBitRate'])
+        if 'OverallBitRate_Mode' in raw_mediainfo['media']['track'][0]:
+            snowstream_info['size_kind'] = raw_mediainfo['media']['track'][0]['OverallBitRate_Mode']
+
     for ii in range(0,len(raw_ffprobe['streams'])):
         ff = raw_ffprobe['streams'][ii]
         mi = raw_mediainfo['media']['track'][ii+1]
-        track = MediaTrack(ffprobe=ff,mediainfo=mi)
-        if not track.kind:
+        if not 'codec_type' in ff:
             continue
+        track = MediaTrack(media_path=media_path,ffprobe=ff,mediainfo=mi)
         if track.kind == 'video':
             if track.is_hdr:
                 snowstream_info['is_hdr'] = True
-            snowstream_info['resolution_name'] = RESOLUTIONS[track.resolution_height] if track.resolution_height in RESOLUTIONS else 'Unknown'
-        snowstream_info['tracks'][track.kind].append(track)
+            snowstream_info['resolution_name'] = RESOLUTION_HEIGHTS[track.resolution_height] if track.resolution_height in RESOLUTION_HEIGHTS else 'Unknown'
+            if snowstream_info['resolution_name'] == 'Unknown':
+                snowstream_info['resolution_name'] = RESOLUTION_WIDTHS[track.resolution_width] if track.resolution_width in RESOLUTION_WIDTHS else 'Unknown'
+        snowstream_info['tracks'][track.kind].append(track.__dict__)
+
     for kind in ['audio','subtitle']:
         if snowstream_info['tracks'][kind]:
-            snowstream_info['tracks'][kind].sort(key=lambda xx: xx.score,reverse=True)
+            snowstream_info['tracks'][kind].sort(key=lambda xx: xx['score'],reverse=True)
 
     result = {
         'snowstream_info': snowstream_info,
         'ffprobe_raw': raw_ffprobe,
-        'raw_mediainfo': raw_mediainfo
+        'mediainfo_raw': raw_mediainfo
     }
     return result
 

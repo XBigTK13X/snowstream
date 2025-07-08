@@ -14,7 +14,9 @@ def create_video_file(
     shelf_id: int,
     kind: str,
     local_path: str,
-    ffprobe_pruned_json: str
+    snowstream_info_json: str,
+    ffprobe_raw_json:str,
+    mediainfo_raw_json:str
     ):
     shelf = db_shelf.get_shelf_by_id(shelf_id=shelf_id)
     network_path = ''
@@ -32,7 +34,9 @@ def create_video_file(
         dbm.network_path = network_path
         dbm.kind = kind
         dbm.shelf_id = shelf_id
-        dbm.ffprobe_pruned_json = ffprobe_pruned_json
+        dbm.snowstream_info_json = snowstream_info_json
+        dbm.ffprobe_raw_json = ffprobe_raw_json
+        dbm.mediainfo_raw_json = mediainfo_raw_json
         dbm.version = version
         dbm.name = os.path.splitext(file_name)[0]
         db.add(dbm)
@@ -55,7 +59,7 @@ def get_or_create_video_file(shelf_id: int, kind: str, local_path: str):
             local_path=local_path,
             snowstream_info_json=info['snowstream_info'],
             ffprobe_raw_json=info['ffprobe_raw'],
-            mediainfo_raw_json=['mediainfo_raw']
+            mediainfo_raw_json=info['mediainfo_raw']
         )
 
     return video_file
