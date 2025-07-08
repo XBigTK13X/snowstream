@@ -54,10 +54,10 @@ export default function PlayMediaPage() {
                 setVideoIsHdr(videoFile.is_hdr)
             })
         } else {
-            setTracks(videoFile.tracks.inspection.scored_tracks)
+            setTracks(videoFile.info.tracks)
             setVideoUrl(videoFile.network_path)
-            setDurationSeconds(videoFile.tracks.duration_seconds)
-            durationRef.current = videoFile.tracks.duration_seconds
+            setDurationSeconds(videoFile.info.duration_seconds)
+            durationRef.current = videoFile.info.duration_seconds
         }
     }
 

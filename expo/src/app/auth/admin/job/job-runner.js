@@ -12,6 +12,7 @@ export default function ShelfEditPage() {
     const [episodeOrder, setEpisodeOrder] = C.React.useState('')
     const [updateImages, setUpdateImages] = C.React.useState('')
     const [updateMetadata, setUpdateMetadata] = C.React.useState('')
+    const [updateVideos, setUpdateVideos] = C.React.useState('')
 
     const createJob = (apiCall) => {
         let details = {
@@ -23,7 +24,8 @@ export default function ShelfEditPage() {
             seasonOrder,
             episodeOrder,
             updateImages,
-            updateMetadata
+            updateMetadata,
+            updateVideos
         }
         return apiCall(details)
     }
@@ -73,6 +75,8 @@ export default function ShelfEditPage() {
                 <C.SnowInput onChangeText={setUpdateImages} value={updateImages} />
                 <C.SnowLabel>Update Metadata</C.SnowLabel>
                 <C.SnowInput onChangeText={setUpdateMetadata} value={updateMetadata} />
+                <C.SnowLabel>Update Videos</C.SnowLabel>
+                <C.SnowInput onChangeText={setUpdateVideos} value={updateVideos} />
             </C.SnowGrid>
         </C.FillView>
     )

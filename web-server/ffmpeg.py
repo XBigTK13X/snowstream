@@ -32,17 +32,6 @@ def transcode_command(
     log.info(command)
     return command,streaming_url
 
-def path_to_info_json(media_path: str):
-    probe = get_snowstream_info(media_path)
-    pruned = json.dumps(probe['snowstream_info'])
-    full = json.dumps(probe['ffprobe_raw'])
-    info = json.dumps(info)
-    return {
-        'mediainfo': info,
-        'ffprobe_full': full,
-        'ffprobe_pruned': pruned
-    }
-
 class MediaTrack:
     # mediainfo index is 1 based
     # ffprobe index is 0 based
@@ -50,9 +39,11 @@ class MediaTrack:
     def __init__(self, ffprobe:dict, mediainfo:dict):
         self.track_index = int(mediainfo['StreamOrder'])
         self.codec = mediainfo(['CodecID'])
+        self.format = mediainfo(['Format'])
         self.size_bits = int(mediainfo['BitRate'])
         self.language = mediainfo['Language'] if 'Language' in mediainfo else 'Undefined'
-        self.is_default = mediainfo['Default'] if 'Default' in mediainfo else False
+        self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
+        self.title = mediainfo['Title'] if 'Title' in mediainfo else None
 
         if ffprobe['codec_type'] == 'video':
             self.read_video(ffprobe,mediainfo)
@@ -66,9 +57,19 @@ class MediaTrack:
         self.video_index = 0
         if '@typeorder' in mediainfo:
             self.video_index = int(mediainfo['@typeorder'])-1
-        self.resolution_width = mediainfo['Width']
-        self.resolution_height = mediainfo['Height']
+        self.resolution_width = int(mediainfo['Width'])
+        self.resolution_height = int(mediainfo['Height'])
         self.is_hdr = 'HDR Format' in mediainfo
+
+    def score_audio_track(self, ffprobe, mediainfo):
+        if 'language' in ffprobe:
+            if 'eng' in ffprobe['language']:
+                if 'truehd' in mediainfo['CodecID'].lower():
+                    return 2100
+                return 2050
+            if 'jap' in ffprobe['language'] or 'jpn' in ffprobe['language']:
+                return 1000
+        return 0
 
     def read_audio(self,ffprobe,mediainfo):
         self.kind = 'audio'
@@ -76,28 +77,87 @@ class MediaTrack:
         if '@typeorder' in mediainfo:
             self.audio_index = int(mediainfo['@typeorder'])-1
         self.title = mediainfo['Format_Commercial_IfAny']
+        self.channel_count = int(mediainfo['Channels'])
+        self.is_lossless = mediainfo['Compression_Mode'] == 'Lossless'
+        self.score = self.score_audio_track(ffprobe,mediainfo)
+
+    def score_subtitle_track(self, ffprobe, mediainfo):
+        if 'language' in ffprobe:
+            if 'eng' in ffprobe['language']:
+                low_title = self.title.lower()
+                if not self.is_text:
+                    return 2040
+                if 'sdh' in low_title:
+                    return 2060
+                if self.is_forced or self.is_default:
+                    return 2070
+                if self.is_captioned:
+                    return 2080
+                if 'convert' in low_title:
+                    return 2015
+                if 'clean' in low_title:
+                    return 2030
+                return 2100
+            if 'und' in ffprobe['language']:
+                if self.is_forced:
+                    return 2020
+                return 2050
+        return 0
 
     def read_subtitle(self,ffprobe,mediainfo):
         self.kind = 'subtitle'
         self.subtitle_index = 0
         if '@typeorder' in mediainfo:
             self.subtitle_index = int(mediainfo['@typeorder'])-1
-        self.is_forced = mediainfo['Forced'] if 'Forced' in mediainfo else False
+        self.is_forced = mediainfo['Forced'] == 'Yes' if 'Forced' in mediainfo else False
         self.is_captioned = False
         low_title = mediainfo['Title'].lower()
-        if ffprobe['disposition']['captions'] == '1' \
+        if ('disposition' in ffprobe and ffprobe['disposition']['captions'] == '1') \
             or 'cc' in low_title  \
             or 'caption' in low_title:
             self.is_captioned = True
+        self.is_text = True
+        low_format = mediainfo['Format'].lower()
+        if 'pgs' in low_format or 'vob' in low_format:
+            self.is_text = False
+        self.score = self.score_subtitle_track(ffprobe,mediainfo)
 
-def get_snowstream_info(media_path:str):
-    command = f'ffprobe -hide_banner -loglevel quiet "{media_path}" -print_format json -show_format -show_streams'
-    #log.info(command)
-    command_output = util.run_cli(command,raw_output=True)
-    ffprobe_output = command_output['stdout']
-    cleaned = ffprobe_output.replace("�",'')
-    raw_ffprobe = json.loads(cleaned)
+RESOLUTIONS = {
+    2160: 'UHD 2160',
+    1080: 'FHD 1080',
+    720: 'HD 720',
+    480: 'SD 480'
+}
 
+
+def path_to_info_json(media_path: str, ffprobe_json:str = None, mediainfo_json:str=None):
+    probe = get_snowstream_info(media_path,ffprobe_existing=ffprobe_json,mediainfo_existing=mediainfo_json)
+    pruned = json.dumps(probe['snowstream_info'])
+    full = json.dumps(probe['ffprobe_raw'])
+    info = json.dumps(info)
+    return {
+        'mediainfo': info,
+        'ffprobe_full': full,
+        'ffprobe_pruned': pruned
+    }
+
+# Originally from snowby
+# https://github.com/XBigTK13X/snowby/blob/acb151d05f60c77845b3b1e5ba2417f97a7acff2/desktop/media/inspector.js
+# https://github.com/XBigTK13X/snowby/blob/acb151d05f60c77845b3b1e5ba2417f97a7acff2/common/jellyfin-item.js
+def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_existing:str=None):
+    raw_ffprobe = None
+    if ffprobe_existing:
+        raw_ffprobe = json.loads(ffprobe_existing)
+    else:
+        command = f'ffprobe -hide_banner -loglevel quiet "{media_path}" -print_format json -show_format -show_streams'
+        #log.info(command)
+        command_output = util.run_cli(command,raw_output=True)
+        ffprobe_output = command_output['stdout']
+        cleaned_ffprobe = ffprobe_output.replace("�",'')
+        raw_ffprobe = json.loads(cleaned_ffprobe)
+
+    if mediainfo_existing:
+        raw_mediainfo = json.loads(mediainfo_existing)
     command = f'mediainfo --Output=JSON "{media_path}"'
     command_output = util.run_cli(command,raw_output=True)
     mediainfo_output = command_output['stdout']
@@ -106,6 +166,8 @@ def get_snowstream_info(media_path:str):
     snowstream_info = {
         'duration_seconds': float(raw_ffprobe['format']['duration']),
         'is_hdr': False,
+        'is_anime': True if '/anime/' in media_path else False,
+        'source_kind': 'remux' if 'remux' in media_path.lower() else 'transcode',
         'tracks': {
             'audio': [],
             'video': [],
@@ -119,164 +181,22 @@ def get_snowstream_info(media_path:str):
         track = MediaTrack(ffprobe=ff,mediainfo=mi)
         if not track.kind:
             continue
-        if track.kind == 'video' and track.is_hdr:
-            snowstream_info['is_hdr'] = True
+        if track.kind == 'video':
+            if track.is_hdr:
+                snowstream_info['is_hdr'] = True
+            snowstream_info['resolution_name'] = RESOLUTIONS[track.resolution_height] if track.resolution_height in RESOLUTIONS else 'Unknown'
         snowstream_info['tracks'][track.kind].append(track)
+    for kind in ['audio','subtitle']:
+        if snowstream_info['tracks'][kind]:
+            snowstream_info['tracks'][kind].sort(key=lambda xx: xx.score,reverse=True)
 
-    for stream in raw_ffprobe['streams']:
-        if stream['codec_type'] == 'video':
-            snowstream_info['resolution_width'] = int(stream['width'])
-            snowstream_info['resolution_height'] = int(stream['height'])
-            if 'tags' in stream and 'BPS-eng' in stream['tags']:
-                entry['megabits_per_second'] = float(stream['tags']['BPS-eng']) / 1000.0
-        if stream['codec_type'] == 'audio':
-            entry['display'] = f"{stream['channels']} ch"
-            if 'codec_name' in stream and stream['codec_name']:
-                 entry['display'] += f' - {stream["codec_name"]}'
-            entry['title'] = ''
-            entry['kind'] = 'audio'
-            if 'tags' in stream and 'language' in stream['tags'] and stream['tags']['language'] != '':
-                entry['language'] = stream['tags']['language']
-                entry['display'] += f" - {entry['language']}"
-            else:
-                entry['language'] = '???'
-                entry['display'] += f" - {entry['language']}"
-            if 'tags' in stream and 'title' in stream['tags']:
-                entry['display'] += f" - {stream['tags']['title']}"
-                entry['title'] = stream['tags']['title']
-            entry['is_forced'] = False
-            entry['is_default'] = False
-            entry['is_closed_caption'] = False
-            if 'tags' in stream and 'BPS-eng' in stream['tags']:
-                entry['megabits_per_second'] = float(stream['tags']['BPS-eng']) / 1000.0
-            if 'disposition' in stream:
-                entry['is_forced'] = stream['disposition']['forced'] == '1' or 'force' in entry['title'].lower()
-                entry['is_default'] = stream['disposition']['default'] == '1' or 'default' in entry['title'].lower()
-                entry['is_closed_caption'] = stream['disposition']['captions'] == '1' or 'cc' in entry['title'].lower()  or 'caption' in entry['title'].lower()
-        if stream['codec_type'] == 'subtitle':
-            entry['display'] = ''
-            if 'codec_name' in stream:
-                entry['display'] = f"{stream['codec_name']}"
-            entry['title'] = ''
-            if 'tags' in stream and 'title' in stream['tags']:
-                 entry['display'] += f" - {stream['tags']['title']}"
-                 entry['title'] = stream['tags']['title']
-            entry['kind'] = 'subtitle'
-            if 'pgs' in entry['display'].lower():
-                entry['display'] = 'pgs'
-            if 'tags' in stream and 'language' in stream['tags']:
-                entry['language'] = stream['tags']['language']
-                if 'HANDLER_NAME' in stream['tags']:
-                    entry['display'] = f"{stream['tags']['HANDLER_NAME']} - {entry['display']}"
-                else:
-                    entry['display'] = f"{stream['tags']['language']} - {entry['display']}"
-            entry['is_forced'] = False
-            entry['is_default'] = False
-            entry['is_closed_caption'] = False
-            if 'disposition' in stream:
-                entry['is_forced'] = stream['disposition']['forced'] == '1' or 'force' in entry['title'].lower()
-                entry['is_default'] = stream['disposition']['default'] == '1' or 'default' in entry['title'].lower()
-                entry['is_closed_caption'] = stream['disposition']['captions'] == '1' or 'cc' in entry['title'].lower()  or 'caption' in entry['title'].lower()
-
-    snowstream_info['inspection'] = inspect_media(media_path=media_path,ffprobe=snowstream_info)
     result = {
-        'ffprobe_raw': raw_ffprobe,
         'snowstream_info': snowstream_info,
+        'ffprobe_raw': raw_ffprobe,
         'raw_mediainfo': raw_mediainfo
     }
     return result
 
-def score_audio_track(track):
-    if 'language' in track:
-        if 'eng' in track['language']:
-            if 'truehd' in track['display']:
-                return 2100
-            return 2050
-        if 'jap' in track['language'] or 'jpn' in track['language']:
-            return 1000
-    return 0
-
-
-def score_subtitle_track(track):
-    if 'language' in track:
-        if 'eng' in track['language']:
-            if 'pgs' in track['display'].lower():
-                return 2040
-            if 'sdh' in track['display'].lower():
-                return 2060
-            if track['is_forced'] or track['is_default']:
-                return 2070
-            if track['is_closed_caption']:
-                return 2080
-            if 'convert' in track['display'].lower():
-                return 2015
-            if 'clean' in track['display'].lower():
-                return 2030
-            return 2100
-        if 'und' in track['language']:
-            if track['is_forced']:
-                return 2020
-            return 2050
-    return 0
-
-
-# Originally from snowby
-# https://github.com/XBigTK13X/snowby/blob/acb151d05f60c77845b3b1e5ba2417f97a7acff2/desktop/media/inspector.js
-# https://github.com/XBigTK13X/snowby/blob/acb151d05f60c77845b3b1e5ba2417f97a7acff2/common/jellyfin-item.js
-def inspect_media(media_path:str, ffprobe:dict):
-    result = {}
-    result['is_anime'] = True if '/anime/' in media_path else False
-    result['source_kind'] = 'transcode'
-    if 'Remux' in media_path:
-        result['source_kind'] = 'remux'
-
-    if ffprobe['resolution_height'] == 2160:
-        result['resolution_name'] = 'UHD 2160'
-    elif ffprobe['resolution_height'] == 1080:
-        result['resolution_name'] = 'FHD 1080'
-    elif ffprobe['resolution_height'] == 720:
-        result['resolution_name'] = 'HD 720'
-    elif ffprobe['resolution_height'] == 480:
-        result['resolution_name'] = 'SD 480'
-    else:
-        result['resolution_name'] = 'Unknown'
-
-    result['is_hdr'] = False
-    if 'color_space' in ffprobe['video'][0] and '2020' in ffprobe['video'][0]['color_space']:
-        result['is_hdr'] = True
-
-    result['scored_tracks'] = {'audio':[],'subtitle':[]}
-
-    for track in ffprobe['audio']:
-        score = score_audio_track(track)
-        if score > 0:
-            track_copy = copy.deepcopy(track)
-            if result['is_anime']:
-                score += 2000
-            track_copy['score'] = score
-            result['scored_tracks']['audio'].append(track_copy)
-    # This will only happen if the inspector doesn't understand what the audio tracks are
-    # Usually only the case for really old files
-    if len(result['scored_tracks']['audio']) == 0:
-        result['scored_tracks']['audio'] = ffprobe['audio']
-    else:
-        result['scored_tracks']['audio'] = sorted(result['scored_tracks']['audio'],key=lambda xx:xx['score'])
-
-    for track in ffprobe['subtitle']:
-        score = score_subtitle_track(track)
-        if score > 0:
-            track_copy = copy.deepcopy(track)
-            track_copy['score'] = score
-            result['scored_tracks']['subtitle'].append(track_copy)
-
-    # This will only happen if the inspector doesn't understand what the subtitle tracks are
-    # Usually only the case for really old files
-    if len(result['scored_tracks']['subtitle']) == 0:
-        result['scored_tracks']['subtitle'] = ffprobe['subtitle']
-    else:
-        result['scored_tracks']['subtitle'] = sorted(result['scored_tracks']['subtitle'],key=lambda xx:xx['score'])
-
-    return result
 
 def extract_screencap(video_path:str, duration_seconds:int, output_path:str):
     seconds = config.ffmpeg_screencap_percent_location * duration_seconds

@@ -191,6 +191,9 @@ export class ApiClient {
             if (details.updateImages) {
                 payload.input.update_images = details.updateImages
             }
+            if (details.updateVideos) {
+                payload.input.update_videos = details.updateVideos
+            }
             if (details.skipExisting) {
                 payload.input.skip_existing = details.skipExisting
             }

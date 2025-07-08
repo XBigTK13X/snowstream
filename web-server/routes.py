@@ -305,16 +305,13 @@ def auth_required(router):
         movie.has_versions = False
 
         for ii in range(0,len(movie.video_files)):
-            # TODO Proper reading of metadata from either ffprobe or mediainfo on video scan
-            movie.video_files[ii].is_hdr = 'remux-2160p' in movie.video_files[ii].local_path.lower()
-            movie.video_files[ii].tracks = json.loads(movie.video_files[ii].ffprobe_pruned_json)
-            movie.video_files[ii].absolute_index = ii
+            movie.video_files[ii].info = json.loads(movie.video_files[ii].snowstream_info_json)
+            movie.video_files[ii].file_index = ii
             if 'main_feature' in movie.video_files[ii].kind:
                 movie.main_feature_index = ii
             if 'extra' in movie.video_files[ii].kind:
                 movie.has_extras = True
                 movie.video_files[ii].is_extra = True
-
             if movie.video_files[ii].version:
                 movie.has_versions = True
         return movie
@@ -501,9 +498,8 @@ def auth_required(router):
         episode.has_extras = False
         episode.has_versions = False
         for ii in range(0,len(episode.video_files)):
-            episode.video_files[ii].is_hdr = 'remux-2160p' in episode.video_files[ii].local_path.lower()
-            episode.video_files[ii].tracks = json.loads(episode.video_files[ii].ffprobe_pruned_json)
-            episode.video_files[ii].absolute_index = ii
+            episode.video_files[ii].info = json.loads(episode.video_files[ii].snowstream_info_json)
+            episode.video_files[ii].file_index = ii
             if episode.video_files[ii].version:
                 episode.has_versions = True
         return episode

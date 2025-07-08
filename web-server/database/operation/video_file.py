@@ -45,7 +45,7 @@ def get_video_file_by_path(local_path: str):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.local_path == local_path).first()
 
-def get_or_create_video_file(shelf_id: int, kind: str, local_path: str, force_inspection: bool=False):
+def get_or_create_video_file(shelf_id: int, kind: str, local_path: str):
     video_file = get_video_file_by_path(local_path=local_path)
     if not video_file:
         info = ffmpeg.path_to_info_json(media_path=local_path)
@@ -57,19 +57,33 @@ def get_or_create_video_file(shelf_id: int, kind: str, local_path: str, force_in
             ffprobe_raw_json=info['ffprobe_raw'],
             mediainfo_raw_json=['mediainfo_raw']
         )
-    #if force_inspection or not video_file.ffprobe_raw_json or not video_file.mediainfo_raw_json:
 
     return video_file
+
+def update_video_file_info(
+    video_file_id:int,
+    snowstream_info_json:str,
+    ffprobe_json:str=None,
+    mediainfo_json:str=None
+):
+    with DbSession() as db:
+        video_file = get_video_file_by_id(video_file_id)
+        video_file.snowstream_info_json = snowstream_info_json
+        if ffprobe_json:
+            video_file.ffprobe_raw_json = ffprobe_json
+        if mediainfo_json:
+            video_file.mediainfo_raw_json = mediainfo_json
+        video_file.commit()
+        return video_file
 
 def get_video_file_by_id(video_file_id: int):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.id == video_file_id).first()
 
-
 def get_video_files_by_shelf(shelf_id: int):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.shelf_id == shelf_id)
 
-def get_video_files_list():
+def get_video_file_list():
     with DbSession() as db:
         return db.query(dm.VideoFile).all()

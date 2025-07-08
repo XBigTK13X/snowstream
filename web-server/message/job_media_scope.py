@@ -23,10 +23,11 @@ class JobMediaScope:
         self.metadata_source = parse(raw_job_input,'metadata_source')
         self.season_order = parse(raw_job_input,'season_order')
         self.episode_order = parse(raw_job_input,'episode_order')
+        self.update_videos = parse(raw_job_input, 'update_videos')
         self.update_images = parse(raw_job_input,'update_images')
         self.update_metadata = parse(raw_job_input,'update_metadata')
-        self.is_subjob = parse(raw_job_input,'is_subjob')
         self.skip_existing = parse(raw_job_input,'skip_existing')
+        self.is_subjob = parse(raw_job_input,'is_subjob')
 
     def is_unscoped(self):
         return self.target_kind == None

@@ -49,11 +49,11 @@ export default function MediaTracksPage(props) {
 
     const chooseVideoFile = (fileIndex) => {
         setVideoFileIndex(fileIndex)
-        if (media.video_files[fileIndex].tracks.inspection.scored_tracks['audio'].length) {
-            setAudioTrack(media.video_files[fileIndex].tracks.inspection.scored_tracks['audio'][0].relative_index)
+        if (media.video_files[fileIndex].info.tracks.audio.length) {
+            setAudioTrack(media.video_files[fileIndex].tracks.audio[0].relative_index)
         }
-        if (media.video_files[fileIndex].tracks.inspection.scored_tracks['subtitle'].length) {
-            setSubtitleTrack(media.video_files[fileIndex].tracks.inspection.scored_tracks['subtitle'][0].relative_index)
+        if (media.video_files[fileIndex].info.tracks.subtitle.length) {
+            setSubtitleTrack(media.video_files[fileIndex].tracks.subtitle[0].relative_index)
         }
     }
 
@@ -104,7 +104,7 @@ export default function MediaTracksPage(props) {
                     <C.SnowDropdown
                         skipDefaultFocus
                         options={media.video_files.filter(ff => ff.is_extra).map((ff) => {
-                            return { name: ff.name, index: ff.absolute_index }
+                            return { name: ff.name, index: ff.file_index }
                         })}
                         onChoose={chooseVideoFile}
                         value={videoFileIndex}
@@ -183,7 +183,7 @@ export default function MediaTracksPage(props) {
                     {versionPicker}
                     {extraPicker}
                     <C.SnowTrackSelector
-                        tracks={videoFile.tracks.inspection.scored_tracks}
+                        tracks={videoFile.tracks}
                         selectTrack={selectTrack}
                         audioTrack={audioTrack}
                         subtitleTrack={subtitleTrack}
