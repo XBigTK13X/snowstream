@@ -170,7 +170,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
 
     if mediainfo_existing:
         raw_mediainfo = json.loads(mediainfo_existing)
-    command = f'mediainfo --Output=JSON "{media_path}"'
+    command = f'mediainfo --ParseSpeed=0 --Output=JSON "{media_path}"'
     command_output = util.run_cli(command,raw_output=True)
     mediainfo_output = command_output['stdout']
     raw_mediainfo = json.loads(mediainfo_output)
@@ -194,11 +194,12 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         if 'OverallBitRate_Mode' in raw_mediainfo['media']['track'][0]:
             snowstream_info['size_kind'] = raw_mediainfo['media']['track'][0]['OverallBitRate_Mode']
 
-    for ii in range(0,len(raw_ffprobe['streams'])):
-        ff = raw_ffprobe['streams'][ii]
-        mi = raw_mediainfo['media']['track'][ii+1]
-        if not 'codec_type' in ff:
-            continue
+    mediainfo_streams = [xx for xx in raw_mediainfo['media']['track'] if 'StreamOrder' in xx]
+    ffprobe_streams = [xx for xx in raw_ffprobe['streams'] if not 'tags' in xx or not 'filename' in xx['tags']]
+
+    for ii in range(0,len(ffprobe_streams)):
+        ff = ffprobe_streams[ii]
+        mi = mediainfo_streams[ii]
         track = MediaTrack(media_path=media_path,ffprobe=ff,mediainfo=mi)
         if track.kind == 'video':
             if track.is_hdr:
