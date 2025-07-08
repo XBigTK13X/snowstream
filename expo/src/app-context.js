@@ -12,16 +12,6 @@ import SnowModal from './comp/snow-modal'
 import SnowText from './comp/snow-text'
 import SnowTextButton from './comp/snow-text-button'
 
-const styles = {
-    prompt: {
-        backgroundColor: StaticStyle.color.background,
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center'
-    }
-}
-
 const setStoredValue = (key, value) => {
     return new Promise(resolve => {
         if (Platform.OS === 'web') {
@@ -194,16 +184,14 @@ export function AppContextProvider(props) {
 
     if (apiError) {
         return (
-            <SnowModal>
-                <View style={styles.prompt}>
-                    <SnowText>Unable to communicate with Snowstream.</SnowText>
-                    <SnowText>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</SnowText>
-                    <View>
-                        <SnowGrid itemsPerRow={2}>
-                            <SnowTextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
-                            <SnowTextButton title="Change Server" onPress={() => { logout(true) }} />
-                        </SnowGrid>
-                    </View>
+            <SnowModal center>
+                <SnowText>Unable to communicate with Snowstream.</SnowText>
+                <SnowText>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</SnowText>
+                <View>
+                    <SnowGrid itemsPerRow={2}>
+                        <SnowTextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
+                        <SnowTextButton title="Change Server" onPress={() => { logout(true) }} />
+                    </SnowGrid>
                 </View>
             </SnowModal>
         )

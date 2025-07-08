@@ -5,7 +5,7 @@ import { Platform, View, TouchableOpacity, Modal } from 'react-native'
 import { StaticStyle } from '../snow-style'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
-
+import SnowModal from './snow-modal'
 
 const isWeb = Platform.OS === 'web'
 
@@ -141,6 +141,7 @@ export default function RnvVideoView(props) {
 
     return (
         <SnowModal
+            wrapper={false}
             onRequestClose={() => { props.stopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity

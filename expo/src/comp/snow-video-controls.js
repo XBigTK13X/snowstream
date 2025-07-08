@@ -1,5 +1,6 @@
 import React from 'react'
 import Slider from '@react-native-community/slider';
+import { View } from 'react-native'
 
 import util from '../util'
 import { StaticStyle } from '../snow-style'
@@ -17,14 +18,6 @@ const styles = {
     background: {
         backgroundColor: StaticStyle.color.transparentDark,
         padding: 60
-    },
-
-    row: {
-        flexBasis: '100%'
-    },
-
-    column: {
-        flex: 1
     },
 
     progress: {
@@ -50,7 +43,7 @@ export default function SnowVideoControls(props) {
     }
 
     const { routes } = useAppContext()
-
+    prompt
     const [showLogs, setShowLogs] = React.useState(false)
 
     const progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
@@ -62,34 +55,33 @@ export default function SnowVideoControls(props) {
             <SnowModal
                 style={styles.logs}
                 onRequestClose={() => { setShowLogs(false) }}>
-                <FillView scroll style={styles.logs}>
-                    <SnowGrid scroll={false} itemsPerRow={1}>
-                        <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
-                    </SnowGrid>
+                <SnowGrid shrink itemsPerRow={1}>
+                    <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
+                </SnowGrid>
+                <FillView scroll>
                     <SnowGrid
-                        scroll={false}
                         itemsPerRow={1}
                         items={props.logs}
                         renderItem={(log) => { return <SnowText shrink>{log}</SnowText> }} />
-                    <SnowGrid scroll={false} itemsPerRow={1}>
-                        <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
-                    </SnowGrid>
                 </FillView>
+                <SnowGrid shrink itemsPerRow={1}>
+                    <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
+                </SnowGrid>
             </SnowModal>
         )
     }
     return (
         (
             <SnowModal
-                style={styles.prompt}
+                modalStyle={styles.prompt}
+                style={styles.background}
                 transparent
                 visible={props.controlsVisible}
                 onRequestClose={props.resumeVideo}
             >
-                <FillView scroll style={styles.background}>
+                <View>
                     <SnowText>{props.videoTitle}</SnowText>
                     <Slider
-                        style={styles.row}
                         minimumValue={0}
                         maximumValue={100}
                         value={progressPercent}
@@ -99,14 +91,15 @@ export default function SnowVideoControls(props) {
                         onValueChange={props.onSeek}
                     />
                     <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
-
-                    <SnowGrid scroll={false} itemsPerRow={4}>
+                </View>
+                <View>
+                    <SnowGrid itemsPerRow={4}>
                         <SnowTextButton shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
                         <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
                         <SnowTextButton title="Stop" onPress={() => { props.stopVideo() }} />
                         <SnowTextButton title="Home" onPress={() => { props.stopVideo(true) }} />
                     </SnowGrid>
-                    <SnowGrid scroll={false} itemsPerRow={4}>
+                    <SnowGrid itemsPerRow={4}>
                         <SnowTextButton title="Sub Smaller" onPress={() => {
                             props.setSubtitleFontSize(fontSize => { return fontSize - 4 })
                         }} />
@@ -135,7 +128,6 @@ export default function SnowVideoControls(props) {
                         }}
                         />
                     </SnowGrid>
-
                     <SnowTrackSelector
                         style={styles.row}
                         tracks={props.tracks}
@@ -143,8 +135,8 @@ export default function SnowVideoControls(props) {
                         audioTrack={props.audioTrack}
                         subtitleTrack={props.subtitleTrack}
                     />
-                </FillView >
-            </SnowModal>
+                </View>
+            </SnowModal >
         )
     )
 }

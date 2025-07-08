@@ -79,6 +79,7 @@ export default function MpvVideoView(props) {
 
     return (
         <SnowModal
+            wrapper={false}
             onRequestClose={() => { props.stopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity

@@ -88,35 +88,39 @@ export function WatchableListPage(props) {
         let itemsPerRow = 4
 
         return (
-            <C.FillView>
-                <C.SnowText>{pageTitle}</C.SnowText>
-                <C.SnowGrid itemsPerRow={itemsPerRow}>
-                    {(togglePlaylistedEnabled && props.toggleShowPlaylisted) ?
-                        <C.SnowTextButton
-                            title={showPlaylisted == true ? 'Hide Playlisted' : 'Show Playlisted'}
-                            onPress={() => { props.toggleShowPlaylisted(routes, shelfId, showPlaylisted === true ? false : true) }}
-                        /> : null
-                    }
-                    {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
-                    {props.shuffleAll ? <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} /> : null}
-                    <C.SnowAdminButton title={`Scan ${props.kind}`} onPress={() => {
-                        props.scanContentsJob(apiClient, shelfId)
-                    }} />
-                    {props.updateMediaJob ?
-                        <C.SnowUpdateMediaButton
-                            kind={props.kind}
-                            remoteId={remoteId}
-                            updateMediaJob={(details) => {
-                                details.shelfId = shelfId
-                                return props.updateMediaJob(apiClient, details)
-                            }}
-                        /> : null}
-                </C.SnowGrid>
-                <Grid
-                    shouldFocus
-                    onPress={gotoItem}
-                    onLongPress={toggleWatchedItem}
-                    items={items} />
+            <C.FillView scroll>
+                <C.View>
+                    <C.SnowText>{pageTitle}</C.SnowText>
+                    <C.SnowGrid itemsPerRow={itemsPerRow}>
+                        {(togglePlaylistedEnabled && props.toggleShowPlaylisted) ?
+                            <C.SnowTextButton
+                                title={showPlaylisted == true ? 'Hide Playlisted' : 'Show Playlisted'}
+                                onPress={() => { props.toggleShowPlaylisted(routes, shelfId, showPlaylisted === true ? false : true) }}
+                            /> : null
+                        }
+                        {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
+                        {props.shuffleAll ? <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} /> : null}
+                        <C.SnowAdminButton title={`Scan ${props.kind}`} onPress={() => {
+                            props.scanContentsJob(apiClient, shelfId)
+                        }} />
+                        {props.updateMediaJob ?
+                            <C.SnowUpdateMediaButton
+                                kind={props.kind}
+                                remoteId={remoteId}
+                                updateMediaJob={(details) => {
+                                    details.shelfId = shelfId
+                                    return props.updateMediaJob(apiClient, details)
+                                }}
+                            /> : null}
+                    </C.SnowGrid>
+                </C.View>
+                <C.FillView>
+                    <Grid
+                        shouldFocus
+                        onPress={gotoItem}
+                        onLongPress={toggleWatchedItem}
+                        items={items} />
+                </C.FillView>
             </C.FillView>
         )
     }

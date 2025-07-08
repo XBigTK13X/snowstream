@@ -13,16 +13,6 @@ import SnowToggle from './snow-toggle'
 import SnowHeader from './snow-header'
 import SnowTextButton from './snow-text-button'
 
-const styles = {
-    prompt: {
-        backgroundColor: StaticStyle.color.background,
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center'
-    }
-}
-
 export default function SnowUpdateMediaButton(props) {
     const { isAdmin } = useAppContext();
     if (!isAdmin) {
@@ -52,31 +42,30 @@ export default function SnowUpdateMediaButton(props) {
         let question = props.kind ? `Do you want to update this ${props.kind}?` : 'Do you want to update this item?'
         return (
             <SnowModal
+                center
                 onRequestClose={() => {
                     setShowRequest(false)
                 }}>
-                <View style={styles.prompt}>
-                    <SnowHeader>{question}</SnowHeader>
-                    <SnowGrid itemsPerRow={4}>
-                        <View style={{ alignItems: 'center' }}>
-                            <SnowLabel>Remote Metadata ID</SnowLabel>
-                            <SnowInput onChangeText={(text) => { setMetadataId(text) }} value={metadataId} />
-                        </View>
-                        <View style={{ alignItems: 'center' }}>
-                            <SnowLabel>Metadata Source</SnowLabel>
-                            <SnowInput onChangeText={(text) => { setMetadataSource(text) }} value={metadataSource} />
-                        </View>
-                    </SnowGrid>
-                    <SnowGrid itemsPerRow={6}>
-                        <SnowToggle title="Metadata" value={updateMetadata} onValueChange={setUpdateMetadata} />
-                        <SnowToggle title="Images" value={updateImages} onValueChange={setUpdateImages} />
-                        <SnowToggle title="Skip Existing" value={skipExisting} onValueChange={setSkipExisting} />
-                    </SnowGrid>
-                    <SnowGrid gridStyle={{ marginTop: 20 }} itemsPerRow={4}>
-                        <SnowTextButton disabled={!updateMetadata && !updateImages} title="Update Media" onPress={() => { onAccept() }} />
-                        <SnowTextButton title="Cancel" onPress={onCancel} />
-                    </SnowGrid>
-                </View>
+                <SnowHeader>{question}</SnowHeader>
+                <SnowGrid itemsPerRow={4}>
+                    <View style={{ alignItems: 'center' }}>
+                        <SnowLabel>Remote Metadata ID</SnowLabel>
+                        <SnowInput onChangeText={(text) => { setMetadataId(text) }} value={metadataId} />
+                    </View>
+                    <View style={{ alignItems: 'center' }}>
+                        <SnowLabel>Metadata Source</SnowLabel>
+                        <SnowInput onChangeText={(text) => { setMetadataSource(text) }} value={metadataSource} />
+                    </View>
+                </SnowGrid>
+                <SnowGrid itemsPerRow={6}>
+                    <SnowToggle title="Metadata" value={updateMetadata} onValueChange={setUpdateMetadata} />
+                    <SnowToggle title="Images" value={updateImages} onValueChange={setUpdateImages} />
+                    <SnowToggle title="Skip Existing" value={skipExisting} onValueChange={setSkipExisting} />
+                </SnowGrid>
+                <SnowGrid gridStyle={{ marginTop: 20 }} itemsPerRow={4}>
+                    <SnowTextButton disabled={!updateMetadata && !updateImages} title="Update Media" onPress={() => { onAccept() }} />
+                    <SnowTextButton title="Cancel" onPress={onCancel} />
+                </SnowGrid>
             </SnowModal>
         )
     }

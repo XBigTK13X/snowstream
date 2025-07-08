@@ -1,12 +1,5 @@
 import C from '../../../common'
 
-const styles = {
-    modal: {
-        backgroundColor: 'black',
-        flex: 1
-    }
-}
-
 export default function MediaTracksPage(props) {
     const { apiClient } = C.useAppContext();
     const { routes } = C.useAppContext();
@@ -48,20 +41,20 @@ export default function MediaTracksPage(props) {
     }
     const selectTrack = (track) => {
         if (track.kind === 'audio') {
-            setAudioTrack(track.relative_index)
+            setAudioTrack(track.audio_index)
         }
         if (track.kind === 'subtitle') {
-            setSubtitleTrack(track.relative_index)
+            setSubtitleTrack(track.subtitle_index)
         }
     }
 
     const chooseVideoFile = (fileIndex) => {
         setVideoFileIndex(fileIndex)
         if (media.video_files[fileIndex].info.tracks.audio.length) {
-            setAudioTrack(media.video_files[fileIndex].tracks.audio[0].relative_index)
+            setAudioTrack(media.video_files[fileIndex].info.tracks.audio[0].audio_index)
         }
         if (media.video_files[fileIndex].info.tracks.subtitle.length) {
-            setSubtitleTrack(media.video_files[fileIndex].tracks.subtitle[0].relative_index)
+            setSubtitleTrack(media.video_files[fileIndex].info.tracks.subtitle[0].subtitle_index)
         }
     }
 
@@ -112,11 +105,12 @@ export default function MediaTracksPage(props) {
             }
             return (
                 <C.SnowModal
-                    style={styles.modal}
                     onRequestClose={() => { setShowModal(false) }}
                 >
-                    <C.FillView scroll style={styles.modal}>
+                    <C.SnowGrid shrink itemsPerRow={1}>
                         <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
+                    </C.SnowGrid>
+                    <C.FillView scroll>
                         <C.SnowLabel>Video File Info</C.SnowLabel>
                         <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
                         <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>
@@ -136,8 +130,10 @@ export default function MediaTracksPage(props) {
                                 )
                             })
                         }
-                        <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
                     </C.FillView>
+                    <C.SnowGrid shrink itemsPerRow={1}>
+                        <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
+                    </C.SnowGrid>
                 </C.SnowModal>
             )
         }
@@ -217,58 +213,60 @@ export default function MediaTracksPage(props) {
         }
         return (
             <C.FillView scroll>
-                <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
-                <C.SnowGrid scroll={false} itemsPerRow={2} substantial>
-                    {resumeControls}
-                    <C.SnowTextButton
-                        shouldFocus={playFocus}
-                        title={playTitle}
-                        onPress={routes.func(routes.playMedia, combinedPlayDestination)}
-                    />
-                    {/*<C.SnowTextButton
+                <C.View>
+                    <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
+                    <C.SnowGrid itemsPerRow={2} substantial>
+                        {resumeControls}
+                        <C.SnowTextButton
+                            shouldFocus={playFocus}
+                            title={playTitle}
+                            onPress={routes.func(routes.playMedia, combinedPlayDestination)}
+                        />
+                        {/*<C.SnowTextButton
                         shouldFocus={playFocus}
                         title="Transcode"
                         onPress={routes.func(routes.playMedia, transcodePlayDestination)}
                     />*/}
-                    {mainFeatureButton}
-                    <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
-                    <C.SnowTextButton title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
-                    {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
-                    <C.SnowAdminButton title={`Rescan ${props.mediaKind}`}
-                        onPress={() => {
-                            const scanDetails = props.getScanDetails(localParams)
-                            return apiClient.createJobShelvesScan(scanDetails)
-                        }} />
-                    <C.SnowUpdateMediaButton
-                        remoteId={remoteMetadataId}
-                        kind={props.mediaKind}
-                        updateMediaJob={(promptDetails) => {
-                            const mediaDetails = props.getUpdateMediaJobDetails(localParams)
-                            return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
-                        }} />
-                    <C.SnowTextButton
-                        title={`Toggle Player [${player}]`}
-                        onPress={togglePlayer}
-                    />
-                    <C.SnowTextButton
-                        title="Info"
-                        onPress={showInfo}
-                    />
-                </C.SnowGrid>
-                <C.FillView>
+                        {mainFeatureButton}
+                        <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
+                        <C.SnowTextButton title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
+                        {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
+                        <C.SnowAdminButton title={`Rescan ${props.mediaKind}`}
+                            onPress={() => {
+                                const scanDetails = props.getScanDetails(localParams)
+                                return apiClient.createJobShelvesScan(scanDetails)
+                            }} />
+                        <C.SnowUpdateMediaButton
+                            remoteId={remoteMetadataId}
+                            kind={props.mediaKind}
+                            updateMediaJob={(promptDetails) => {
+                                const mediaDetails = props.getUpdateMediaJobDetails(localParams)
+                                return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
+                            }} />
+                        <C.SnowTextButton
+                            title={`Toggle Player [${player}]`}
+                            onPress={togglePlayer}
+                        />
+                        <C.SnowTextButton
+                            title="Info"
+                            onPress={showInfo}
+                        />
+                    </C.SnowGrid>
+                </C.View>
+                <C.View>
                     {versionPicker}
                     {extraPicker}
                     <C.SnowTrackSelector
-                        tracks={videoFile.tracks}
+                        tracks={videoFile.info.tracks}
                         selectTrack={selectTrack}
                         audioTrack={audioTrack}
                         subtitleTrack={subtitleTrack}
                     />
-                </C.FillView>
-                <C.FillView>
+                </C.View>
+                <C.View>
                     <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                     <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
-                </C.FillView>
+                </C.View>
             </C.FillView>
         )
     }

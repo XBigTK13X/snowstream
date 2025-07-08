@@ -4,6 +4,8 @@ import {
     FlatList
 } from 'react-native'
 
+import FillView from './fill-view'
+
 const styles = {
     grid: {
         padding: 5
@@ -40,6 +42,7 @@ export function SnowGrid(props) {
     if (props.mainGrid) {
         gridStyle.push(styles.mainGrid)
     }
+
     let items = props.items
     if (!props.items) {
         // Without this, if a ternary `{x?x:null}` nullable component will leave a gap in the grid
@@ -55,10 +58,11 @@ export function SnowGrid(props) {
     if (props.renderItem) {
         renderItem = props.renderItem
     }
+    const GridView = props.shrink ? View : FillView
     return (
-        <View style={gridStyle}>
+        <GridView style={gridStyle}>
             <FlatList
-                scrollEnabled={props.scroll !== false}
+                scrollEnabled={props.scroll === true}
                 disableVirtualization={props.substantial}
                 numColumns={itemsPerRow}
                 contentContainerStyle={styles.list}
@@ -72,7 +76,7 @@ export function SnowGrid(props) {
                     )
                 }}
             />
-        </View>
+        </GridView>
     )
 }
 

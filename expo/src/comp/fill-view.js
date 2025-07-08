@@ -1,17 +1,18 @@
 import { ScrollView, View } from 'react-native'
+const styles = {
+    default: {
+        flex: 1
+    }
+}
 export default function FillView(props) {
     // FlatList often overflows outside of the viewport without enabling scrolling.
     // This commonly happens when any parent container is not set to flex: 1
-    style = [{ flex: 1 }]
+    let style = [styles.default]
     if (props.style) {
         style.push(props.style)
     }
-    if (props.scroll) {
-        return (
-            <ScrollView style={style} children={props.children} />
-        )
-    }
+    const ViewKind = props.scroll ? ScrollView : View
     return (
-        <View style={style} children={props.children} />
+        <ViewKind style={style} children={props.children} />
     )
 }
