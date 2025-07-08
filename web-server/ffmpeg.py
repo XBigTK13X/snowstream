@@ -194,20 +194,74 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         if 'OverallBitRate_Mode' in raw_mediainfo['media']['track'][0]:
             snowstream_info['size_kind'] = raw_mediainfo['media']['track'][0]['OverallBitRate_Mode']
 
+    stream_lookup = {}
+
     mediainfo_streams = [xx for xx in raw_mediainfo['media']['track'] if 'StreamOrder' in xx]
     ffprobe_streams = [xx for xx in raw_ffprobe['streams'] if not 'tags' in xx or not 'filename' in xx['tags']]
 
-    for ii in range(0,len(ffprobe_streams)):
-        ff = ffprobe_streams[ii]
-        mi = mediainfo_streams[ii]
-        track = MediaTrack(media_path=media_path,ffprobe=ff,mediainfo=mi)
-        if track.kind == 'video':
-            if track.is_hdr:
-                snowstream_info['is_hdr'] = True
-            snowstream_info['resolution_name'] = RESOLUTION_HEIGHTS[track.resolution_height] if track.resolution_height in RESOLUTION_HEIGHTS else 'Unknown'
-            if snowstream_info['resolution_name'] == 'Unknown':
-                snowstream_info['resolution_name'] = RESOLUTION_WIDTHS[track.resolution_width] if track.resolution_width in RESOLUTION_WIDTHS else 'Unknown'
-        snowstream_info['tracks'][track.kind].append(track.__dict__)
+    stream_keys = []
+
+    for ff in raw_ffprobe['streams']:
+        try:
+            if 'disposition' in ff and \
+                (ff['disposition']['attached_pic'] == 1 \
+                    or ff['disposition']['still_image'] == 1):
+                continue
+            if ff['codec_type'] == 'attachment':
+                continue
+            stream_key = int(ff['index'])
+            if not stream_key in stream_lookup:
+                stream_keys.append(stream_key)
+                stream_lookup[stream_key] = {
+                    'ffprobe': ff,
+                    'track_index': int(ff['index'])
+                }
+        except Exception as e:
+            print("Unable to process")
+            print(media_path)
+            import pprint
+            pprint.pprint(ff)
+            raise e
+    for mi in raw_mediainfo['media']['track']:
+        try:
+            if mi['@type'] == 'General':
+                continue
+            stream_key = None
+            if 'StreamOrder' in mi:
+                stream_key = int(mi['StreamOrder'])
+            elif 'ID' in mi:
+                stream_key = 1000 + int(mi['ID'])
+            else:
+                continue
+            if not stream_key in stream_keys:
+                stream_keys.append(stream_key)
+            if not stream_key in stream_lookup:
+                stream_lookup[stream_key] = {'track_index': stream_key}
+            stream_lookup[stream_key]['mediainfo'] = mi
+        except Exception as e:
+            print("Unable to process")
+            print(media_path)
+            import pprint
+            pprint.pprint(mi)
+            raise e
+
+    for sk in stream_keys:
+        try:
+            stream = stream_lookup[sk]
+            track = MediaTrack(media_path=media_path,ffprobe=stream['ffprobe'],mediainfo=stream['mediainfo'])
+            if track.kind == 'video':
+                if track.is_hdr:
+                    snowstream_info['is_hdr'] = True
+                snowstream_info['resolution_name'] = RESOLUTION_HEIGHTS[track.resolution_height] if track.resolution_height in RESOLUTION_HEIGHTS else 'Unknown'
+                if snowstream_info['resolution_name'] == 'Unknown':
+                    snowstream_info['resolution_name'] = RESOLUTION_WIDTHS[track.resolution_width] if track.resolution_width in RESOLUTION_WIDTHS else 'Unknown'
+            snowstream_info['tracks'][track.kind].append(track.__dict__)
+        except Exception as e:
+            print("Unable to process")
+            print(media_path)
+            import pprint
+            pprint.pprint(stream)
+            raise e
 
     for kind in ['audio','subtitle']:
         if snowstream_info['tracks'][kind]:
