@@ -117,10 +117,10 @@ class ShowEpisode(MediaUpdater):
         local_path = self.get_image_path()
         if not images or not self.download_image(image_url=images['screencap'],local_path=local_path):
             if not os.path.exists(local_path):
-                ffprobe = json.loads(self.show_episode.video_files[0].ffprobe_pruned_json)
+                info = json.loads(self.show_episode.video_files[0].snowstream_info_json)
                 ffmpeg.extract_screencap(
                     video_path=self.show_episode.video_files[0].local_path,
-                    duration_seconds=ffprobe['duration_seconds'],
+                    duration_seconds=info['duration_seconds'],
                     output_path=local_path
                 )
                 db.op.update_job(job_id=self.job_id, message=f"Took a screencap from {self.show_episode.name} to {local_path}")

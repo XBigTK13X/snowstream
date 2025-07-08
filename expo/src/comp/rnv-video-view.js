@@ -140,8 +140,7 @@ export default function RnvVideoView(props) {
     }
 
     return (
-        <Modal
-            navigationBarTranslucent statusBarTranslucent
+        <SnowModal
             onRequestClose={() => { props.stopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity
@@ -208,6 +207,6 @@ export default function RnvVideoView(props) {
 
                 />
             </TouchableOpacity>
-        </Modal>
+        </SnowModal>
     )
 }

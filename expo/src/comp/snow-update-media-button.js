@@ -1,17 +1,17 @@
 import React from 'react'
 import {
-    Modal,
     View
 } from 'react-native'
 
-import SnowTextButton from './snow-text-button'
 import { useAppContext } from '../app-context'
 import { StaticStyle } from '../snow-style'
 import SnowInput from './snow-input'
 import SnowLabel from './snow-label'
+import SnowModal from './snow-modal'
 import SnowGrid from './snow-grid'
 import SnowToggle from './snow-toggle'
 import SnowHeader from './snow-header'
+import SnowTextButton from './snow-text-button'
 
 const styles = {
     prompt: {
@@ -51,8 +51,7 @@ export default function SnowUpdateMediaButton(props) {
     if (showRequest) {
         let question = props.kind ? `Do you want to update this ${props.kind}?` : 'Do you want to update this item?'
         return (
-            <Modal
-                navigationBarTranslucent statusBarTranslucent
+            <SnowModal
                 onRequestClose={() => {
                     setShowRequest(false)
                 }}>
@@ -78,7 +77,7 @@ export default function SnowUpdateMediaButton(props) {
                         <SnowTextButton title="Cancel" onPress={onCancel} />
                     </SnowGrid>
                 </View>
-            </Modal>
+            </SnowModal>
         )
     }
     let title = props.kind ? `Update ${props.kind} Media` : 'Update Media'

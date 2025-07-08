@@ -31,10 +31,11 @@ function TrackList(props) {
 
                 <SnowGrid itemsPerRow={5} gridStyle={styles.row} scroll={false}>
                     {props.tracks.map((track, trackKey) => {
-                        let display = track.display
+                        let display = `${track.title} - ${track.format_full ? track.format_full : track.format}`
                         if (display && display.length > 30) {
                             display = display.substring(0, 30) + '...'
                         }
+                        console.log({ display })
                         return (
                             <SnowTextButton
                                 key={trackKey}

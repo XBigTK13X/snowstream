@@ -1,5 +1,4 @@
 import React from 'react'
-import { Modal, View } from 'react-native'
 import Slider from '@react-native-community/slider';
 
 import util from '../util'
@@ -11,6 +10,7 @@ import SnowTrackSelector from './snow-track-selector'
 import SnowText from './snow-text';
 import SnowTextButton from './snow-text-button'
 import SnowGrid from './snow-grid'
+import SnowModal from './snow-modal'
 
 
 const styles = {
@@ -59,8 +59,7 @@ export default function SnowVideoControls(props) {
 
     if (showLogs) {
         return (
-            <Modal
-                navigationBarTranslucent statusBarTranslucent
+            <SnowModal
                 style={styles.logs}
                 onRequestClose={() => { setShowLogs(false) }}>
                 <FillView scroll style={styles.logs}>
@@ -76,13 +75,12 @@ export default function SnowVideoControls(props) {
                         <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
                     </SnowGrid>
                 </FillView>
-            </Modal>
+            </SnowModal>
         )
     }
     return (
         (
-            <Modal
-                navigationBarTranslucent statusBarTranslucent
+            <SnowModal
                 style={styles.prompt}
                 transparent
                 visible={props.controlsVisible}
@@ -146,7 +144,7 @@ export default function SnowVideoControls(props) {
                         subtitleTrack={props.subtitleTrack}
                     />
                 </FillView >
-            </Modal>
+            </SnowModal>
         )
     )
 }

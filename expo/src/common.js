@@ -15,9 +15,7 @@ import {
 } from 'expo-image'
 
 import {
-    Dimensions,
     Linking,
-    Modal,
     Platform,
     Text,
     TouchableOpacity,
@@ -44,6 +42,7 @@ import SnowGrid from './comp/snow-grid'
 import SnowHeader from './comp/snow-header'
 import SnowInput from './comp/snow-input'
 import SnowLabel from './comp/snow-label'
+import SnowModal from './comp/snow-modal'
 import SnowPosterGrid from './comp/snow-poster-grid'
 import SnowToggle from './comp/snow-toggle'
 import SnowText from './comp/snow-text'
@@ -73,7 +72,6 @@ export default {
     Image,
     Link,
     Linking,
-    Modal,
     Platform,
     React,
     Redirect,
@@ -85,6 +83,7 @@ export default {
     SnowImageButton,
     SnowInput,
     SnowLabel,
+    SnowModal,
     SnowPosterGrid,
     SnowText,
     SnowTextButton,

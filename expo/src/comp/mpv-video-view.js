@@ -1,7 +1,8 @@
 import React from 'react'
-import { Modal, TouchableOpacity, Platform } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { useNavigation } from 'expo-router'
 import { StaticStyle } from '../snow-style'
+import SnowModal from './snow-modal'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
@@ -77,7 +78,7 @@ export default function MpvVideoView(props) {
     }, [props.subtitleColor])
 
     return (
-        <Modal
+        <SnowModal
             onRequestClose={() => { props.stopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity
@@ -104,6 +105,6 @@ export default function MpvVideoView(props) {
                     seekToSeconds={props.seekToSeconds}
                 />
             </TouchableOpacity>
-        </Modal >
+        </SnowModal >
     )
 }

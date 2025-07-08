@@ -118,7 +118,7 @@ def sql_row_to_api_result(
             video_file.local_path = row.video_local_path_list[ii]
             video_file.network_path = row.video_network_path_list[ii]
             video_file.kind = row.video_kind_list[ii]
-            video_file.ffprobe_pruned_json = row.video_ffprobe_list[ii]
+            video_file.snowstream_info_json = row.video_info_list[ii]
             video_file.version = row.video_version_list[ii]
             episode.video_files.append(video_file)
 
@@ -220,7 +220,7 @@ def get_show_episode_list(
         array_agg(episode_video.kind) as video_kind_list,
         array_agg(episode_video.local_path) as video_local_path_list,
         array_agg(episode_video.network_path) as video_network_path_list,
-        array_agg(episode_video.ffprobe_pruned_json) as video_ffprobe_list,
+        array_agg(episode_video.snowstream_info_json) as video_info_list,
         array_agg(episode_video.version) as video_version_list,
 
         array_agg(episode_metadata.id) as metadata_id_list,

@@ -1,5 +1,12 @@
 import C from '../../../common'
 
+const styles = {
+    modal: {
+        backgroundColor: 'black',
+        flex: 1
+    }
+}
+
 export default function MediaTracksPage(props) {
     const { apiClient } = C.useAppContext();
     const { routes } = C.useAppContext();
@@ -12,6 +19,7 @@ export default function MediaTracksPage(props) {
     const [videoFileIndex, setVideoFileIndex] = C.React.useState(0)
     const [player, setPlayer] = C.React.useState(C.isWeb ? 'exo' : 'mpv')
     const [forcePlayer, setForcePlayer] = C.React.useState(null)
+    const [showModal, setShowModal] = C.React.useState(false)
 
     const shelfId = localParams.shelfId;
 
@@ -67,7 +75,72 @@ export default function MediaTracksPage(props) {
             setForcePlayer('exo')
         }
     }
+
+    const showInfo = () => {
+        setShowModal(true)
+    }
+
     if (shelf && media) {
+        const videoFile = media.video_files[videoFileIndex]
+        if (showModal) {
+            const snowstreamInfo = JSON.parse(videoFile.snowstream_info_json)
+            let fileInfos = []
+            for (const [key, value] of Object.entries(snowstreamInfo)) {
+                if (key !== 'tracks') {
+                    fileInfos.push(`${key} [${value}]`)
+                }
+            }
+            let videoInfos = []
+            let audioInfos = []
+            let subtitleInfos = []
+            for (const [kind, tracks] of Object.entries(snowstreamInfo.tracks)) {
+                for (const track of tracks) {
+                    let entry = []
+                    for (const [trackKey, trackValue] of Object.entries(track)) {
+                        entry.push(`${trackKey} [${trackValue}]`)
+                    }
+                    if (kind === 'video') {
+                        videoInfos.push(entry)
+                    }
+                    if (kind === 'audio') {
+                        audioInfos.push(entry)
+                    }
+                    if (kind == 'subtitle') {
+                        subtitleInfos.push(entry)
+                    }
+                }
+            }
+            return (
+                <C.SnowModal
+                    style={styles.modal}
+                    onRequestClose={() => { setShowModal(false) }}
+                >
+                    <C.FillView scroll style={styles.modal}>
+                        <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
+                        <C.SnowLabel>Video File Info</C.SnowLabel>
+                        <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
+                        <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>
+                        <C.SnowLabel>Audio Info</C.SnowLabel>
+                        {
+                            audioInfos.map((info, index) => {
+                                return (
+                                    <C.SnowText key={'audio' + index}>{info.join('   ')}</C.SnowText>
+                                )
+                            })
+                        }
+                        <C.SnowLabel>Subtitle Info</C.SnowLabel>
+                        {
+                            subtitleInfos.map((info, index) => {
+                                return (
+                                    <C.SnowText key={'subtitle' + index}>{info.join('   ')}</C.SnowText>
+                                )
+                            })
+                        }
+                        <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
+                    </C.FillView>
+                </C.SnowModal>
+            )
+        }
         const watchTitle = media.watched ? "Mark Unwatched (hold)" : "Mark Watched (hold)"
         const playDestination = {
             videoFileIndex: videoFileIndex,
@@ -112,7 +185,6 @@ export default function MediaTracksPage(props) {
                 </C.View>
             )
         }
-        const videoFile = media.video_files[videoFileIndex]
         let remoteMetadataId = ''
         if (media.remote_metadata_id) {
             remoteMetadataId = media.remote_metadata_id
@@ -178,6 +250,10 @@ export default function MediaTracksPage(props) {
                         title={`Toggle Player [${player}]`}
                         onPress={togglePlayer}
                     />
+                    <C.SnowTextButton
+                        title="Info"
+                        onPress={showInfo}
+                    />
                 </C.SnowGrid>
                 <C.FillView>
                     {versionPicker}
@@ -192,7 +268,6 @@ export default function MediaTracksPage(props) {
                 <C.FillView>
                     <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
                     <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
-                    <C.SnowText>ffprobe: {videoFile.ffprobe_pruned_json}</C.SnowText>
                 </C.FillView>
             </C.FillView>
         )

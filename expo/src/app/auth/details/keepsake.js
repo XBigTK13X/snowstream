@@ -79,8 +79,7 @@ export default function KeepsakeDetailsPage() {
             }
         }
         return (
-            <C.Modal
-                navigationBarTranslucent statusBarTranslucent
+            <C.SnowModal
                 onRequestClose={closeModal}
             >
                 <C.TouchableOpacity
@@ -88,7 +87,7 @@ export default function KeepsakeDetailsPage() {
                     style={styles.modal}>
                     {modalContent}
                 </C.TouchableOpacity>
-            </C.Modal>
+            </C.SnowModal>
         )
     }
 

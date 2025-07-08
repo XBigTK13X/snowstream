@@ -3,11 +3,12 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { config } from './settings'
 import { routes } from './routes'
-import { Modal, View } from 'react-native'
+import { View } from 'react-native'
 import { ApiClient } from './api-client'
 
 import { StaticStyle } from './snow-style'
 import SnowGrid from './comp/snow-grid'
+import SnowModal from './comp/snow-modal'
 import SnowText from './comp/snow-text'
 import SnowTextButton from './comp/snow-text-button'
 
@@ -193,7 +194,7 @@ export function AppContextProvider(props) {
 
     if (apiError) {
         return (
-            <Modal navigationBarTranslucent statusBarTranslucent>
+            <SnowModal>
                 <View style={styles.prompt}>
                     <SnowText>Unable to communicate with Snowstream.</SnowText>
                     <SnowText>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</SnowText>
@@ -204,7 +205,7 @@ export function AppContextProvider(props) {
                         </SnowGrid>
                     </View>
                 </View>
-            </Modal>
+            </SnowModal>
         )
     }
 
