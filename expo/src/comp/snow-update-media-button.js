@@ -14,10 +14,6 @@ import SnowHeader from './snow-header'
 import SnowTextButton from './snow-text-button'
 
 export default function SnowUpdateMediaButton(props) {
-    const { isAdmin } = useAppContext();
-    if (!isAdmin) {
-        return null
-    }
     const [showRequest, setShowRequest] = React.useState(false)
     const [metadataId, setMetadataId] = React.useState(props.remoteId ? props.remoteId : '')
     const [metadataSource, setMetadataSource] = React.useState('')

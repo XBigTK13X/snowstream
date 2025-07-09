@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function MediaTracksPage(props) {
-    const { apiClient } = C.useAppContext();
+    const { apiClient, isAdmin } = C.useAppContext();
     const { routes } = C.useAppContext();
     const localParams = C.useLocalSearchParams();
 
@@ -235,21 +235,21 @@ export default function MediaTracksPage(props) {
                         <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
                         <C.SnowTextButton title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
                         {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
-                        <C.SnowAdminButton title={`Rescan ${props.mediaKind}`}
+                        {isAdmin ? <C.SnowTextButton title={`Rescan ${props.mediaKind}`}
                             onPress={() => {
                                 const scanDetails = props.getScanDetails(localParams)
                                 return apiClient.createJobShelvesScan(scanDetails).then(() => {
                                     let readDetails = { ...scanDetails, ...{ updateVideos: true, updateMetadata: true } }
                                     return apiClient.createJobReadMediaFiles(readDetails)
                                 })
-                            }} />
-                        <C.SnowUpdateMediaButton
+                            }} /> : null}
+                        {isAdmin ? <C.SnowUpdateMediaButton
                             remoteId={remoteMetadataId}
                             kind={props.mediaKind}
                             updateMediaJob={(promptDetails) => {
                                 const mediaDetails = props.getUpdateMediaJobDetails(localParams)
                                 return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
-                            }} />
+                            }} /> : null}
                         <C.SnowTextButton
                             title={`Toggle Player [${player}]`}
                             onPress={togglePlayer}

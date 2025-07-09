@@ -100,10 +100,10 @@ export function WatchableListPage(props) {
                         }
                         {props.watchAll ? <C.SnowTextButton title="Watch All" onPress={watchAll} /> : null}
                         {props.shuffleAll ? <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} /> : null}
-                        <C.SnowAdminButton title={`Scan ${props.kind}`} onPress={() => {
+                        {isAdmin ? <C.SnowTextButton title={`Scan ${props.kind}`} onPress={() => {
                             props.scanContentsJob(apiClient, shelfId)
-                        }} />
-                        {props.updateMediaJob ?
+                        }} /> : null}
+                        {props.updateMediaJob && isAdmin ?
                             <C.SnowUpdateMediaButton
                                 kind={props.kind}
                                 remoteId={remoteId}

@@ -35,7 +35,6 @@ import { useAppContext } from './app-context'
 
 import FillView from './comp/fill-view'
 
-import SnowAdminButton from './comp/snow-admin-button'
 import SnowImageButton from './comp/snow-image-button'
 import SnowDropdown from './comp/snow-dropdown'
 import SnowGrid from './comp/snow-grid'
@@ -76,7 +75,6 @@ export default {
     React,
     Redirect,
     Slot,
-    SnowAdminButton,
     SnowDropdown,
     SnowGrid,
     SnowHeader,
