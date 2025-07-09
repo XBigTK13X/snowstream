@@ -1,4 +1,4 @@
-import { Text } from 'react-native'
+import { View, Text } from 'react-native'
 
 import { StaticStyle } from '../snow-style'
 
@@ -11,15 +11,37 @@ const normalStyle = {
     padding: 10
 }
 
+const styles = {
+    text: {
+        color: StaticStyle.color.text
+    },
+    normal: {
+        margin: 10,
+        padding: 10
+    },
+    center: {
+        width: '100%',
+        alignItems: 'center'
+    }
+}
+
+
 export function SnowText(props) {
-    let styles = [textStyle]
+    let style = [textStyle]
     if (!props.shrink) {
-        styles.push(normalStyle)
+        style.push(normalStyle)
     }
     if (props.style) {
-        styles.push(props.style)
+        style.push(props.style)
     }
-    return <Text style={styles}>{props.children}</Text>
+    if (props.center) {
+        return (
+            <View style={styles.center}>
+                <Text style={style} children={props.children} />
+            </View>
+        )
+    }
+    return <Text style={style} children={props.children} />
 }
 
 export default SnowText

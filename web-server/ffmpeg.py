@@ -2,8 +2,6 @@ from settings import config
 from log import log
 import json
 import util
-import copy
-import os
 import datetime
 
 def transcode_command(
@@ -32,6 +30,14 @@ def transcode_command(
     log.info(command)
     return command,streaming_url
 
+def fail_track_parse(exception, local_path, ffprobe=None, mediainfo=None):
+    log.error(f"An error occurred while reading track info for [{local_path}]")
+    if ffprobe:
+        log.error(json.dumps(ffprobe, indent=4))
+    if mediainfo:
+        log.error(json.dumps(mediainfo, indent=4))
+    raise exception
+
 class MediaTrack:
     # mediainfo index is 1 based
     # ffprobe index is 0 based
@@ -47,7 +53,7 @@ class MediaTrack:
                 self.bit_rate = int(mediainfo['BitRate'])
             if 'BitRate_Mode' in mediainfo:
                 self.bit_rate_kind = mediainfo['BitRate_Mode']
-            self.language = mediainfo['Language'] if 'Language' in mediainfo else 'Undefined'
+            self.language = mediainfo['Language'] if 'Language' in mediainfo else None
             self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
             self.title = mediainfo['Title'] if 'Title' in mediainfo else ''
 
@@ -57,12 +63,9 @@ class MediaTrack:
                 self.read_audio(ffprobe, mediainfo, is_anime)
             elif ffprobe['codec_type'] == 'subtitle':
                 self.read_subtitle(ffprobe, mediainfo, is_anime)
+
         except Exception as e:
-            print(f"Unable to parse media track info for {media_path}")
-            import pprint
-            pprint.pprint(ffprobe)
-            pprint.pprint(mediainfo)
-            raise e
+            fail_track_parse(e,media_path,ffprobe,mediainfo)
 
     def read_video(self,ffprobe,mediainfo):
         self.kind = 'video'
@@ -88,32 +91,33 @@ class MediaTrack:
         self.audio_index = 0
         if '@typeorder' in mediainfo:
             self.audio_index = int(mediainfo['@typeorder'])-1
-        self.format_full = mediainfo['Format_Commercial_IfAny'] if 'Format_Commercial_IfAny' in mediainfo else None
+        if 'Format_Commercial_IfAny' in mediainfo:
+            self.format_full = mediainfo['Format_Commercial_IfAny']
         self.channel_count = int(mediainfo['Channels'])
-        self.is_lossless = mediainfo['Compression_Mode'] == 'Lossless'
+        if 'Compression_Mode' in mediainfo:
+            self.is_lossless = mediainfo['Compression_Mode'] == 'Lossless'
         self.score = self.score_audio_track(ffprobe, mediainfo, is_anime)
 
     def score_subtitle_track(self, ffprobe, mediainfo, is_anime):
-        if 'language' in ffprobe:
-            if self.language == 'en':
-                low_title = self.title.lower()
-                if not self.is_text:
-                    return 2040
-                if 'sdh' in low_title:
-                    return 2060
-                if self.is_forced or self.is_default:
-                    return 2070
-                if self.is_captioned:
-                    return 2080
-                if 'convert' in low_title:
-                    return 2015
-                if 'clean' in low_title:
-                    return 2030
-                return 2100
-            if self.language == 'Undefined':
-                if self.is_forced:
-                    return 2020
-                return 2050
+        if self.language == 'en':
+            low_title = self.title.lower()
+            if not self.is_text:
+                return 2040
+            if 'sdh' in low_title:
+                return 2060
+            if self.is_forced or self.is_default:
+                return 2070
+            if self.is_captioned:
+                return 2080
+            if 'convert' in low_title:
+                return 2015
+            if 'clean' in low_title:
+                return 2030
+            return 2100
+        if self.language == None:
+            if self.is_forced:
+                return 2020
+            return 2050
         return 0
 
     def read_subtitle(self, ffprobe, mediainfo, is_anime):
@@ -150,7 +154,11 @@ RESOLUTION_WIDTHS = {
 
 
 def path_to_info_json(media_path: str, ffprobe_json:str = None, mediainfo_json:str=None):
-    probe = get_snowstream_info(media_path,ffprobe_existing=ffprobe_json,mediainfo_existing=mediainfo_json)
+    probe = get_snowstream_info(
+        media_path,
+        ffprobe_existing=ffprobe_json,
+        mediainfo_existing=mediainfo_json
+    )
     return {
         'mediainfo_raw': json.dumps(probe['mediainfo_raw']),
         'ffprobe_raw': json.dumps(probe['ffprobe_raw']),
@@ -217,11 +225,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
                     'track_index': int(ff['index'])
                 }
         except Exception as e:
-            print("Unable to process")
-            print(media_path)
-            import pprint
-            pprint.pprint(ff)
-            raise e
+            fail_track_parse(e,media_path,ff)
+
     for mi in raw_mediainfo['media']['track']:
         try:
             if mi['@type'] == 'General':
@@ -239,11 +244,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
                 stream_lookup[stream_key] = {'track_index': stream_key}
             stream_lookup[stream_key]['mediainfo'] = mi
         except Exception as e:
-            print("Unable to process")
-            print(media_path)
-            import pprint
-            pprint.pprint(mi)
-            raise e
+            fail_track_parse(e,media_path,None,mi)
 
     for sk in stream_keys:
         try:
@@ -263,13 +264,15 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
                 if snowstream_info['resolution_name'] == 'Unknown':
                     if track.resolution_width in RESOLUTION_WIDTHS:
                         snowstream_info['resolution_name'] = RESOLUTION_WIDTHS[track.resolution_width]
+
             snowstream_info['tracks'][track.kind].append(track.__dict__)
         except Exception as e:
-            print("Unable to process")
-            print(media_path)
-            import pprint
-            pprint.pprint(stream)
-            raise e
+            fail_track_parse(
+                exception=e,
+                media_path=media_path,
+                ffprobe=stream['ffprobe'] if 'ffprobe' in stream else None,
+                mediainfo=stream['mediainfo'] if 'mediainfo' in stream else None
+            )
 
     for kind in ['audio','subtitle']:
         if snowstream_info['tracks'][kind]:

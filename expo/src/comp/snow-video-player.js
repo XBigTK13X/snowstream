@@ -1,4 +1,5 @@
 import React from 'react'
+import util from '../util'
 import { Platform, View } from 'react-native'
 import { useAppContext } from '../app-context'
 import { StaticStyle } from '../snow-style'
@@ -108,7 +109,7 @@ export default function SnowVideoPlayer(props) {
 
     const onVideoUpdate = (info) => {
         if (config.debugVideoPlayer) {
-            console.log({ info })
+            util.log({ info })
         }
 
         if (!props.initialSeekComplete.current && props.initialSeekSeconds) {
@@ -184,7 +185,7 @@ export default function SnowVideoPlayer(props) {
 
     const onVideoError = (err) => {
         if (config.debugVideoPlayer) {
-            console.log({ err })
+            util.log({ err })
         }
 
         addLog(err)
@@ -198,13 +199,13 @@ export default function SnowVideoPlayer(props) {
                     props.onError(err)
                 }
                 else {
-                    console.log("Unhandled error kind")
-                    console.log({ err })
+                    util.log("Unhandled error kind")
+                    util.log({ err })
                 }
             }
             else {
-                console.log("Unhandled error source")
-                console.log({ err })
+                util.log("Unhandled error source")
+                util.log({ err })
             }
         }
     }
@@ -219,7 +220,7 @@ export default function SnowVideoPlayer(props) {
     }
 
     if (config.debugVideoPlayer) {
-        console.log(props.videoUrl)
+        util.log(props.videoUrl)
     }
 
     return (

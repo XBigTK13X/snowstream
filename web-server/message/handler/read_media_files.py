@@ -7,13 +7,26 @@ import ffmpeg
 def prep(files,movie=None,show=None,show_season=None,show_episode=None):
     results = []
     for ff in files:
-        import pprint
-        pprint.pprint(ff)
-        ff.movie = movie
-        ff.show = show
-        ff.show_season = show_season
-        ff.show_episode = show_episode
-        results.append(ff)
+        result = db.model.Stub()
+        result.id = ff.id
+        result.local_path = ff.local_path
+        if ff.model_kind == 'video_file':
+            result.snowstream_info_json = ff.snowstream_info_json
+            result.ffprobe_raw_json = ff.ffprobe_raw_json
+            result.mediainfo_raw_json = ff.mediainfo_raw_json
+        if movie:
+            result.movie = db.model.Stub()
+            result.movie.id = movie.id
+        if show:
+            result.show = db.model.Stub()
+            result.show.id = show.id
+        if show_season:
+            result.show_season = db.model.Stub()
+            result.show_season.id = show_season.id
+        if show_episode:
+            result.show_episode = db.model.Stub()
+            result.show_episode.id = show_episode.id
+        results.append(result)
     return results
 
 def handle(scope):
@@ -27,28 +40,29 @@ def handle(scope):
         return False
 
     if scope.is_unscoped():
-        metadata_files = db.op.get_metadata_file_list() if scope.update_metadata else None
-        video_files = db.op.get_video_file_list() if scope.update_videos else None
+        if scope.update_metadata:
+            metadata_files = db.op.get_metadata_file_list()
+        if scope.update_videos:
+            video_files = db.op.get_video_file_list()
     elif scope.is_shelf():
-        metadata_files = db.op.get_metadata_files_by_shelf(shelf_id=scope.target_id) if scope.update_metadata else None
-        video_files = db.op.get_video_files_by_shelf(shelf_id=scope.target_id) if scope.update_videos else None
+        if scope.update_metadata:
+            metadata_files = db.op.get_metadata_files_by_shelf(shelf_id=scope.target_id)
+        if scope.update_videos:
+            video_files = db.op.get_video_files_by_shelf(shelf_id=scope.target_id)
     elif scope.is_movie():
         movie = db.op.get_movie_by_id(ticket=ticket,movie_id=scope.target_id)
-        metadata_files = prep(movie.metadata_files, movie=movie) if scope.update_metadata else None
-        import pprint
-        print(1)
-        pprint.pprint(movie.video_files)
-        video_files = prep(movie.video_files, movie=movie) if scope.update_videos else None
-        print(2)
-        pprint.pprint(movie.video_files)
-        print("Getting video files")
+        if scope.update_metadata:
+            metadata_files = prep(movie.metadata_files, movie=movie)
+        if scope.update_videos:
+            video_files = prep(movie.video_files, movie=movie)
     elif scope.is_show():
         show = db.op.get_show_by_id(ticket=ticket,show_id=scope.target_id)
-        metadata_files = prep(show.metadata_files,show=show) if scope.update_metadata else None
-        seasons = db.op.get_show_season_list_by_show_id(ticket=ticket,show_id=scope.target_id)
         if scope.update_metadata:
-            for season in seasons:
-                metadata_files += prep(season.metadata_files,show_season=season)
+            metadata_files = prep(show.metadata_files,show=show)
+            seasons = db.op.get_show_season_list_by_show_id(ticket=ticket,show_id=scope.target_id)
+            if scope.update_metadata:
+                for season in seasons:
+                    metadata_files += prep(season.metadata_files,show_season=season)
         episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=show.shelf.id,show_id=scope.target_id)
         video_files = []
         for episode in episodes:
@@ -58,7 +72,8 @@ def handle(scope):
                 video_files += prep(episode.video_files,show_episode=episode)
     elif scope.is_season():
         season = db.op.get_show_season_by_id(ticket=ticket,season_id=scope.target_id)
-        metadata_files = prep(season.metadata_files,season=season)
+        if scope.update_metadata:
+            metadata_files = prep(season.metadata_files,season=season)
         episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=season.show.shelf.id,show_season_id=scope.target_id)
         video_files = []
         for episode in episodes:
@@ -68,8 +83,10 @@ def handle(scope):
                 video_files += prep(episode.video_files, show_episode=episode)
     elif scope.is_episode():
         episode = db.op.get_show_episode_by_id(ticket=ticket,episode_id=scope.target_id)
-        metadata_files = prep(episode.metadata_files,show_episode=episode) if scope.update_metadata else None
-        video_files = prep(episode.video_files, show_episode=episode) if scope.update_videos else None
+        if scope.update_metadata:
+            metadata_files = prep(episode.metadata_files,show_episode=episode)
+        if scope.update_videos:
+            video_files = prep(episode.video_files, show_episode=episode)
 
     if scope.update_metadata:
         defined_tag_ids = {}
@@ -103,13 +120,9 @@ def handle(scope):
                 if metadata_file.show_episode != None:
                     db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
 
-    import pprint
-    pprint.pprint(video_files)
-
     if scope.update_videos:
         progress_count = 0
         for video_file in video_files:
-            print(video_file.local_path)
             progress_count += 1
             if progress_count % 500 == 0:
                 db.op.update_job(job_id=scope.job_id, message=f'Read video file {progress_count} out of {len(metadata_files)}')

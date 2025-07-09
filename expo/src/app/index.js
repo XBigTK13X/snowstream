@@ -67,7 +67,13 @@ export default function SignInPage() {
         passwordForm = (
             <C.FillView>
                 <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
-                <C.SnowInput secureTextEntry onSubmit={login} shouldFocus onChangeText={setPassword} value={password} />
+                <C.SnowInput
+                    secureTextEntry
+                    onSubmit={login}
+                    shouldFocus
+                    onChangeText={setPassword}
+                    value={password}
+                />
                 <C.SnowGrid itemsPerRow={2} >
                     <C.SnowTextButton title="Login" onPress={login} />
                     <C.SnowTextButton title="Cancel" onPress={cancel} />
@@ -77,7 +83,7 @@ export default function SignInPage() {
     } else {
         selectServer = (
             <C.FillView>
-                <C.SnowLabel>Choose a server to use.</C.SnowLabel>
+                <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
                 <C.SnowGrid itemsPerRow={4} >
                     <C.SnowTextButton title="Beast" onPress={() => { chooseServer('beast', config.beastWebApiUrl) }} />
                     <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer('vondoom', config.vondoomWebApiUrl) }} />
@@ -99,7 +105,7 @@ export default function SignInPage() {
         }
         userList = (
             <C.FillView>
-                <C.SnowLabel>Select a user to login to {apiClient.webApiUrl}.</C.SnowLabel>
+                <C.SnowLabel center>Select a user to login to {apiClient.webApiUrl}.</C.SnowLabel>
                 <C.SnowGrid items={users} renderItem={renderItem} />
             </C.FillView>
 

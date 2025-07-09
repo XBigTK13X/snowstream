@@ -75,6 +75,8 @@ export default function MediaTracksPage(props) {
 
     if (shelf && media) {
         const videoFile = media.video_files[videoFileIndex]
+        const videoTrack = videoFile.info.tracks.video[0]
+        console.log({ track: videoFile.info.tracks })
         if (showModal) {
             const snowstreamInfo = JSON.parse(videoFile.snowstream_info_json)
             let fileInfos = []
@@ -214,7 +216,9 @@ export default function MediaTracksPage(props) {
         return (
             <C.FillView scroll>
                 <C.View>
-                    <C.SnowText>Title: {props.getMediaName ? props.getMediaName(localParams, media) : media.name}</C.SnowText>
+                    <C.SnowLabel center>
+                        {props.getMediaName ? props.getMediaName(localParams, media) : media.name}
+                    </C.SnowLabel>
                     <C.SnowGrid itemsPerRow={2} substantial>
                         {resumeControls}
                         <C.SnowTextButton
@@ -268,6 +272,7 @@ export default function MediaTracksPage(props) {
                 </C.View>
                 <C.View>
                     <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
+                    <C.SnowText>Video: {C.util.bitsToPretty(videoTrack.bit_rate)} {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
                     <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
                 </C.View>
             </C.FillView>

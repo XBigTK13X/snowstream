@@ -19,7 +19,26 @@ export function secondsToTimestamp(seconds) {
     return new Date(seconds * 1000).toISOString().slice(11, 19);
 }
 
+export function log(message) {
+    console.log(message)
+}
+
+export function bitsToPretty(bits) {
+    if (!bits) {
+        return '???'
+    }
+    if (bits < 1000) {
+        return `${bits}b'`
+    }
+    if (bits < 1000000) {
+        return `${Math.ceil(bits / 1000)}kb`
+    }
+    return `${Math.ceil(bits / 1000000)}Mb`
+}
+
 export default {
     formatEpisodeTitle,
-    secondsToTimestamp
+    secondsToTimestamp,
+    log,
+    bitsToPretty
 }

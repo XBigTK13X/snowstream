@@ -71,7 +71,7 @@ def update_video_file_info(
     mediainfo_json:str=None
 ):
     with DbSession() as db:
-        video_file = get_video_file_by_id(video_file_id)
+        video_file = db.query(dm.VideoFile).filter(dm.VideoFile.id == video_file_id).first()
         video_file.snowstream_info_json = snowstream_info_json
         if ffprobe_json:
             video_file.ffprobe_raw_json = ffprobe_json

@@ -1,3 +1,4 @@
+import util from './util'
 import { router } from 'expo-router'
 
 // DOCS router method https://docs.expo.dev/router/navigating-pages/#imperative-navigation
@@ -120,8 +121,8 @@ routes.gotoItem = (item) => {
         })
     }
     else {
-        console.log("Unhandled poster item")
-        console.log({ item })
+        util.log("Unhandled poster item")
+        util.log({ item })
     }
 }
 

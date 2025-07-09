@@ -1,12 +1,11 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import util from './util'
 import { config } from './settings'
 import { routes } from './routes'
 import { View } from 'react-native'
 import { ApiClient } from './api-client'
-
-import { StaticStyle } from './snow-style'
 import SnowGrid from './comp/snow-grid'
 import SnowModal from './comp/snow-modal'
 import SnowText from './comp/snow-text'
@@ -150,7 +149,7 @@ export function AppContextProvider(props) {
                     }
                 })
                 .catch((err) => {
-                    console.log({ err })
+                    util.log({ err })
                     apiClient.debug()
                     return resolve({ failed: err })
                 })

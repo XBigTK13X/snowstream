@@ -132,8 +132,8 @@ export default function PlayMediaPage() {
                     loadEpisode(entry.id)
                 }
                 else {
-                    console.log("Unhandled playing queue entry")
-                    console.log({ entry })
+                    C.util.log("Unhandled playing queue entry")
+                    C.util.log({ entry })
                 }
             })
         }

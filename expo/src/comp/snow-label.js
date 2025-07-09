@@ -1,4 +1,4 @@
-import { Text } from 'react-native'
+import { View, Text } from 'react-native'
 import { StaticStyle } from '../snow-style'
 
 const styles = {
@@ -7,11 +7,22 @@ const styles = {
         color: StaticStyle.color.text,
         margin: 10,
         padding: 10
+    },
+    center: {
+        alignItems: 'center',
+        width: '100%'
     }
 }
 
 export function SnowLabel(props) {
-    return <Text style={styles.label}>{props.children}</Text>
+    if (props.center) {
+        return (
+            <View style={styles.center}>
+                <Text style={styles.label} children={props.children} />
+            </View>
+        )
+    }
+    return <Text style={styles.label} children={props.children} />
 }
 
 export default SnowLabel

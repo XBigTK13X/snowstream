@@ -27,7 +27,6 @@ export default function ShelfEditPage() {
             updateMetadata,
             updateVideos
         }
-        console.log({ details })
         return apiCall(details)
     }
 

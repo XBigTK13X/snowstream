@@ -2,6 +2,7 @@ import axios from 'axios'
 import DeviceInfo from 'react-native-device-info';
 import { UAParser } from 'ua-parser-js'
 import { Platform } from 'react-native'
+import util from './util'
 
 export class ApiClient {
     constructor(details) {
@@ -37,7 +38,7 @@ export class ApiClient {
         this.createClient(details)
 
         this.handleError = (err) => {
-            console.log(err)
+            util.log(err)
             if (err) {
                 if (err.response && err.response.status === 401) {
                     details.onLogout()
@@ -467,8 +468,8 @@ export class ApiClient {
             return this.get(`/playing/queue?source=${details.source}`)
         }
         else {
-            console.log("Unhandled playing queue")
-            console.log({ details })
+            util.log("Unhandled playing queue")
+            util.log({ details })
         }
     }
 
@@ -535,7 +536,7 @@ export class ApiClient {
     }
 
     debug() {
-        console.log({ baseURL: this.baseURL, authToken: this.authToken })
+        util.log({ baseURL: this.baseURL, authToken: this.authToken })
     }
 }
 
