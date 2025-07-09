@@ -27,6 +27,7 @@ export default function ShelfEditPage() {
             updateMetadata,
             updateVideos
         }
+        console.log({ details })
         return apiCall(details)
     }
 
@@ -51,8 +52,8 @@ export default function ShelfEditPage() {
     }
 
     return (
-        <C.FillView scroll>
-            <C.SnowGrid
+        <C.FillView>
+            <C.SnowGrid shrink
                 itemsPerRow={3}
                 items={buttons}
                 renderItem={renderItem} />

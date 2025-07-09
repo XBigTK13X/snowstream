@@ -5,12 +5,16 @@ import nfo
 import ffmpeg
 
 def prep(files,movie=None,show=None,show_season=None,show_episode=None):
+    results = []
     for ff in files:
+        import pprint
+        pprint.pprint(ff)
         ff.movie = movie
         ff.show = show
         ff.show_season = show_season
         ff.show_episode = show_episode
-    return files
+        results.append(ff)
+    return results
 
 def handle(scope):
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a read_media_files job")
@@ -31,7 +35,13 @@ def handle(scope):
     elif scope.is_movie():
         movie = db.op.get_movie_by_id(ticket=ticket,movie_id=scope.target_id)
         metadata_files = prep(movie.metadata_files, movie=movie) if scope.update_metadata else None
+        import pprint
+        print(1)
+        pprint.pprint(movie.video_files)
         video_files = prep(movie.video_files, movie=movie) if scope.update_videos else None
+        print(2)
+        pprint.pprint(movie.video_files)
+        print("Getting video files")
     elif scope.is_show():
         show = db.op.get_show_by_id(ticket=ticket,show_id=scope.target_id)
         metadata_files = prep(show.metadata_files,show=show) if scope.update_metadata else None
@@ -93,9 +103,13 @@ def handle(scope):
                 if metadata_file.show_episode != None:
                     db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
 
+    import pprint
+    pprint.pprint(video_files)
+
     if scope.update_videos:
         progress_count = 0
         for video_file in video_files:
+            print(video_file.local_path)
             progress_count += 1
             if progress_count % 500 == 0:
                 db.op.update_job(job_id=scope.job_id, message=f'Read video file {progress_count} out of {len(metadata_files)}')

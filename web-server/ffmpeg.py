@@ -36,23 +36,27 @@ class MediaTrack:
     # mediainfo index is 1 based
     # ffprobe index is 0 based
     # mpv uses ffprobe index scheme
-    def __init__(self, media_path: str, ffprobe:dict, mediainfo:dict):
+    def __init__(self, media_path: str, ffprobe:dict, mediainfo:dict, is_anime:bool=False):
         try:
             self.track_index = int(mediainfo['StreamOrder'])
             self.codec = mediainfo['CodecID']
             self.format = mediainfo['Format']
-            self.size_bits = int(mediainfo['BitRate']) if 'BitRate' in mediainfo else None
-            self.size_kind = mediainfo['BitRate_Mode'] if 'BitRate_Mode' in mediainfo else None
+            if 'StreamSize' in mediainfo:
+                self.bit_size = mediainfo['StreamSize']
+            if 'BitRate' in mediainfo:
+                self.bit_rate = int(mediainfo['BitRate'])
+            if 'BitRate_Mode' in mediainfo:
+                self.bit_rate_kind = mediainfo['BitRate_Mode']
             self.language = mediainfo['Language'] if 'Language' in mediainfo else 'Undefined'
             self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
             self.title = mediainfo['Title'] if 'Title' in mediainfo else ''
 
             if ffprobe['codec_type'] == 'video':
-                self.read_video(ffprobe,mediainfo)
+                self.read_video(ffprobe, mediainfo)
             elif ffprobe['codec_type'] == 'audio':
-                self.read_audio(ffprobe,mediainfo)
+                self.read_audio(ffprobe, mediainfo, is_anime)
             elif ffprobe['codec_type'] == 'subtitle':
-                self.read_subtitle(ffprobe,mediainfo)
+                self.read_subtitle(ffprobe, mediainfo, is_anime)
         except Exception as e:
             print(f"Unable to parse media track info for {media_path}")
             import pprint
@@ -69,17 +73,17 @@ class MediaTrack:
         self.resolution_height = int(mediainfo['Height'])
         self.is_hdr = 'HDR Format' in mediainfo
 
-    def score_audio_track(self, ffprobe, mediainfo):
-        if 'language' in ffprobe:
-            if 'eng' in ffprobe['language']:
-                if 'truehd' in mediainfo['CodecID'].lower():
+    def score_audio_track(self, ffprobe, mediainfo, is_anime):
+        if self.language:
+            if self.language == 'en':
+                if 'truehd' in ffprobe['codec_name']:
                     return 2100
                 return 2050
-            if 'jap' in ffprobe['language'] or 'jpn' in ffprobe['language']:
-                return 1000
+            if self.language == 'ja':
+                return 3000 if is_anime else 1000
         return 0
 
-    def read_audio(self,ffprobe,mediainfo):
+    def read_audio(self, ffprobe, mediainfo, is_anime):
         self.kind = 'audio'
         self.audio_index = 0
         if '@typeorder' in mediainfo:
@@ -87,11 +91,11 @@ class MediaTrack:
         self.format_full = mediainfo['Format_Commercial_IfAny'] if 'Format_Commercial_IfAny' in mediainfo else None
         self.channel_count = int(mediainfo['Channels'])
         self.is_lossless = mediainfo['Compression_Mode'] == 'Lossless'
-        self.score = self.score_audio_track(ffprobe,mediainfo)
+        self.score = self.score_audio_track(ffprobe, mediainfo, is_anime)
 
-    def score_subtitle_track(self, ffprobe, mediainfo):
+    def score_subtitle_track(self, ffprobe, mediainfo, is_anime):
         if 'language' in ffprobe:
-            if 'eng' in ffprobe['language']:
+            if self.language == 'en':
                 low_title = self.title.lower()
                 if not self.is_text:
                     return 2040
@@ -106,13 +110,13 @@ class MediaTrack:
                 if 'clean' in low_title:
                     return 2030
                 return 2100
-            if 'und' in ffprobe['language']:
+            if self.language == 'Undefined':
                 if self.is_forced:
                     return 2020
                 return 2050
         return 0
 
-    def read_subtitle(self,ffprobe,mediainfo):
+    def read_subtitle(self, ffprobe, mediainfo, is_anime):
         self.kind = 'subtitle'
         self.subtitle_index = 0
         if '@typeorder' in mediainfo:
@@ -128,7 +132,7 @@ class MediaTrack:
         low_format = mediainfo['Format'].lower()
         if 'pgs' in low_format or 'vob' in low_format:
             self.is_text = False
-        self.score = self.score_subtitle_track(ffprobe,mediainfo)
+        self.score = self.score_subtitle_track(ffprobe, mediainfo, is_anime)
 
 RESOLUTION_HEIGHTS = {
     2160: 'UHD 2160',
@@ -195,10 +199,6 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
             snowstream_info['size_kind'] = raw_mediainfo['media']['track'][0]['OverallBitRate_Mode']
 
     stream_lookup = {}
-
-    mediainfo_streams = [xx for xx in raw_mediainfo['media']['track'] if 'StreamOrder' in xx]
-    ffprobe_streams = [xx for xx in raw_ffprobe['streams'] if not 'tags' in xx or not 'filename' in xx['tags']]
-
     stream_keys = []
 
     for ff in raw_ffprobe['streams']:
@@ -248,13 +248,21 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     for sk in stream_keys:
         try:
             stream = stream_lookup[sk]
-            track = MediaTrack(media_path=media_path,ffprobe=stream['ffprobe'],mediainfo=stream['mediainfo'])
+            track = MediaTrack(
+                media_path=media_path,
+                ffprobe=stream['ffprobe'],
+                mediainfo=stream['mediainfo'],
+                is_anime=snowstream_info['is_anime']
+            )
             if track.kind == 'video':
                 if track.is_hdr:
                     snowstream_info['is_hdr'] = True
-                snowstream_info['resolution_name'] = RESOLUTION_HEIGHTS[track.resolution_height] if track.resolution_height in RESOLUTION_HEIGHTS else 'Unknown'
+                snowstream_info['resolution_name'] = 'Unknown'
+                if track.resolution_height in RESOLUTION_HEIGHTS:
+                    snowstream_info['resolution_name'] = RESOLUTION_HEIGHTS[track.resolution_height]
                 if snowstream_info['resolution_name'] == 'Unknown':
-                    snowstream_info['resolution_name'] = RESOLUTION_WIDTHS[track.resolution_width] if track.resolution_width in RESOLUTION_WIDTHS else 'Unknown'
+                    if track.resolution_width in RESOLUTION_WIDTHS:
+                        snowstream_info['resolution_name'] = RESOLUTION_WIDTHS[track.resolution_width]
             snowstream_info['tracks'][track.kind].append(track.__dict__)
         except Exception as e:
             print("Unable to process")

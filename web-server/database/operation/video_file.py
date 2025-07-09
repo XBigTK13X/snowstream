@@ -77,7 +77,7 @@ def update_video_file_info(
             video_file.ffprobe_raw_json = ffprobe_json
         if mediainfo_json:
             video_file.mediainfo_raw_json = mediainfo_json
-        video_file.commit()
+        db.commit()
         return video_file
 
 def get_video_file_by_id(video_file_id: int):

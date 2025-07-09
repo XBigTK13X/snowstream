@@ -13,6 +13,7 @@ export class ApiClient {
 
         // Only functions that get passed around as higher order functions need to be bound
         this.login = this.login.bind(this)
+
         // An example of this is the job runner
         this.createScopedJob = this.createScopedJob.bind(this)
         this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
@@ -21,6 +22,7 @@ export class ApiClient {
         this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
         this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
         this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
+
         // Another example is the watched status setters used by onLongPress event handlers
         this.toggleItemWatched = this.toggleItemWatched.bind(this)
         this.toggleMovieShelfWatchStatus = this.toggleMovieShelfWatchStatus.bind(this)

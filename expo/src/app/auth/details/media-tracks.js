@@ -234,7 +234,10 @@ export default function MediaTracksPage(props) {
                         <C.SnowAdminButton title={`Rescan ${props.mediaKind}`}
                             onPress={() => {
                                 const scanDetails = props.getScanDetails(localParams)
-                                return apiClient.createJobShelvesScan(scanDetails)
+                                return apiClient.createJobShelvesScan(scanDetails).then(() => {
+                                    let readDetails = { ...scanDetails, ...{ updateVideos: true, updateMetadata: true } }
+                                    return apiClient.createJobReadMediaFiles(readDetails)
+                                })
                             }} />
                         <C.SnowUpdateMediaButton
                             remoteId={remoteMetadataId}
