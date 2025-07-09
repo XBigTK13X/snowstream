@@ -28,12 +28,12 @@ export function bitsToPretty(bits) {
         return '???'
     }
     if (bits < 1000) {
-        return `${bits}b'`
+        return `${bits} b'`
     }
     if (bits < 1000000) {
-        return `${Math.ceil(bits / 1000)}kb`
+        return `${Math.ceil(bits / 1000).toFixed(2)} kb`
     }
-    return `${Math.ceil(bits / 1000000)}Mb`
+    return `${(bits / 1000000).toFixed(2)} Mb`
 }
 
 export default {
