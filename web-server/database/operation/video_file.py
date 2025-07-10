@@ -90,4 +90,8 @@ def get_video_files_by_shelf(shelf_id: int):
 
 def get_video_file_list():
     with DbSession() as db:
-        return db.query(dm.VideoFile).all()
+        return (
+            db.query(dm.VideoFile)
+            .order_by(dm.VideoFile.local_path)
+            .all()
+        )

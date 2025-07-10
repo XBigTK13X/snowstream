@@ -3,6 +3,7 @@ from db import db
 import api_models as am
 import nfo
 import ffmpeg
+import os
 
 def prep(files,movie=None,show=None,show_season=None,show_episode=None):
     results = []
@@ -40,6 +41,7 @@ def handle(scope):
         return False
 
     if scope.is_unscoped():
+        db.op.update_job(job_id=scope.job_id, message="Getting all entries from the database")
         if scope.update_metadata:
             metadata_files = db.op.get_metadata_file_list()
         if scope.update_videos:
@@ -88,7 +90,8 @@ def handle(scope):
         if scope.update_videos:
             video_files = prep(episode.video_files, show_episode=episode)
 
-    if scope.update_metadata:
+    if scope.update_metadata and metadata_files:
+        db.op.update_job(job_id=scope.job_id, message=f"Updating {len(metadata_files)} metadata files")
         defined_tag_ids = {}
         progress_count = 0
         for metadata_file in metadata_files:
@@ -96,6 +99,9 @@ def handle(scope):
             if progress_count % 500 == 0:
                 db.op.update_job(job_id=scope.job_id, message=f'Read metadata file {progress_count} out of {len(metadata_files)}')
             if not metadata_file.local_path:
+                continue
+            if not os.path.exists(metadata_file.local_path):
+                db.op.update_job(f"WARNING A metadata_file db entry exists for a path that does not exist\n\t[{metadata_file.local_path}]")
                 continue
             nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
             if not 'tag' in nfo_content:
@@ -120,16 +126,20 @@ def handle(scope):
                 if metadata_file.show_episode != None:
                     db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
 
-    if scope.update_videos:
+    if scope.update_videos and video_files:
+        db.op.update_job(job_id=scope.job_id, message=f"Updating {len(video_files)} video files")
         progress_count = 0
         for video_file in video_files:
             progress_count += 1
             if progress_count % 500 == 0:
-                db.op.update_job(job_id=scope.job_id, message=f'Read video file {progress_count} out of {len(metadata_files)}')
+                db.op.update_job(job_id=scope.job_id, message=f'Read video file {progress_count} out of {len(video_files)}')
             if not video_file.local_path:
                 continue
             info = None
             if not scope.skip_existing:
+                if not os.path.exists(video_file.local_path):
+                    db.op.update_job(f"WARNING A video_file db entry exists for a path that does not exist\n\t[{video_file.local_path}]")
+                    continue
                 # First read fresh mediainfo + ffprobe, then regenerate the snowstream info
                 info = ffmpeg.path_to_info_json(media_path=video_file.local_path)
                 db.op.update_video_file_info(

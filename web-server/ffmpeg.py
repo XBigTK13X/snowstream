@@ -30,8 +30,8 @@ def transcode_command(
     log.info(command)
     return command,streaming_url
 
-def fail_track_parse(exception, local_path, ffprobe=None, mediainfo=None):
-    log.error(f"An error occurred while reading track info for [{local_path}]")
+def fail_track_parse(exception, media_path, ffprobe=None, mediainfo=None):
+    log.error(f"An error occurred while reading track info for [{media_path}]")
     if ffprobe:
         log.error(json.dumps(ffprobe, indent=4))
     if mediainfo:
@@ -49,8 +49,8 @@ class MediaTrack:
             self.format = mediainfo['Format']
             if 'StreamSize' in mediainfo:
                 self.bit_size = mediainfo['StreamSize']
-            if 'BitRate' in mediainfo:
-                self.bit_rate = int(mediainfo['BitRate'])
+            if 'BitRate' in ffprobe:
+                self.bit_rate = int(ffprobe['BitRate'])
             if 'BitRate_Mode' in mediainfo:
                 self.bit_rate_kind = mediainfo['BitRate_Mode']
             self.language = mediainfo['Language'] if 'Language' in mediainfo else None
@@ -180,12 +180,14 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         cleaned_ffprobe = ffprobe_output.replace("�",'')
         raw_ffprobe = json.loads(cleaned_ffprobe)
 
+    raw_mediainfo = None
     if mediainfo_existing:
         raw_mediainfo = json.loads(mediainfo_existing)
-    command = f'mediainfo --ParseSpeed=0 --Output=JSON "{media_path}"'
-    command_output = util.run_cli(command,raw_output=True)
-    mediainfo_output = command_output['stdout']
-    raw_mediainfo = json.loads(mediainfo_output)
+    else:
+        command = f'mediainfo --ParseSpeed=0 --Output=JSON "{media_path}"'
+        command_output = util.run_cli(command,raw_output=True)
+        mediainfo_output = command_output['stdout']
+        raw_mediainfo = json.loads(mediainfo_output)
 
     snowstream_info = {
         'duration_seconds': float(raw_ffprobe['format']['duration']),
