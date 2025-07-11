@@ -49,8 +49,11 @@ class MediaTrack:
             self.format = mediainfo['Format']
             if 'StreamSize' in mediainfo:
                 self.bit_size = mediainfo['StreamSize']
-            if 'BitRate' in ffprobe:
-                self.bit_rate = int(ffprobe['BitRate'])
+            if 'BitRate' in mediainfo:
+                if '/' in mediainfo['BitRate']:
+                    self.bit_rate = int(mediainfo['BitRate'].split('/')[0])
+                else:
+                    self.bit_rate = int(mediainfo['BitRate'])
             if 'BitRate_Mode' in mediainfo:
                 self.bit_rate_kind = mediainfo['BitRate_Mode']
             self.language = mediainfo['Language'] if 'Language' in mediainfo else None

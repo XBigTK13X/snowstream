@@ -306,6 +306,7 @@ def auth_required(router):
 
         for ii in range(0,len(movie.video_files)):
             movie.video_files[ii].info = json.loads(movie.video_files[ii].snowstream_info_json)
+            del movie.video_files[ii].snowstream_info_json
             movie.video_files[ii].file_index = ii
             if 'main_feature' in movie.video_files[ii].kind:
                 movie.main_feature_index = ii
@@ -499,6 +500,7 @@ def auth_required(router):
         episode.has_versions = False
         for ii in range(0,len(episode.video_files)):
             episode.video_files[ii].info = json.loads(episode.video_files[ii].snowstream_info_json)
+            del episode.video_files[ii].snowstream_info_json
             episode.video_files[ii].file_index = ii
             if episode.video_files[ii].version:
                 episode.has_versions = True

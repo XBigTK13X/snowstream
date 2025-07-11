@@ -76,11 +76,9 @@ export default function MediaTracksPage(props) {
     if (shelf && media) {
         const videoFile = media.video_files[videoFileIndex]
         const videoTrack = videoFile.info.tracks.video[0]
-        console.log({ track: videoFile.info.tracks })
         if (showModal) {
-            const snowstreamInfo = JSON.parse(videoFile.snowstream_info_json)
             let fileInfos = []
-            for (const [key, value] of Object.entries(snowstreamInfo)) {
+            for (const [key, value] of Object.entries(videoFile.info)) {
                 if (key !== 'tracks') {
                     fileInfos.push(`${key} [${value}]`)
                 }
@@ -88,7 +86,7 @@ export default function MediaTracksPage(props) {
             let videoInfos = []
             let audioInfos = []
             let subtitleInfos = []
-            for (const [kind, tracks] of Object.entries(snowstreamInfo.tracks)) {
+            for (const [kind, tracks] of Object.entries(videoFile.info.tracks)) {
                 for (const track of tracks) {
                     let entry = []
                     for (const [trackKey, trackValue] of Object.entries(track)) {

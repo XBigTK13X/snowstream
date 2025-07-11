@@ -147,16 +147,16 @@ def handle(scope):
                 )
                 db.op.update_video_file_info(
                     video_file_id=video_file.id,
-                    snowstream_info_json=info['snowstream_info'],
-                    ffprobe_json=info['ffprobe_raw'],
-                    mediainfo_json=info['mediainfo_raw']
+                    snowstream_info_json=info['snowstream_info']
                 )
             else:
                 # First read fresh mediainfo + ffprobe from file, then regenerate the snowstream info
                 info = ffmpeg.path_to_info_json(media_path=video_file.local_path)
                 db.op.update_video_file_info(
                     video_file_id=video_file.id,
-                    snowstream_info_json=info['snowstream_info']
+                    snowstream_info_json=info['snowstream_info'],
+                    ffprobe_json=info['ffprobe_raw'],
+                    mediainfo_json=info['mediainfo_raw']
                 )
 
     return True
