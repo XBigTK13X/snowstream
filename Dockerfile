@@ -11,6 +11,8 @@ ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
 
 RUN rabbitmq-plugins enable rabbitmq_management
 
+COPY docker/rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
+
 RUN systemctl disable nginx
 
 ENV NVM_DIR=/usr/local/nvm

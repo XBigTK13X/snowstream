@@ -101,7 +101,7 @@ def handle(scope):
             if not metadata_file.local_path:
                 continue
             if not os.path.exists(metadata_file.local_path):
-                db.op.update_job(f"WARNING A metadata_file db entry exists for a path that does not exist\n\t[{metadata_file.local_path}]")
+                db.op.update_job(job_id=scope.job_id, message=f"WARNING A metadata_file db entry exists for a path that does not exist\n\t[{metadata_file.local_path}]")
                 continue
             nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
             if not 'tag' in nfo_content:
@@ -135,18 +135,10 @@ def handle(scope):
                 db.op.update_job(job_id=scope.job_id, message=f'Read video file {progress_count} out of {len(video_files)}')
             if not video_file.local_path:
                 continue
-            info = None
-            if not scope.skip_existing:
-                if not os.path.exists(video_file.local_path):
-                    db.op.update_job(f"WARNING A video_file db entry exists for a path that does not exist\n\t[{video_file.local_path}]")
-                    continue
-                # First read fresh mediainfo + ffprobe, then regenerate the snowstream info
-                info = ffmpeg.path_to_info_json(media_path=video_file.local_path)
-                db.op.update_video_file_info(
-                    video_file_id=video_file.id,
-                    snowstream_info_json=info['snowstream_info']
-                )
-            else:
+            if not os.path.exists(video_file.local_path):
+                db.op.update_job(job_id=scope.job_id, message=f"WARNING A video_file db entry exists for a path that does not exist\n\t[{video_file.local_path}]")
+                continue
+            if scope.skip_existing and video_file.ffprobe_raw_json and video_file.mediainfo_raw_json:
                 # Regenerate the snowstream info without running the file through mediainfo + ffprobe
                 info = ffmpeg.path_to_info_json(
                     media_path=video_file.local_path,
@@ -158,6 +150,13 @@ def handle(scope):
                     snowstream_info_json=info['snowstream_info'],
                     ffprobe_json=info['ffprobe_raw'],
                     mediainfo_json=info['mediainfo_raw']
+                )
+            else:
+                # First read fresh mediainfo + ffprobe from file, then regenerate the snowstream info
+                info = ffmpeg.path_to_info_json(media_path=video_file.local_path)
+                db.op.update_video_file_info(
+                    video_file_id=video_file.id,
+                    snowstream_info_json=info['snowstream_info']
                 )
 
     return True

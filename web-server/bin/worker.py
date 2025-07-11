@@ -41,6 +41,15 @@ def start():
         log.info('')
         payload = json.loads(body)
         job_id = payload["job_id"]
+        job = db.op.get_job_by_id(job_id=job_id)
+        if job.status == 'complete':
+            # Something glitched out with rabbitmq
+            # but snowstream completed the previous run of the job
+            # ack the message so rabbitmq doesn't requeue it
+            channel.basic_ack(delivery_tag=method.delivery_tag)
+            max_failures = 4
+            delay_seconds = 5
+            return
         user = 'unknown' if 'auth_user' in payload else payload['auth_user']
         db.op.update_job(job_id=job_id,message=f"Message received from {user}. {message.read.count()} messages remain in queue.")
         db.op.update_job(job_id=job_id,message="\n"+json.dumps(payload,indent=4))

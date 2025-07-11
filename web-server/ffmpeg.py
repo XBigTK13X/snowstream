@@ -55,7 +55,7 @@ class MediaTrack:
                 self.bit_rate_kind = mediainfo['BitRate_Mode']
             self.language = mediainfo['Language'] if 'Language' in mediainfo else None
             self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
-            self.title = mediainfo['Title'] if 'Title' in mediainfo else ''
+            self.title = f"{mediainfo['Title']}" if 'Title' in mediainfo else ''
 
             if ffprobe['codec_type'] == 'video':
                 self.read_video(ffprobe, mediainfo)
@@ -63,7 +63,6 @@ class MediaTrack:
                 self.read_audio(ffprobe, mediainfo, is_anime)
             elif ffprobe['codec_type'] == 'subtitle':
                 self.read_subtitle(ffprobe, mediainfo, is_anime)
-
         except Exception as e:
             fail_track_parse(e,media_path,ffprobe,mediainfo)
 
