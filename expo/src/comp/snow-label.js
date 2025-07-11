@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native'
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 
 const styles = {
     label: {
-        fontSize: StaticStyle.fontSize.label,
-        color: StaticStyle.color.text,
+        fontSize: Style.fontSize.label,
+        color: Style.color.text,
         margin: 10,
         padding: 10
     },

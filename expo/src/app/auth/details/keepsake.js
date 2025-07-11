@@ -4,7 +4,7 @@ const styles = {
     modal: {
         flex: 1,
         padding: 10,
-        backgroundColor: C.StaticStyle.color.background
+        backgroundColor: C.Style.color.background
     },
     zoomedImage: {
         width: "100%",

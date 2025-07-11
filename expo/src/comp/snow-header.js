@@ -1,10 +1,10 @@
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 import { Text } from 'react-native'
 
 const styles = {
     header: {
-        fontSize: StaticStyle.fontSize.header,
-        color: StaticStyle.color.text,
+        fontSize: Style.fontSize.header,
+        color: Style.color.text,
         margin: 10,
         padding: 10
     }

@@ -1,52 +1,50 @@
 import React from 'react'
 import { Platform, Image, TouchableOpacity } from 'react-native';
 import SnowText from './snow-text'
-import { StaticStyle, DynamicStyle } from '../snow-style'
+import Style from '../snow-style'
 
 const missingPosterImage = '../../assets/images/app/missing-poster.jpeg'
 const missingScreencapImage = '../../assets/images/app/missing-screencap.jpeg'
 // TODO hiddenPoster / hiddenScreencap
 
 
-const dyn = DynamicStyle()
-
 const styles = {
     wrapper: {
-        height: dyn.imageButton.wrapper.normal.height,
-        width: dyn.imageButton.wrapper.normal.width,
+        height: Style.imageButton.wrapper.normal.height,
+        width: Style.imageButton.wrapper.normal.width,
         margin: 10,
         marginLeft: 'auto',
         marginRight: 'auto',
         marginBottom: 0,
-        backgroundColor: StaticStyle.color.core,
+        backgroundColor: Style.color.core,
         borderWidth: 5,
-        borderColor: StaticStyle.color.core,
+        borderColor: Style.color.core,
         borderRadius: 5,
     },
     wrapperWide: {
-        height: dyn.imageButton.wrapper.wide.height,
-        width: dyn.imageButton.wrapper.wide.width,
+        height: Style.imageButton.wrapper.wide.height,
+        width: Style.imageButton.wrapper.wide.width,
     },
     wrapperSquare: {
-        height: dyn.imageButton.wrapper.square.height,
-        width: dyn.imageButton.wrapper.square.width
+        height: Style.imageButton.wrapper.square.height,
+        width: Style.imageButton.wrapper.square.width
     },
     selected: {
-        borderColor: StaticStyle.color.active
+        borderColor: Style.color.active
     },
     focused: {
-        borderColor: StaticStyle.color.hover
+        borderColor: Style.color.hover
     },
     dull: {
-        backgroundColor: StaticStyle.color.coreDark,
-        borderColor: StaticStyle.color.coreDark,
+        backgroundColor: Style.color.coreDark,
+        borderColor: Style.color.coreDark,
     },
     image: {
-        height: dyn.imageButton.image.normal.height,
-        width: dyn.imageButton.image.normal.width,
+        height: Style.imageButton.image.normal.height,
+        width: Style.imageButton.image.normal.width,
         borderWidth: 2,
-        borderColor: StaticStyle.color.outlineDark,
-        backgroundColor: StaticStyle.color.outlineDark,
+        borderColor: Style.color.outlineDark,
+        backgroundColor: Style.color.outlineDark,
         marginTop: 5,
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -54,25 +52,25 @@ const styles = {
         borderRadius: 6
     },
     imageWide: {
-        height: dyn.imageButton.image.wide.height,
-        width: dyn.imageButton.image.wide.width,
+        height: Style.imageButton.image.wide.height,
+        width: Style.imageButton.image.wide.width,
     },
     imageSquare: {
-        height: dyn.imageButton.image.square.height,
-        width: dyn.imageButton.image.square.width,
+        height: Style.imageButton.image.square.height,
+        width: Style.imageButton.image.square.width,
     },
     text: {
         height: 80,
-        color: StaticStyle.color.textDark,
-        fontSize: dyn.imageButton.fontSize.normal,
+        color: Style.color.textDark,
+        fontSize: Style.imageButton.fontSize.normal,
         fontWeight: 'bold',
         padding: 0,
         margin: 0,
-        marginTop: dyn.imageButton.textBox.marginTop,
+        marginTop: Style.imageButton.textBox.marginTop,
         textAlign: 'center'
     },
     smallText: {
-        fontSize: dyn.imageButton.fontSize.small
+        fontSize: Style.imageButton.fontSize.small
     }
 }
 

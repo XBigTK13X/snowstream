@@ -2,7 +2,7 @@ import React from 'react'
 import Video from 'react-native-video';
 import { ViewType } from 'react-native-video'
 import { Platform, View, TouchableOpacity, Modal } from 'react-native'
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
 import SnowModal from './snow-modal'
@@ -26,10 +26,10 @@ const bufferConfig = {
 export default function RnvVideoView(props) {
     const styles = {
         touchable: {
-            width: StaticStyle.window.width(),
-            height: StaticStyle.window.height(),
-            zIndex: StaticStyle.depth.video.toggle,
-            elevation: StaticStyle.depth.video.toggle,
+            width: Style.window.width(),
+            height: Style.window.height(),
+            zIndex: Style.depth.video.toggle,
+            elevation: Style.depth.video.toggle,
             position: 'absolute',
             top: 0,
             left: 0,
@@ -40,10 +40,10 @@ export default function RnvVideoView(props) {
             backgroundColor: 'black'
         },
         wrapper: {
-            width: StaticStyle.window.width(),
-            height: StaticStyle.window.height(),
-            zIndex: StaticStyle.depth.video.wrapper,
-            elevation: StaticStyle.depth.video.wrapper,
+            width: Style.window.width(),
+            height: Style.window.height(),
+            zIndex: Style.depth.video.wrapper,
+            elevation: Style.depth.video.wrapper,
             position: 'absolute',
             top: 0,
             left: 0,
@@ -54,8 +54,8 @@ export default function RnvVideoView(props) {
             backgroundColor: 'black'
         },
         video: {
-            width: StaticStyle.window.width(),
-            height: StaticStyle.window.height(),
+            width: Style.window.width(),
+            height: Style.window.height(),
             position: 'absolute',
             alignSelf: 'center',
             backgroundColor: 'black',
@@ -63,8 +63,8 @@ export default function RnvVideoView(props) {
             left: 0,
             bottom: 0,
             right: 0,
-            zIndex: StaticStyle.depth.video.content,
-            elevation: StaticStyle.depth.video.content
+            zIndex: Style.depth.video.content,
+            elevation: Style.depth.video.content
         },
     }
     const videoRef = React.useRef(null);

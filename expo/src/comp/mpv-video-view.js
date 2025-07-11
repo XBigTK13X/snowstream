@@ -1,15 +1,15 @@
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
 import { useNavigation } from 'expo-router'
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 import SnowModal from './snow-modal'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
     const styles = {
         touchable: {
-            width: StaticStyle.window.width(),
-            height: StaticStyle.window.height(),
+            width: Style.window.width(),
+            height: Style.window.height(),
             position: 'absolute',
             top: 0,
             left: 0,
@@ -19,8 +19,8 @@ export default function MpvVideoView(props) {
             justifyContent: 'center',
         },
         wrapper: {
-            width: StaticStyle.window.width(),
-            height: StaticStyle.window.height(),
+            width: Style.window.width(),
+            height: Style.window.height(),
             position: 'absolute',
             top: 0,
             left: 0,
@@ -31,8 +31,8 @@ export default function MpvVideoView(props) {
             backgroundColor: 'black'
         },
         video: {
-            width: StaticStyle.window.width(),
-            height: StaticStyle.window.height(),
+            width: Style.window.width(),
+            height: Style.window.height(),
             position: 'absolute',
             alignSelf: 'center',
             backgroundColor: 'black',
@@ -89,8 +89,8 @@ export default function MpvVideoView(props) {
                 <LibmpvVideo
                     playUrl={props.videoUrl}
                     isPlaying={props.isPlaying}
-                    surfaceWidth={StaticStyle.surface.width()}
-                    surfaceHeight={StaticStyle.surface.height()}
+                    surfaceWidth={Style.surface.width()}
+                    surfaceHeight={Style.surface.height()}
                     onLibmpvEvent={(libmpvEvent) => {
                         if (props.onUpdate) {
                             props.onUpdate({ kind: 'mpvevent', libmpvEvent })

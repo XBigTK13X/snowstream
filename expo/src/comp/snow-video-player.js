@@ -2,7 +2,7 @@ import React from 'react'
 import util from '../util'
 import { Platform, View } from 'react-native'
 import { useAppContext } from '../app-context'
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 import SnowVideoControls from './snow-video-controls'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -10,19 +10,19 @@ export default function SnowVideoPlayer(props) {
     const styles = {
         videoOverlay: {
             backgroundColor: 'transparent',
-            width: StaticStyle.window.width(),
-            height: StaticStyle.window.height(),
+            width: Style.window.width(),
+            height: Style.window.height(),
         },
         videoView: {
-            width: StaticStyle.window.width(),
-            height: StaticStyle.window.height(),
-            backgroundColor: StaticStyle.color.background,
+            width: Style.window.width(),
+            height: Style.window.height(),
+            backgroundColor: Style.color.background,
         },
         videoControls: {
             flex: 1
         },
         dark: {
-            backgroundColor: StaticStyle.color.background,
+            backgroundColor: Style.color.background,
         }
     }
     const { config, routes } = useAppContext()
@@ -226,8 +226,8 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             <VideoView
-                windowHeight={StaticStyle.window.height()}
-                windowWidth={StaticStyle.window.width()}
+                windowHeight={Style.window.height()}
+                windowWidth={Style.window.width()}
                 videoUrl={props.videoUrl}
                 isPlaying={isPlaying}
                 isReady={isReady}

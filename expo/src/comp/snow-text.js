@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
 
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 
 const textStyle = {
-    color: StaticStyle.color.text
+    color: Style.color.text
 }
 
 const normalStyle = {
@@ -13,7 +13,7 @@ const normalStyle = {
 
 const styles = {
     text: {
-        color: StaticStyle.color.text
+        color: Style.color.text
     },
     normal: {
         margin: 10,

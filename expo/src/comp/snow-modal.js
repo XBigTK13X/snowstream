@@ -1,13 +1,13 @@
 import { Modal } from 'react-native'
 import FillView from './fill-view'
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 
 const styles = {
     prompt: {
-        backgroundColor: StaticStyle.color.background
+        backgroundColor: Style.color.background
     },
     transparent: {
-        backgroundColor: StaticStyle.color.transparentDark
+        backgroundColor: Style.color.transparentDark
     },
     center: {
         justifyContent: 'center',

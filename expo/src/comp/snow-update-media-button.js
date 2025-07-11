@@ -4,7 +4,7 @@ import {
 } from 'react-native'
 
 import { useAppContext } from '../app-context'
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 import SnowInput from './snow-input'
 import SnowLabel from './snow-label'
 import SnowModal from './snow-modal'

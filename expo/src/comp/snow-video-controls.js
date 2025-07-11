@@ -3,7 +3,7 @@ import Slider from '@react-native-community/slider';
 import { View } from 'react-native'
 
 import util from '../util'
-import { StaticStyle } from '../snow-style'
+import Style from '../snow-style'
 import { useAppContext } from '../app-context'
 
 import FillView from './fill-view'
@@ -16,7 +16,7 @@ import SnowModal from './snow-modal'
 
 const styles = {
     background: {
-        backgroundColor: StaticStyle.color.transparentDark,
+        backgroundColor: Style.color.transparentDark,
         padding: 60
     },
 
@@ -26,14 +26,14 @@ const styles = {
     },
 
     logs: {
-        backgroundColor: StaticStyle.color.background,
-        zIndex: StaticStyle.depth.video.controls + 10,
-        elevation: StaticStyle.depth.video.controls + 10
+        backgroundColor: Style.color.background,
+        zIndex: Style.depth.video.controls + 10,
+        elevation: Style.depth.video.controls + 10
     },
     prompt: {
-        backgroundColor: StaticStyle.color.transparentDark,
-        zIndex: StaticStyle.depth.video.controls,
-        elevation: StaticStyle.depth.video.controls
+        backgroundColor: Style.color.transparentDark,
+        zIndex: Style.depth.video.controls,
+        elevation: Style.depth.video.controls
     }
 }
 

@@ -5,14 +5,15 @@ import { SystemBars } from "react-native-edge-to-edge";
 const styles = {
     safeArea: {
         padding: 30,
-        backgroundColor: C.StaticStyle.color.background,
+        backgroundColor: C.Style.color.background,
         flex: 1
     },
     header: {
-        width: '100%'
+        width: '100%',
+        height: C.isTV ? '15%' : 'auto'
     },
     hr: {
-        borderBottomColor: C.StaticStyle.color.coreDark,
+        borderBottomColor: C.Style.color.coreDark,
         borderBottomWidth: 2,
     },
     page: {

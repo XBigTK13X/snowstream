@@ -3,42 +3,39 @@ import React from 'react'
 
 import { TouchableOpacity } from 'react-native';
 import SnowText from './snow-text'
-import { StaticStyle, DynamicStyle } from '../snow-style'
-
-
-const dyn = DynamicStyle()
+import Style from '../snow-style'
 
 const styles = {
     wrapper: {
         margin: 10,
         padding: 10,
-        height: dyn.textButton.wrapper.normal.height,
+        height: Style.textButton.wrapper.normal.height,
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        backgroundColor: StaticStyle.color.core,
+        backgroundColor: Style.color.core,
         borderWidth: 5,
-        borderColor: StaticStyle.color.core,
+        borderColor: Style.color.core,
         borderRadius: 5
     },
     selected: {
-        borderColor: StaticStyle.color.active
+        borderColor: Style.color.active
     },
     focused: {
-        borderColor: StaticStyle.color.hover
+        borderColor: Style.color.hover
     },
     disabled: {
         opacity: 0.5
     },
     text: {
-        fontSize: dyn.textButton.fontSize.normal,
+        fontSize: Style.textButton.fontSize.normal,
         padding: 0,
         margin: 0,
         textAlign: 'center',
-        height: dyn.textButton.textBox.height
+        height: Style.textButton.textBox.height
     },
     smallText: {
-        fontSize: dyn.textButton.fontSize.small
+        fontSize: Style.textButton.fontSize.small
     }
 }
 
