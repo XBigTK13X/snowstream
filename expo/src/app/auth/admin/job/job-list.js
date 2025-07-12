@@ -13,15 +13,18 @@ export default function JobListPage() {
     })
 
     if (!!jobs) {
-        return <C.SnowGrid itemsPerRow={2} items={jobs} renderItem={(job) => {
-            const title = `${job.id}) ${job.kind} - ${job.status} - ${job.message.substring(0, 25)}`
-            return (
-                <C.SnowTextButton
-                    title={title}
-                    onPress={routes.func(routes.admin.jobDetails, { jobId: job.id })}
-                />
-            )
-        }}></C.SnowGrid>
+        return (
+            <C.FillView scroll><C.SnowGrid itemsPerRow={2} items={jobs} renderItem={(job) => {
+                const title = `${job.id}) ${job.kind} - ${job.status} - ${job.message.substring(0, 25)}`
+                return (
+                    <C.SnowTextButton
+                        title={title}
+                        onPress={routes.func(routes.admin.jobDetails, { jobId: job.id })}
+                    />
+                )
+            }}></C.SnowGrid>
+            </C.FillView>
+        )
     }
     return (
         <C.View >

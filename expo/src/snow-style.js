@@ -2,6 +2,7 @@ import { Platform, Dimensions } from 'react-native';
 
 const isTV = Platform.isTV
 const isAndroid = Platform.OS === 'android'
+const isPortrait = Dimensions.get('window').width < Dimensions.get('window').height
 
 const uhd = {
     width: 3840,
@@ -98,7 +99,7 @@ export const Style = {
     textButton: {
         wrapper: {
             normal: {
-                height: 40
+                height: isPortrait ? 80 : 40
             }
         },
         fontSize: {

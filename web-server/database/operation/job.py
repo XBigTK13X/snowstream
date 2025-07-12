@@ -22,7 +22,7 @@ def create_job(kind: str, input:dict=None):
 
 def get_job_list():
     with DbSession() as db:
-        return db.query(dm.Job).order_by(desc(dm.Job.id)).all()
+        return db.query(dm.Job).order_by(desc(dm.Job.id)).limit(25).all()
 
 
 def get_job_by_id(job_id: int):

@@ -10,9 +10,7 @@ import {
     useRouter
 } from 'expo-router'
 
-import {
-    Image
-} from 'expo-image'
+import { Image } from 'expo-image'
 
 import {
     Linking,

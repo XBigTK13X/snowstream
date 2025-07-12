@@ -1,5 +1,6 @@
 import React from 'react'
-import { Platform, Image, TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image'
 import SnowText from './snow-text'
 import Style from '../snow-style'
 
