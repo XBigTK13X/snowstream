@@ -1,11 +1,11 @@
 import React from 'react'
-import { Platform, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image'
 import SnowText from './snow-text'
 import Style from '../snow-style'
 
-const missingPosterImage = '../../assets/images/app/missing-poster.jpeg'
-const missingScreencapImage = '../../assets/images/app/missing-screencap.jpeg'
+const missingPosterImage = require('../image/asset/missing-poster.jpeg')
+const missingScreencapImage = require('../image/asset/missing-screencap.jpeg')
 // TODO hiddenPoster / hiddenScreencap
 
 
@@ -131,7 +131,7 @@ export function SnowImageButton(props) {
             autoFocus={props.shouldFocus}>
             <Image
                 style={imageStyle}
-                placeholder={{ uri: placeholder }}
+                placeholder={placeholder}
                 contentFit="contain"
                 source={{ uri: props.imageUrl }} />
             <SnowText style={fontStyle}>{title}</SnowText>
