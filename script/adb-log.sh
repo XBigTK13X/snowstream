@@ -1,3 +1,3 @@
 #! /bin/bash
 
-adb logcat > web-server/.snowstream/log/adb.log 2>&1
+adb logcat > /tmp/adb.log 2>&1

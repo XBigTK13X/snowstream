@@ -54,10 +54,12 @@ export default function MpvVideoView(props) {
             props.onReady()
         }
         if (!cleanup) {
-            //Libmpv.command("set|vf|no")
-            //Libmpv.command("set|af|no")
+            Libmpv.command("set|vf|no")
+            Libmpv.command("set|af|no")
             // Loudness normalization from Snowby
-            Libmpv.command('set|af|acompressor=ratio=4,loudnorm')
+            //Libmpv.command('set|af|acompressor=ratio=4,loudnorm')
+            Libmpv.command("set|hwdec|auto")
+            Libmpv.command("set|profile|fast")
             Libmpv.command("set|cache-secs|5")
             Libmpv.command("set|demuxer-readahead-secs|5")
             navigation.addListener('beforeRemove', (e) => {
@@ -82,29 +84,30 @@ export default function MpvVideoView(props) {
             wrapper={false}
             onRequestClose={() => { props.stopVideo() }}
             style={styles.wrapper}>
+
+            <LibmpvVideo
+                playUrl={props.videoUrl}
+                isPlaying={props.isPlaying}
+                surfaceWidth={Style.surface.width()}
+                surfaceHeight={Style.surface.height()}
+                onLibmpvEvent={(libmpvEvent) => {
+                    if (props.onUpdate) {
+                        props.onUpdate({ kind: 'mpvevent', libmpvEvent })
+                    }
+                }}
+                onLibmpvLog={(libmpvLog) => {
+                    if (props.onUpdate) {
+                        props.onUpdate({ kind: 'mpvlog', libmpvLog })
+                    }
+                }}
+                selectedAudioTrack={props.audioIndex}
+                selectedSubtitleTrack={props.subtitleIndex}
+                seekToSeconds={props.seekToSeconds}
+            />
             <TouchableOpacity
                 hasTVPreferredFocus={props.shouldFocus}
                 style={styles.touchable}
                 onPress={props.pauseVideo}>
-                <LibmpvVideo
-                    playUrl={props.videoUrl}
-                    isPlaying={props.isPlaying}
-                    surfaceWidth={Style.surface.width()}
-                    surfaceHeight={Style.surface.height()}
-                    onLibmpvEvent={(libmpvEvent) => {
-                        if (props.onUpdate) {
-                            props.onUpdate({ kind: 'mpvevent', libmpvEvent })
-                        }
-                    }}
-                    onLibmpvLog={(libmpvLog) => {
-                        if (props.onUpdate) {
-                            props.onUpdate({ kind: 'mpvlog', libmpvLog })
-                        }
-                    }}
-                    selectedAudioTrack={props.audioIndex}
-                    selectedSubtitleTrack={props.subtitleIndex}
-                    seekToSeconds={props.seekToSeconds}
-                />
             </TouchableOpacity>
         </SnowModal >
     )

@@ -32,7 +32,7 @@ export default function EpisodeListPage() {
         return apiClient.getPlayingQueue({ shelfId, seasonId })
     }
 
-    const shuffleAll = (apiClient) => {
+    const shuffleAll = (apiClient, shelfId) => {
         return apiClient.getPlayingQueue({ shelfId, seasonId, shuffle: true })
     }
     return (
