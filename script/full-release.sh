@@ -15,6 +15,6 @@ echo "=-=- Push the apks up to the file server -=-="
 ~/script/push-apks.sh snowstream
 
 echo "=-=- Deploy the apks to all devices -=-="
-~/script/remote-adb.py
+~/script/remote-adb.py All deploy_snowstream
 
 unset NODE_ENV

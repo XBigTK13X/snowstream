@@ -4,6 +4,7 @@ import util from '../util'
 import SnowGrid from './snow-grid'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
+import FillView from './fill-view'
 
 function TrackList(props) {
     if (!props.tracks) {
@@ -13,7 +14,7 @@ function TrackList(props) {
         return props.isAudio ? track.audio_index === props.activeTrack : track.subtitle_index === props.activeTrack
     })[0]
     return (
-        <View>
+        <FillView>
             <SnowText>
                 {props.title} ({props.tracks.length}) [{util.bitsToPretty(activeTrack.bit_rate)}/s]
             </SnowText>
@@ -47,7 +48,7 @@ function TrackList(props) {
                     )
                 })}
             </SnowGrid>
-        </View>
+        </FillView>
     )
 }
 
@@ -56,7 +57,7 @@ export default function SnowTrackSelector(props) {
         return null
     }
     return (
-        <View>
+        <FillView>
             {props.tracks.audio.length ? <TrackList
                 kind="audio"
                 title="Audio"
@@ -72,6 +73,6 @@ export default function SnowTrackSelector(props) {
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}
             /> : null}
-        </View>
+        </FillView>
     )
 }

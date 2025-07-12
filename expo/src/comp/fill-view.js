@@ -11,6 +11,9 @@ export default function FillView(props) {
     if (props.style) {
         style.push(props.style)
     }
+    if (props.shrink) {
+        style = []
+    }
     const ViewKind = props.scroll ? ScrollView : View
     return (
         <ViewKind style={style} children={props.children} />
