@@ -28,7 +28,7 @@ export function bitsToPretty(bits) {
         return '???'
     }
     if (bits < 1000) {
-        return `${bits} b'`
+        return `${bits.toFixed(2)} b`
     }
     if (bits < 1000000) {
         return `${Math.ceil(bits / 1000).toFixed(2)} kb`

@@ -43,7 +43,6 @@ export default function SnowVideoControls(props) {
     }
 
     const { routes } = useAppContext()
-    prompt
     const [showLogs, setShowLogs] = React.useState(false)
 
     const progressPercent = 100 * (props.progressSeconds / props.durationSeconds)

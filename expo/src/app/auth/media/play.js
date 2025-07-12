@@ -79,9 +79,9 @@ export default function PlayMediaPage() {
             setEpisode(response)
             setEpisodeId(loadEpisodeId)
             loadVideoFile(response)
-            let title = `${response.season.show.name} - ${response.episode_slug} - ${response.name}`
+            let title = `${response.season.show.name} - ${C.util.formatEpisodeTitle(response)}`
             if (playingQueue) {
-                title = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${title}`
+                title = `Queue [${playingQueue.progress + 1}/${playingQueue.length}]- ${title}`
             }
             setVideoTitle(title)
         })

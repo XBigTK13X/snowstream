@@ -20,7 +20,7 @@ function TrackList(props) {
 
             <SnowGrid itemsPerRow={5} scroll={false}>
                 {props.tracks.map((track, trackKey) => {
-                    let display = `${track.language} - `
+                    let display = track.language ? track.language + ' - ' : ''
                     display += `${(track.title.indexOf('.') === -1 && track.title) ? track.title + ' - ' : ''}`
                     if (props.isAudio) {
                         display += `${track.codec.replace('A_', '')} - `

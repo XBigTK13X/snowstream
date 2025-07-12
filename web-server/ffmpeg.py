@@ -48,7 +48,7 @@ class MediaTrack:
             self.codec = mediainfo['CodecID']
             self.format = mediainfo['Format']
             if 'StreamSize' in mediainfo:
-                self.bit_size = mediainfo['StreamSize']
+                self.bit_size = int(mediainfo['StreamSize'])
             if 'BitRate' in mediainfo:
                 if '/' in mediainfo['BitRate']:
                     self.bit_rate = int(mediainfo['BitRate'].split('/')[0])
@@ -196,8 +196,9 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         'is_hdr': False,
         'is_anime': True if '/anime/' in media_path else False,
         'source_kind': 'remux' if 'remux' in media_path.lower() else 'transcode',
-        'size_bits': None,
-        'size_kind': None,
+        'bit_rate': None,
+        'bit_rate_kind': None,
+        'bit_file_size': None,
         'tracks': {
             'audio': [],
             'video': [],
@@ -206,9 +207,11 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     }
 
     if 'OverallBitRate' in raw_mediainfo['media']['track'][0]:
-        snowstream_info['size_bits'] = int(raw_mediainfo['media']['track'][0]['OverallBitRate'])
+        snowstream_info['bit_rate'] = int(raw_mediainfo['media']['track'][0]['OverallBitRate'])
         if 'OverallBitRate_Mode' in raw_mediainfo['media']['track'][0]:
-            snowstream_info['size_kind'] = raw_mediainfo['media']['track'][0]['OverallBitRate_Mode']
+            snowstream_info['bit_rate_kind'] = raw_mediainfo['media']['track'][0]['OverallBitRate_Mode']
+    if 'FileSize' in raw_mediainfo['media']['track'][0]:
+        snowstream_info['bit_file_size'] = int(raw_mediainfo['media']['track'][0]['FileSize'])
 
     stream_lookup = {}
     stream_keys = []
