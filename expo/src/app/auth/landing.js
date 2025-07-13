@@ -16,9 +16,10 @@ export default function LandingPage(props) {
         if (!shelves) {
             apiClient.getShelfList().then((response) => {
                 setShelves(response)
-            })
-            apiClient.getStreamSourceList().then((response) => {
-                setStreamSources(response)
+            }).then(() => {
+                apiClient.getStreamSourceList().then((response) => {
+                    setStreamSources(response)
+                })
             })
         }
     })

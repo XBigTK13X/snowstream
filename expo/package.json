@@ -1,6 +1,6 @@
 {
     "name": "snowstream",
-    "version": "0.12.8",
+    "version": "0.12.9",
     "main": "expo-router/entry",
     "dependencies": {
         "@react-native-community/slider": "4.5.7",
@@ -16,7 +16,7 @@
         "react-dom": "19.0.0",
         "react-native": "npm:react-native-tvos@0.79.5-0",
         "react-native-device-info": "14.0.4",
-        "react-native-libmpv": "0.7.1",
+        "react-native-libmpv": "0.7.5",
         "react-native-safe-area-context": "5.5.2",
         "react-native-screens": "4.11.1",
         "react-native-video": "6.16.1",
