@@ -10,7 +10,7 @@ const styles = {
     },
     header: {
         width: '100%',
-        height: C.isTV ? '15%' : 'auto'
+        height: 'auto'
     },
     hr: {
         borderBottomColor: C.Style.color.coreDark,
@@ -70,10 +70,10 @@ export default function RootLayout() {
     return (
         <SafeAreaView>
             <AppContextProvider>
-                <C.View style={styles.page}>
+                <C.FillView scroll style={styles.page}>
                     <Header />
                     <C.Slot />
-                </C.View>
+                </C.FillView>
             </AppContextProvider>
         </SafeAreaView>
     )

@@ -43,7 +43,7 @@ export default function TagEditPage() {
         return <C.Redirect href={routes.admin.tagList} />
     }
     return (
-        <C.FillView scroll >
+        <C.FillView>
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onChangeText={setTagName} value={tagName} />
 

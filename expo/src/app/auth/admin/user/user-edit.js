@@ -78,7 +78,7 @@ export default function UserEditPage() {
     }
 
     return (
-        <C.FillView scroll >
+        <C.FillView>
             {existingUserControls}
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onChangeText={setUserUsername} value={userUsername} />

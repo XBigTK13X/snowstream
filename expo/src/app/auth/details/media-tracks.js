@@ -41,10 +41,18 @@ export default function MediaTracksPage(props) {
     }
     const selectTrack = (track) => {
         if (track.kind === 'audio') {
-            setAudioTrack(track.audio_index)
+            if (audioTrack == track.audio_index) {
+                setAudioTrack(-1)
+            } else {
+                setAudioTrack(track.audio_index)
+            }
         }
         if (track.kind === 'subtitle') {
-            setSubtitleTrack(track.subtitle_index)
+            if (subtitleTrack == track.subtitle_index) {
+                setSubtitleTrack(-1)
+            } else {
+                setSubtitleTrack(track.subtitle_index)
+            }
         }
     }
 
@@ -212,7 +220,7 @@ export default function MediaTracksPage(props) {
             )
         }
         return (
-            <C.FillView scroll>
+            <C.FillView>
                 <C.View>
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(localParams, media) : media.name}

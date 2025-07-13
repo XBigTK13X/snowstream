@@ -22,7 +22,7 @@ export default function JobDetailsPage() {
     }
 
     return (
-        <C.FillView scroll>
+        <C.FillView>
             <C.SnowLabel>Job</C.SnowLabel>
             <C.SnowText>{job.kind} is {job.status}. {job.created_at} to {job.updated_at}</C.SnowText>
             <C.SnowLabel>Input</C.SnowLabel>

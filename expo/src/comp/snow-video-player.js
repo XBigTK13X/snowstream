@@ -30,7 +30,7 @@ export default function SnowVideoPlayer(props) {
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
-    const [seekToSeconds, setSeekToSeconds] = React.useState(null)
+    const [seekToSeconds, setSeekToSeconds] = React.useState(0)
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
     const [logs, setLogs] = React.useState([])
     const [subtitleFontSize, setSubtitleFontSize] = React.useState(38) // MPV default font size

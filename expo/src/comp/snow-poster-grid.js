@@ -1,8 +1,11 @@
+import { Platform } from 'react-native'
 import FillView from './fill-view'
 import SnowGrid from './snow-grid'
 import SnowImageButton from './snow-image-button'
 import SnowLabel from './snow-label'
 import { useAppContext } from '../app-context'
+
+const itemsPerRow = Platform.isTV ? 7 : 5
 
 export function SnowPosterGrid(props) {
     const { routes } = useAppContext()
@@ -44,7 +47,7 @@ export function SnowPosterGrid(props) {
                 mainGrid
                 items={props.items}
                 renderItem={renderItem}
-                itemsPerRow={7}
+                itemsPerRow={itemsPerRow}
             />
         </FillView>
     )

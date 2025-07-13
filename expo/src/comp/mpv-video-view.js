@@ -54,14 +54,9 @@ export default function MpvVideoView(props) {
             props.onReady()
         }
         if (!cleanup) {
-            Libmpv.command("set|vf|no")
-            Libmpv.command("set|af|no")
             // Loudness normalization from Snowby
             //Libmpv.command('set|af|acompressor=ratio=4,loudnorm')
-            Libmpv.command("set|hwdec|auto")
-            Libmpv.command("set|profile|fast")
-            Libmpv.command("set|cache-secs|5")
-            Libmpv.command("set|demuxer-readahead-secs|5")
+
             navigation.addListener('beforeRemove', (e) => {
                 Libmpv.cleanup()
             })

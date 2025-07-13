@@ -141,10 +141,19 @@ export default function PlayMediaPage() {
 
     const selectTrack = (track) => {
         if (track.kind === 'audio') {
-            setAudioTrackIndex(track.audio_index)
+            if (audioTrackIndex === track.audio_index) {
+                setAudioTrackIndex(-1)
+            } else {
+                setAudioTrackIndex(track.audio_index)
+            }
+
         }
         if (track.kind === 'subtitle') {
-            setSubtitleTrackIndex(track.subtitle_index)
+            if (subtitleTrackIndex === track.subtitle_index) {
+                setSubtitleTrackIndex(-1)
+            } else {
+                setSubtitleTrackIndex(track.subtitle_index)
+            }
         }
     }
 

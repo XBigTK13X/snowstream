@@ -88,7 +88,7 @@ export function WatchableListPage(props) {
         let itemsPerRow = 4
 
         return (
-            <C.FillView scroll>
+            <C.FillView>
                 <C.View>
                     <C.SnowText>{pageTitle}</C.SnowText>
                     <C.SnowGrid itemsPerRow={itemsPerRow}>

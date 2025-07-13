@@ -10,16 +10,17 @@ function TrackList(props) {
     if (!props.tracks) {
         return null
     }
-    let activeTrack = props.tracks.filter((track) => {
+    let activeTrack = props.activeTrack === -1 ? null : props.tracks.filter((track) => {
         return props.isAudio ? track.audio_index === props.activeTrack : track.subtitle_index === props.activeTrack
     })[0]
+    let activeBitRate = props.activeTrack === -1 ? null : `[${util.bitsToPretty(activeTrack.bit_rate)}/s]`
     return (
         <FillView>
             <SnowText>
-                {props.title} ({props.tracks.length}) [{util.bitsToPretty(activeTrack.bit_rate)}/s]
+                {props.title} ({props.tracks.length}) {activeBitRate}
             </SnowText>
 
-            <SnowGrid itemsPerRow={5} scroll={false}>
+            <SnowGrid itemsPerRow={5}>
                 {props.tracks.map((track, trackKey) => {
                     let display = track.language ? track.language + ' - ' : ''
                     display += `${(track.title.indexOf('.') === -1 && track.title) ? track.title + ' - ' : ''}`

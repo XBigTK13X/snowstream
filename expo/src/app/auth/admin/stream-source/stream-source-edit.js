@@ -68,7 +68,7 @@ export default function StreamSourceEditPage() {
     }
 
     return (
-        <C.FillView scroll >
+        <C.FillView>
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onChangeText={setStreamSourceName} value={streamSourceName} />
 

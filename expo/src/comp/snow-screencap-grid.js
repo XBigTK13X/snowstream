@@ -1,9 +1,11 @@
-import { View } from 'react-native'
+import { View, Platform } from 'react-native'
 import FillView from './fill-view'
 import SnowGrid from './snow-grid'
 import SnowImageButton from './snow-image-button'
 import SnowLabel from './snow-label'
 import { useAppContext } from '../app-context'
+
+const itemsPerRow = Platform.isTV ? 8 : 5
 
 export function SnowScreencapGrid(props) {
     const { routes } = useAppContext()
@@ -39,7 +41,8 @@ export function SnowScreencapGrid(props) {
                 mainGrid
                 wide={true}
                 items={props.items}
-                renderItem={renderItem} itemsPerRow={8}
+                renderItem={renderItem}
+                itemsPerRow={itemsPerRow}
             />
         </FillView>
     )
