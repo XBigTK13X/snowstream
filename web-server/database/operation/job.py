@@ -37,6 +37,8 @@ def get_job_by_id(job_id: int):
         return job
 
 def update_job(job_id: int, message:str=None, status:str=None):
+    if job_id == None:
+        return None
     with DbSession() as db:
         job = db.query(dm.Job).filter(dm.Job.id == job_id).first()
         if not job:

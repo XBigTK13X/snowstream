@@ -11,8 +11,8 @@ from log import log
 # https://github.com/leandcesar/themoviedb/tree/master/themoviedb/routes_sync
 # https://github.com/leandcesar/themoviedb/tree/master/themoviedb/schemas
 class ThemoviedbProvider(base.MediaProvider):
-    def __init__(self,job_id):
-        super().__init__(job_id,"themoviedb")
+    def __init__(self,job_id:int=None,metadata_source:str=None):
+        super().__init__(job_id,"themoviedb",metadata_source)
         self.tmdb_client = TMDb(key=config.themoviedb_api_key, language="EN", region="US")
 
     def identify(self, kind:str, query:str, year:int=None):

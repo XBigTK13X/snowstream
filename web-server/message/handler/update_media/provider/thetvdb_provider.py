@@ -9,14 +9,22 @@ from log import log
 # https://github.com/thetvdb/tvdb-v4-python/blob/main/tvdb_v4_official.py
 # https://thetvdb.github.io/v4-api
 class ThetvdbProvider(base.MediaProvider):
-    def __init__(self, job_id):
-        super().__init__(job_id,"thetvdb")
+    def __init__(self, job_id:int=None, metadata_source:str=None):
+        super().__init__(job_id,"thetvdb",metadata_source)
         self.tvdb_client = tvdb_v4_official.TVDB(config.thetvdb_api_key)
         self.artwork_kinds = {}
         for artwork_type in ARTWORK_TYPES_RAW:
             slug = f"{artwork_type['recordType']}-{artwork_type['name']}".lower()
             self.artwork_kinds[artwork_type['id']] = slug
             self.artwork_kinds[str(artwork_type['id'])] = slug
+        self.season_order_kind = None
+        if metadata_source and '--' in metadata_source:
+            parts = metadata_source.split('--')
+            for ii in range(1,len(parts)):
+                part = parts[ii]
+                k,v = part.split('=')
+                if k == 'order_kind':
+                    self.season_order_kind = v
 
     def get_movie_info(self, metadata_id:int):
         cache_key = f'tvdb-movie-{metadata_id}'
@@ -37,18 +45,31 @@ class ThetvdbProvider(base.MediaProvider):
             return None
         return self.filter_images(movie_info['tvdb_extended']['artworks'])
 
+    def load_show_order_kind(self, show):
+        if self.season_order_kind:
+            show['order_kind'] = self.season_order_kind
+            return show
+        else:
+            order_id = int(show['defaultSeasonType'])
+            for order_kind in show['tvdb_extended']['seasonTypes']:
+                if int(order_kind['id']) == order_id:
+                    show['order_kind'] = order_kind['type']
+                    return show
+        show['order_kind'] = 'official'
+        return show
+
     def get_show_info(self, metadata_id:int):
         cache_key = f'tvdb-show-{metadata_id}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             db.op.update_job(job_id=self.job_id, message=f"Show result for {metadata_id} is fresh, return cached result [{cache_key}]")
-            return json.loads(cached_result)
+            return self.load_show_order_kind(json.loads(cached_result))
         db.op.update_job(job_id=self.job_id, message=f"Show result for {metadata_id} is stale, read from tvdb")
         show = self.tvdb_client.get_series(id=metadata_id)
         show['tvdb_extended'] = self.tvdb_client.get_series_extended(id=metadata_id)
         show['tvdb_translation'] = self.tvdb_client.get_series_translation(id=metadata_id,lang='eng')
         db.op.upsert_cached_text(key=cache_key,data=json.dumps(show))
-        return show
+        return self.load_show_order_kind(show)
 
     def get_show_images(self, metadata_id:int):
         show_info = self.get_show_info(metadata_id=metadata_id)
@@ -57,14 +78,17 @@ class ThetvdbProvider(base.MediaProvider):
         return self.filter_images(show_info['tvdb_extended']['artworks'])
 
     def get_season_info(self, show_metadata_id:int, season_order:int):
-        cache_key = f'tvdb-show-{show_metadata_id}-season-{season_order}'
+        show = self.get_show_info(metadata_id=show_metadata_id)
+        cache_key = f'tvdb-show-{show_metadata_id}-season-{season_order}-{show["order_kind"]}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             db.op.update_job(job_id=self.job_id, message=f"Season result for {show_metadata_id} {season_order} is fresh, return cached result [{cache_key}]")
             return json.loads(cached_result)
         db.op.update_job(job_id=self.job_id, message=f"Season result for {show_metadata_id} {season_order} is stale, read from tvdb [{cache_key}]")
-        show = self.get_show_info(metadata_id=show_metadata_id)
-        season = [xx for xx in show['tvdb_extended']['seasons'] if int(xx['number']) == int(season_order)][0]
+        season = None
+        for ss in show['tvdb_extended']['seasons']:
+            if int(ss['number']) == int(season_order) and ss['type']['type'] == show['order_kind']:
+                season = ss
         season['details'] = self.tvdb_client.get_season(id=season['id'])
         season['extended'] = self.tvdb_client.get_season_extended(id=season['id'])
         season['episodes'] = [xx for xx in self.get_show_episodes(show_metadata_id=show_metadata_id) if int(xx['seasonNumber']) == int(season_order)]
@@ -78,7 +102,8 @@ class ThetvdbProvider(base.MediaProvider):
         return self.filter_images(season_info['extended']['artwork'])
 
     def get_show_episodes(self, show_metadata_id: int):
-        cache_key = f'tvdb-show-{show_metadata_id}-episodes'
+        show = self.get_show_info(metadata_id=show_metadata_id)
+        cache_key = f'tvdb-show-{show_metadata_id}-episodes-{show["order_kind"]}'
         cached_result = db.op.get_cached_text_by_key(cache_key)
         if cached_result:
             db.op.update_job(job_id=self.job_id, message=f"Show episodes result for {show_metadata_id} is fresh, return cached result [{cache_key}]")
@@ -89,7 +114,7 @@ class ThetvdbProvider(base.MediaProvider):
         while True:
             current_results = self.tvdb_client.get_series_episodes(
                 id=show_metadata_id,
-                season_type='default',
+                season_type=show['order_kind'],
                 lang='eng',
                 page=currentPage
             )

@@ -1,7 +1,8 @@
 class MediaProvider:
-    def __init__(self,job_id,kind):
+    def __init__(self, job_id:int, kind:str, metadata_source:str):
         self.job_id = job_id
         self.kind = kind
+        self.metadata_source = metadata_source
 
 
     def get_movie_info(self, metadata_id:int):

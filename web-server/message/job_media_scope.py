@@ -48,14 +48,14 @@ class JobMediaScope:
         return self.target_kind == 'episode'
 
     def get_movie_media_provider(self):
-        if not self.metadata_source or self.metadata_source == 'themoviedb':
-            return ThemoviedbProvider(self.job_id)
-        return ThetvdbProvider(self.job_id)
+        if not self.metadata_source or 'themoviedb' in self.metadata_source:
+            return ThemoviedbProvider(self.job_id,self.metadata_source)
+        return ThetvdbProvider(self.job_id,self.metadata_source)
 
     def get_show_media_provider(self):
-        if not self.metadata_source or self.metadata_source == 'thetvdb':
-            return ThetvdbProvider(self.job_id)
-        return ThemoviedbProvider(self.job_id)
+        if not self.metadata_source or 'thetvdb' in self.metadata_source:
+            return ThetvdbProvider(self.job_id,self.metadata_source)
+        return ThemoviedbProvider(self.job_id,self.metadata_source)
 
     def skip_existing_media(self):
         return self.skip_existing == True
