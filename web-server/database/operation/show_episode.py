@@ -475,10 +475,12 @@ def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchPro
         db.commit()
         watch_percent = float(watch_progress.played_seconds) / float(watch_progress.duration_seconds)
         if watch_percent <= config.watch_progress_unwatched_threshold:
-            set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=False)
+            if episode.watched:
+                set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=False)
         elif watch_percent >= config.watch_progress_watched_threshold:
-            is_watched = True
-            set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=True)
+            if not episode.watched:
+                is_watched = True
+                set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=True)
         else:
             dbm = dm.WatchProgress()
             dbm.client_device_user_id = ticket.cduid

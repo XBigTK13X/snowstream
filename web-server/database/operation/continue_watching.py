@@ -1,7 +1,7 @@
 from log import log
 import util
 
-from database.sql_alchemy import DbSession
+from database.sql_alchemy import DbSession, desc
 import database.db_models as dm
 import sqlalchemy.orm as sorm
 
@@ -29,6 +29,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
         if movies_in_progress:
             for progress in movies_in_progress:
                 movie = dm.set_primary_images(progress.movie)
+                movie.progress_at = progress.updated_at
                 skip_movie[movie.id] = True
                 in_progress.append(movie)
 
@@ -45,18 +46,29 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 .joinedload(dm.ShowEpisode.season)
                 .joinedload(dm.ShowSeason.show)
                 .joinedload(dm.Show.shelf)
-            ).all()
+            ).order_by(desc(dm.WatchProgress.updated_at)).all()
         )
+
         if episodes_in_progress:
+            show_dedupe = {}
+            delete_progress = []
             for progress in episodes_in_progress:
+                if progress.show_episode.season.show.id in show_dedupe:
+                    delete_progress.append(progress.id)
+                    continue
                 episode = progress.show_episode
+                episode.progress_at = progress.updated_at
                 skip_episode[episode.id] = True
                 show = episode.season.show
                 show = dm.set_primary_images(show)
                 progress.show_episode.poster_image = show.poster_image
                 in_progress.append(episode)
+                show_dedupe[progress.show_episode.season.show.id] = True
+            if delete_progress:
+                db.query(dm.WatchProgress).filter(dm.WatchProgress.id.in_(delete_progress)).delete()
 
         if in_progress:
+            in_progress.sort(key=lambda xx:xx.progress_at,reverse=True)
             results.append({
                 'kind': 'in_progress',
                 'name': 'In Progress',
