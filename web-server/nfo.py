@@ -16,7 +16,7 @@ def nfo_dict_to_xml(nfo_dict:dict):
 
 def save_dict_as_nfo(nfo_path:str, nfo_dict:dict):
     with open(nfo_path,'w',encoding='utf-8') as write_handle:
-        xml_content = xmltodict.unparse(dict,pretty=True)
+        xml_content = xmltodict.unparse(nfo_dict,pretty=True)
         write_handle.write(xml_content)
 
 def save_xml_as_nfo(nfo_path: str, nfo_xml: str):

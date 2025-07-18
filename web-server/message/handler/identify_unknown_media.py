@@ -1,8 +1,6 @@
 from log import log
 from db import db
 
-from message.handler.update_media.provider.thetvdb_provider import ThetvdbProvider
-from message.handler.update_media.provider.themoviedb_provider import ThemoviedbProvider
 from message.job_media_scope import JobMediaScope
 from message.child_job import create_child_job
 

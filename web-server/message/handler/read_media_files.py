@@ -65,7 +65,7 @@ def handle(scope):
             if scope.update_metadata:
                 for season in seasons:
                     metadata_files += prep(season.metadata_files,show_season=season)
-        episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=show.shelf.id,show_id=scope.target_id)
+        episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=show.shelf.id,show_id=scope.target_id,load_episode_files=True)
         video_files = []
         for episode in episodes:
             if scope.update_metadata:
@@ -76,7 +76,7 @@ def handle(scope):
         season = db.op.get_show_season_by_id(ticket=ticket,season_id=scope.target_id)
         if scope.update_metadata:
             metadata_files = prep(season.metadata_files,season=season)
-        episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=season.show.shelf.id,show_season_id=scope.target_id)
+        episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=season.show.shelf.id,show_season_id=scope.target_id,load_episode_files=True)
         video_files = []
         for episode in episodes:
             if scope.update_metadata:

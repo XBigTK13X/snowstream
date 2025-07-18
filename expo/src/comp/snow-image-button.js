@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image'
 import SnowText from './snow-text'
 import Style from '../snow-style'
@@ -7,6 +7,7 @@ import Style from '../snow-style'
 const missingPosterImage = require('../image/asset/missing-poster.jpeg')
 const missingScreencapImage = require('../image/asset/missing-screencap.jpeg')
 // TODO hiddenPoster / hiddenScreencap
+
 
 
 const styles = {
@@ -75,6 +76,8 @@ const styles = {
     }
 }
 
+const isTV = Platform.isTV
+
 export function SnowImageButton(props) {
     const [focused, setFocused] = React.useState(false)
     const touchRef = React.useRef(null)
@@ -112,7 +115,7 @@ export function SnowImageButton(props) {
     if (props.selected) {
         wrapperStyle.push(styles.selected)
     }
-    if (focused) {
+    if (focused && isTV) {
         wrapperStyle.push(styles.focused)
     }
 

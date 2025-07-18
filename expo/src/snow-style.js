@@ -4,11 +4,6 @@ const isTV = Platform.isTV
 const isAndroid = Platform.OS === 'android'
 const isPortrait = Dimensions.get('window').width < Dimensions.get('window').height
 
-const uhd = {
-    width: 3840,
-    height: 2160
-}
-
 let scaleMultiplier = 0.75
 
 if (isTV) {
@@ -52,11 +47,9 @@ export const Style = {
         }
     },
     surface: {
-        height: () => {
-            return isTV ? uhd.height : Dimensions.get('window').height
-        },
-        width: () => {
-            return isTV ? uhd.width : Dimensions.get('window').width
+        uhd: {
+            width: 3840,
+            height: 2160
         }
     },
     imageButton: {

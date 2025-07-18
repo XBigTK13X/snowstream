@@ -13,6 +13,7 @@ export default function ShelfEditPage() {
     const [updateImages, setUpdateImages] = C.React.useState('')
     const [updateMetadata, setUpdateMetadata] = C.React.useState('')
     const [updateVideos, setUpdateVideos] = C.React.useState('')
+    const [skipExisting, setSkipExisting] = C.React.useState('')
 
     const createJob = (apiCall) => {
         let details = {
@@ -25,7 +26,8 @@ export default function ShelfEditPage() {
             episodeOrder,
             updateImages,
             updateMetadata,
-            updateVideos
+            updateVideos,
+            skipExisting
         }
         return apiCall(details)
     }
@@ -36,7 +38,8 @@ export default function ShelfEditPage() {
         { name: 'Read Media Files', apiCall: apiClient.createJobReadMediaFiles },
         { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
         { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia },
-        { name: 'Clean File Records', apiCall: apiClient.createJobCleanFileRecords }
+        { name: 'Clean File Records', apiCall: apiClient.createJobCleanFileRecords },
+        { name: 'Delete Media Records', apiCall: apiClient.createJobDeleteMediaRecords }
     ]
 
     const renderItem = (item) => {
@@ -77,6 +80,8 @@ export default function ShelfEditPage() {
                 <C.SnowInput onChangeText={setUpdateMetadata} value={updateMetadata} />
                 <C.SnowLabel>Update Videos</C.SnowLabel>
                 <C.SnowInput onChangeText={setUpdateVideos} value={updateVideos} />
+                <C.SnowLabel>Skip Existing</C.SnowLabel>
+                <C.SnowInput onChangeText={setSkipExisting} value={skipExisting} />
             </C.SnowGrid>
         </C.FillView>
     )

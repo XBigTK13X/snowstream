@@ -123,6 +123,7 @@ def sql_row_to_api_result(row,load_files,watch_group):
             continue
         dedupe[f'i-{row.image_local_path_list[ii]}'] = 1
         image_file = dm.Stub()
+        image_file.model_kind = 'image_file'
         image_file.id = row.image_id_list[ii]
         image_file.local_path = row.image_local_path_list[ii]
         image_file.web_path = row.image_web_path_list[ii]
@@ -146,6 +147,7 @@ def sql_row_to_api_result(row,load_files,watch_group):
                 continue
             dedupe[f'v-{row.video_id_list[ii]}'] = 1
             video_file = dm.Stub()
+            video_file.model_kind = 'video_file'
             video_file.id = row.video_id_list[ii]
             video_file.kind = row.video_kind_list[ii]
             video_file.web_path = row.video_network_path_list[ii]
@@ -159,6 +161,7 @@ def sql_row_to_api_result(row,load_files,watch_group):
                 continue
             dedupe[f'm-{row.metadata_id_list[ii]}'] = 1
             metadata_file = dm.Stub()
+            metadata_file.model_kind = 'metadata_file'
             metadata_file.id = row.metadata_id_list[ii]
             metadata_file.kind = row.metadata_kind_list[ii]
             metadata_file.xml_content = row.metadata_xml_content_list[ii]
@@ -516,3 +519,6 @@ def get_unknown_movie_list(shelf_id:int=None):
             if not movie.image_files or not movie.metadata_files:
                 results.append(movie)
         return results
+
+def delete_movie_records(ticket:dm.Ticket, movie_id:int):
+    pass

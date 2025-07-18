@@ -228,6 +228,10 @@ export class ApiClient {
         return this.createScopedJob('clean_file_records', details)
     }
 
+    createJobDeleteMediaRecords(details) {
+        return this.createScopedJob('delete_media_records', details)
+    }
+
     getJobList() {
         return this.get('/job/list')
     }

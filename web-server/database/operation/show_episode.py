@@ -93,6 +93,7 @@ def sql_row_to_api_result(
             continue
         dedupe[f'i-{image_ids[ii]}'] = 1
         image_file = dm.Stub()
+        image_file.model_kind = 'image_file'
         image_file.id = image_ids[ii]
         image_file.local_path = image_local_paths[ii]
         image_file.web_path = image_web_paths[ii]
@@ -114,11 +115,14 @@ def sql_row_to_api_result(
                 continue
             dedupe[f'v-{row.video_id_list[ii]}'] = 1
             video_file = dm.Stub()
+            video_file.model_kind = 'video_file'
             video_file.id = row.video_id_list[ii]
             video_file.local_path = row.video_local_path_list[ii]
             video_file.network_path = row.video_network_path_list[ii]
             video_file.kind = row.video_kind_list[ii]
             video_file.snowstream_info_json = row.video_info_list[ii]
+            video_file.ffprobe_raw_json = row.video_ffprobe_list[ii]
+            video_file.mediainfo_raw_json = row.video_mediainfo_list[ii]
             video_file.version = row.video_version_list[ii]
             episode.video_files.append(video_file)
 
@@ -127,6 +131,7 @@ def sql_row_to_api_result(
                 continue
             dedupe[f'm-{row.metadata_id_list[ii]}'] = 1
             metadata_file = dm.Stub()
+            metadata_file.model_kind = 'metadata_file'
             metadata_file.id = row.metadata_id_list[ii]
             metadata_file.kind = row.metadata_kind_list[ii]
             metadata_file.local_path = row.metadata_local_path_list[ii]
@@ -221,6 +226,8 @@ def get_show_episode_list(
         array_agg(episode_video.local_path) as video_local_path_list,
         array_agg(episode_video.network_path) as video_network_path_list,
         array_agg(episode_video.snowstream_info_json) as video_info_list,
+        array_agg(episode_video.ffprobe_raw_json) as video_ffprobe_list,
+        array_agg(episode_video.mediainfo_raw_json) as video_mediainfo_list,
         array_agg(episode_video.version) as video_version_list,
 
         array_agg(episode_metadata.id) as metadata_id_list,
@@ -532,3 +539,6 @@ def reset_show_episode_watch_count(ticket:dm.Ticket,show_episode_id:int):
         )
         db.commit()
         return True
+
+def delete_show_episode_records(ticket:dm.Ticket, show_episode_id:int):
+    pass

@@ -30,7 +30,7 @@ class JobMediaScope:
         self.is_subjob = parse(raw_job_input,'is_subjob')
 
     def is_unscoped(self):
-        return self.target_kind == None
+        return self.target_kind == None or self.target_id == None
 
     def is_shelf(self):
         return self.target_kind == 'shelf'

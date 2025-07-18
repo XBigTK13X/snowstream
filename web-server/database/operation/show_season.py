@@ -172,3 +172,6 @@ def get_show_season_watched(ticket:dm.Ticket,season_id:int):
         return False
     episodes = db_episode.get_show_episode_list(ticket=ticket,show_season_id=season_id,load_episode_files=False)
     return all(xx.watched for xx in episodes)
+
+def delete_show_season_records(ticket:dm.Ticket, show_season_id:int):
+    pass

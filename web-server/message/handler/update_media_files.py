@@ -56,3 +56,6 @@ def handle(scope):
     handler.schedule_subjobs()
 
     return True
+
+def delete_show_season_records(ticket:dm.Ticket, show_season_id:int):
+    pass

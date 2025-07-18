@@ -109,8 +109,8 @@ export default function MpvVideoView(props) {
             <LibmpvVideo
                 playUrl={props.videoUrl}
                 isPlaying={props.isPlaying}
-                surfaceWidth={Style.surface.width()}
-                surfaceHeight={Style.surface.height()}
+                surfaceWidth={props.videoWidth}
+                surfaceHeight={props.videoHeight}
                 onLibmpvEvent={(libmpvEvent) => {
                     if (props.onUpdate) {
                         props.onUpdate({ kind: 'mpvevent', libmpvEvent })

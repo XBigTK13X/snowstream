@@ -30,7 +30,7 @@ export default function SnowVideoPlayer(props) {
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
-    const [seekToSeconds, setSeekToSeconds] = React.useState(0)
+    const [seekToSeconds, setSeekToSeconds] = React.useState(1)
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
     const [logs, setLogs] = React.useState([])
     const [subtitleFontSize, setSubtitleFontSize] = React.useState(38) // MPV default font size
@@ -169,7 +169,7 @@ export default function SnowVideoPlayer(props) {
                     }
                 }
                 else {
-                    if (mpvEvent.property !== 'demuxer-cache-time') {
+                    if (mpvEvent.property !== 'demuxer-cache-time' && mpvEvent.property !== 'track-list') {
                         addLog(info)
                     }
                 }
@@ -191,7 +191,9 @@ export default function SnowVideoPlayer(props) {
         }
 
         else {
-            addLog(info)
+            if (info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('Description:') === -1) {
+                addLog(info)
+            }
         }
     }
 
@@ -238,8 +240,8 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             <VideoView
-                windowHeight={Style.window.height()}
-                windowWidth={Style.window.width()}
+                videoWidth={props.tracks.video[0].resolution_width}
+                videoHeight={props.tracks.video[0].resolution_height}
                 videoUrl={props.videoUrl}
                 isPlaying={isPlaying}
                 isReady={isReady}
