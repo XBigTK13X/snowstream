@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity } from 'react-native'
+import { AppState, TouchableOpacity } from 'react-native'
 import { useNavigation } from 'expo-router'
 import Style from '../snow-style'
 import SnowModal from './snow-modal'
@@ -47,21 +47,44 @@ export default function MpvVideoView(props) {
     let Libmpv = libmpv.Libmpv
     let LibmpvVideo = libmpv.LibmpvVideo
 
-    const [cleanup, setCleanup] = React.useState(false)
+    const [cleaned, setCleaned] = React.useState(false)
 
     React.useEffect(() => {
+        // Loudness normalization from Snowby
+        //Libmpv.command('set|af|acompressor=ratio=4,loudnorm')
         if (!props.isReady && props.onReady) {
             props.onReady()
         }
-        if (!cleanup) {
-            // Loudness normalization from Snowby
-            //Libmpv.command('set|af|acompressor=ratio=4,loudnorm')
-            navigation.addListener('beforeRemove', (e) => {
-                Libmpv.cleanup()
-            })
-            setCleanup(true)
-        }
     })
+
+    React.useEffect(() => {
+        const navListener = navigation.addListener('beforeRemove', (e) => {
+            if (!cleaned) {
+                console.log("Cleanup beforeRemove")
+                Libmpv.cleanup()
+                setCleaned(true)
+            }
+        })
+        return () => {
+            navigation.removeListener('beforeRemove', navListener)
+        }
+    }, [])
+
+    React.useEffect(() => {
+        const appStateSubscription = AppState.addEventListener('change', appState => {
+            if (appState === 'background') {
+                if (!cleaned) {
+                    console.log("Cleanup background")
+                    Libmpv.cleanup()
+                    setCleaned(true)
+                }
+            }
+        });
+
+        return () => {
+            appStateSubscription.remove();
+        };
+    }, []);
 
     React.useEffect(() => {
         Libmpv.command(`set|sub-ass-override|force`)
@@ -72,6 +95,10 @@ export default function MpvVideoView(props) {
         Libmpv.command(`set|sub-ass-override|force`)
         Libmpv.command(`set|sub-color|${props.subtitleColor.shade}/${props.subtitleColor.alpha}`)
     }, [props.subtitleColor])
+
+    if (cleaned) {
+        return null
+    }
 
     return (
         <SnowModal

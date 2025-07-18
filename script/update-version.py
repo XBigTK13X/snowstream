@@ -10,14 +10,19 @@ EXPO_SETTINGS_PATH = './expo/app.json'
 PACKAGE_JSON_PATH = './expo/package.json'
 BUILD_GRADLE_PATH = './expo/android/app/build.gradle'
 
+version = None
+with open(SERVER_SETTINGS_PATH,'r') as read_handle:
+    for line in read_handle.readlines():
+        if 'version' in line:
+            version = line.split(' = ')[1]
 if len(sys.argv) < 2:
-    version = None
-    with open(SERVER_SETTINGS_PATH,'r') as read_handle:
-        for line in read_handle.readlines():
-            if 'version' in line:
-                version = line.split(' = ')[1]
+
     print(f"Pass a new version. Current version is {version.replace('"','')}")
     sys.exit(1)
+
+if sys.argv[1] == 'read':
+    print(version.replace('"',''),end='')
+    sys.exit(0)
 
 build_date = datetime.datetime.now().strftime('%B %d, %Y')
 build_version = sys.argv[1]
