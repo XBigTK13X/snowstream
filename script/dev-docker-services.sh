@@ -4,7 +4,7 @@ echo "Docker services working dir"
 
 pwd
 
-docker pull xbigtk13x/snowstream
+docker pull $SNOWSTREAM_DOCKER_IMAGE
 
 docker rm -f snowstream || true
 
@@ -46,7 +46,7 @@ docker run -d \
     -v /mnt/j-media/tv:/mnt/j-media/tv \
     -v /mnt/j-media/photo:/mnt/j-media/photo \
     -v /mnt/m-media/movie:/mnt/m-media/movie \
-    xbigtk13x/snowstream
+    $SNOWSTREAM_DOCKER_IMAGE
 
 sleep 12
 

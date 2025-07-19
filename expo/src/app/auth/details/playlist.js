@@ -39,15 +39,19 @@ export default function PlaylistDetailsPage() {
 
     return (
         <C.FillView>
-            <C.SnowText>Found {playlistItems.length} items from playlist {tagName}.</C.SnowText>
-            <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="Watch All" onPress={watchAll} />
-                <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
-            </C.SnowGrid>
-            <C.SnowPosterGrid
-                items={playlistItems}
-                onLongPress={apiClient.toggleItemWatched}
-            />
+            <C.View>
+                <C.SnowText>Found {playlistItems.length} items from playlist {tagName}.</C.SnowText>
+                <C.SnowGrid itemsPerRow={2}>
+                    <C.SnowTextButton title="Watch All" onPress={watchAll} />
+                    <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
+                </C.SnowGrid>
+            </C.View>
+            <C.FillView>
+                <C.SnowPosterGrid
+                    items={playlistItems}
+                    onLongPress={apiClient.toggleItemWatched}
+                />
+            </C.FillView>
         </C.FillView>
     )
 }

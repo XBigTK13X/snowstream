@@ -2,13 +2,13 @@
 
 script/prod-build-web-client.sh
 
-docker build -t gitea.9914.us/xbigtk13x/snowstream .
+docker build -t $SNOWSTREAM_DOCKER_IMAGE .
 
 version=`script/update-version.py read`
 
-docker image tag gitea.9914.us/xbigtk13x/snowstream gitea.9914.us/xbigtk13x/snowstream:$version
+docker image tag $SNOWSTREAM_DOCKER_IMAGE $SNOWSTREAM_DOCKER_IMAGE:$version
 
 if [ ! -z $1 ]; then
-  docker push gitea.9914.us/xbigtk13x/snowstream
-  docker push gitea.9914.us/xbigtk13x/snowstream:$version
+  docker push $SNOWSTREAM_DOCKER_IMAGE
+  docker push $SNOWSTREAM_DOCKER_IMAGE:$version
 fi
