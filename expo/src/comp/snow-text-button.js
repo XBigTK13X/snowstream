@@ -1,7 +1,7 @@
 import React from 'react'
 
 
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import SnowText from './snow-text'
 import Style from '../snow-style'
 

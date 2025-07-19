@@ -15,8 +15,8 @@ export default function JobListPage() {
     if (!!jobs) {
         return (
             <C.FillView>
-                <C.SnowGrid itemsPerRow={2} items={jobs} renderItem={(job) => {
-                    const title = `${job.id}) ${job.kind} - ${job.status} - ${job.message.substring(0, 25)}`
+                <C.SnowGrid itemsPerRow={1} items={jobs} renderItem={(job) => {
+                    const title = `${job.id}) ${job.kind} - ${job.status} - ${job.message.substring(0, 180).replaceAll('\n', '.')}`
                     return (
                         <C.SnowTextButton
                             title={title}

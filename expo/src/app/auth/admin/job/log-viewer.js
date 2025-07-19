@@ -26,7 +26,7 @@ export default function LogViewerPage() {
 
     return (
         <C.FillView>
-            <C.SnowGrid items={logPaths} renderItem={(item, itemIndex) => {
+            <C.SnowGrid itemsPerRow={1} items={logPaths} renderItem={(item, itemIndex) => {
                 return <C.SnowTextButton title={item} onPress={() => {
                     loadLog(itemIndex)
                 }} />
