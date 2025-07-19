@@ -44,7 +44,7 @@ def start():
         payload = json.loads(body)
         job_id = payload["job_id"]
         job = db.op.get_job_by_id(job_id=job_id)
-        if job.status == 'complete':
+        if job == None or job.status == 'complete':
             # Something glitched out with rabbitmq
             # but snowstream completed the previous run of the job
             # ack the message so rabbitmq doesn't requeue it

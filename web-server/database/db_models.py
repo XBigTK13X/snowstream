@@ -534,9 +534,7 @@ class StreamSource(BaseModel):
     url = sa.Column(sa.Text, unique=True)
     username = sa.Column(sa.Text)
     password = sa.Column(sa.Text)
-    streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship(
-        cascade="delete",passive_deletes=True
-    )
+    streamables: sorm.Mapped[List["Streamable"]] = sorm.relationship()
     tags: sorm.Mapped[List["Tag"]] = sorm.relationship(secondary="stream_source_tag",back_populates="stream_sources")
 
     def get_tag_ids(self):
@@ -578,9 +576,7 @@ class StreamableChannel(BaseModel):
     edited_id = sa.Column(sa.Text)
     edited_name = sa.Column(sa.Text)
     edited_number = sa.Column(sa.Float)
-    schedules: sorm.Mapped[List["StreamableSchedule"]] = sorm.relationship(
-        cascade="delete", passive_deletes=True
-    )
+    schedules: sorm.Mapped[List["StreamableSchedule"]] = sorm.relationship()
 
 class StreamableSchedule(BaseModel):
     __tablename__ = "streamable_schedule"

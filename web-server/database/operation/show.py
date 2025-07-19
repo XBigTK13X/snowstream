@@ -1,6 +1,7 @@
 import database.db_models as dm
 from database.sql_alchemy import DbSession
 import sqlalchemy.orm as sorm
+from sqlalchemy import text as sql_text
 from settings import config
 import database.operation.show_episode as db_episode
 import database.operation.show_season as db_season
@@ -257,128 +258,9 @@ def get_unknown_show_list(shelf_id:int=None):
         return results
 
 def delete_show_records(ticket:dm.Ticket, show_id:int):
-    episodes = db_episode.get_show_episode_list(ticket=ticket,show_id=show_id,load_episode_files=True)
-    seasons = db_season.get_show_season_list_by_show_id(ticket=ticket,show_id=show_id)
+    if not show_id:
+        return False
     with DbSession() as db:
-        raw_query =f'''
-        select
-
-        {f'distinct on (show.name)' if first_per_show else ''}
-        {f'distinct on (season.season_order_counter)' if first_per_season else ''}
-
-        episode.id as episode_id,
-        episode.name as episode_name,
-        episode.episode_order_counter as episode_order,
-        episode.episode_end_order_counter as episode_end_order,
-        {"array_remove(array_agg(watched.id),NULL) as episode_watched_list," if watch_group else ""}
-        {"array_remove(array_agg(watch_count.amount),NULL) as episode_watch_count_list," if watch_group else ""}
-        {"array_remove(array_agg(watch_progress.played_seconds),NULL) as episode_in_progress_list," if watch_group else ""}
-
-        season.id as season_id,
-        season.season_order_counter as season_order,
-
-        show.id as show_id,
-        show.name as show_name,
-
-        shelf.id as shelf_id,
-        shelf.name as shelf_name,
-
-        {"""
-        array_remove(array_agg(episode_image.id),NULL) as image_id_list,
-        array_remove(array_agg(episode_image.local_path),NULL) as image_local_path_list,
-        array_remove(array_agg(episode_image.web_path),NULL) as image_web_path_list,
-        array_remove(array_agg(episode_image.kind),NULL) as image_kind_list,
-        array_remove(array_agg(episode_image.thumbnail_web_path),NULL) as image_thumbnail_web_path_list,
-
-        array_agg(episode_video.id) as video_id_list,
-        array_agg(episode_video.kind) as video_kind_list,
-        array_agg(episode_video.local_path) as video_local_path_list,
-        array_agg(episode_video.network_path) as video_network_path_list,
-        array_agg(episode_video.snowstream_info_json) as video_info_list,
-        array_agg(episode_video.ffprobe_raw_json) as video_ffprobe_list,
-        array_agg(episode_video.mediainfo_raw_json) as video_mediainfo_list,
-        array_agg(episode_video.version) as video_version_list,
-
-        array_agg(episode_metadata.id) as metadata_id_list,
-        array_agg(episode_metadata.kind) as metadata_kind_list,
-        array_agg(episode_metadata.local_path) as metadata_local_path_list,
-        array_agg(episode_metadata.xml_content) as metadata_xml_content_list,
-        """ if load_episode_files else ''}
-
-        array_remove(array_agg(show_image.id),NULL) as show_image_id_list,
-        array_remove(array_agg(show_image.local_path),NULL) as show_image_local_path_list,
-        array_remove(array_agg(show_image.web_path),NULL) as show_image_web_path_list,
-        array_remove(array_agg(show_image.kind),NULL) as show_image_kind_list,
-        array_remove(array_agg(show_image.thumbnail_web_path),NULL) as show_image_thumbnail_web_path_list,
-
-        array_remove(array_agg(show_tag.name),NULL) as show_tag_name_list,
-        array_remove(array_agg(show_tag.id),NULL) as show_tag_id_list,
-        array_remove(array_agg(season_tag.name),NULL) as season_tag_name_list,
-        array_remove(array_agg(season_tag.id),NULL) as season_tag_id_list,
-        array_remove(array_agg(episode_tag.name),NULL) as episode_tag_name_list,
-        array_remove(array_agg(episode_tag.id),NULL) as episode_tag_id_list
-
-        from show as show
-        join show_season as season on season.show_id = show.id
-            and show.id = {show_id}
-        join show_episode as episode on show_season.id = episode.show_season_id
-        left join watched as watched on watched.show_episode_id = episode.id
-        left join watch_progress as watch_progress on watch_progress.show_episode_id = episode.id
-
-        left join show_episode_image_file as seif on seif.show_episode_id = episode.id
-        left join image_file as episode_image on seif.image_file_id = episode_image.id
-        left join show_episode_video_file as sevf on sevf.show_episode_id = episode.id
-        left join video_file as episode_video on sevf.video_file_id = episode_video.id
-        left join show_episode_metadata_file as semf on semf.show_episode_id = episode.id
-        left join metadata_file as episode_metadata on semf.metadata_file_id = episode_metadata.id
-
-        left join show_image_file as sif on sif.show_id = show.id
-        left join image_file as show_image on sif.image_file_id = show_image.id
-
-        left join show_tag as st on st.show_id = show.id
-        left join tag as show_tag on show_tag.id = st.tag_id
-        left join show_season_tag as sst on sst.show_season_id = season.id
-        left join tag as season_tag on season_tag.id = sst.tag_id
-        left join show_episode_tag as setag on setag.show_episode_id = episode.id
-        left join tag as episode_tag on episode_tag.id = setag.tag_id
-        left join watch_count as watch_count on watch_count.show_episode_id = episode.id
-
-        where 1=1
-        group by
-            shelf.id,
-            shelf.name,
-            show.id,
-            show.name,
-            season.id,
-            season.season_order_counter,
-            episode.episode_order_counter,
-            episode.episode_end_order_counter,
-            episode.id,
-            episode.name
-        order by
-            show.name,
-            season.season_order_counter,
-            episode.episode_order_counter
-        '''
-        cursor = db.execute(sql_text(raw_query))
-        results = []
-        raw_result_count = 0
-        for xx in cursor:
-            raw_result_count += 1
-            model = sql_row_to_api_result(
-                row=xx,
-                load_episode_files=load_episode_files,
-                trim_episode_files=trim_episode_files,
-                watch_group=watch_group
-            )
-            if not model.has_images and not show_season_id:
-                continue
-            if not ticket.is_allowed(tag_ids=model.tag_ids):
-                continue
-            if show_playlisted == False and any('Playlist:' in xx for xx in model.tag_names):
-                continue
-            results.append(model)
-        if first_result == True:
-            return results[0]
-        return results
-    pass
+        db.execute(sql_text(f'delete from show where show.id = {show_id};'))
+        db.commit()
+        return True

@@ -33,13 +33,13 @@ export default function ShelfEditPage() {
     }
 
     const buttons = [
-        { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan },
-        { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
-        { name: 'Read Media Files', apiCall: apiClient.createJobReadMediaFiles },
-        { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
-        { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia },
         { name: 'Clean File Records', apiCall: apiClient.createJobCleanFileRecords },
-        { name: 'Delete Media Records', apiCall: apiClient.createJobDeleteMediaRecords }
+        { name: 'Delete Media Records', apiCall: apiClient.createJobDeleteMediaRecords },
+        { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia },
+        { name: 'Read Media Files', apiCall: apiClient.createJobReadMediaFiles },
+        { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
+        { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan },
+        { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
     ]
 
     const renderItem = (item) => {
@@ -56,10 +56,10 @@ export default function ShelfEditPage() {
     return (
         <C.FillView>
             <C.SnowGrid shrink
-                itemsPerRow={3}
+                itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />
-            <C.SnowGrid itemsPerRow={4}>
+            <C.SnowGrid itemsPerRow={6}>
                 <C.SnowLabel>Target Kind</C.SnowLabel>
                 <C.SnowInput onChangeText={setTargetKind} value={targetKind} />
                 <C.SnowLabel>Target Id</C.SnowLabel>

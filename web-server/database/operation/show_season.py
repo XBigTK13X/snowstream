@@ -2,6 +2,7 @@ import util
 import database.db_models as dm
 from database.sql_alchemy import DbSession
 import sqlalchemy.orm as sorm
+from sqlalchemy import text as sql_text
 import database.operation.show_episode as db_episode
 
 def create_show_season(show_id: int, season_order_counter: int, directory: str):
@@ -174,4 +175,9 @@ def get_show_season_watched(ticket:dm.Ticket,season_id:int):
     return all(xx.watched for xx in episodes)
 
 def delete_show_season_records(ticket:dm.Ticket, show_season_id:int):
-    pass
+    if not show_season_id:
+        return False
+    with DbSession() as db:
+        db.execute(sql_text(f'delete from show_season where show_season.id = {show_season_id};'))
+        db.commit()
+        return True

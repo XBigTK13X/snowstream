@@ -541,4 +541,9 @@ def reset_show_episode_watch_count(ticket:dm.Ticket,show_episode_id:int):
         return True
 
 def delete_show_episode_records(ticket:dm.Ticket, show_episode_id:int):
-    pass
+    if not show_episode_id:
+        return False
+    with DbSession() as db:
+        db.execute(sql_text(f'delete from show_episode where show_episode.id = {show_episode_id};'))
+        db.commit()
+        return True

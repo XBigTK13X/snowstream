@@ -17,23 +17,24 @@ export class ApiClient {
 
         // An example of this is the job runner
         this.createScopedJob = this.createScopedJob.bind(this)
-        this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
-        this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
-        this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
-        this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
-        this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
         this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
+        this.createJobDeleteMediaRecords = this.createJobDeleteMediaRecords.bind(this)
+        this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
+        this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
+        this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
+        this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
+        this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
 
         // Another example is the watched status setters used by onLongPress event handlers
         this.toggleItemWatched = this.toggleItemWatched.bind(this)
+        this.setItemUnwatched = this.setItemUnwatched.bind(this)
+        this.setItemWatched = this.setItemWatched.bind(this)
+        this.toggleEpisodeWatchStatus = this.toggleEpisodeWatchStatus.bind(this)
         this.toggleMovieShelfWatchStatus = this.toggleMovieShelfWatchStatus.bind(this)
         this.toggleMovieWatchStatus = this.toggleMovieWatchStatus.bind(this)
-        this.toggleShowShelfWatchStatus = this.toggleShowShelfWatchStatus.bind(this)
-        this.toggleEpisodeWatchStatus = this.toggleEpisodeWatchStatus.bind(this)
         this.toggleSeasonWatchStatus = this.toggleSeasonWatchStatus.bind(this)
+        this.toggleShowShelfWatchStatus = this.toggleShowShelfWatchStatus.bind(this)
         this.toggleShowWatchStatus = this.toggleShowWatchStatus.bind(this)
-        this.setItemWatched = this.setItemWatched.bind(this)
-        this.setItemUnwatched = this.setItemUnwatched.bind(this)
 
         this.createClient(details)
 

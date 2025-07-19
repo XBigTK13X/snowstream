@@ -521,4 +521,9 @@ def get_unknown_movie_list(shelf_id:int=None):
         return results
 
 def delete_movie_records(ticket:dm.Ticket, movie_id:int):
-    pass
+    if not movie_id:
+        return False
+    with DbSession() as db:
+        db.execute(sql_text(f'delete from movie where movie.id = {movie_id};'))
+        db.commit()
+        return True
