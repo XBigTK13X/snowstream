@@ -4,6 +4,7 @@ from database.sql_alchemy import DbSession
 from log import log
 import sqlalchemy as sa
 import sqlalchemy.orm as sorm
+from sqlalchemy import text as sql_text
 from settings import config
 import os
 import database.operation.movie as db_movie
@@ -155,14 +156,32 @@ def find_shelf_content_without_video_files():
     results = []
     with DbSession() as db:
         ticket = dm.Ticket(ignore_watch_group=True)
-        with DbSession() as db:
-            movies = db_movie.get_movie_list(ticket=ticket)
-            for movie in movies:
-                if not movie.video_files:
-                    results.append(movie.directory)
+        movies = db_movie.get_movie_list(ticket=ticket)
+        for movie in movies:
+            if not movie.video_files:
+                results.append(movie.directory)
 
-            episodes = db_episode.get_show_episode_list(ticket=ticket)
-            for episode in episodes:
-                if not episode.video_files:
-                    results.append(episode.season.directory)
-        return results
+        episodes = db_episode.get_show_episode_list(ticket=ticket)
+        for episode in episodes:
+            if not episode.video_files:
+                results.append(episode.season.directory)
+    return results
+
+def purge_orphaned_records():
+    results = []
+    with DbSession() as db:
+        ticket = dm.Ticket(ignore_watch_groups=True)
+        kinds = ['metadata_file','image_file','video_file']
+        for kind in kinds:
+            query = f'''
+                select
+                from
+                {kind}
+                left join show_{kind} on show_{kind}.{kind}_id = {kind}.id
+                left join show_season_{kind} on show_season_{kind}.{kind}_id = {kind}.id
+                left join show_episode_{kind} on show_episode_{kind}.{kind}_id = {kind}.id
+                left join movie_{kind} on movie_{kind}.{kind}_id = {kind}.id
+            '''
+            #db.execute(sql_text(query))
+            #db.commit()
+        return True

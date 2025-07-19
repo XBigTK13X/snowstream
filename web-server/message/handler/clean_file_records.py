@@ -4,7 +4,14 @@ from db import db
 from message.job_media_scope import JobMediaScope
 
 def handle(scope:JobMediaScope):
-    db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling an clean_file_records job")
+    db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a clean_file_records job")
+
+    db.op.update_job(job_id=scope.job_id, message=f"Checking for orphaned records")
+    results = db.op.purge_orphaned_records()
+    if results:
+        db.op.update_job(job_id=scope.job_id, message=f'Purged {len(results)} orphaned records')
+        for result in results:
+            db.op.update_job(job_id=scope.job_id, message=f"    {result}")
 
     db.op.update_job(job_id=scope.job_id, message=f"Checking for deleted metadata files")
     results = db.op.purge_missing_metadata_file_records()

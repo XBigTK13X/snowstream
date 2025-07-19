@@ -7,7 +7,7 @@ export default function JobDetailsPage() {
     const [job, setJob] = C.React.useState(null)
     const jobId = localParams.jobId
     C.React.useEffect(() => {
-        if (!job) {
+        if (!job || job.status === 'running') {
             apiClient.getJob(jobId).then((response) => {
                 if (response && response.logs && response.logs.length) {
                     response.logs.reverse()
