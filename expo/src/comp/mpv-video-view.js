@@ -60,7 +60,6 @@ export default function MpvVideoView(props) {
     React.useEffect(() => {
         const navListener = navigation.addListener('beforeRemove', (e) => {
             if (!cleaned) {
-                console.log("Cleanup beforeRemove")
                 Libmpv.cleanup()
                 setCleaned(true)
             }
@@ -74,7 +73,6 @@ export default function MpvVideoView(props) {
         const appStateSubscription = AppState.addEventListener('change', appState => {
             if (appState === 'background') {
                 if (!cleaned) {
-                    console.log("Cleanup background")
                     Libmpv.cleanup()
                     setCleaned(true)
                 }

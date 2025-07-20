@@ -13,6 +13,9 @@ def handle(scope:JobMediaScope):
         for result in results:
             db.op.update_job(job_id=scope.job_id, message=f"    {result}")
 
+    if scope.is_orphan():
+        return True
+
     db.op.update_job(job_id=scope.job_id, message=f"Checking for deleted metadata files")
     results = db.op.purge_missing_metadata_file_records()
     if results:

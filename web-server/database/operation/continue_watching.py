@@ -58,7 +58,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     continue
                 episode = progress.show_episode
                 episode.progress_at = progress.updated_at
-                skip_episode[episode.id] = True
+                skip_episode[episode.season.show.id] = True
                 show = episode.season.show
                 show = dm.set_primary_images(show)
                 progress.show_episode.poster_image = show.poster_image
@@ -112,7 +112,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     load_episode_files=False
                 )
                 for episode in unwatched_episodes:
-                    if episode.id in skip_episode:
+                    if episode.season.show.id in skip_episode:
                         continue
                     first_episode = first_lookup[episode.season.show.id]
                     if first_episode.id == episode.id:

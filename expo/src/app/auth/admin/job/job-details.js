@@ -7,12 +7,17 @@ export default function JobDetailsPage() {
     const [job, setJob] = C.React.useState(null)
     const jobId = localParams.jobId
     C.React.useEffect(() => {
-        if (!job || job.status === 'running') {
+        if (!job) {
             apiClient.getJob(jobId).then((response) => {
                 if (response && response.logs && response.logs.length) {
                     response.logs.reverse()
                 }
                 setJob(response)
+                if (response.status === 'running' || response.status === 'pending') {
+                    setTimeout(() => {
+                        setJob(null)
+                    }, 2500)
+                }
             })
         }
     })

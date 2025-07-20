@@ -170,8 +170,10 @@ export class ApiClient {
         let payload = { name }
         if (details) {
             payload.input = {}
-            if (details.targetKind && details.targetId) {
+            if (details.targetKind) {
                 payload.input.target_kind = details.targetKind
+            }
+            if (details.targetId) {
                 payload.input.target_id = details.targetId
             }
             if (details.targetDirectory) {

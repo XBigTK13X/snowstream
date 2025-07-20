@@ -13,7 +13,10 @@ function TrackList(props) {
     let activeTrack = props.activeTrack === -1 ? null : props.tracks.filter((track) => {
         return props.isAudio ? track.audio_index === props.activeTrack : track.subtitle_index === props.activeTrack
     })[0]
-    let activeBitRate = props.activeTrack === -1 ? null : `[${util.bitsToPretty(activeTrack.bit_rate)}/s]`
+    let activeBitRate = null;
+    if (activeTrack) {
+        activeBitRate = `[${util.bitsToPretty(activeTrack.bit_rate)}/s]`
+    }
     return (
         <FillView>
             <SnowText>

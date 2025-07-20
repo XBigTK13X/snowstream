@@ -170,18 +170,107 @@ def find_shelf_content_without_video_files():
 def purge_orphaned_records():
     results = []
     with DbSession() as db:
-        ticket = dm.Ticket(ignore_watch_groups=True)
         kinds = ['metadata_file','image_file','video_file']
         for kind in kinds:
-            query = f'''
+            file_query = f'''
                 select
-                from
-                {kind}
-                left join show_{kind} on show_{kind}.{kind}_id = {kind}.id
-                left join show_season_{kind} on show_season_{kind}.{kind}_id = {kind}.id
-                left join show_episode_{kind} on show_episode_{kind}.{kind}_id = {kind}.id
-                left join movie_{kind} on movie_{kind}.{kind}_id = {kind}.id
+                    {kind}.id as file_id
+                from {kind}
+                    left join show_episode_{kind} on show_episode_{kind}.{kind}_id = {kind}.id
+                    left join movie_{kind} on movie_{kind}.{kind}_id = {kind}.id
+                    {'' if kind == 'video_file' else f'left join show_season_{kind} on show_season_{kind}.{kind}_id = {kind}.id'}
+                    {'' if kind == 'video_file' else f'left join show_{kind} on show_{kind}.{kind}_id = {kind}.id'}
+                where
+                    show_episode_{kind}.id is null
+                    and movie_{kind}.id is null
+                    {'' if kind == 'video_file' else f'and show_{kind}.id is null'}
+                    {'' if kind == 'video_file' else f'and show_season_{kind}.id is null'}
+                    ;
             '''
-            #db.execute(sql_text(query))
-            #db.commit()
-        return True
+            cursor = db.execute(sql_text(file_query))
+            file_ids = []
+            for row in cursor:
+                results.append(f'{kind} - {row.file_id}')
+                file_ids.append(str(row.file_id))
+            if file_ids:
+                group = ",".join(file_ids)
+                db.execute(sql_text(f'delete from {kind} where {kind}.id in ({group});'))
+                db.commit()
+
+        episode_query = f'''
+            select
+                show_episode.id as episode_id
+            from show_episode
+                left join show_season on show_season.id = show_episode.show_season_id
+            where
+                show_season.id is null;
+        '''
+        episode_cursor = db.execute(sql_text(episode_query))
+        episode_ids = []
+        for row in episode_cursor:
+            results.append(f'show_episode - {row.episode_id}')
+            episode_ids.append(str(row.episode_id))
+        if episode_ids:
+            group = ",".join(episode_ids)
+            db.execute(sql_text(f'delete from show_episode where show_episode.id in ({group});'))
+            db.commit()
+
+        season_query = f'''
+            select
+                show_season.id as season_id
+            from show_season
+                left join show on show.id = show_season.show_id
+            where
+                show.id is null;
+        '''
+        season_cursor = db.execute(sql_text(season_query))
+        season_ids = []
+        for row in season_cursor:
+            results.append(f'show_season - {row.season_id}')
+            season_ids.append(str(row.season_id))
+        if season_ids:
+            group = ",".join(season_ids)
+            db.execute(sql_text(f'delete from show_season where show_season.id in ({group});'))
+            db.commit()
+
+        show_query = f'''
+            select
+                show.id as show_id
+            from show
+                left join show_shelf on show_shelf.show_id = show.id
+                left join shelf on shelf.id = show_shelf.shelf_id
+            where
+                show_shelf.id is null
+                or shelf.id is null;
+        '''
+        show_cursor = db.execute(sql_text(show_query))
+        show_ids = []
+        for row in show_cursor:
+            results.append(f'show - {row.show_id}')
+            show_ids.append(str(row.show_id))
+        if show_ids:
+            group = ",".join(show_ids)
+            db.execute(sql_text(f'delete from show where show.id in ({group});'))
+            db.commit()
+
+        movie_query = f'''
+            select
+                movie.id as movie_id
+            from movie
+                left join movie_shelf on movie_shelf.movie_id = movie.id
+                left join shelf on shelf.id = movie_shelf.shelf_id
+            where
+                movie_shelf.id is null
+                or shelf.id is null;
+        '''
+        movie_cursor = db.execute(sql_text(movie_query))
+        movie_ids = []
+        for row in movie_cursor:
+            results.append(f'movie - {row.movie_id}')
+            movie_ids.append(str(row.movie_id))
+        if movie_ids:
+            group = ",".join(movie_ids)
+            db.execute(sql_text(f'delete from movie where movie.id in ({group});'))
+            db.commit()
+
+    return results

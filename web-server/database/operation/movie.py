@@ -118,7 +118,7 @@ def sql_row_to_api_result(row,load_files,watch_group):
     movie.has_images = False
     dedupe = {}
     for ii in range(0,len(row.image_id_list)):
-        if row.image_id_list[ii].id == None:
+        if row.image_id_list[ii] == None:
                 continue
         movie.has_images = True
         if f'i-{row.image_local_path_list[ii]}' in dedupe:
@@ -145,7 +145,7 @@ def sql_row_to_api_result(row,load_files,watch_group):
 
     if load_files:
         for ii in range(0,len(row.video_id_list)):
-            if row.video_id_list[ii].id == None:
+            if row.video_id_list[ii] == None:
                 continue
             if f'v-{row.video_id_list[ii]}' in dedupe:
                 continue
@@ -161,7 +161,7 @@ def sql_row_to_api_result(row,load_files,watch_group):
             movie.video_files.append(video_file)
 
         for ii in range(0,len(row.metadata_id_list)):
-            if row.metadata_id_list[ii].id == None:
+            if row.metadata_id_list[ii] == None:
                 continue
             if f'm-{row.metadata_id_list[ii]}' in dedupe:
                 continue

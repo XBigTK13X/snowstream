@@ -47,6 +47,9 @@ class JobMediaScope:
     def is_episode(self):
         return self.target_kind == 'episode'
 
+    def is_orphan(self):
+        return self.target_kind == 'orphan'
+
     def get_movie_media_provider(self):
         if not self.metadata_source or 'themoviedb' in self.metadata_source:
             return ThemoviedbProvider(self.job_id,self.metadata_source)
