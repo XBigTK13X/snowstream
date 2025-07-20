@@ -88,6 +88,8 @@ def sql_row_to_api_result(
     dedupe = {}
 
     for ii in range(0,len(image_ids)):
+        if image_ids[ii] == None:
+                continue
         episode.has_images = True
         if f'i-{image_ids[ii]}' in dedupe:
             continue
@@ -111,6 +113,8 @@ def sql_row_to_api_result(
 
     if load_episode_files:
         for ii in range(0,len(row.video_id_list)):
+            if row.video_id_list[ii] == None:
+                continue
             if f'v-{row.video_id_list[ii]}' in dedupe:
                 continue
             dedupe[f'v-{row.video_id_list[ii]}'] = 1
@@ -127,6 +131,8 @@ def sql_row_to_api_result(
             episode.video_files.append(video_file)
 
         for ii in range(0,len(row.metadata_id_list)):
+            if row.metadata_id_list[ii] == None:
+                continue
             if f'm-{row.metadata_id_list[ii]}' in dedupe:
                 continue
             dedupe[f'm-{row.metadata_id_list[ii]}'] = 1
