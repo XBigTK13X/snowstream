@@ -65,16 +65,16 @@ export default function ShelfEditPage() {
     return (
         <C.FillView >
             <C.SnowLabel>Name</C.SnowLabel>
-            <C.SnowInput onChangeText={setShelfName} value={shelfName} />
+            <C.SnowInput onValueChange={setShelfName} value={shelfName} />
 
             <C.SnowLabel>Kind</C.SnowLabel>
             <C.SnowDropdown options={['Movies', 'Shows', 'Keepsakes']} onChoose={chooseShelfKind} selected={shelfKindIndex} />
 
             <C.SnowLabel>Shelf Local Path</C.SnowLabel>
-            <C.SnowInput onChangeText={setLocalPath} value={localPath} />
+            <C.SnowInput onValueChange={setLocalPath} value={localPath} />
 
             <C.SnowLabel>Shelf Network Path</C.SnowLabel>
-            <C.SnowInput onChangeText={setNetworkPath} value={networkPath} />
+            <C.SnowInput onValueChange={setNetworkPath} value={networkPath} />
 
             <C.SnowTextButton title="Save Shelf" onPress={saveShelf} />
             {deleteButton}

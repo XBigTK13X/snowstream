@@ -50,6 +50,10 @@ export const Style = {
         uhd: {
             width: 3840,
             height: 2160
+        },
+        fhd: {
+            width: 1920,
+            height: 1080
         }
     },
     imageButton: {

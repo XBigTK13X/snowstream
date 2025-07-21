@@ -45,7 +45,7 @@ export default function TagEditPage() {
     return (
         <C.FillView>
             <C.SnowLabel>Name</C.SnowLabel>
-            <C.SnowInput onChangeText={setTagName} value={tagName} />
+            <C.SnowInput onValueChange={setTagName} value={tagName} />
 
             <C.SnowTextButton title="Save Tag" onPress={saveTag} />
             {deleteButton}

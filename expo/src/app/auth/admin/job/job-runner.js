@@ -61,27 +61,27 @@ export default function ShelfEditPage() {
                 renderItem={renderItem} />
             <C.SnowGrid itemsPerRow={6}>
                 <C.SnowLabel>Target Kind</C.SnowLabel>
-                <C.SnowInput onChangeText={setTargetKind} value={targetKind} />
+                <C.SnowInput onValueChange={setTargetKind} value={targetKind} />
                 <C.SnowLabel>Target Id</C.SnowLabel>
-                <C.SnowInput onChangeText={setTargetId} value={targetId} />
+                <C.SnowInput onValueChange={setTargetId} value={targetId} />
                 <C.SnowLabel>Target Directory</C.SnowLabel>
-                <C.SnowInput onChangeText={setTargetDirectory} value={targetDirectory} />
+                <C.SnowInput onValueChange={setTargetDirectory} value={targetDirectory} />
                 <C.SnowLabel>Metadata Id</C.SnowLabel>
-                <C.SnowInput onChangeText={setMetadataId} value={metadataId} />
+                <C.SnowInput onValueChange={setMetadataId} value={metadataId} />
                 <C.SnowLabel>Metadata Source</C.SnowLabel>
-                <C.SnowInput onChangeText={setMetadataSource} value={metadataSource} />
+                <C.SnowInput onValueChange={setMetadataSource} value={metadataSource} />
                 <C.SnowLabel>Season Order</C.SnowLabel>
-                <C.SnowInput onChangeText={setSeasonOrder} value={seasonOrder} />
+                <C.SnowInput onValueChange={setSeasonOrder} value={seasonOrder} />
                 <C.SnowLabel>Episode Order</C.SnowLabel>
-                <C.SnowInput onChangeText={setEpisodeOrder} value={episodeOrder} />
+                <C.SnowInput onValueChange={setEpisodeOrder} value={episodeOrder} />
                 <C.SnowLabel>Update Images</C.SnowLabel>
-                <C.SnowInput onChangeText={setUpdateImages} value={updateImages} />
+                <C.SnowInput onValueChange={setUpdateImages} value={updateImages} />
                 <C.SnowLabel>Update Metadata</C.SnowLabel>
-                <C.SnowInput onChangeText={setUpdateMetadata} value={updateMetadata} />
+                <C.SnowInput onValueChange={setUpdateMetadata} value={updateMetadata} />
                 <C.SnowLabel>Update Videos</C.SnowLabel>
-                <C.SnowInput onChangeText={setUpdateVideos} value={updateVideos} />
+                <C.SnowInput onValueChange={setUpdateVideos} value={updateVideos} />
                 <C.SnowLabel>Skip Existing</C.SnowLabel>
-                <C.SnowInput onChangeText={setSkipExisting} value={skipExisting} />
+                <C.SnowInput onValueChange={setSkipExisting} value={skipExisting} />
             </C.SnowGrid>
         </C.FillView>
     )

@@ -14,7 +14,7 @@ export function SnowInput(props) {
         secureTextEntry={props.secureTextEntry}
         hasTVPreferredFocus={props.shouldFocus}
         autoFocus={props.shouldFocus}
-        onChangeText={props.onChangeText}
+        onChangeText={props.onValueChange}
         onSubmitEditing={props.onSubmit}
         value={props.value}
     />

@@ -71,7 +71,7 @@ export default function SignInPage() {
                     secureTextEntry
                     onSubmit={login}
                     shouldFocus
-                    onChangeText={setPassword}
+                    onValueChange={setPassword}
                     value={password}
                 />
                 <C.SnowGrid itemsPerRow={2} >

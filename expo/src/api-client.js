@@ -116,49 +116,29 @@ export class ApiClient {
     login(payload) {
         let self = this
         return new Promise(resolve => {
-            let getDeviceId = () => {
-                return DeviceInfo.getUniqueId().then((uniqueId) => {
-                    const deviceBrand = DeviceInfo.getBrand()
-                    return DeviceInfo.getHost().then(deviceName => {
-                        return `${deviceBrand} - ${deviceName} - ${uniqueId}`
+            return self.httpClient
+                .postForm('/login', {
+                    username: payload.username,
+                    password: payload.password,
+                    device_info: payload.deviceId
+                })
+                .then((data) => {
+                    if (data && data.data && data.data.access_token) {
+                        self.authToken = data.data.access_token
+                        self.permissions = data.data.permissions
+                        self.hasAdmin = self.permissions.includes('admin')
+                        self.createClient({ webApiUrl: self.webApiUrl, authToken: self.authToken })
+                        self.displayName = data.data.display_name
+                    }
+                    return resolve({
+                        authToken: self.authToken,
+                        isAdmin: self.hasAdmin,
+                        displayName: self.displayName
                     })
                 })
-            }
-            if (Platform.OS === 'web') {
-                getDeviceId = () => {
-                    return new Promise(resolve => {
-                        const uaParser = new UAParser()
-                        const result = uaParser.getResult()
-                        const deviceId = `${result.os}${result.version ? ' ' + result.version : ''} ${result.browser.name} ${result.browser.major}`
-                        return resolve(deviceId)
-                    })
-                }
-            }
-            getDeviceId().then((deviceId) => {
-                return self.httpClient
-                    .postForm('/login', {
-                        username: payload.username,
-                        password: payload.password,
-                        device_info: deviceId
-                    })
-                    .then((data) => {
-                        if (data && data.data && data.data.access_token) {
-                            self.authToken = data.data.access_token
-                            self.permissions = data.data.permissions
-                            self.hasAdmin = self.permissions.includes('admin')
-                            self.createClient({ webApiUrl: self.webApiUrl, authToken: self.authToken })
-                            self.displayName = data.data.display_name
-                        }
-                        return resolve({
-                            authToken: self.authToken,
-                            isAdmin: self.hasAdmin,
-                            displayName: self.displayName
-                        })
-                    })
-                    .catch((err) => {
-                        return resolve({ failed: true, err: err })
-                    })
-            })
+                .catch((err) => {
+                    return resolve({ failed: true, err: err })
+                })
         })
     }
 

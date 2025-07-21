@@ -6,6 +6,8 @@ import Style from '../snow-style'
 import SnowVideoControls from './snow-video-controls'
 import { useDebouncedCallback } from 'use-debounce'
 
+const targetResolution = Platform.isTV ? Style.surface.udh : Style.surface.hd
+
 export default function SnowVideoPlayer(props) {
     const styles = {
         videoOverlay: {

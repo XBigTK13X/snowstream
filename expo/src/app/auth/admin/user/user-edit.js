@@ -81,20 +81,20 @@ export default function UserEditPage() {
         <C.FillView>
             {existingUserControls}
             <C.SnowLabel>Name</C.SnowLabel>
-            <C.SnowInput onChangeText={setUserUsername} value={userUsername} />
+            <C.SnowInput onValueChange={setUserUsername} value={userUsername} />
 
             <C.SnowLabel>Display Name</C.SnowLabel>
-            <C.SnowInput onChangeText={setUserDisplayName} value={userDisplayName} />
+            <C.SnowInput onValueChange={setUserDisplayName} value={userDisplayName} />
 
             <C.SnowLabel>Enabled</C.SnowLabel>
-            <C.SnowInput onChangeText={setUserEnabled} value={userEnabled} />
+            <C.SnowInput onValueChange={setUserEnabled} value={userEnabled} />
 
             <C.SnowLabel>Permissions</C.SnowLabel>
-            <C.SnowInput onChangeText={setUserPermissions} value={userPermissions} />
+            <C.SnowInput onValueChange={setUserPermissions} value={userPermissions} />
 
             <C.SnowLabel>Change Password (Currently {userHasPassword ? 'Set' : 'None'})</C.SnowLabel>
             <C.SnowText>Set to "SNOWSTREAM_EMPTY" for a no password user (nonadmin only).</C.SnowText>
-            <C.SnowInput onChangeText={setUserPassword} value={userPassword} />
+            <C.SnowInput onValueChange={setUserPassword} value={userPassword} />
 
             <C.SnowTextButton title="Save User" onPress={saveUser} />
             {deleteButton}

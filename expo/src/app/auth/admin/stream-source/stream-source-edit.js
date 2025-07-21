@@ -70,7 +70,7 @@ export default function StreamSourceEditPage() {
     return (
         <C.FillView>
             <C.SnowLabel>Name</C.SnowLabel>
-            <C.SnowInput onChangeText={setStreamSourceName} value={streamSourceName} />
+            <C.SnowInput onValueChange={setStreamSourceName} value={streamSourceName} />
 
             <C.SnowLabel>Kind</C.SnowLabel>
             <C.SnowDropdown
@@ -79,13 +79,13 @@ export default function StreamSourceEditPage() {
                 value={streamSourceKind} />
 
             <C.SnowLabel>URL</C.SnowLabel>
-            <C.SnowInput onChangeText={setStreamSourceUrl} value={streamSourceUrl} />
+            <C.SnowInput onValueChange={setStreamSourceUrl} value={streamSourceUrl} />
 
             <C.SnowLabel>Username</C.SnowLabel>
-            <C.SnowInput onChangeText={setStreamSourceUsername} value={streamSourceUsername} />
+            <C.SnowInput onValueChange={setStreamSourceUsername} value={streamSourceUsername} />
 
             <C.SnowLabel>Password</C.SnowLabel>
-            <C.SnowInput onChangeText={setStreamSourcePassword} value={streamSourcePassword} />
+            <C.SnowInput onValueChange={setStreamSourcePassword} value={streamSourcePassword} />
 
             <C.SnowTextButton title="Save Stream Source" onPress={saveStreamSource} />
             {deleteButton}

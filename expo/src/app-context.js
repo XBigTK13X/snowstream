@@ -10,6 +10,7 @@ import SnowGrid from './comp/snow-grid'
 import SnowModal from './comp/snow-modal'
 import SnowText from './comp/snow-text'
 import SnowTextButton from './comp/snow-text-button'
+import Style from './snow-style'
 
 const setStoredValue = (key, value) => {
     return new Promise(resolve => {
@@ -68,7 +69,9 @@ const AppContext = React.createContext({
     signIn: () => null,
     signOut: () => null,
     useStorageStage: () => null,
-    setWebApiUrl: () => null
+    setWebApiUrl: () => null,
+    clientOptions: null,
+    changeClientOptions: () => null
 });
 
 export function useAppContext() {
@@ -88,6 +91,7 @@ export function AppContextProvider(props) {
     const [isAdmin, setIsAdmin] = React.useState(false)
     const [displayName, setDisplayName] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
+    const [clientOptions, setClientOptions] = React.useState(null)
 
     React.useEffect(() => {
         if (!apiClient) {
@@ -111,6 +115,24 @@ export function AppContextProvider(props) {
         }
     })
 
+    React.useEffect(() => {
+        if (!clientOptions) {
+            let storedOptions = getStoredValue('clientOptions')
+            if (storedOptions) {
+                storedOptions = JSON.parse(storedOptions)
+            }
+            if (!storedOptions) {
+                storedOptions = {
+                    resolutionWidth: Style.surface.uhd.width,
+                    resolutionHeight: Style.surface.uhd.height,
+                    audioCompression: false,
+                    deviceId: crypto.randomUUID()
+                }
+            }
+            setClientOptions(storedOptions)
+        }
+    })
+
     const onApiError = (err) => {
         if (!apiError) {
             setApiError(err)
@@ -130,7 +152,11 @@ export function AppContextProvider(props) {
             if (!apiClient) {
                 return resolve({ loading: true })
             }
-            apiClient.login({ username: username, password: password })
+            apiClient.login({
+                username: username,
+                password: password,
+                deviceId: clientOptions.deviceId
+            })
                 .then(loginResponse => {
                     if (loginResponse && loginResponse.failed) {
                         resolve(loginResponse)
@@ -160,6 +186,7 @@ export function AppContextProvider(props) {
         setSession(null)
         setDisplayName(null)
         setIsAdmin(false)
+        setClientOptions(null)
         return setStoredValue('session', null)
             .then(() => {
                 return setStoredValue('displayName', null)
@@ -179,6 +206,22 @@ export function AppContextProvider(props) {
             .then(() => {
                 return routes.reset()
             })
+    }
+
+    const changeClientOptions = (options) => {
+        let shouldLogout = false;
+        if (clientOptions.deviceId !== options.deviceId) {
+            shouldLogout = true;
+        }
+        let stored = options
+        if (options) {
+            stored = JSON.stringify(options)
+        }
+        setStoredValue('clientOptions', stored)
+        setClientOptions(options)
+        if (shouldLogout) {
+            logout();
+        }
     }
 
     if (apiError) {
@@ -208,7 +251,9 @@ export function AppContextProvider(props) {
         setMessageDisplay: setMessage,
         signIn: login,
         signOut: logout,
-        setWebApiUrl
+        setWebApiUrl,
+        clientOptions,
+        changeClientOptions
     }
 
     return (

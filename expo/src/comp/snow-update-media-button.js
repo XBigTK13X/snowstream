@@ -46,11 +46,11 @@ export default function SnowUpdateMediaButton(props) {
                 <SnowGrid itemsPerRow={4}>
                     <View style={{ alignItems: 'center' }}>
                         <SnowLabel>Remote Metadata ID</SnowLabel>
-                        <SnowInput onChangeText={(text) => { setMetadataId(text) }} value={metadataId} />
+                        <SnowInput onValueChange={(text) => { setMetadataId(text) }} value={metadataId} />
                     </View>
                     <View style={{ alignItems: 'center' }}>
                         <SnowLabel>Metadata Source</SnowLabel>
-                        <SnowInput onChangeText={(text) => { setMetadataSource(text) }} value={metadataSource} />
+                        <SnowInput onValueChange={(text) => { setMetadataSource(text) }} value={metadataSource} />
                     </View>
                 </SnowGrid>
                 <SnowGrid itemsPerRow={6}>

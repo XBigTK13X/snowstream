@@ -74,7 +74,7 @@ export default function SearchPage() {
     return (
         <C.FillView>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
-            <C.SnowInput shouldFocus={true} value={queryText} onChangeText={updateQuery} onSubmit={executeQuery} />
+            <C.SnowInput shouldFocus={true} value={queryText} onValueChange={updateQuery} onSubmit={executeQuery} />
             {resultsTab}
         </C.FillView>
     )
