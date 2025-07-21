@@ -125,7 +125,7 @@ export default function SnowVideoPlayer(props) {
 
         if (!props.initialSeekComplete.current && props.initialSeekSeconds) {
             if (playerKind === 'mpv') {
-                if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('audio ready') !== -1) {
+                if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('Starting playback') !== -1) {
                     setSeekToSeconds(props.initialSeekSeconds)
                     setProgressSeconds(props.initialSeekSeconds)
                     props.onReadyToSeek()
