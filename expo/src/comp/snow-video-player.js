@@ -239,8 +239,8 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             <VideoView
-                videoWidth={props.tracks.video[0].resolution_width}
-                videoHeight={props.tracks.video[0].resolution_height}
+                videoWidth={Style.window.width()}
+                videoHeight={Style.window.height()}
                 videoUrl={props.videoUrl}
                 isPlaying={isPlaying}
                 isReady={isReady}

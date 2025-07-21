@@ -132,3 +132,6 @@ class QueueRequest(BaseModel):
     show_season_id:int | None = None
     tag_id: int | None = None
     shuffle: bool | None = False
+
+class SaveLogsRequest(BaseModel):
+    logs: list[str] | None = None

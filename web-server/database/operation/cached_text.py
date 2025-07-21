@@ -1,5 +1,5 @@
 import database.db_models as dm
-from database.sql_alchemy import DbSession
+from database.sql_alchemy import DbSession, desc
 from datetime import datetime, timezone
 from settings import config
 
@@ -42,3 +42,12 @@ def upsert_cached_text(key: str, data: str, ttl_seconds:int=None):
     if cached_text:
         return update_cached_text(key=key, data=data)
     return create_cached_text(key=key, data=data, ttl_seconds=ttl_seconds)
+
+def get_cached_text_list(search_query:str):
+    with DbSession() as db:
+        return (
+            db.query(dm.CachedText)
+            .filter(dm.CachedText.key.ilike(f'%{search_query}%'))
+            .order_by(desc(dm.CachedText.updated_at))
+            .all()
+        )

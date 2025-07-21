@@ -42,8 +42,9 @@ export default function SnowVideoControls(props) {
         return null
     }
 
-    const { routes } = useAppContext()
+    const { apiClient } = useAppContext()
     const [showLogs, setShowLogs] = React.useState(false)
+    const [logTitle, setLogTitle] = React.useState('Logs')
 
     const progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
     const progressDisplay = util.secondsToTimestamp(props.progressSeconds)
@@ -69,6 +70,13 @@ export default function SnowVideoControls(props) {
             </SnowModal>
         )
     }
+
+    const persistLogs = () => {
+        apiClient.savePlaybackLogs(props.logs).then((response) => {
+            setLogTitle(response.cache_key)
+        })
+    }
+
     return (
         (
             <SnowModal
@@ -95,7 +103,7 @@ export default function SnowVideoControls(props) {
                     <View>
                         <SnowGrid itemsPerRow={4}>
                             <SnowTextButton shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
-                            <SnowTextButton title="Logs" onPress={() => { setShowLogs(true) }} />
+                            <SnowTextButton title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
                             <SnowTextButton title="Stop" onPress={() => { props.stopVideo() }} />
                             <SnowTextButton title="Home" onPress={() => { props.stopVideo(true) }} />
                         </SnowGrid>

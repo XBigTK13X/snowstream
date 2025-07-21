@@ -1,19 +1,20 @@
-from log import log
-from fastapi.responses import PlainTextResponse
-from fastapi import Response, Request
-from typing import Annotated
-from fastapi import Security
-import api_models as am
-from db import db
-import message.write
 import cache
-import auth
-from auth import get_current_user
-from transcode import transcode
-from settings import config
 import json
-import os
 import util
+import uuid
+
+from fastapi import Response, Request
+from fastapi import Security
+from fastapi.responses import PlainTextResponse
+
+from auth import get_current_user
+from db import db
+from log import log
+from settings import config
+from transcode import transcode
+from typing import Annotated
+import api_models as am
+import message.write
 
 def register(router):
     router = no_auth_required(router)
@@ -99,7 +100,11 @@ def auth_required(router):
     def get_log_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        return config.tail_log_paths
+        playback_logs = db.op.get_cached_text_list(search_query="playback-log-")
+        return {
+            'server': config.tail_log_paths,
+            'playback': playback_logs
+        }
 
     @router.get('/log', tags=['Job'])
     def get_log(
@@ -585,6 +590,17 @@ def auth_required(router):
         progress:int
     ):
         return db.op.update_playing_queue(ticket=auth_user.ticket,source=source,progress=progress)
+
+    @router.post('/log/playback', tags=['User'])
+    def save_playback_logs(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        saveLogsRequest:am.SaveLogsRequest
+    ):
+        playback_id = str(uuid.uuid4())
+        cache_key = f'playback-log-{playback_id}'
+        seven_days_seconds = 604800
+        db.op.upsert_cached_text(key=cache_key, data='\n'.join(saveLogsRequest.logs), ttl_seconds=seven_days_seconds)
+        return {'cache_key':cache_key}
 
     @router.post('/hotfix')
     def deployment_hotfix(

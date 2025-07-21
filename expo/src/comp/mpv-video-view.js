@@ -1,5 +1,5 @@
 import React from 'react'
-import { AppState, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { useNavigation } from 'expo-router'
 import Style from '../snow-style'
 import SnowModal from './snow-modal'
@@ -42,12 +42,12 @@ export default function MpvVideoView(props) {
             right: 0
         },
     }
-    const navigation = useNavigation()
-    let libmpv = require('react-native-libmpv')
-    let Libmpv = libmpv.Libmpv
-    let LibmpvVideo = libmpv.LibmpvVideo
 
-    const [cleaned, setCleaned] = React.useState(false)
+    // We don't want it being included outside of Android
+    // So don't trying importing it until first render
+    const Libmpv = require('react-native-libmpv')
+
+    const nativeRef = React.useRef(null);
 
     React.useEffect(() => {
         // Loudness normalization from Snowby
@@ -58,45 +58,19 @@ export default function MpvVideoView(props) {
     })
 
     React.useEffect(() => {
-        const navListener = navigation.addListener('beforeRemove', (e) => {
-            if (!cleaned) {
-                Libmpv.cleanup()
-                setCleaned(true)
-            }
-        })
-        return () => {
-            navigation.removeListener('beforeRemove', navListener)
+        if (nativeRef.current) {
+            nativeRef.current.runMpvCommand(`set|sub-ass-override|force`)
+            nativeRef.current.runMpvCommand(`set|sub-font-size|${props.subtitleFontSize}`)
         }
-    }, [])
 
-    React.useEffect(() => {
-        const appStateSubscription = AppState.addEventListener('change', appState => {
-            if (appState === 'background') {
-                if (!cleaned) {
-                    Libmpv.cleanup()
-                    setCleaned(true)
-                }
-            }
-        });
-
-        return () => {
-            appStateSubscription.remove();
-        };
-    }, []);
-
-    React.useEffect(() => {
-        Libmpv.command(`set|sub-ass-override|force`)
-        Libmpv.command(`set|sub-font-size|${props.subtitleFontSize}`)
     }, [props.subtitleFontSize])
 
     React.useEffect(() => {
-        Libmpv.command(`set|sub-ass-override|force`)
-        Libmpv.command(`set|sub-color|${props.subtitleColor.shade}/${props.subtitleColor.alpha}`)
+        if (nativeRef.current) {
+            nativeRef.current.runMpvCommand(`set|sub-ass-override|force`)
+            nativeRef.current.runMpvCommand(`set|sub-color|${props.subtitleColor.shade}/${props.subtitleColor.alpha}`)
+        }
     }, [props.subtitleColor])
-
-    if (cleaned) {
-        return null
-    }
 
     return (
         <SnowModal
@@ -104,7 +78,8 @@ export default function MpvVideoView(props) {
             onRequestClose={() => { props.stopVideo() }}
             style={styles.wrapper}>
 
-            <LibmpvVideo
+            <Libmpv.LibmpvVideo
+                ref={nativeRef}
                 playUrl={props.videoUrl}
                 isPlaying={props.isPlaying}
                 surfaceWidth={props.videoWidth}

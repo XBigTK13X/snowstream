@@ -542,6 +542,10 @@ export class ApiClient {
         return this.setItemWatchedStatus(item, false)
     }
 
+    savePlaybackLogs(logs) {
+        return this.post('/log/playback', { logs })
+    }
+
     debug() {
         util.log({ baseURL: this.baseURL, authToken: this.authToken })
     }
