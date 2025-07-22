@@ -7,7 +7,8 @@ const styles = {
         flex: 1,
         display: 'flex',
         marginLeft: 'auto',
-        marginRight: 'auto'
+        marginRight: 'auto',
+        marginBottom: 30
     }
 }
 

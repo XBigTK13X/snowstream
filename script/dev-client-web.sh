@@ -1,5 +1,5 @@
 #! /bin/bash
-
+source script/variables.sh
 cd expo
 export BROWSER=none
 if [ -z "$1" ]; then

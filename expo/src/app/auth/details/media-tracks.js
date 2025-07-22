@@ -167,8 +167,8 @@ export default function MediaTracksPage(props) {
                         options={media.video_files.filter(ff => ff.version).map((ff) => {
                             return ff.version
                         })}
-                        onChoose={chooseVideoFile}
-                        value={videoFileIndex}
+                        onValueChange={chooseVideoFile}
+                        valueIndex={videoFileIndex}
                     />
                 </C.View>
             )
@@ -183,8 +183,8 @@ export default function MediaTracksPage(props) {
                         options={media.video_files.filter(ff => ff.is_extra).map((ff) => {
                             return { name: ff.name, index: ff.file_index }
                         })}
-                        onChoose={chooseVideoFile}
-                        value={videoFileIndex}
+                        onValueChange={chooseVideoFile}
+                        valueIndex={videoFileIndex}
                     />
                 </C.View>
             )

@@ -68,7 +68,11 @@ export default function ShelfEditPage() {
             <C.SnowInput onValueChange={setShelfName} value={shelfName} />
 
             <C.SnowLabel>Kind</C.SnowLabel>
-            <C.SnowDropdown options={['Movies', 'Shows', 'Keepsakes']} onChoose={chooseShelfKind} selected={shelfKindIndex} />
+            <C.SnowDropdown
+                options={['Movies', 'Shows', 'Keepsakes']}
+                onValueChange={chooseShelfKind}
+                valueIndex={shelfKindIndex}
+            />
 
             <C.SnowLabel>Shelf Local Path</C.SnowLabel>
             <C.SnowInput onValueChange={setLocalPath} value={localPath} />

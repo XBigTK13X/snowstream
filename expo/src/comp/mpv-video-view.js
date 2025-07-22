@@ -1,11 +1,13 @@
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
 import { useNavigation } from 'expo-router'
+import { useAppContext } from '../app-context'
 import Style from '../snow-style'
 import SnowModal from './snow-modal'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
+    const { clientOptions } = useAppContext()
     const styles = {
         touchable: {
             width: Style.window.width(),
@@ -43,16 +45,18 @@ export default function MpvVideoView(props) {
         },
     }
 
-    // We don't want it being included outside of Android
-    // So don't trying importing it until first render
+    // Don't want it being included outside of Android
+    // Don't trying importing it until first render
     const Libmpv = require('react-native-libmpv')
 
     const nativeRef = React.useRef(null);
 
     React.useEffect(() => {
-        // Loudness normalization from Snowby
-        //Libmpv.command('set|af|acompressor=ratio=4,loudnorm')
         if (!props.isReady && props.onReady) {
+            if (nativeRef.current && clientOptions.audioCompression) {
+                // Loudness normalization from Snowby
+                nativeRef.current.runMpvCommand(`set|af|acompressor=ratio=4,loudnorm`)
+            }
             props.onReady()
         }
     })
@@ -82,6 +86,7 @@ export default function MpvVideoView(props) {
                 ref={nativeRef}
                 playUrl={props.videoUrl}
                 isPlaying={props.isPlaying}
+                useHardwareDecoder={clientOptions.hardwareDecoder}
                 surfaceWidth={props.videoWidth}
                 surfaceHeight={props.videoHeight}
                 onLibmpvEvent={(libmpvEvent) => {

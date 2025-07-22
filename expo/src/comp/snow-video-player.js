@@ -6,8 +6,6 @@ import Style from '../snow-style'
 import SnowVideoControls from './snow-video-controls'
 import { useDebouncedCallback } from 'use-debounce'
 
-const targetResolution = Platform.isTV ? Style.surface.udh : Style.surface.hd
-
 export default function SnowVideoPlayer(props) {
     const styles = {
         videoOverlay: {
@@ -27,7 +25,7 @@ export default function SnowVideoPlayer(props) {
             backgroundColor: Style.color.background,
         }
     }
-    const { config, routes } = useAppContext()
+    const { config, routes, clientOptions } = useAppContext()
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
@@ -241,8 +239,8 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             <VideoView
-                videoWidth={Style.window.width()}
-                videoHeight={Style.window.height()}
+                videoWidth={clientOptions.resolutionWidth}
+                videoHeight={clientOptions.resolutionHeight}
                 videoUrl={props.videoUrl}
                 isPlaying={isPlaying}
                 isReady={isReady}

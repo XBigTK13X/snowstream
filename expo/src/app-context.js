@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import uuid from 'react-native-uuid';
 import util from './util'
 import { config } from './settings'
 import { routes } from './routes'
@@ -126,7 +127,8 @@ export function AppContextProvider(props) {
                     resolutionWidth: Style.surface.uhd.width,
                     resolutionHeight: Style.surface.uhd.height,
                     audioCompression: false,
-                    deviceId: crypto.randomUUID()
+                    hardwareDecoder: false,
+                    deviceId: uuid.v4()
                 }
             }
             setClientOptions(storedOptions)
