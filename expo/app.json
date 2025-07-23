@@ -1,6 +1,6 @@
 {
   "expo": {
-    "version": "0.13.5",
+    "version": "0.13.7",
     "scheme": "com.simplepathstudios.snowstream",
     "newArchEnabled": false,
     "plugins": [

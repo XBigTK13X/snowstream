@@ -167,8 +167,6 @@ export default function PlayMediaPage() {
         if (!initialSeekRef.current) {
             initialSeekRef.current = true
             setInitialSeekComplete(true)
-
-            //setProgressSeconds(initialSeekSeconds)
         }
     }
 
@@ -177,7 +175,7 @@ export default function PlayMediaPage() {
     }
 
     const onProgress = (progressSeconds, force) => {
-        if (Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds || force) {
+        if (force || Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds) {
             setProgressSeconds(progressSeconds)
             if (!playingQueueSource) {
                 const duration = durationRef.current
