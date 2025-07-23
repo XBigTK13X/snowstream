@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import SnowGrid from './snow-grid'
 import SnowTextButton from './snow-text-button'
 import SnowText from './snow-text'
+import SnowLabel from './snow-label'
 
 export function SnowDropdown(props) {
     if (!props.options) {
@@ -26,11 +27,18 @@ export function SnowDropdown(props) {
             }
         }
         return <SnowTextButton
+            tall
             selected={selected}
             title={item.name ? item.name : item}
             onPress={() => { choose(item.index ? item.index : itemIndex) }} />
     }
 
+    if (props.title) {
+        return <View>
+            <SnowLabel center>{props.title}</SnowLabel>
+            <SnowGrid substantial items={props.options} renderItem={renderItem} />
+        </View>
+    }
     return <SnowGrid substantial items={props.options} renderItem={renderItem} />
 }
 

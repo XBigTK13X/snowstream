@@ -1,7 +1,7 @@
 import C from '../../../common'
 
 export default function PlayMediaPage() {
-    const { apiClient, routes, config } = C.useAppContext()
+    const { apiClient, routes, config, clientOptions } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
 
     const shelfId = localParams.shelfId
@@ -21,7 +21,14 @@ export default function PlayMediaPage() {
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
 
     const [videoUrl, setVideoUrl] = C.React.useState(null)
-    const [transcode, setTranscode] = C.React.useState(localParams.transcode ? localParams.transcode : false)
+    let shouldTranscode = false
+    if (localParams.transcode) {
+        shouldTranscode = localParams.transcode
+    }
+    if (clientOptions.alwaysTranscode) {
+        shouldTranscode = true
+    }
+    const [transcode, setTranscode] = C.React.useState(shouldTranscode)
     const [transcodeReady, setTranscodeReady] = C.React.useState(false)
 
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
@@ -38,7 +45,6 @@ export default function PlayMediaPage() {
     const [initialSeekComplete, setInitialSeekComplete] = C.React.useState(false)
     const initialSeekRef = C.React.useRef(initialSeekComplete)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
-
 
     const loadVideoFile = (videoHolder) => {
         // TODO This is where the playing queue needs to determine a videoFileIndex
@@ -239,8 +245,7 @@ export default function PlayMediaPage() {
     if (transcode && !transcodeReady) {
         return (
             <C.View>
-                <C.SnowText>This video cannot be played directly on this device.</C.SnowText>
-                <C.SnowText>Please wait a few moments while the server transcodes it to a supported format.</C.SnowText>
+                <C.SnowText>Snowstream is preparing a server-side transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
             </C.View>
         )
     }

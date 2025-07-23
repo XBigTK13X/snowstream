@@ -371,8 +371,12 @@ export class ApiClient {
 
     createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex) {
         let requestUrl = `${this.baseURL}/transcode/session?video_file_id=${videoFileId}`
-        requestUrl += `&audio_track_index=${audioTrackIndex}`
-        requestUrl += `&subtitle_track_index=${subtitleTrackIndex}`
+        if (audioTrackIndex !== -1) {
+            requestUrl += `&audio_track_index=${audioTrackIndex}`
+        }
+        if (subtitleTrackIndex !== -1) {
+            requestUrl += `&subtitle_track_index=${subtitleTrackIndex}`
+        }
         return this.post(requestUrl)
     }
 

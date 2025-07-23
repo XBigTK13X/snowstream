@@ -14,6 +14,7 @@ export default function OptionsPage() {
     const [resolutionHeight, setResolutionHeight] = C.React.useState(clientOptions ? clientOptions.resolutionHeight : '')
     const [audioCompression, setAudioCompression] = C.React.useState(clientOptions ? clientOptions.audioCompression : '')
     const [hardwareDecoder, setHardwareDecoder] = C.React.useState(clientOptions ? clientOptions.hardwareDecoder : '')
+    const [alwaysTranscode, setAlwaysTranscode] = C.React.useState(clientOptions ? clientOptions.alwaysTranscode : '')
     const [deviceId, setDeviceId] = C.React.useState(clientOptions ? clientOptions.deviceId : '')
 
     const chooseResolution = (selection) => {
@@ -35,6 +36,10 @@ export default function OptionsPage() {
         setHardwareDecoder(selection === 0 ? false : true)
     }
 
+    const chooseAlwaysTranscode = (selection) => {
+        setAlwaysTranscode(selection === 0 ? false : true)
+    }
+
     return (
         <C.FillView>
             <C.SnowGrid itemsPerRow={3} shrink>
@@ -48,37 +53,43 @@ export default function OptionsPage() {
                         }
                     }}
                 />
+                <C.SnowTextButton title="Save" onPress={() => {
+                    changeClientOptions({
+                        deviceId,
+                        resolutionWidth,
+                        resolutionHeight,
+                        audioCompression,
+                        hardwareDecoder,
+                        alwaysTranscode
+                    })
+                }} />
             </C.SnowGrid>
             <C.FillView>
                 <C.SnowLabel center>Device ID</C.SnowLabel>
                 <C.SnowGrid shrink itemsPerRow={3}>
                     <C.SnowInput value={deviceId} onValueChange={setDeviceId} />
                 </C.SnowGrid>
-                <C.SnowLabel center>Video Resolution</C.SnowLabel>
-                <C.SnowDropdown
-                    options={resolutions}
-                    onValueChange={chooseResolution}
-                    valueIndex={resolutionIndex} />
-                <C.SnowLabel center>Audio Compression</C.SnowLabel>
-                <C.SnowDropdown
-                    options={['No', 'Yes']}
-                    onValueChange={chooseAudioCompression}
-                    valueIndex={audioCompression === true ? 1 : 0} />
-                <C.SnowLabel center>Hardware Decoder</C.SnowLabel>
-                <C.SnowDropdown
-                    options={['No', 'Yes']}
-                    onValueChange={chooseHardwareDecoder}
-                    valueIndex={hardwareDecoder === true ? 1 : 0} />
-                <C.SnowGrid itemsPerRow={3} shrink>
-                    <C.SnowTextButton title="Save" onPress={() => {
-                        changeClientOptions({
-                            resolutionWidth,
-                            resolutionHeight,
-                            audioCompression,
-                            hardwareDecoder,
-                            deviceId,
-                        })
-                    }} />
+                <C.SnowGrid shrink itemsPerRow={2}>
+                    <C.SnowDropdown
+                        title="Video Resolution"
+                        options={resolutions}
+                        onValueChange={chooseResolution}
+                        valueIndex={resolutionIndex} />
+                    <C.SnowDropdown
+                        title="Audio Compression"
+                        options={['No', 'Yes']}
+                        onValueChange={chooseAudioCompression}
+                        valueIndex={audioCompression === true ? 1 : 0} />
+                    <C.SnowDropdown
+                        title="Hardware Decoder"
+                        options={['No', 'Yes']}
+                        onValueChange={chooseHardwareDecoder}
+                        valueIndex={hardwareDecoder === true ? 1 : 0} />
+                    <C.SnowDropdown
+                        title="Always Transcode"
+                        options={['No', 'Yes']}
+                        onValueChange={chooseAlwaysTranscode}
+                        valueIndex={alwaysTranscode === true ? 1 : 0} />
                 </C.SnowGrid>
             </C.FillView>
         </C.FillView>

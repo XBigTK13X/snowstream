@@ -128,7 +128,8 @@ export function AppContextProvider(props) {
                     resolutionHeight: Style.surface.uhd.height,
                     audioCompression: false,
                     hardwareDecoder: false,
-                    deviceId: uuid.v4()
+                    deviceId: uuid.v4(),
+                    alwaysTranscode: false
                 }
             }
             setClientOptions(storedOptions)

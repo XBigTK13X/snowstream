@@ -1,17 +1,18 @@
 from log import log
-import os
-import util
-import signal
-import atexit
-import time
-import shutil
-from util import debounce
 from pathlib import Path
+import atexit
+import ffmpeg
+import json
+import os
+import shutil
+import signal
+import time
+import traceback
+import util
+
 from db import db
 from database import db_models as dm
 from settings import config
-import ffmpeg
-import traceback
 
 class Transcode:
     def __init__(self):
@@ -41,11 +42,13 @@ class Transcode:
         subtitle_track_index:int=None
     ):
         input_path = None
+        snowstream_info = None
         if video_file_id != None:
             video_file = db.op.get_video_file_by_id(video_file_id=video_file_id)
             if not video_file:
                 return None
             input_path = video_file.local_path
+            snowstream_info = json.loads(video_file.snowstream_info_json)
         if streamable_id != None:
             streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
             if not streamable:
@@ -64,6 +67,7 @@ class Transcode:
         )
         command,streaming_url = ffmpeg.transcode_command(
             input_url=input_path,
+            snowstream_info=snowstream_info,
             stream_port=stream_port,
             audio_track_index=audio_track_index,
             subtitle_track_index=subtitle_track_index
@@ -108,7 +112,7 @@ class Transcode:
         self.close_on_disconnect(transcode_session=transcode_session)
         return binary_data
 
-    @debounce(config.transcode_disconnect_seconds)
+    @util.debounce(config.transcode_disconnect_seconds)
     def close_on_disconnect(self, transcode_session:dm.TranscodeSession):
         self.close(transcode_session=transcode_session)
 

@@ -8,6 +8,9 @@ Different clients may need to handle transcoding differently.
 Currently, only ExoPlayer will handle HDR.
 Maybe transcode keeping the bit depth and HDR, but to a different codec that the device supports.
 
+If a large movie has text subs, then ffmpeg will take ages to begin burning in the subtitles.
+It processes the entire video before providing a useable streaming handle.
+
 # Thoughts on v2
 
  1. Allow different users to stream the same file at different settings?

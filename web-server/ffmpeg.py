@@ -6,25 +6,50 @@ import datetime
 
 def transcode_command(
     input_url:str,
+    snowstream_info:dict,
     stream_port:int,
     audio_track_index:int=None,
     subtitle_track_index:int=None
 ):
     streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.flv'
     command =  f'ffmpeg  -i "{input_url}"'
+
+    # All devices in the current pool can decode 8 bit h264 video with aac audio
+
     if config.transcode_dialect == 'nvidia':
         command += f' -c:v h264_nvenc -cq 25'
     elif config.transcode_dialect == 'quicksync':
         command += f' -c:v h264_qsv -global_quality 25 -look_ahead 1'
-    command += f' -filter_complex "format=yuv420p;'
+
+    # Force 8 bit color depth
+    video_out = '[v]'
+    command += f' -filter_complex "[0:v]format=yuv420p[v];'
+
+    # This subtitles filter for text based subs is PART of the filter_complex
     if subtitle_track_index != None:
-        command += f'subtitles=\'{input_url}\':si={subtitle_track_index}'
-        # TODO Apply client-side subtitle style changes to the burn in subtitles
-        command += f":force_style='FontName=Arial,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BackColour=&HA0000000,BorderStyle=4,Fontsize=18'\""
+        sub_is_text = True
+        if snowstream_info:
+            sub_track = snowstream_info['tracks']['subtitle'][subtitle_track_index]
+            sub_is_text = sub_track['is_text']
+        if sub_is_text:
+            command += f'[v]subtitles=\'{input_url}\':si={subtitle_track_index}'
+            # TODO Apply client-side subtitle style changes to the burned in subtitles
+            command += f":force_style='"
+            command += f"FontName=Arial,"
+            command += f"PrimaryColour=&H00FFFFFF,"
+            command += f"OutlineColour=&H00000000,"
+            command += f"BackColour=&HA0000000,"
+            command += f"BorderStyle=4,"
+            command += f"Fontsize=18'[outv];"
+            video_out = '[outv]'
+        else:
+            command += f"[v][0:s:0]overlay;"
+    command += f"\" -map '{video_out}'"
+
     command += f' -c:a aac'
     if audio_track_index != None:
-        command += f' -map 0:v:0'
         command += f' -map 0:a:{audio_track_index}'
+
     command += f' -f flv -listen 1'
     command += f' "{streaming_url}"'
     log.info(command)
