@@ -76,7 +76,9 @@ class MediaTrack:
             self.video_index = int(mediainfo['@typeorder'])-1
         self.resolution_width = int(mediainfo['Width'])
         self.resolution_height = int(mediainfo['Height'])
-        self.is_hdr = 'HDR Format' in mediainfo
+        self.is_hdr = 'HDR_Format' in mediainfo
+        if 'BitDepth' in mediainfo:
+            self.bit_depth = mediainfo['BitDepth']
 
     def score_audio_track(self, ffprobe, mediainfo, is_anime):
         if self.language:

@@ -44,6 +44,7 @@ export default function ShelfEditPage() {
 
     const renderItem = (item) => {
         return <C.SnowTextButton
+            tall
             title={item.name}
             onPress={() => {
                 createJob(item.apiCall).then(job => {
@@ -56,7 +57,7 @@ export default function ShelfEditPage() {
     return (
         <C.FillView>
             <C.SnowGrid shrink
-                itemsPerRow={4}
+                itemsPerRow={7}
                 items={buttons}
                 renderItem={renderItem} />
             <C.SnowGrid itemsPerRow={6}>

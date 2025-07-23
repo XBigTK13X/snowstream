@@ -278,8 +278,8 @@ export default function MediaTracksPage(props) {
                 </C.View>
                 <C.View>
                     <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
-                    <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}</C.SnowText>
-                    <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)} {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
+                    <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
+                    <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
                     <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
                     <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
                 </C.View>

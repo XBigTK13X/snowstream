@@ -10,13 +10,18 @@ const styles = {
         margin: 10,
         padding: 10,
         height: Style.textButton.wrapper.normal.height,
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
+        justifyContent: 'center', // Horizontally center each line
+        alignItems: 'center', // Vertically center each line
+        alignContent: 'center', // Multiline vertical center of parent
+        textAlign: 'center', // Ensure text objects are horitzontally centered
         backgroundColor: Style.color.core,
         borderWidth: 5,
         borderColor: Style.color.core,
         borderRadius: 5
+    },
+    tallWrapper: {
+        height: 80,
+        padding: 0
     },
     selected: {
         borderColor: Style.color.active
@@ -62,6 +67,14 @@ export function SnowTextButton(props) {
         }
     }
 
+    if (props.tall) {
+        wrapperStyle.push(styles.tallWrapper)
+    }
+
+    if (props.style) {
+        wrapperStyle.push(props.style)
+    }
+
     let textStyle = [styles.text]
     if (props.title.length > 18) {
         textStyle.push(styles.smallText)
@@ -70,13 +83,13 @@ export function SnowTextButton(props) {
     return (
         <TouchableOpacity
             ref={touchRef}
+            style={wrapperStyle}
             activeOpacity={1.0}
             onPress={props.onPress}
             hasTVPreferredFocus={props.shouldFocus}
             onLongPress={props.onLongPress}
             onFocus={() => { setFocused(true) }}
             onBlur={() => { setFocused(false) }}
-            style={wrapperStyle}
             disabled={props.disabled}>
             <SnowText style={textStyle}>{props.title}</SnowText>
         </TouchableOpacity>

@@ -1,3 +1,13 @@
+# Research on a potential v3
+Different clients may need to handle transcoding differently.
+
+1. Need to know the bit depth of an encoding
+2. Need to know the codec used to encode
+3. Need to know if the encoding contains HDR
+
+Currently, only ExoPlayer will handle HDR.
+Maybe transcode keeping the bit depth and HDR, but to a different codec that the device supports.
+
 # Thoughts on v2
 
  1. Allow different users to stream the same file at different settings?
@@ -6,7 +16,7 @@
  3. Settings to change the codec used (for when using nvidia vs intel etc)
  4. Move transcode sessions into the database
 
-What if instead of serving files over SMB or FTP, have each media server host them via HTTP from a local nginx 
+What if instead of serving files over SMB or FTP, have each media server host them via HTTP from a local nginx
 That nginx server could be configured to allow rtmp restreams.
 Push transcodes up to those.
 Maybe host a loval restream in the docker container for non-media server hosted sources, like Frigate
@@ -50,7 +60,7 @@ otherwise
 transcode_segment_url = f"{config.web_api_url}/api/transcode/segment?transcode_session_id={transcode_session.id}&segment_file="
 transcode_playlist_url = f"{config.web_api_url}/api/transcode/playlist.m3u8?transcode_session_id={transcode_session.id}"
 if os.path.exists(output_dir):
-    shutil.rmtree(output_dir)            
+    shutil.rmtree(output_dir)
 os.makedirs(output_dir,exist_ok=True)
 hls_options = f'-f hls -hls_flags delete_segments -hls_time 30 -hls_base_url "{transcode_segment_url}"'
 av_options = f'-c:v {config.transcode_video_codec} -preset medium -vf "bwdif,format=yuv420p" -c:a aac'
