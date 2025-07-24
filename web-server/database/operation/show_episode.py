@@ -350,7 +350,9 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
         return get_show_episode_list(
             ticket=ticket,
             show_episode_id=episode_id,
-            first_result=True
+            first_result=True,
+            load_episode_files=True,
+            include_specials=True
         )
 
 def get_show_episode_by_season_order(show_season_id: int, episode_order_counter: int):

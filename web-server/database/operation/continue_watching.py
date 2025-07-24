@@ -106,7 +106,7 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 unwatched_episodes = db_episode.get_show_episode_list(
                     ticket=ticket,
                     shelf_id=shelf.id,
-                    include_specials=False,
+                    include_specials=True,
                     only_unwatched=True,
                     first_per_show=True,
                     load_episode_files=False
@@ -114,14 +114,18 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 for episode in unwatched_episodes:
                     if episode.season.show.id in skip_episode:
                         continue
-                    first_episode = first_lookup[episode.season.show.id]
-                    if first_episode.id == episode.id:
-                        new_shows.append(episode)
-                    else:
-                        if episode.episode_order_counter > 1:
-                            new_episodes.append(episode)
+                    if episode.season.show.id in first_lookup:
+                        first_episode = first_lookup[episode.season.show.id]
+                        if first_episode.id == episode.id:
+                            new_shows.append(episode)
                         else:
-                            new_seasons.append(episode)
+                            if episode.episode_order_counter > 1:
+                                new_episodes.append(episode)
+                            else:
+                                new_seasons.append(episode)
+                    else:
+                        # This is a Season 0 / Specials episode
+                        new_episodes.append(episode)
 
 
         if new_episodes:

@@ -161,7 +161,7 @@ def find_shelf_content_without_video_files():
             if not movie.video_files:
                 results.append(movie.directory)
 
-        episodes = db_episode.get_show_episode_list(ticket=ticket)
+        episodes = db_episode.get_show_episode_list(ticket=ticket,include_specials=True)
         for episode in episodes:
             if not episode.video_files:
                 results.append(episode.season.directory)

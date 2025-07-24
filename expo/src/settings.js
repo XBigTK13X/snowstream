@@ -14,7 +14,7 @@ class Config {
             this.webApiUrl = this.beastWebApiUrl
         }
 
-        this.clientVersion = "0.13.7"
+        this.clientVersion = "0.13.8"
         this.clientBuildDate = "July 23, 2025"
         this.clientDevBuildNumber = 1
 

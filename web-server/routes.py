@@ -412,7 +412,8 @@ def auth_required(router):
     ):
         return db.op.get_show_episode_list(
             ticket=auth_user.ticket,
-            show_id=show_id
+            show_id=show_id,
+            include_specials=True
         )
 
     @router.get("/show/season/list",tags=['Show'])
@@ -459,7 +460,7 @@ def auth_required(router):
         shelf_id: int,
         show_season_id: int
     ):
-        return db.op.get_show_episode_list(ticket=auth_user.ticket,shelf_id=shelf_id,show_season_id=show_season_id)
+        return db.op.get_show_episode_list(ticket=auth_user.ticket,shelf_id=shelf_id,show_season_id=show_season_id,include_specials=True)
 
     @router.post("/show/season/episode/watched",tags=['Show'])
     def set_show_episode_watched(
@@ -606,7 +607,12 @@ def auth_required(router):
     def deployment_hotfix(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
     ):
-         return db.op.fix_image_file_thumbnail_paths()
+        # return None
+        # return db.op.fix_image_file_thumbnail_paths()
+        episodes = db.op.get_show_episode_list(ticket=auth_user.ticket,include_specials=True,load_episode_files=False)
+        special_ids = [xx.id for xx in episodes if xx.season.season_order_counter == 0]
+        db.op.set_show_episode_list_watched(auth_user.ticket,special_ids)
+        return {'episodes': len(special_ids)}
 
     return router
 

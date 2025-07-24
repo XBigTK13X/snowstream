@@ -201,7 +201,7 @@ def upsert_show_tag(show_id: int, tag_id: int):
 def set_show_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return False
-    episodes = db_episode.get_show_episode_list(ticket=ticket,shelf_id=shelf_id,load_episode_files=False)
+    episodes = db_episode.get_show_episode_list(ticket=ticket,shelf_id=shelf_id,load_episode_files=False,include_specials=True)
     episode_ids = [xx.id for xx in episodes]
     with DbSession() as db:
         db.query(dm.Watched).filter(
@@ -216,11 +216,11 @@ def set_show_shelf_watched(ticket:dm.Ticket,shelf_id:int,is_watched:bool=True):
 def get_show_shelf_watched(ticket:dm.Ticket,shelf_id:int):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return False
-    episodes = db_episode.get_show_episode_list(ticket=ticket,shelf_id=shelf_id,load_episode_files=False)
+    episodes = db_episode.get_show_episode_list(ticket=ticket,shelf_id=shelf_id,load_episode_files=False,include_specials=True)
     return all(xx.watched for xx in episodes)
 
 def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
-    show_episodes = db_episode.get_show_episode_list(ticket=ticket,show_id=show_id)
+    show_episodes = db_episode.get_show_episode_list(ticket=ticket,show_id=show_id,include_specials=True)
     episode_ids = [xx.id for xx in show_episodes]
     if not show_episodes:
         return False
@@ -235,7 +235,7 @@ def set_show_watched(ticket:dm.Ticket,show_id:int,is_watched:bool=True):
     return is_watched
 
 def get_show_watched(ticket:dm.Ticket,show_id:int):
-    show_episodes = db_episode.get_show_episode_list(ticket=ticket,show_id=show_id,load_episode_files=False)
+    show_episodes = db_episode.get_show_episode_list(ticket=ticket,show_id=show_id,load_episode_files=False,include_specials=True)
     if not show_episodes:
         return False
     return all(xx.watched for xx in show_episodes)

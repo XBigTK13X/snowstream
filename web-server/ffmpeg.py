@@ -26,24 +26,28 @@ def transcode_command(
     command += f' -filter_complex "[0:v]format=yuv420p[v];'
 
     # This subtitles filter for text based subs is PART of the filter_complex
+    valid_sub_index = True
     if subtitle_track_index != None:
         sub_is_text = True
         if snowstream_info:
+            if subtitle_track_index + 1 >= len(snowstream_info['tracks']['subtitle']):
+                valid_sub_index = False
             sub_track = snowstream_info['tracks']['subtitle'][subtitle_track_index]
             sub_is_text = sub_track['is_text']
-        if sub_is_text:
-            command += f'[v]subtitles=\'{input_url}\':si={subtitle_track_index}'
-            # TODO Apply client-side subtitle style changes to the burned in subtitles
-            command += f":force_style='"
-            command += f"FontName=Arial,"
-            command += f"PrimaryColour=&H00FFFFFF,"
-            command += f"OutlineColour=&H00000000,"
-            command += f"BackColour=&HA0000000,"
-            command += f"BorderStyle=4,"
-            command += f"Fontsize=18'[outv];"
-            video_out = '[outv]'
-        else:
-            command += f"[v][0:s:0]overlay;"
+        if valid_sub_index:
+            if sub_is_text:
+                command += f'[v]subtitles=\'{input_url}\':si={subtitle_track_index}'
+                # TODO Apply client-side subtitle style changes to the burned in subtitles
+                command += f":force_style='"
+                command += f"FontName=Arial,"
+                command += f"PrimaryColour=&H00FFFFFF,"
+                command += f"OutlineColour=&H00000000,"
+                command += f"BackColour=&HA0000000,"
+                command += f"BorderStyle=4,"
+                command += f"Fontsize=18'[outv];"
+                video_out = '[outv]'
+            else:
+                command += f"[v][0:s:0]overlay;"
     command += f"\" -map '{video_out}'"
 
     command += f' -c:a aac'

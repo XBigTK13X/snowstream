@@ -68,7 +68,8 @@ def get_show_season_list_by_show_id(ticket:dm.Ticket,show_id: int):
         show_id=show_id,
         load_episode_files=False,
         only_unwatched=True,
-        first_per_season=True
+        first_per_season=True,
+        include_specials=True
     )
     with DbSession() as db:
         query = (
@@ -155,7 +156,7 @@ def upsert_show_season_tag(show_season_id: int, tag_id: int):
         return dbm
 
 def set_show_season_watched(ticket:dm.Ticket,season_id:int,is_watched:bool=True):
-    episodes = db_episode.get_show_episode_list(ticket=ticket,show_season_id=season_id,load_episode_files=False)
+    episodes = db_episode.get_show_episode_list(ticket=ticket,show_season_id=season_id,load_episode_files=False,include_specials=True)
     episode_ids = [xx.id for xx in episodes]
     with DbSession() as db:
         db.query(dm.Watched).filter(
@@ -171,7 +172,7 @@ def get_show_season_watched(ticket:dm.Ticket,season_id:int):
     season = get_show_season_by_id(ticket=ticket,season_id=season_id)
     if not season:
         return False
-    episodes = db_episode.get_show_episode_list(ticket=ticket,show_season_id=season_id,load_episode_files=False)
+    episodes = db_episode.get_show_episode_list(ticket=ticket,show_season_id=season_id,load_episode_files=False,include_specials=True)
     return all(xx.watched for xx in episodes)
 
 def delete_show_season_records(ticket:dm.Ticket, show_season_id:int):

@@ -13,7 +13,7 @@ class ShowSeason(MediaUpdater):
         self.season_order = scope.season_order
         self.is_subjob = scope.is_subjob
         self.show_season = self.db.op.get_show_season_by_id(ticket=self.ticket,season_id=self.show_season_id)
-        self.episodes = self.db.op.get_show_episode_list(ticket=self.ticket,shelf_id=self.show_season.show.shelf.id,show_season_id=self.show_season_id)
+        self.episodes = self.db.op.get_show_episode_list(ticket=self.ticket,shelf_id=self.show_season.show.shelf.id,show_season_id=self.show_season_id,include_specials=True)
 
     def has_nfo(self):
         return len(self.show_season.metadata_files) > 0
