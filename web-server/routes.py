@@ -15,6 +15,7 @@ from transcode import transcode
 from typing import Annotated
 import api_models as am
 import message.write
+import ffmpeg
 
 def register(router):
     router = no_auth_required(router)
@@ -44,7 +45,7 @@ def auth_required(router):
     ):
         if not auth_user.is_admin():
             return None
-        return db.op.upsert_stream_source(stream_source=stream_source)
+        return db.op.upsert_stream_source(ticket=auth_user.ticket,stream_source=stream_source)
 
     @router.delete("/stream/source/{stream_source_id}",tags=['Stream Source'])
     def delete_stream_source(
@@ -70,7 +71,11 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         streamable_id: int,
     ):
-        return db.op.get_streamable_by_id(streamable_id=streamable_id)
+        streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
+        if streamable.stream_source.kind == 'TubeArchivist':
+            info = ffmpeg.get_snowstream_info(streamable.url)
+            streamable.duration_seconds = info['snowstream_info']['duration_seconds']
+        return streamable
 
     @router.post("/job",tags=['Job'])
     def create_job(

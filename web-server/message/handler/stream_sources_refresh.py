@@ -9,6 +9,7 @@ import message.handler.stream_source.iptv_epg as ie
 import message.handler.stream_source.iptv_m3u as im
 import message.handler.stream_source.frigate_nvr as fn
 import message.handler.stream_source.schedules_direct as sd
+import message.handler.stream_source.tube_archivist as ta
 
 source_handlers = {
     "HdHomeRun": hhr.HdHomeRun,
@@ -16,6 +17,7 @@ source_handlers = {
     "IptvM3u": im.IptvM3u,
     "FrigateNvr": fn.FrigateNvr,
     "SchedulesDirect": sd.SchedulesDirect,
+    'TubeArchivist': ta.TubeArchivist
 }
 
 

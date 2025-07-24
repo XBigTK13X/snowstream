@@ -17,6 +17,7 @@ export default function StreamSourceDetailsPage() {
         const renderItem = (streamable, itemIndex) => {
             return (
                 <C.SnowTextButton
+                    tall
                     shouldFocus={itemIndex === 0}
                     key={streamable.id}
                     title={streamable.name}

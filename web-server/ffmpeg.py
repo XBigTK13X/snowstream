@@ -126,7 +126,8 @@ class MediaTrack:
             self.audio_index = int(mediainfo['@typeorder'])-1
         if 'Format_Commercial_IfAny' in mediainfo:
             self.format_full = mediainfo['Format_Commercial_IfAny']
-        self.channel_count = int(mediainfo['Channels'])
+        if 'Channels' in mediainfo:
+            self.channel_count = int(mediainfo['Channels'])
         if 'Compression_Mode' in mediainfo:
             self.is_lossless = mediainfo['Compression_Mode'] == 'Lossless'
         self.score = self.score_audio_track(ffprobe, mediainfo, is_anime)

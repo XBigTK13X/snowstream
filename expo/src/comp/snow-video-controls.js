@@ -46,9 +46,15 @@ export default function SnowVideoControls(props) {
     const [showLogs, setShowLogs] = React.useState(false)
     const [logTitle, setLogTitle] = React.useState('Logs')
 
-    const progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
-    const progressDisplay = util.secondsToTimestamp(props.progressSeconds)
-    const durationDisplay = util.secondsToTimestamp(props.durationSeconds)
+    let progressPercent = null
+    let progressDisplay = null
+    let durationDisplay = null
+
+    if (props.durationSeconds > 0) {
+        progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
+        progressDisplay = util.secondsToTimestamp(props.progressSeconds)
+        durationDisplay = util.secondsToTimestamp(props.durationSeconds)
+    }
 
     if (showLogs) {
         return (
@@ -87,19 +93,21 @@ export default function SnowVideoControls(props) {
                 onRequestClose={props.resumeVideo}
             >
                 <FillView scroll>
-                    <View>
-                        <SnowText>{props.videoTitle}</SnowText>
-                        <Slider
-                            minimumValue={0}
-                            maximumValue={100}
-                            value={progressPercent}
-                            minimumTrackTintColor="#FFFFFF"
-                            maximumTrackTintColor="#cccccc"
-                            onSlidingComplete={props.onSeek}
-                            onValueChange={props.onSeek}
-                        />
-                        <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
-                    </View>
+                    {props.durationSeconds > 0 ?
+                        <View>
+                            <SnowText>{props.videoTitle}</SnowText>
+                            <Slider
+                                minimumValue={0}
+                                maximumValue={100}
+                                value={progressPercent}
+                                minimumTrackTintColor="#FFFFFF"
+                                maximumTrackTintColor="#cccccc"
+                                onSlidingComplete={props.onSeek}
+                                onValueChange={props.onSeek}
+                            />
+                            <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
+                        </View>
+                        : null}
                     <View>
                         <SnowGrid itemsPerRow={4}>
                             <SnowTextButton shouldFocus={true} title="Resume" onPress={props.resumeVideo} />

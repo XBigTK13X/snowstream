@@ -47,21 +47,26 @@ def get_stream_source_by_id(ticket:dm.Ticket,stream_source_id: int):
         )
         if not ticket.is_allowed(tag_provider=stream_source.get_tag_ids):
             return None
-        stream_source.streamables = sorted(stream_source.streamables,key=lambda xx:xx.name)
+        if stream_source.kind != 'TubeArchivist':
+            stream_source.streamables = sorted(stream_source.streamables,key=lambda xx:xx.name)
         return stream_source
 
 def get_stream_source_by_url(url: str):
     with DbSession() as db:
         return db.query(dm.StreamSource).filter(dm.StreamSource.url == url).first()
 
-def upsert_stream_source(stream_source: am.StreamSource):
+def upsert_stream_source(ticket:dm.Ticket, stream_source: am.StreamSource):
     existing_stream_source = None
     if stream_source.id:
-        existing_stream_source = get_stream_source_by_url(url=stream_source.url)
+        existing_stream_source = get_stream_source_by_id(ticket=ticket,stream_source_id=stream_source.id)
     if not existing_stream_source:
         return create_stream_source(stream_source)
     with DbSession() as db:
-        existing_stream_source = db.query(dm.StreamSource).filter(dm.StreamSource.id == stream_source.id).update(stream_source.model_dump())
+        existing_stream_source = (
+            db.query(dm.StreamSource)
+            .filter(dm.StreamSource.id == stream_source.id)
+            .update(stream_source.model_dump())
+        )
         db.commit()
         return existing_stream_source
 

@@ -122,6 +122,9 @@ export default function PlayMediaPage() {
                         setTranscodeReady(true)
                     })
                 } else {
+                    if (response.duration_seconds) {
+                        setDurationSeconds(response.duration_seconds)
+                    }
                     setVideoUrl(response.url)
                 }
                 setVideoTitle(response.name)

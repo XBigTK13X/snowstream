@@ -31,6 +31,7 @@ export default function StreamSourceEditPage() {
         'IptvM3u',
         'FrigateNvr',
         'SchedulesDirect',
+        'TubeArchivist'
     ]
     const chooseStreamSourceKind = (chosenKindIndex) => {
         setStreamSourceKind(streamSourceKinds[chosenKindIndex])
