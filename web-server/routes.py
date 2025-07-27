@@ -610,16 +610,27 @@ def auth_required(router):
         db.op.upsert_cached_text(key=cache_key, data='\n'.join(saveLogsRequest.logs), ttl_seconds=seven_days_seconds)
         return {'cache_key':cache_key}
 
-    @router.post('/hotfix')
+    @router.delete('/cached/text', tags=['Admin'])
+    def delete_all_cached_text(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        if not auth_user.is_admin():
+            return False
+        db.op.delete_all_cached_text()
+        return True
+
+    @router.post('/hotfix', tags=['Admin'])
     def deployment_hotfix(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
     ):
-        # return None
+         return None
+
         # return db.op.fix_image_file_thumbnail_paths()
-        episodes = db.op.get_show_episode_list(ticket=auth_user.ticket,include_specials=True,load_episode_files=False)
-        special_ids = [xx.id for xx in episodes if xx.season.season_order_counter == 0]
-        db.op.set_show_episode_list_watched(auth_user.ticket,special_ids)
-        return {'episodes': len(special_ids)}
+
+        #episodes = db.op.get_show_episode_list(ticket=auth_user.ticket,include_specials=True,load_episode_files=False)
+        #special_ids = [xx.id for xx in episodes if xx.season.season_order_counter == 0]
+        #db.op.set_show_episode_list_watched(auth_user.ticket,special_ids)
+        #return {'episodes': len(special_ids)}
 
     return router
 

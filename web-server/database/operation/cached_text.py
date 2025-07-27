@@ -1,7 +1,10 @@
 import database.db_models as dm
 from database.sql_alchemy import DbSession, desc
+from sqlalchemy import text as sql_text
 from datetime import datetime, timezone
 from settings import config
+
+
 
 def create_cached_text(key: str, data: str, ttl_seconds: int):
     with DbSession() as db:
@@ -51,3 +54,9 @@ def get_cached_text_list(search_query:str):
             .order_by(desc(dm.CachedText.updated_at))
             .all()
         )
+
+def delete_all_cached_text():
+    with DbSession() as db:
+        db.execute(sql_text('truncate cached_text;'))
+        db.commit()
+        return True

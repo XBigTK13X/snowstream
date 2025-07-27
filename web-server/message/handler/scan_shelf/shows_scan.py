@@ -129,6 +129,9 @@ def parse_show_info(file_path: str):
         return info
 
     matches = re.search(SHOW_REGEX, location)
+    # Weird scanner issue that I don't see the problem with regex
+    # if info['show_name'] == '[number]':
+    #    return None
     if matches != None:
         return parse_show_file_info(matches=matches)
 

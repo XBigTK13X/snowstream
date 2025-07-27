@@ -40,6 +40,7 @@ export default function ShelfEditPage() {
         { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
         { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan },
         { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
+        { name: 'Delete Cached Text', apiCall: apiClient.deleteAllCachedText }
     ]
 
     const renderItem = (item) => {
@@ -48,7 +49,9 @@ export default function ShelfEditPage() {
             title={item.name}
             onPress={() => {
                 createJob(item.apiCall).then(job => {
-                    routes.goto(routes.admin.jobDetails, { jobId: job.id })
+                    if (item.name !== 'Delete Cached Text') {
+                        routes.goto(routes.admin.jobDetails, { jobId: job.id })
+                    }
                 })
             }}
         />

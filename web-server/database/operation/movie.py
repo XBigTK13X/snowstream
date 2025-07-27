@@ -515,6 +515,7 @@ def get_unknown_movie_list(shelf_id:int=None):
             db.query(dm.Movie)
             .options(sorm.joinedload(dm.Movie.image_files))
             .options(sorm.joinedload(dm.Movie.metadata_files))
+            .options(sorm.joinedload(dm.Movie.video_files))
         )
         if shelf_id:
             query = query.join(dm.MovieShelf).filter(dm.MovieShelf.shelf_id == shelf_id)
@@ -522,7 +523,7 @@ def get_unknown_movie_list(shelf_id:int=None):
         movies = query.all()
         results = []
         for movie in movies:
-            if not movie.image_files or not movie.metadata_files:
+            if movie.video_files and (not movie.image_files or not movie.metadata_files):
                 results.append(movie)
         return results
 

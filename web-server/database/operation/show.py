@@ -254,7 +254,15 @@ def get_unknown_show_list(shelf_id:int=None):
         results = []
         for show in shows:
             if not show.image_files or not show.metadata_files:
-                results.append(show)
+                episodes = db_episode.get_show_episode_list(
+                    ticket=dm.Ticket(),
+                    show_id=show.id,
+                    include_specials=True,
+                    load_episode_files=True,
+                    first_per_show=True
+                )
+                if episodes and episodes[0].video_files:
+                    results.append(show)
         return results
 
 def delete_show_records(ticket:dm.Ticket, show_id:int):

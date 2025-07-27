@@ -11,47 +11,7 @@ export class ApiClient {
         this.onApiError = details.onApiError
         this.apiErrorSent = false
         let self = this
-
-        // Only functions that get passed around as higher order functions need to be bound
-        this.login = this.login.bind(this)
-
-        // An example of this is the job runner
-        this.createScopedJob = this.createScopedJob.bind(this)
-        this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
-        this.createJobDeleteMediaRecords = this.createJobDeleteMediaRecords.bind(this)
-        this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
-        this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
-        this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
-        this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
-        this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
-
-        // Another example is the watched status setters used by onLongPress event handlers
-        this.toggleItemWatched = this.toggleItemWatched.bind(this)
-        this.setItemUnwatched = this.setItemUnwatched.bind(this)
-        this.setItemWatched = this.setItemWatched.bind(this)
-        this.toggleEpisodeWatchStatus = this.toggleEpisodeWatchStatus.bind(this)
-        this.toggleMovieShelfWatchStatus = this.toggleMovieShelfWatchStatus.bind(this)
-        this.toggleMovieWatchStatus = this.toggleMovieWatchStatus.bind(this)
-        this.toggleSeasonWatchStatus = this.toggleSeasonWatchStatus.bind(this)
-        this.toggleShowShelfWatchStatus = this.toggleShowShelfWatchStatus.bind(this)
-        this.toggleShowWatchStatus = this.toggleShowWatchStatus.bind(this)
-
         this.createClient(details)
-
-        this.handleError = (err) => {
-            util.log(err)
-            if (err) {
-                if (err.response && err.response.status === 401) {
-                    details.onLogout()
-                }
-                if (err.code && err.code === 'ERR_NETWORK') {
-                    if (!self.apiErrorSent) {
-                        self.onApiError(err)
-                    }
-                    self.apiErrorSent = true
-                }
-            }
-        }
 
         this.get = async (url, params) => {
             let queryParams = null
@@ -88,6 +48,46 @@ export class ApiClient {
                 .catch((err) => {
                     this.handleError(err)
                 })
+        }
+
+        // Only functions that get passed around as higher order functions need to be bound
+        this.login = this.login.bind(this)
+
+        // An example of this is the job runner
+        this.createScopedJob = this.createScopedJob.bind(this)
+        this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
+        this.createJobDeleteMediaRecords = this.createJobDeleteMediaRecords.bind(this)
+        this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
+        this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
+        this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
+        this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
+        this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
+        this.deleteAllCachedText = this.deleteAllCachedText.bind(this)
+
+        // Another example is the watched status setters used by onLongPress event handlers
+        this.toggleItemWatched = this.toggleItemWatched.bind(this)
+        this.setItemUnwatched = this.setItemUnwatched.bind(this)
+        this.setItemWatched = this.setItemWatched.bind(this)
+        this.toggleEpisodeWatchStatus = this.toggleEpisodeWatchStatus.bind(this)
+        this.toggleMovieShelfWatchStatus = this.toggleMovieShelfWatchStatus.bind(this)
+        this.toggleMovieWatchStatus = this.toggleMovieWatchStatus.bind(this)
+        this.toggleSeasonWatchStatus = this.toggleSeasonWatchStatus.bind(this)
+        this.toggleShowShelfWatchStatus = this.toggleShowShelfWatchStatus.bind(this)
+        this.toggleShowWatchStatus = this.toggleShowWatchStatus.bind(this)
+
+        this.handleError = (err) => {
+            util.log(err)
+            if (err) {
+                if (err.response && err.response.status === 401) {
+                    details.onLogout()
+                }
+                if (err.code && err.code === 'ERR_NETWORK') {
+                    if (!self.apiErrorSent) {
+                        self.onApiError(err)
+                    }
+                    self.apiErrorSent = true
+                }
+            }
         }
     }
 
@@ -532,6 +532,10 @@ export class ApiClient {
 
     savePlaybackLogs(logs) {
         return this.post('/log/playback', { logs })
+    }
+
+    deleteAllCachedText() {
+        return this.delete('/cached/text')
     }
 
     debug() {

@@ -61,3 +61,10 @@ def test_video_and_image_have_the_same_movie():
     assert image_info != None
     assert image_identity != None
     assert video_info['movie_name'] == image_info['movie_name']
+
+def test_file_in_the_folder():
+    video_file_path = "/mnt/m-media/movie/the/The Parent Trap (1998)/The Parent Trap (1998) Remux-1080p.mkv"
+    video_info = movies.parse_movie_info(video_file_path)
+    assert video_info != None
+    assert video_info['movie_name'] == "The Parent Trap"
+    assert video_info['movie_year'] == '1998'
