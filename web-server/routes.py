@@ -97,9 +97,11 @@ def auth_required(router):
 
     @router.get("/job/list", tags=['Job'])
     def get_job_list(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        show_complete: bool = True,
+        limit: int = 50
     ):
-        return db.op.get_job_list()
+        return db.op.get_job_list(show_complete=show_complete, limit=limit)
 
     @router.get('/log/list', tags=['Job'])
     def get_log_list(

@@ -20,9 +20,15 @@ def create_job(kind: str, input:dict=None):
     return db_job
 
 
-def get_job_list():
+def get_job_list(show_complete:bool=True,limit:int=50):
     with DbSession() as db:
-        return db.query(dm.Job).order_by(desc(dm.Job.id)).limit(25).all()
+        return (
+            db.query(dm.Job)
+            .filter(True if show_complete else dm.Job.status != 'complete')
+            .order_by(desc(dm.Job.id))
+            .limit(limit)
+            .all()
+        )
 
 
 def get_job_by_id(job_id: int):

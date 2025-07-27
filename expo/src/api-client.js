@@ -215,8 +215,12 @@ export class ApiClient {
         return this.createScopedJob('delete_media_records', details)
     }
 
-    getJobList() {
-        return this.get('/job/list')
+    getJobList(showComplete, limit) {
+        let query = `/job/list?show_complete=${showComplete}`
+        if (limit) {
+            query += `&limit=${limit}`
+        }
+        return this.get(query)
     }
 
     getJob(jobId) {
