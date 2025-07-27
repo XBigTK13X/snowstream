@@ -34,7 +34,7 @@ class ThemoviedbProvider(base.MediaProvider):
                 results.append({
                     'tvdbid': None,
                     'remote_id': show.id,
-                    'remote_source': 'themoviedb',
+                    'remote_id_source': 'themoviedb',
                     'name': show.name,
                     'year': show.year,
                     'poster_url': show.poster_url(),
@@ -49,7 +49,7 @@ class ThemoviedbProvider(base.MediaProvider):
                 results.append({
                     'name': movie.title,
                     'remote_id': movie.id,
-                    'remote_source': 'themoviedb',
+                    'remote_id_source': 'themoviedb',
                     'tvdbid': None,
                     'year': movie.year,
                     'poster_url': movie.poster_url(),
