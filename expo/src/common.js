@@ -12,6 +12,8 @@ import {
 
 import { Image } from 'expo-image'
 
+import { useKeepAwake } from 'expo-keep-awake';
+
 import {
     AppState,
     Linking,
@@ -61,6 +63,7 @@ export default {
     isWeb,
     useAppContext,
     useDebouncedCallback,
+    useKeepAwake,
     useLocalSearchParams,
     useNavigation,
     useRouter,

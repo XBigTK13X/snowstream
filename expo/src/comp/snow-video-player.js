@@ -1,6 +1,7 @@
 import React from 'react'
 import util from '../util'
 import { AppState, Platform, View } from 'react-native'
+import { useKeepAwake } from 'expo-keep-awake';
 import { useAppContext } from '../app-context'
 import Style from '../snow-style'
 import SnowVideoControls from './snow-video-controls'
@@ -35,6 +36,8 @@ export default function SnowVideoPlayer(props) {
     const [logs, setLogs] = React.useState([])
     const [subtitleFontSize, setSubtitleFontSize] = React.useState(38) // MPV default font size
     const [subtitleColor, setSubtitleColor] = React.useState({ shade: 1.0, alpha: 1.0 })
+
+    useKeepAwake();
 
     let VideoView = null
     let playerKind = null

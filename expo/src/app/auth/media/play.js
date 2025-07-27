@@ -55,9 +55,14 @@ export default function PlayMediaPage() {
                 audioTrackIndex,
                 subtitleTrackIndex
             ).then((transcodeSession) => {
-                setVideoUrl(transcodeSession.transcode_url)
-                setTranscodeReady(true)
-                setVideoIsHdr(videoFile.is_hdr)
+                if (transcodeSession) {
+                    setVideoUrl(transcodeSession.transcode_url)
+                    setTranscodeReady(true)
+                    setVideoIsHdr(videoFile.is_hdr)
+                }
+                else {
+                    setPlaybackFailed("Unable to create a transcode session")
+                }
             })
         } else {
             setTracks(videoFile.info.tracks)
@@ -118,8 +123,13 @@ export default function PlayMediaPage() {
             apiClient.getStreamable(streamableId).then((response) => {
                 if (transcode) {
                     apiClient.createStreamableTranscodeSession(streamableId).then((transcodeSession) => {
-                        setVideoUrl(transcodeSession.transcode_url)
-                        setTranscodeReady(true)
+                        if (transcodeSession) {
+                            setVideoUrl(transcodeSession.transcode_url)
+                            setTranscodeReady(true)
+                        }
+                        else {
+                            setPlaybackFailed("Unable to create a transcode session")
+                        }
                     })
                 } else {
                     if (response.duration_seconds) {

@@ -30,7 +30,7 @@ def transcode_command(
     if subtitle_track_index != None:
         sub_is_text = True
         if snowstream_info:
-            if subtitle_track_index + 1 >= len(snowstream_info['tracks']['subtitle']):
+            if subtitle_track_index < len(snowstream_info['tracks']['subtitle']):
                 valid_sub_index = False
             sub_track = snowstream_info['tracks']['subtitle'][subtitle_track_index]
             sub_is_text = sub_track['is_text']
