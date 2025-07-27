@@ -166,9 +166,9 @@ def identify_show_file_kind(extension_kind: str, info: dict, file_path: str):
 
 
 class ShowsScanHandler(ShelfScanner):
-    def __init__(self, job_id, shelf, target_directory=None):
+    def __init__(self, scope, shelf, target_directory=None):
         super().__init__(
-            job_id=job_id,
+            scope=scope,
             shelf=shelf,
             identifier=identify_show_file_kind,
             parser=parse_show_info,
@@ -185,6 +185,8 @@ class ShowsScanHandler(ShelfScanner):
                 )
                 db.op.add_show_to_shelf(shelf_id=self.shelf.id, show_id=show.id)
             self.batch_lookup[show_slug] = {"show_id": show.id}
+            if not show.remote_metadata_id and self.scope.metadata_id:
+                db.op.update_show_remote_metadata_id(show_id=show.id, remote_metadata_id=self.scope.metadata_id)
         show_id = self.batch_lookup[show_slug]["show_id"]
         return show_slug, show_id
 
@@ -238,7 +240,7 @@ class ShowsScanHandler(ShelfScanner):
             try:
                 progress_count += 1
                 if progress_count % 500 == 0:
-                    db.op.update_job(job_id=self.job_id, message=f'Organize show metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
+                    db.op.update_job(job_id=self.scope.job_id, message=f'Organize show metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
                 show_slug, show_id = self.get_or_create_show(info=info)
                 season_slug = None
                 season_id = None
@@ -297,9 +299,9 @@ class ShowsScanHandler(ShelfScanner):
                                 name=metadata['title']
                             )
             except Exception as e:
-                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing metadata [{info['file_path']}]")
+                db.op.update_job(job_id=self.scope.job_id,message=f"An error occurred while processing metadata [{info['file_path']}]")
                 import traceback
-                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
+                db.op.update_job(job_id=self.scope.job_id,message=f"{traceback.format_exc()}")
 
     def organize_images(self):
         progress_count = 0
@@ -307,7 +309,7 @@ class ShowsScanHandler(ShelfScanner):
             try:
                 progress_count += 1
                 if progress_count % 500 == 0:
-                    db.op.update_job(job_id=self.job_id, message=f'Organize show image {progress_count} out of {len(self.file_info_lookup["image"])}')
+                    db.op.update_job(job_id=self.scope.job_id, message=f'Organize show image {progress_count} out of {len(self.file_info_lookup["image"])}')
                 show_slug, show_id = self.get_or_create_show(info=info)
                 season_slug = None
                 season_id = None
@@ -339,9 +341,9 @@ class ShowsScanHandler(ShelfScanner):
                             show_episode_id=episode.id, image_file_id=info["id"]
                         )
             except Exception as e:
-                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing image [{info['file_path']}]")
+                db.op.update_job(job_id=self.scope.job_id,message=f"An error occurred while processing image [{info['file_path']}]")
                 import traceback
-                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
+                db.op.update_job(job_id=self.scope.job_id,message=f"{traceback.format_exc()}")
 
     def organize_videos(self):
         progress_count = 0
@@ -349,7 +351,7 @@ class ShowsScanHandler(ShelfScanner):
             try:
                 progress_count += 1
                 if progress_count % 500 == 0:
-                    db.op.update_job(job_id=self.job_id, message=f'Organize show video {progress_count} out of {len(self.file_info_lookup["video"])}')
+                    db.op.update_job(job_id=self.scope.job_id, message=f'Organize show video {progress_count} out of {len(self.file_info_lookup["video"])}')
                 show_slug, show_id = self.get_or_create_show(info=info)
                 season_slug, season_id = self.get_or_create_season(
                     show_slug=show_slug, show_id=show_id, info=info
@@ -363,6 +365,6 @@ class ShowsScanHandler(ShelfScanner):
                         show_episode_id=episode.id, video_file_id=info["id"]
                     )
             except Exception as e:
-                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing video [{info['file_path']}]")
+                db.op.update_job(job_id=self.scope.job_id,message=f"An error occurred while processing video [{info['file_path']}]")
                 import traceback
-                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
+                db.op.update_job(job_id=self.scope.job_id,message=f"{traceback.format_exc()}")

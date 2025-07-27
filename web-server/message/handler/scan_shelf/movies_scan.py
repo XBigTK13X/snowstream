@@ -124,9 +124,9 @@ def identify_movie_file_kind(extension_kind: str, info: dict, file_path: str):
 
 
 class MoviesScanHandler(ShelfScanner):
-    def __init__(self, job_id, shelf, target_directory=None):
+    def __init__(self, scope, shelf, target_directory=None):
         super().__init__(
-            job_id=job_id,
+            scope=scope,
             shelf=shelf,
             identifier=identify_movie_file_kind,
             parser=parse_movie_info,
@@ -146,6 +146,8 @@ class MoviesScanHandler(ShelfScanner):
                 db.op.add_movie_to_shelf(shelf_id=self.shelf.id, movie_id=movie.id)
             self.batch_lookup[movie_slug] = movie
         movie = self.batch_lookup[movie_slug]
+        if not movie.remote_metadata_id and self.scope.metadata_id:
+            db.op.update_movie_remote_metadata_id(movie.id, remote_metadata_id=self.scope.metadata_id)
         return movie_slug, movie
 
     def organize_images(self):
@@ -154,7 +156,7 @@ class MoviesScanHandler(ShelfScanner):
             try:
                 progress_count += 1
                 if progress_count % 500 == 0:
-                    db.op.update_job(job_id=self.job_id, message=f'Organize movie image {progress_count} out of {len(self.file_info_lookup["image"])}')
+                    db.op.update_job(job_id=self.scope.job_id, message=f'Organize movie image {progress_count} out of {len(self.file_info_lookup["image"])}')
                 movie_slug, movie = self.get_or_create_movie(info=info)
                 if not db.op.get_movie_image_file(
                     movie_id=movie.id, image_file_id=info["id"]
@@ -163,9 +165,9 @@ class MoviesScanHandler(ShelfScanner):
                         movie_id=movie.id, image_file_id=info["id"]
                     )
             except Exception as e:
-                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing image [{info['file_path']}]")
+                db.op.update_job(job_id=self.scope.job_id,message=f"An error occurred while processing image [{info['file_path']}]")
                 import traceback
-                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
+                db.op.update_job(job_id=self.scope.job_id,message=f"{traceback.format_exc()}")
 
     def organize_metadata(self):
         progress_count = 0
@@ -173,7 +175,7 @@ class MoviesScanHandler(ShelfScanner):
             try:
                 progress_count += 1
                 if progress_count % 500 == 0:
-                    db.op.update_job(job_id=self.job_id, message=f'Organize movie metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
+                    db.op.update_job(job_id=self.scope.job_id, message=f'Organize movie metadata {progress_count} out of {len(self.file_info_lookup["metadata"])}')
                 movie_slug, movie = self.get_or_create_movie(info=info)
                 if not db.op.get_movie_metadata_file(
                     movie_id=movie.id, metadata_file_id=info["id"]
@@ -197,9 +199,9 @@ class MoviesScanHandler(ShelfScanner):
                             remote_metadata_source=remote_source
                         )
             except Exception as e:
-                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing metadata [{info['file_path']}]")
+                db.op.update_job(job_id=self.scope.job_id,message=f"An error occurred while processing metadata [{info['file_path']}]")
                 import traceback
-                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
+                db.op.update_job(job_id=self.scope.job_id,message=f"{traceback.format_exc()}")
 
 
     def organize_videos(self):
@@ -208,7 +210,7 @@ class MoviesScanHandler(ShelfScanner):
             try:
                 progress_count += 1
                 if progress_count % 500 == 0:
-                    db.op.update_job(job_id=self.job_id, message=f'Organize movie video {progress_count} out of {len(self.file_info_lookup["video"])}')
+                    db.op.update_job(job_id=self.scope.job_id, message=f'Organize movie video {progress_count} out of {len(self.file_info_lookup["video"])}')
                 movie_slug, movie = self.get_or_create_movie(info=info)
                 if not db.op.get_movie_video_file(
                     movie_id=movie.id, video_file_id=info["id"]
@@ -217,6 +219,6 @@ class MoviesScanHandler(ShelfScanner):
                         movie_id=movie.id, video_file_id=info["id"]
                     )
             except Exception as e:
-                db.op.update_job(job_id=self.job_id,message=f"An error occurred while processing video [{info['file_path']}]")
+                db.op.update_job(job_id=self.scope.job_id,message=f"An error occurred while processing video [{info['file_path']}]")
                 import traceback
-                db.op.update_job(job_id=self.job_id,message=f"{traceback.format_exc()}")
+                db.op.update_job(job_id=self.scope.job_id,message=f"{traceback.format_exc()}")

@@ -688,64 +688,28 @@ def no_auth_required(router):
         if not 'apikey' in headers or headers['apikey'] != 'scanner':
             return False
         body = await request.json()
-        if kind == 'show' and 'series' in body and 'path' in body['series']:
-            directory = body['series']['path']
-            tvdbid = None
-            if 'tvdbId' in body['series'] and body['series']['tvdbId'] != None:
-                tvdbid = int(body['series']['tvdbId'])
-            show = db.op.get_show_by_directory(directory=directory)
-            if not show:
-                log.info(f"Did not find any show at [{directory}]")
-                return False
-            if not show.remote_metadata_id and tvdbid:
-                show = db.op.update_show_remote_metadata_id(
-                    show_id=show.id,
-                    remote_metadata_id=tvdbid,
-                    remote_metadata_source="thetvdb"
-                )
-            input={
-                'target_id': show.id,
-                'target_kind': 'show',
-                'skip_existing': True,
-                'update_images': True,
-                'update_metadata': True
-            }
-            scan_job = db.op.create_job(kind='scan_shelves_content',input=input)
-            message.write.send(job_id=scan_job.id, kind='scan_shelves_content', input=input)
-            if show.remote_metadata_id:
-                input['metadata_id'] = show.remote_metadata_id
-                media_job = db.op.create_job(kind='update_media_files',input=input)
-                message.write.send(job_id=media_job.id, kind='update_media_files', input=input)
-            return True
-        elif kind == 'movie' and 'movie' in body and 'folderPath' in body['movie']:
-            directory = body['movie']['folderPath']
-            tmdbid = None
-            if 'tmdbId' in body['movie'] and body['movie']['tmdbId'] != None:
-                tmdbid = int(body['movie']['tmdbId'])
-            movie = db.op.get_movie_by_directory(directory=directory)
-            if not movie:
-                log.info(f'Did not find any movie at [{directory}]')
-                return False
-            if not movie.remote_metadata_id and tmdbid:
-                movie = db.op.update_movie_remote_metadata_id(
-                    movie_id=movie.id,
-                    remote_metadata_id=tmdbid,
-                    remote_metadata_source="themoviedb"
-                )
+        is_show = kind == 'show' and 'series' in body and 'path' in body['series']
+        is_movie = kind == 'movie' and 'movie' in body and 'folderPath' in body['movie']
+        if is_movie or is_show:
+            metadata_id = None
+            directory = None
+            if is_show:
+                directory = body['series']['path']
+                if 'tvdbId' in body['series'] and body['series']['tvdbId'] != None:
+                    metadata_id = int(body['series']['tvdbId'])
+            else:
+                directory = body['movie']['folderPath']
+                if 'tmdbId' in body['movie'] and body['movie']['tmdbId'] != None:
+                    metadata_id = int(body['movie']['tmdbId'])
             input = {
-                'target_id': movie.id,
-                'target_kind': 'movie',
-                'skip_existing': True,
-                'update_images': True,
-                'update_metadata': True
+                'target_kind': 'directory',
+                'target_directory': directory,
             }
+            if metadata_id:
+                input['metadata_id'] = metadata_id
+                input['spawn_subjob'] = 'update_media_files'
             scan_job = db.op.create_job(kind='scan_shelves_content',input=input)
             message.write.send(job_id=scan_job.id, kind='scan_shelves_content', input=input)
-            if movie.remote_metadata_id:
-                input['metadata_id'] = movie.remote_metadata_id
-                media_job = db.op.create_job(kind='update_media_files',input=input)
-                message.write.send(job_id=media_job.id, kind='update_media_files', input=input)
-            return True
         else:
             log.info("Unable to process webhook")
             log.info("Header")
@@ -753,7 +717,6 @@ def no_auth_required(router):
             log.info("Body")
             log.info(json.dumps(body,indent=4))
             return False
-        return True
 
     # https://github.com/Sonarr/Sonarr/blob/14e324ee30694ae017a39fd6f66392dc2d104617/src/NzbDrone.Core/Notifications/Webhook/WebhookBase.cs#L32
     @router.post("/hook/sonarr", tags=['Unauthed'])

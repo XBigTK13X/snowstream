@@ -35,7 +35,7 @@ def handle(scope):
     elif scope.is_episode():
         handler = update_episode.ShowEpisode(job_id=scope.job_id,scope=scope)
     else:
-        db.op.update_job(job_id=scope.job_id, message=f"Unhandled target of kind {scope.target}")
+        db.op.update_job(job_id=scope.job_id, message=f"Unhandled target of kind {scope.target_kind}")
         return False
 
     if scope.update_metadata:

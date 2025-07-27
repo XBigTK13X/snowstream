@@ -1,10 +1,11 @@
 from db import db
 
+from message.child_job import create_child_job
+from message.job_media_scope import JobMediaScope
+
 from message.handler.scan_shelf.movies_scan import MoviesScanHandler
 from message.handler.scan_shelf.shows_scan import ShowsScanHandler
 from message.handler.scan_shelf.keepsakes_scan import KeepsakesScanHandler
-
-from message.job_media_scope import JobMediaScope
 
 shelf_handlers = {
     "Movies": MoviesScanHandler,
@@ -18,11 +19,17 @@ def handle(scope:JobMediaScope):
     shelves = []
     target_directory = None
     ticket = db.model.Ticket(ignore_watch_group=True)
+    is_show = False
     if scope.is_unscoped():
         shelves = db.op.get_shelf_list()
     else:
         if scope.is_shelf():
             shelves = [db.op.get_shelf_by_id(shelf_id=scope.target_id)]
+        elif scope.is_directory():
+            shelves = db.op.get_shelf_list(ticket=ticket)
+            shelves = [xx for xx in shelves if xx.local_path in scope.target_directory]
+            is_show = shelves[0].kind == 'Shows'
+            target_directory = scope.target_directory
         elif scope.is_movie():
             movie = db.op.get_movie_by_id(ticket=ticket,movie_id=scope.target_id)
             target_directory = movie.directory
@@ -49,7 +56,7 @@ def handle(scope:JobMediaScope):
         if target_directory and not shelf.local_path in target_directory:
             continue
         db.op.update_job(job_id=scope.job_id,message=f"Scanning content for shelf [{shelf.name}->{shelf.kind}]")
-        handler = shelf_handlers[shelf.kind](job_id=scope.job_id, shelf=shelf, target_directory=target_directory)
+        handler = shelf_handlers[shelf.kind](scope=scope, shelf=shelf, target_directory=target_directory)
 
         if not handler.get_files_in_directory():
             results[shelf.name] = False
@@ -77,5 +84,23 @@ def handle(scope:JobMediaScope):
         handler.organize_metadata()
         handler.organize_images()
         handler.organize_videos()
+
+
+    if scope.spawn_subjob and scope.spawn_subjob == 'update_media_files':
+        input = {
+            'skip_existing': True,
+            'update_images': True,
+            'update_metadata': True,
+            'metadata_id': scope.metadata_id
+        }
+        if is_show:
+            show = db.op.get_show_by_directory(directory=scope.target_directory)
+            input['target_kind'] = 'show'
+            input['target_id'] = show.id
+        else:
+            movie = db.op.get_movie_by_directory(directory=scope.target_directory)
+            input['target_kind'] = 'movie'
+            input['target_id'] = movie.id
+        create_child_job(name='update_media_files',payload=input)
 
     return True
