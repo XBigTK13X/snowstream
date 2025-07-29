@@ -33,21 +33,25 @@ class TubeArchivist(StreamSourceImporter):
     def parse_watchable_urls(self):
         ta_videos = json.loads(self.cached_data)
         ta_videos = ta_videos['data']
-        streams = []
+        dedupe = {}
+        for xx in self.stream_source.streamables:
+            dedupe[xx.url] = True
+        new_count = 0
         for entry in ta_videos:
             web_path = entry['media_url']
             web_path = web_path.replace('/youtube',self.stream_source.username)
-            title = f"{entry['channel']['channel_name']} - {entry['title']}"
-            streams.append({"url": web_path, "name": title})
-        new_count = 0
-        for stream in streams:
-            if not any(x.url == stream["url"] for x in self.stream_source.streamables):
-                db.op.create_streamable(
-                    stream_source_id=self.stream_source.id,
-                    url=stream["url"],
-                    name=stream["name"],
-                )
-                new_count += 1
+            if web_path in dedupe:
+                continue
+            title = entry['title']
+            group = entry['channel']['channel_name']
+            db.op.create_streamable(
+                stream_source_id=self.stream_source.id,
+                url=web_path,
+                name=title,
+                group=group
+            )
+            new_count += 1
+            dedupe[web_path] = True
         if new_count > 0:
             db.op.update_job(job_id=self.job_id, message=f"Found {new_count} new streams")
         return True

@@ -554,6 +554,7 @@ class Streamable(BaseModel):
     __tablename__ = "streamable"
     url = sa.Column(sa.Text)
     name = sa.Column(sa.Text)
+    group = sa.Column(sa.Text)
     stream_source_id: sorm.Mapped[int] = sorm.mapped_column(
         sa.ForeignKey("stream_source.id")
     )

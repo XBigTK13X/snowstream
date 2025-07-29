@@ -80,7 +80,7 @@ export default function LandingPage(props) {
         destinations = destinations.concat(streamSources.map((streamSource) => {
             return (<C.SnowTextButton
                 title={streamSource.name}
-                onPress={routes.func(routes.streamSourceDetails, {
+                onPress={routes.func(routes.streamableList, {
                     streamSourceId: streamSource.id,
                 })}
             />)

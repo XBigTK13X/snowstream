@@ -19,4 +19,6 @@ BaseModel.updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 def DbTruncate(table_name):
     if not table_name:
         raise Exception("DbTruncate must be called on an existing table_name")
-    engine.connect().execute(sqlalchemy.text(f"TRUNCATE TABLE {table_name}"))
+    with DbSession() as db:
+        db.execute(sqlalchemy.text(f"truncate {table_name} cascade"))
+        db.commit()

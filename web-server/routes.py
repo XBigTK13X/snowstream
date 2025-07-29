@@ -64,7 +64,19 @@ def auth_required(router):
     ):
         if not auth_user.ticket.is_allowed(stream_source_id=stream_source_id):
             return None
-        return db.op.get_stream_source_by_id(ticket=auth_user.ticket,stream_source_id=stream_source_id)
+        stream_source = db.op.get_stream_source_by_id(ticket=auth_user.ticket,stream_source_id=stream_source_id)
+        stream_source.grouped_streamables = {}
+        stream_source.groups = []
+        for streamable in stream_source.streamables:
+            if streamable.group == None:
+                continue
+            if streamable.group and not streamable.group in stream_source.grouped_streamables:
+                stream_source.groups.append(streamable.group)
+                stream_source.grouped_streamables[streamable.group] = []
+            stream_source.grouped_streamables[streamable.group].append(streamable)
+        if stream_source.groups:
+            del stream_source.streamables
+        return stream_source
 
     @router.get("/streamable",tags=['Stream Source'])
     def get_streamable(
@@ -623,7 +635,9 @@ def auth_required(router):
     def deployment_hotfix(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
     ):
-         return None
+        db.sql.truncate('streamable')
+        db.sql.truncate('cached_text')
+        return True
 
         # return db.op.fix_image_file_thumbnail_paths()
 

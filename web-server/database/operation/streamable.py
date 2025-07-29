@@ -6,12 +6,13 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sorm
 
 
-def create_streamable(stream_source_id: int, url: str, name: str):
+def create_streamable(stream_source_id: int, url: str, name: str, group: str=None):
     with DbSession() as db:
         dbm = dm.Streamable()
         dbm.name = name
         dbm.url = url
         dbm.stream_source_id = stream_source_id
+        dbm.group = group
         db.add(dbm)
         db.commit()
         db.refresh(dbm)

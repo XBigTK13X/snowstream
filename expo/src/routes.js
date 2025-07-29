@@ -39,7 +39,7 @@ export var routes = {
     showList: '/auth/list/show',
     signIn: '/',
     signOut: '/auth/sign-out',
-    streamSourceDetails: '/auth/details/stream-source',
+    streamableList: '/auth/list/streamable',
     replace: (target, params) => {
         if (!params) {
             return router.replace(target)
