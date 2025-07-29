@@ -263,7 +263,7 @@ export default function SnowVideoPlayer(props) {
                         immediateSeek(null, progressSeconds + 90)
                     }
                     else if (remoteEvent.eventType === 'left') {
-                        immediateSeek(null, progressSeconds - 45)
+                        immediateSeek(null, progressSeconds - 5)
                     }
                     else if (remoteEvent.eventType === 'down') {
                         setSubtitleFontSize((fontSize) => { return fontSize -= 4 })

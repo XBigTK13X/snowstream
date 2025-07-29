@@ -22,6 +22,9 @@ const styles = {
     },
     listColumn: {
         justifyContent: 'space-evenly',
+    },
+    short: {
+        padding: 0
     }
 }
 
@@ -41,6 +44,10 @@ export function SnowGrid(props) {
     }
     if (props.mainGrid) {
         gridStyle.push(styles.mainGrid)
+    }
+
+    if (props.short) {
+        gridStyle.push(styles.short)
     }
 
     let items = props.items

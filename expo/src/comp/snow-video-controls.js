@@ -109,13 +109,13 @@ export default function SnowVideoControls(props) {
                         </View>
                         : null}
                     <View>
-                        <SnowGrid shrink itemsPerRow={4}>
+                        <SnowGrid short shrink itemsPerRow={4}>
                             <SnowTextButton short shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
                             <SnowTextButton short title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
                             <SnowTextButton short title="Stop" onPress={() => { props.stopVideo() }} />
                             <SnowTextButton short title="Home" onPress={() => { props.stopVideo(true) }} />
                         </SnowGrid>
-                        <SnowGrid shrink itemsPerRow={4}>
+                        <SnowGrid short shrink itemsPerRow={4}>
                             <SnowTextButton short title="Sub Smaller" onPress={() => {
                                 props.setSubtitleFontSize(fontSize => { return fontSize - 4 })
                             }} />

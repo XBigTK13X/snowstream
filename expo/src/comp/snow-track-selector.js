@@ -27,7 +27,7 @@ function TrackList(props) {
         header = (
             <SnowGrid itemsPerRow={3} shrink>
                 {header}
-                <SnowInput value={props.delay} onValueChange={props.setDelay} />
+                <SnowInput short value={props.delay} onValueChange={props.setDelay} />
                 <SnowText>Seconds Delay</SnowText>
             </SnowGrid>
         )
@@ -36,7 +36,7 @@ function TrackList(props) {
         <FillView>
             {header}
 
-            <SnowGrid itemsPerRow={5}>
+            <SnowGrid short shrink itemsPerRow={4}>
                 {props.tracks.map((track, trackKey) => {
                     let display = track.language ? track.language + ' - ' : ''
                     display += `${(track.title.indexOf('.') === -1 && track.title) ? track.title + ' - ' : ''}`
@@ -58,6 +58,7 @@ function TrackList(props) {
                     return (
                         <SnowTextButton
                             key={trackKey}
+                            short
                             selected={relativeIndex === props.activeTrack}
                             title={display}
                             onPress={() => { props.selectTrack(track) }}
