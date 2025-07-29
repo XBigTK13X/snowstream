@@ -1,6 +1,12 @@
 import React from 'react'
 import util from '../util'
-import { AppState, Platform, View } from 'react-native'
+import {
+    AppState,
+    Platform,
+    View,
+    TVEventHandler,
+    useTVEventHandler,
+} from 'react-native'
 import { useKeepAwake } from 'expo-keep-awake';
 import { useAppContext } from '../app-context'
 import Style from '../snow-style'
@@ -34,7 +40,7 @@ export default function SnowVideoPlayer(props) {
     const [seekToSeconds, setSeekToSeconds] = React.useState(1)
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
     const [logs, setLogs] = React.useState([])
-    const [subtitleFontSize, setSubtitleFontSize] = React.useState(38) // MPV default font size
+    const [subtitleFontSize, setSubtitleFontSize] = React.useState(42)
     const [subtitleColor, setSubtitleColor] = React.useState({ shade: 1.0, alpha: 1.0 })
 
     useKeepAwake();
@@ -104,6 +110,14 @@ export default function SnowVideoPlayer(props) {
     }
 
     const immediateSeek = (progressPercent, progressSeconds) => {
+        if (progressSeconds < 0) {
+            progressSeconds = 0
+        }
+        if (props.durationSeconds) {
+            if (progressSeconds > props.durationSeconds) {
+                progressSeconds = props.durationSeconds
+            }
+        }
         if (!progressSeconds) {
             progressSeconds = (progressPercent / 100) * props.durationSeconds
         }
@@ -237,6 +251,35 @@ export default function SnowVideoPlayer(props) {
 
     if (config.debugVideoPlayer) {
         util.log(props.videoUrl)
+    }
+
+    if (Platform.isTV) {
+        const tvRemoteHandler = (remoteEvent) => {
+            if (!controlsVisible) {
+                if (props.initialSeekComplete.current || !props.initialSeekSeconds) {
+                    if (remoteEvent.eventType === 'right') {
+                        immediateSeek(null, progressSeconds + 90)
+                    }
+                    else if (remoteEvent.eventType === 'left') {
+                        immediateSeek(null, progressSeconds - 45)
+                    }
+                    else if (remoteEvent.eventType === 'down') {
+                        setSubtitleFontSize((fontSize) => { return fontSize -= 4 })
+                    }
+                    else if (remoteEvent.eventType === 'up') {
+                        setSubtitleColor((fontColor) => {
+                            newColor = { ...fontColor }
+                            newColor.shade -= 0.15;
+                            if (newColor.shade < 0) {
+                                newColor.shade = 0.0
+                            }
+                            return newColor
+                        })
+                    }
+                }
+            };
+        }
+        useTVEventHandler(tvRemoteHandler);
     }
 
     return (

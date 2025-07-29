@@ -20,9 +20,12 @@ import {
     Platform,
     Text,
     TouchableOpacity,
+    TVEventHandler,
     TVFocusGuideView,
+    useTVEventHandler,
     View,
 } from 'react-native'
+
 
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -67,6 +70,7 @@ export default {
     useLocalSearchParams,
     useNavigation,
     useRouter,
+    useTVEventHandler,
     util,
     AppState,
     FillView,
@@ -97,6 +101,7 @@ export default {
     Style,
     Text,
     TouchableOpacity,
+    TVEventHandler,
     TVFocusGuideView,
     View,
 }
