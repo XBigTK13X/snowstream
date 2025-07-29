@@ -76,6 +76,18 @@ export default function MpvVideoView(props) {
         }
     }, [props.subtitleColor])
 
+    React.useEffect(() => {
+        if (nativeRef.current) {
+            nativeRef.current.runMpvCommand(`set|audio-delay|${props.audioDelay}`)
+        }
+    }, [props.audioDelay])
+
+    React.useEffect(() => {
+        if (nativeRef.current) {
+            nativeRef.current.runMpvCommand(`set|sub-delay|${props.subtitleDelay}`)
+        }
+    }, [props.subtitleDelay])
+
     return (
         <SnowModal
             wrapper={false}

@@ -42,6 +42,8 @@ export default function SnowVideoPlayer(props) {
     const [logs, setLogs] = React.useState([])
     const [subtitleFontSize, setSubtitleFontSize] = React.useState(42)
     const [subtitleColor, setSubtitleColor] = React.useState({ shade: 1.0, alpha: 1.0 })
+    const [subtitleDelaySeconds, setSubtitleDelaySeconds] = React.useState(0)
+    const [audioDelaySeconds, setAudioDelaySeconds] = React.useState(0)
 
     useKeepAwake();
 
@@ -293,9 +295,11 @@ export default function SnowVideoPlayer(props) {
                 isTranscode={props.isTranscode}
                 seekToSeconds={seekToSeconds}
                 audioIndex={props.audioIndex}
+                audioDelay={audioDelaySeconds}
                 subtitleIndex={props.subtitleIndex}
                 subtitleFontSize={subtitleFontSize}
                 subtitleColor={subtitleColor}
+                subtitleDelay={subtitleDelaySeconds}
                 onUpdate={onVideoUpdate}
                 onError={onVideoError}
                 onReady={onVideoReady}
@@ -307,9 +311,13 @@ export default function SnowVideoPlayer(props) {
                 videoTitle={props.videoTitle}
                 tracks={props.tracks}
                 audioTrack={props.audioIndex}
+                audioDelay={audioDelaySeconds}
+                setAudioDelay={setAudioDelaySeconds}
                 subtitleTrack={props.subtitleIndex}
                 setSubtitleFontSize={setSubtitleFontSize}
                 setSubtitleColor={setSubtitleColor}
+                subtitleDelay={subtitleDelaySeconds}
+                setSubtitleDelay={setSubtitleDelaySeconds}
                 progressSeconds={progressSeconds}
                 durationSeconds={props.durationSeconds}
                 onSeek={onSeek}

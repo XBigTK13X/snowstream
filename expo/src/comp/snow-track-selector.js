@@ -4,6 +4,7 @@ import util from '../util'
 import SnowGrid from './snow-grid'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
+import SnowInput from './snow-input'
 import FillView from './fill-view'
 
 function TrackList(props) {
@@ -17,11 +18,23 @@ function TrackList(props) {
     if (activeTrack) {
         activeBitRate = `[${util.bitsToPretty(activeTrack.bit_rate)}/s]`
     }
+    let header = (
+        <SnowText>
+            {props.title} ({props.tracks.length}) {activeBitRate}
+        </SnowText>
+    )
+    if (props.showDelay) {
+        header = (
+            <SnowGrid itemsPerRow={3} shrink>
+                {header}
+                <SnowInput value={props.delay} onValueChange={props.setDelay} />
+                <SnowText>Seconds Delay</SnowText>
+            </SnowGrid>
+        )
+    }
     return (
         <FillView>
-            <SnowText>
-                {props.title} ({props.tracks.length}) {activeBitRate}
-            </SnowText>
+            {header}
 
             <SnowGrid itemsPerRow={5}>
                 {props.tracks.map((track, trackKey) => {
@@ -65,6 +78,9 @@ export default function SnowTrackSelector(props) {
             {props.tracks.audio.length ? <TrackList
                 kind="audio"
                 title="Audio"
+                showDelay={props.showDelay}
+                delay={props.audioDelay}
+                setDelay={props.setAudioDelay}
                 isAudio={true}
                 tracks={props.tracks.audio.filter((track) => { return track.score > 0 || props.tracks.audio.length < 3 })}
                 selectTrack={props.selectTrack}
@@ -73,6 +89,9 @@ export default function SnowTrackSelector(props) {
             {props.tracks.subtitle.length ? <TrackList
                 kind="subtitle"
                 title="Subtitles"
+                showDelay={props.showDelay}
+                delay={props.subtitleDelay}
+                setDelay={props.setSubtitleDelay}
                 tracks={props.tracks.subtitle.filter((track) => { return track.score > 0 || props.tracks.subtitle.length < 3 })}
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}

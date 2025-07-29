@@ -23,6 +23,9 @@ const styles = {
         height: 80,
         padding: 0
     },
+    shortWrapper: {
+        height: 10
+    },
     selected: {
         borderColor: Style.color.active
     },
@@ -69,6 +72,10 @@ export function SnowTextButton(props) {
 
     if (props.tall) {
         wrapperStyle.push(styles.tallWrapper)
+    }
+
+    if (props.short) {
+        wrapperStyle.push(styles.shortWrapper)
     }
 
     if (props.style) {

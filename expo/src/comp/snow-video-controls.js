@@ -109,20 +109,20 @@ export default function SnowVideoControls(props) {
                         </View>
                         : null}
                     <View>
-                        <SnowGrid itemsPerRow={4}>
-                            <SnowTextButton shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
-                            <SnowTextButton title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
-                            <SnowTextButton title="Stop" onPress={() => { props.stopVideo() }} />
-                            <SnowTextButton title="Home" onPress={() => { props.stopVideo(true) }} />
+                        <SnowGrid shrink itemsPerRow={4}>
+                            <SnowTextButton short shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
+                            <SnowTextButton short title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
+                            <SnowTextButton short title="Stop" onPress={() => { props.stopVideo() }} />
+                            <SnowTextButton short title="Home" onPress={() => { props.stopVideo(true) }} />
                         </SnowGrid>
-                        <SnowGrid itemsPerRow={4}>
-                            <SnowTextButton title="Sub Smaller" onPress={() => {
+                        <SnowGrid shrink itemsPerRow={4}>
+                            <SnowTextButton short title="Sub Smaller" onPress={() => {
                                 props.setSubtitleFontSize(fontSize => { return fontSize - 4 })
                             }} />
-                            <SnowTextButton title="Sub Bigger" onPress={() => {
+                            <SnowTextButton short title="Sub Bigger" onPress={() => {
                                 props.setSubtitleFontSize(fontSize => { return fontSize + 4 })
                             }} />
-                            <SnowTextButton title="Sub Darker" onPress={() => {
+                            <SnowTextButton short title="Sub Darker" onPress={() => {
                                 props.setSubtitleColor(fontColor => {
                                     newColor = { ...fontColor }
                                     newColor.shade -= 0.15;
@@ -132,7 +132,7 @@ export default function SnowVideoControls(props) {
                                     return newColor
                                 })
                             }} />
-                            <SnowTextButton title="Sub Lighter" onPress={() => {
+                            <SnowTextButton short title="Sub Lighter" onPress={() => {
                                 props.setSubtitleColor(fontColor => {
                                     newColor = { ...fontColor }
                                     newColor.shade += 0.15;
@@ -148,6 +148,11 @@ export default function SnowVideoControls(props) {
                     <View>
                         <SnowTrackSelector
                             style={styles.row}
+                            showDelay={true}
+                            audioDelay={props.audioDelay}
+                            setAudioDelay={props.setAudioDelay}
+                            subtitleDelay={props.subtitleDelay}
+                            setSubtitleDelay={props.setSubtitleDelay}
                             tracks={props.tracks}
                             selectTrack={props.selectTrack}
                             audioTrack={props.audioTrack}
