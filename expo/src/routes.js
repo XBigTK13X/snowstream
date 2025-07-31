@@ -108,6 +108,12 @@ routes.gotoItem = (item) => {
             episodeOrder: item.episode_order_counter
         })
     }
+    else if (item.model_kind === 'playlist') {
+        routes.goto(routes.playlistDetails, {
+            tagId: item.id,
+            tagName: item.name
+        })
+    }
     else {
         util.log("Unhandled poster item")
         util.log({ item })

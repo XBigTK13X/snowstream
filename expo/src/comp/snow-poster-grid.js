@@ -17,6 +17,9 @@ export function SnowPosterGrid(props) {
         if (item.poster_image) {
             thumbnailUrl = item.poster_image.thumbnail_web_path
         }
+        if (item.thumbnail_url) {
+            thumbnailUrl = item.thumbnail_url
+        }
         let longPress = null
         if (props.onLongPress) {
             longPress = () => {

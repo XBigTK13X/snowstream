@@ -20,13 +20,5 @@ export default function PlaylistListPage() {
         return < C.SnowText > No playlists found.</C.SnowText >
     }
 
-    return <C.SnowGrid items={playlistList} renderItem={(item) => {
-        return <C.SnowTextButton
-            tall
-            title={item.name}
-            onPress={routes.func(routes.playlistDetails, {
-                tagId: item.id,
-                tagName: item.name
-            })} />
-    }} />
+    return <C.SnowPosterGrid items={playlistList} />
 }
