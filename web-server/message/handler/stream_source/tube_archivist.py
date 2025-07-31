@@ -13,20 +13,35 @@ class TubeArchivist(StreamSourceImporter):
         super().__init__(job_id, "TubeArchivist", stream_source)
 
     def download(self):
-        # if super().download():
-        #   return True
+        if super().download():
+            return True
 
-        config_url = f"{self.stream_source.url}/api/video/?sort=published&order=desc"
+        videos_url = f"{self.stream_source.url}/api/video/?sort=published&order=desc"
         # TODO This only gets the last 100 videos, handle pagination
         archivist_response = requests.get(
-            config_url, headers={
+            videos_url, headers={
                 "User-Agent": "Snowstream 1.0.0",
                 "Authorization": f'Token {self.stream_source.password}'
             }
         )
 
+        info = archivist_response.json()
+
+        if 'paginate' in info:
+            if info['paginate']['last_page'] > 0:
+                for ii in range(1,info['paginate']['last_page']+1):
+                    page_url = f'{videos_url}&page={ii}'
+                    page_response = requests.get(
+                        page_url, headers={
+                            "User-Agent": "Snowstream 1.0.0",
+                            "Authorization": f'Token {self.stream_source.password}'
+                        }
+                    )
+                    page_info = page_response.json()
+                    info['data'] += page_info['data']
+
         self.cached_data = db.op.upsert_cached_text(
-            key=self.cache_key, data=json.dumps(archivist_response.json())
+            key=self.cache_key, data=json.dumps(info)
         )
         return True
 

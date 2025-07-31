@@ -34,13 +34,14 @@ export default function ShelfEditPage() {
 
     const buttons = [
         { name: 'Clean File Records', apiCall: apiClient.createJobCleanFileRecords },
+        { name: 'Delete Cached Text', apiCall: apiClient.deleteAllCachedText },
         { name: 'Delete Media Records', apiCall: apiClient.createJobDeleteMediaRecords },
         { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia },
         { name: 'Read Media Files', apiCall: apiClient.createJobReadMediaFiles },
         { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
         { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan },
         { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
-        { name: 'Delete Cached Text', apiCall: apiClient.deleteAllCachedText }
+
     ]
 
     const renderItem = (item) => {
@@ -60,7 +61,7 @@ export default function ShelfEditPage() {
     return (
         <C.FillView>
             <C.SnowGrid shrink
-                itemsPerRow={7}
+                itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />
             <C.SnowGrid itemsPerRow={6}>

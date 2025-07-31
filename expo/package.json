@@ -1,6 +1,6 @@
 {
     "name": "snowstream",
-    "version": "0.13.10",
+    "version": "0.13.12",
     "main": "expo-router/entry",
     "dependencies": {
         "@react-native-community/slider": "4.5.7",
