@@ -225,7 +225,7 @@ export default function MediaTracksPage(props) {
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(localParams, media) : media.name}
                     </C.SnowLabel>
-                    <C.SnowGrid itemsPerRow={2} substantial>
+                    <C.SnowGrid itemsPerRow={2}>
                         {resumeControls}
                         <C.SnowTextButton
                             shouldFocus={playFocus}
