@@ -720,10 +720,14 @@ def no_auth_required(router):
             directory = None
             if is_show:
                 directory = body['series']['path']
+                if 'testpath' in directory:
+                    return True
                 if 'tvdbId' in body['series'] and body['series']['tvdbId'] != None:
                     metadata_id = int(body['series']['tvdbId'])
             else:
                 directory = body['movie']['folderPath']
+                if 'testpath' in directory:
+                    return True
                 if 'tmdbId' in body['movie'] and body['movie']['tmdbId'] != None:
                     metadata_id = int(body['movie']['tmdbId'])
             input = {
