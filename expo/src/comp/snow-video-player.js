@@ -4,7 +4,6 @@ import {
     AppState,
     Platform,
     View,
-    TVEventHandler,
     useTVEventHandler,
 } from 'react-native'
 import { useKeepAwake } from 'expo-keep-awake';
@@ -51,6 +50,7 @@ export default function SnowVideoPlayer(props) {
     let playerKind = null
     if (config.useNullVideoView) {
         VideoView = require('./null-video-view').default
+        playerKind = 'null'
     }
     else {
         if (Platform.OS === 'web' || props.forceExoPlayer) {
@@ -161,10 +161,10 @@ export default function SnowVideoPlayer(props) {
 
         if (info && info.kind && info.kind === 'rnvevent') {
             if (info.data) {
-                if (info.data.currentTime) {
-                    setProgressSeconds(info.data.currentTime)
+                if (info.data.data && info.data.data.currentTime) {
+                    setProgressSeconds(info.data.data.currentTime)
                     if (props.onProgress) {
-                        props.onProgress(info.data.currentTime)
+                        props.onProgress(info.data.data.currentTime)
                     }
                 }
                 else {
@@ -257,7 +257,7 @@ export default function SnowVideoPlayer(props) {
 
     if (Platform.isTV) {
         const tvRemoteHandler = (remoteEvent) => {
-            if (!controlsVisible) {
+            if (!controlsVisible && isReady) {
                 if (props.initialSeekComplete.current || !props.initialSeekSeconds) {
                     if (remoteEvent.eventType === 'right') {
                         immediateSeek(null, progressSeconds + 90)
@@ -308,6 +308,7 @@ export default function SnowVideoPlayer(props) {
             />
             <SnowVideoControls
                 controlsVisible={controlsVisible}
+                playerKind={playerKind}
                 videoTitle={props.videoTitle}
                 tracks={props.tracks}
                 audioTrack={props.audioIndex}

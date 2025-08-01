@@ -56,7 +56,8 @@ export default function OptionsPage() {
                         resolutionHeight,
                         audioCompression,
                         hardwareDecoder,
-                        alwaysTranscode
+                        alwaysTranscode,
+                        alwaysUseExoPlayer
                     })
                 }} />
                 <C.View>

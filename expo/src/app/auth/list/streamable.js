@@ -57,6 +57,11 @@ export default function StreamableListPage() {
                         streamSourceId: streamSource.id,
                         streamableId: streamable.id,
                     })}
+                    onLongPress={routes.func(routes.playMedia, {
+                        streamSourceId: streamSource.id,
+                        streamableId: streamable.id,
+                        forcePlayer: 'exo'
+                    })}
                 />
             )
         }

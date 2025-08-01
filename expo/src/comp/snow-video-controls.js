@@ -44,7 +44,7 @@ export default function SnowVideoControls(props) {
 
     const { apiClient } = useAppContext()
     const [showLogs, setShowLogs] = React.useState(false)
-    const [logTitle, setLogTitle] = React.useState('Logs')
+    const [logTitle, setLogTitle] = React.useState(props.playerKind !== 'rnv' ? props.playerKind + ' Logs' : 'exo Logs')
 
     let progressPercent = null
     let progressDisplay = null
@@ -115,7 +115,7 @@ export default function SnowVideoControls(props) {
                             <SnowTextButton short title="Stop" onPress={() => { props.stopVideo() }} />
                             <SnowTextButton short title="Home" onPress={() => { props.stopVideo(true) }} />
                         </SnowGrid>
-                        <SnowGrid short shrink itemsPerRow={4}>
+                        {props.playerKind !== 'rnv' ? <SnowGrid short shrink itemsPerRow={4}>
                             <SnowTextButton short title="Sub Smaller" onPress={() => {
                                 props.setSubtitleFontSize(fontSize => { return fontSize - 4 })
                             }} />
@@ -143,7 +143,7 @@ export default function SnowVideoControls(props) {
                                 })
                             }}
                             />
-                        </SnowGrid>
+                        </SnowGrid> : null}
                     </View>
                     <View>
                         <SnowTrackSelector

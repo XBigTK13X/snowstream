@@ -36,10 +36,10 @@ export function SnowDropdown(props) {
     if (props.title) {
         return <View>
             <SnowLabel center>{props.title}</SnowLabel>
-            <SnowGrid items={props.options} renderItem={renderItem} />
+            <SnowGrid shrink items={props.options} renderItem={renderItem} />
         </View>
     }
-    return <SnowGrid items={props.options} renderItem={renderItem} />
+    return <SnowGrid shrink items={props.options} renderItem={renderItem} />
 }
 
 export default SnowDropdown
