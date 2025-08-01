@@ -286,7 +286,7 @@ class ThetvdbProvider(base.MediaProvider):
 
         if 'tvdb_translation' in metadata:
             if 'name' in metadata['tvdb_translation']:
-                result['name'] = metadata['tvdb_translation']['overview']
+                result['name'] = metadata['tvdb_translation']['name']
             if 'overview' in metadata['tvdb_translation']:
                 result['overview'] = metadata['tvdb_translation']['overview']
         return result
