@@ -95,10 +95,16 @@ def handle(scope:JobMediaScope):
         }
         if is_show:
             show = db.op.get_show_by_directory(directory=scope.target_directory)
+            if not show:
+                db.op.update_job(job_id=scope.job_id, message=f"Unable to find a show for directory {scope.target_directory}")
+                return False
             input['target_kind'] = 'show'
             input['target_id'] = show.id
         else:
             movie = db.op.get_movie_by_directory(directory=scope.target_directory)
+            if not movie:
+                db.op.update_job(job_id=scope.job_id, message=f"Unable to find a movie for directory {scope.target_directory}")
+                return False
             input['target_kind'] = 'movie'
             input['target_id'] = movie.id
         create_child_job(name='update_media_files',payload=input)
