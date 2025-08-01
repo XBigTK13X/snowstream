@@ -129,7 +129,8 @@ export function AppContextProvider(props) {
                     audioCompression: false,
                     hardwareDecoder: false,
                     deviceId: uuid.v4(),
-                    alwaysTranscode: false
+                    alwaysTranscode: false,
+                    alwaysUseExoPlayer: false
                 }
             }
             setClientOptions(storedOptions)

@@ -15,6 +15,7 @@ export default function OptionsPage() {
     const [audioCompression, setAudioCompression] = C.React.useState(clientOptions ? clientOptions.audioCompression : '')
     const [hardwareDecoder, setHardwareDecoder] = C.React.useState(clientOptions ? clientOptions.hardwareDecoder : '')
     const [alwaysTranscode, setAlwaysTranscode] = C.React.useState(clientOptions ? clientOptions.alwaysTranscode : '')
+    const [alwaysUseExoPlayer, setAlwaysUseExoPlayer] = C.React.useState(clientOptions ? clientOptions.alwaysUseExoPlayer : '')
     const [deviceId, setDeviceId] = C.React.useState(clientOptions ? clientOptions.deviceId : '')
 
     const chooseResolution = (selection) => {
@@ -40,19 +41,14 @@ export default function OptionsPage() {
         setAlwaysTranscode(selection === 0 ? false : true)
     }
 
+    const chooseAlwaysUseExoPlayer = (selection) => {
+        setAlwaysUseExoPlayer(selection === 0 ? false : true)
+    }
+
     return (
         <C.FillView>
             <C.SnowGrid itemsPerRow={3} shrink>
-                <C.SnowTextButton
-                    title="Download Latest"
-                    onPress={() => {
-                        if (C.isTV) {
-                            C.Linking.openURL('https://android.9914.us/snowstream-tv.apk')
-                        } else {
-                            C.Linking.openURL('https://android.9914.us/snowstream-mobile.apk')
-                        }
-                    }}
-                />
+
                 <C.SnowTextButton title="Save" onPress={() => {
                     changeClientOptions({
                         deviceId,
@@ -63,33 +59,48 @@ export default function OptionsPage() {
                         alwaysTranscode
                     })
                 }} />
+                <C.View>
+                    <C.SnowLabel center>Device ID</C.SnowLabel>
+                    <C.SnowInput value={deviceId} onValueChange={setDeviceId} />
+                </C.View>
+                <C.SnowTextButton
+                    title="Download Latest"
+                    onPress={() => {
+                        if (C.isTV) {
+                            C.Linking.openURL('https://android.9914.us/snowstream-tv.apk')
+                        } else {
+                            C.Linking.openURL('https://android.9914.us/snowstream-mobile.apk')
+                        }
+                    }}
+                />
             </C.SnowGrid>
             <C.FillView>
-                <C.SnowLabel center>Device ID</C.SnowLabel>
                 <C.SnowGrid shrink itemsPerRow={3}>
-                    <C.SnowInput value={deviceId} onValueChange={setDeviceId} />
-                </C.SnowGrid>
-                <C.SnowGrid shrink itemsPerRow={2}>
                     <C.SnowDropdown
                         title="Video Resolution"
                         options={resolutions}
                         onValueChange={chooseResolution}
                         valueIndex={resolutionIndex} />
                     <C.SnowDropdown
-                        title="Audio Compression"
-                        options={['No', 'Yes']}
-                        onValueChange={chooseAudioCompression}
-                        valueIndex={audioCompression === true ? 1 : 0} />
-                    <C.SnowDropdown
-                        title="Hardware Decoder"
-                        options={['No', 'Yes']}
-                        onValueChange={chooseHardwareDecoder}
-                        valueIndex={hardwareDecoder === true ? 1 : 0} />
-                    <C.SnowDropdown
                         title="Always Transcode"
                         options={['No', 'Yes']}
                         onValueChange={chooseAlwaysTranscode}
                         valueIndex={alwaysTranscode === true ? 1 : 0} />
+                    <C.SnowDropdown
+                        title="Always Use ExoPlayer"
+                        options={['No', 'Yes']}
+                        onValueChange={chooseAlwaysUseExoPlayer}
+                        valueIndex={alwaysUseExoPlayer === true ? 1 : 0} />
+                    <C.SnowDropdown
+                        title="Audio Compression (mpv)"
+                        options={['No', 'Yes']}
+                        onValueChange={chooseAudioCompression}
+                        valueIndex={audioCompression === true ? 1 : 0} />
+                    <C.SnowDropdown
+                        title="Hardware Decoder (mpv)"
+                        options={['No', 'Yes']}
+                        onValueChange={chooseHardwareDecoder}
+                        valueIndex={hardwareDecoder === true ? 1 : 0} />
                 </C.SnowGrid>
             </C.FillView>
         </C.FillView>

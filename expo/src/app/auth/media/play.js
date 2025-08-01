@@ -46,6 +46,17 @@ export default function PlayMediaPage() {
     const initialSeekRef = C.React.useRef(initialSeekComplete)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
 
+    let forceExo = false
+    if (forcePlayer === 'exo') {
+        forceExo = true
+    }
+    else if (videoIsHdr && forcePlayer !== 'mpv') {
+        forceExo = true
+    }
+    else if (clientOptions.alwaysUseExoPlayer) {
+        forceExo = true
+    }
+
     const loadVideoFile = (videoHolder) => {
         // TODO This is where the playing queue needs to determine a videoFileIndex
         const videoFile = videoHolder.video_files[videoFileIndex ? videoFileIndex : 0]
@@ -259,14 +270,6 @@ export default function PlayMediaPage() {
                 <C.SnowText>Snowstream is preparing a server-side transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
             </C.View>
         )
-    }
-
-    let forceExo = false
-    if (forcePlayer === 'exo') {
-        forceExo = true
-    }
-    else if (videoIsHdr && forcePlayer !== 'mpv') {
-        forceExo = true
     }
 
     if (videoUrl) {
