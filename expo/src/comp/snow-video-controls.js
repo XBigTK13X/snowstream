@@ -1,6 +1,7 @@
 import React from 'react'
 import Slider from '@react-native-community/slider';
 import { View } from 'react-native'
+import { useLocalSearchParams } from 'expo-router'
 
 import util from '../util'
 import Style from '../snow-style'
@@ -42,7 +43,8 @@ export default function SnowVideoControls(props) {
         return null
     }
 
-    const { apiClient } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const localParams = useLocalSearchParams()
     const [showLogs, setShowLogs] = React.useState(false)
     const [logTitle, setLogTitle] = React.useState(props.playerKind !== 'rnv' ? props.playerKind + ' Logs' : 'exo Logs')
 
@@ -83,6 +85,11 @@ export default function SnowVideoControls(props) {
         })
     }
 
+    let swapTitle = "Swap to mpv"
+    if (props.playerKind === 'mpv') {
+        swapTitle = 'Swap to exo'
+    }
+
     return (
         (
             <SnowModal
@@ -109,9 +116,8 @@ export default function SnowVideoControls(props) {
                         </View>
                         : null}
                     <View>
-                        <SnowGrid short shrink itemsPerRow={4}>
+                        <SnowGrid short shrink itemsPerRow={3}>
                             <SnowTextButton short shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
-                            <SnowTextButton short title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
                             <SnowTextButton short title="Stop" onPress={() => { props.stopVideo() }} />
                             <SnowTextButton short title="Home" onPress={() => { props.stopVideo(true) }} />
                         </SnowGrid>
@@ -159,6 +165,17 @@ export default function SnowVideoControls(props) {
                             subtitleTrack={props.subtitleTrack}
                         />
                     </View>
+                    <SnowGrid short shrink itemsPerRow={2}>
+                        <SnowTextButton short title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
+                        <SnowTextButton short title={swapTitle} onPress={() => {
+                            let newParams = { ...localParams }
+                            newParams.forcePlayer = 'mpv'
+                            if (props.playerKind === 'mpv') {
+                                newParams.forcePlayer = 'exo'
+                            }
+                            routes.replace(routes.playMedia, newParams)
+                        }} />
+                    </SnowGrid>
                 </FillView>
             </SnowModal >
         )
