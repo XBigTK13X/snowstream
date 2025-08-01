@@ -88,10 +88,16 @@ def get_video_files_by_shelf(shelf_id: int):
     with DbSession() as db:
         return db.query(dm.VideoFile).filter(dm.VideoFile.shelf_id == shelf_id)
 
-def get_video_file_list():
+def get_video_file_list(directory:str=None):
     with DbSession() as db:
-        return (
-            db.query(dm.VideoFile)
+        query = db.query(dm.VideoFile)
+
+        if directory:
+            query = query.filter(dm.VideoFile.local_path.contains(directory))
+
+        query = (query
             .order_by(dm.VideoFile.local_path)
             .all()
         )
+
+        return query

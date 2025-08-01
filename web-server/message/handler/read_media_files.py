@@ -50,6 +50,11 @@ def handle(scope):
             metadata_files = db.op.get_metadata_file_list()
         if scope.update_videos:
             video_files = db.op.get_video_file_list()
+    elif scope.is_directory():
+        if scope.update_metadata:
+            metadata_files = db.op.get_metadata_file_list(directory=scope.target_directory)
+        if scope.update_videos:
+            video_files = db.op.get_video_file_list(directory=scope.target_directory)
     elif scope.is_shelf():
         if scope.update_metadata:
             metadata_files = db.op.get_metadata_files_by_shelf(shelf_id=scope.target_id)
@@ -98,6 +103,8 @@ def handle(scope):
         db.op.update_job(job_id=scope.job_id, message=f"Updating {len(metadata_files)} metadata files")
         defined_tag_ids = {}
         progress_count = 0
+        updated_shows = {}
+        update_show_years = []
         for metadata_file in metadata_files:
             progress_count += 1
             if progress_count % 500 == 0:
@@ -125,10 +132,18 @@ def handle(scope):
                     db.op.upsert_movie_tag(metadata_file.movie.id,tag_id)
                 if metadata_file.show != None:
                     db.op.upsert_show_tag(metadata_file.show.id,tag_id)
+                    if not metadata_file.show.release_year and 'year' in nfo_content and nfo_content['year']:
+                        if not metadata_file.show.id in updated_shows:
+                            update_show_years.append([metadata_file.show.id,metadata_file.show.name, nfo_content['year']])
+                            updated_shows[metadata_file.show.id] = True
                 if metadata_file.show_season != None:
                     db.op.upsert_show_season_tag(metadata_file.show_season.id,tag_id)
                 if metadata_file.show_episode != None:
                     db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
+        if update_show_years:
+            for info in update_show_years:
+                db.op.update_job(job_id=scope.job_id, message=f"Update show [{info[0]}][{info[1]}] release year to {info[2]}")
+                db.op.update_show_release_year(show_id=info[0],release_year=info[2])
 
     if scope.update_videos and video_files:
         db.op.update_job(job_id=scope.job_id, message=f"Updating {len(video_files)} video files")

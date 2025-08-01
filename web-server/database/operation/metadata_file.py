@@ -51,17 +51,25 @@ def get_metadata_files_by_shelf(shelf_id: int):
     with DbSession() as db:
         return db.query(dm.MetadataFile).filter(dm.MetadataFile.shelf_id == shelf_id)
 
-def get_metadata_file_list():
+def get_metadata_file_list(directory:str=None):
     with DbSession() as db:
-        return (
+        query = (
             db.query(dm.MetadataFile)
             .options(sorm.joinedload(dm.MetadataFile.movie))
             .options(sorm.joinedload(dm.MetadataFile.show))
             .options(sorm.joinedload(dm.MetadataFile.show_season))
             .options(sorm.joinedload(dm.MetadataFile.show_episode))
+        )
+
+        if directory:
+            query = query.filter(dm.MetadataFile.local_path.contains(directory))
+
+        query = (query
             .order_by(dm.MetadataFile.local_path)
             .all()
         )
+
+        return query
 
 def update_metadata_file_content(metadata_file_id:int,xml_content:str):
     with DbSession() as db:
