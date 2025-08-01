@@ -35,8 +35,10 @@ export default function SearchPage() {
     const debouncedSearch = C.useDebouncedCallback(executeQuery, config.debounceMilliseconds)
 
     const updateQuery = (value) => {
-        setQueryText(value)
-        debouncedSearch(value)
+        if (value !== queryText) {
+            setQueryText(value)
+            debouncedSearch(value)
+        }
     }
 
     const loadTab = (tabEntry, tabIndex) => {
@@ -66,7 +68,10 @@ export default function SearchPage() {
                 <C.View style={styles.columns}>
                     {tabButtons}
                 </C.View>
-                <C.SnowPosterGrid disableWatched items={tabItems} />
+                <C.SnowPosterGrid
+                    disableWatched
+                    items={tabItems}
+                />
             </C.FillView>
         )
     }
@@ -74,7 +79,10 @@ export default function SearchPage() {
     return (
         <C.FillView>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
-            <C.SnowInput shouldFocus={true} value={queryText} onValueChange={updateQuery} onSubmit={executeQuery} />
+            <C.SnowInput
+                shouldFocus={true}
+                value={queryText}
+                onValueChange={updateQuery} />
             {resultsTab}
         </C.FillView>
     )

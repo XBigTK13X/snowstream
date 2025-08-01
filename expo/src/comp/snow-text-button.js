@@ -1,7 +1,5 @@
 import React from 'react'
-
-
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, Keyboard } from 'react-native';
 import SnowText from './snow-text'
 import Style from '../snow-style'
 
@@ -53,7 +51,7 @@ export function SnowTextButton(props) {
     const touchRef = React.useRef(null)
 
     React.useEffect(() => {
-        if (props.shouldFocus) {
+        if (props.shouldFocus && !Keyboard.isVisible()) {
             touchRef.current.focus()
         }
     }, [])
@@ -89,14 +87,31 @@ export function SnowTextButton(props) {
         textStyle.push(styles.smallText)
     }
 
+    const onPressUnlessTyping = () => {
+        if (props.onPress && !Keyboard.isVisible()) {
+            return props.onPress()
+        }
+    }
+
+    const onLongPressUnlessTyping = () => {
+        if (props.onLongPress && !Keyboard.isVisible()) {
+            return props.onLongPress()
+        }
+    }
+
+    const allowFocus = props.shouldFocus && !Keyboard.isVisible()
+
     return (
         <TouchableOpacity
             ref={touchRef}
             style={wrapperStyle}
             activeOpacity={1.0}
-            onPress={props.onPress}
-            hasTVPreferredFocus={props.shouldFocus}
-            onLongPress={props.onLongPress}
+
+            onPress={onPressUnlessTyping}
+            onLongPress={onLongPressUnlessTyping}
+
+            hasTVPreferredFocus={allowFocus || focused}
+            autoFocus={allowFocus}
             onFocus={() => { setFocused(true) }}
             onBlur={() => { setFocused(false) }}
             disabled={props.disabled}>

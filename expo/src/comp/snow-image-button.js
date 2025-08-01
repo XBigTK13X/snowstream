@@ -1,5 +1,5 @@
 import React from 'react'
-import { Platform, TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity, Keyboard } from 'react-native';
 import { Image } from 'expo-image'
 import SnowText from './snow-text'
 import Style from '../snow-style'
@@ -83,7 +83,7 @@ export function SnowImageButton(props) {
     const touchRef = React.useRef(null)
 
     React.useEffect(() => {
-        if (props.shouldFocus) {
+        if (props.shouldFocus && !Keyboard.isVisible()) {
             touchRef.current.focus()
         }
     }, [])
@@ -121,17 +121,33 @@ export function SnowImageButton(props) {
 
     let placeholder = props.wide ? missingScreencapImage : missingPosterImage
 
+    const onPressUnlessTyping = () => {
+        if (props.onPress && !Keyboard.isVisible()) {
+            return props.onPress()
+        }
+    }
+
+    const onLongPressUnlessTyping = () => {
+        if (props.onLongPress && !Keyboard.isVisible()) {
+            return props.onLongPress()
+        }
+    }
+
+    const allowFocus = props.shouldFocus && !Keyboard.isVisible()
+
     return (
         <TouchableOpacity
             ref={touchRef}
             activeOpacity={1.0}
-            onPress={props.onPress}
-            onLongPress={props.onLongPress}
+            style={wrapperStyle}
+
+            onPress={onPressUnlessTyping}
+            onLongPress={onLongPressUnlessTyping}
+
             onFocus={() => { setFocused(true) }}
             onBlur={() => { setFocused(false) }}
-            style={wrapperStyle}
-            hasTVPreferredFocus={props.shouldFocus || focused}
-            autoFocus={props.shouldFocus}>
+            hasTVPreferredFocus={allowFocus || focused}
+            autoFocus={allowFocus}>
             <Image
                 style={imageStyle}
                 placeholder={placeholder}
