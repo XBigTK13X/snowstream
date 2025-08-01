@@ -173,6 +173,7 @@ export default function SnowVideoControls(props) {
                             if (props.playerKind === 'mpv') {
                                 newParams.forcePlayer = 'exo'
                             }
+                            newParams.seekToSeconds = props.progressSeconds
                             routes.replace(routes.playMedia, newParams)
                         }} />
                     </SnowGrid>
