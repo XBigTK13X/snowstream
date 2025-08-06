@@ -8,7 +8,7 @@ const JOB_PROPERTIES = [
     ['targetKind', 'target_kind'],
     ['targetId', 'target_id'],
     ['targetDirectory', 'target_directory'],
-    ['metadataId', 'metadata_Id'],
+    ['metadataId', 'metadata_id'],
     ['metadataSource', 'metadata_source'],
     ['seasonOrder', 'season_order'],
     ['episodeOrder', 'episode_order'],
