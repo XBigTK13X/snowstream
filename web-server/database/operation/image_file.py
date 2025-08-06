@@ -46,9 +46,12 @@ def get_image_files_by_shelf(shelf_id: int):
     with DbSession() as db:
         return db.query(dm.ImageFile).filter(dm.ImageFile.shelf_id == shelf_id)
 
-def get_image_files_list():
+def get_image_file_list(directory:str=None):
     with DbSession() as db:
-        return db.query(dm.ImageFile).all()
+        query = db.query(dm.ImageFile)
+        if directory:
+            query = query.filter(dm.ImageFile.local_path.contains(directory))
+        return query.all()
 
 def fix_image_file_thumbnail_paths():
     with DbSession() as db:

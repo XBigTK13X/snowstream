@@ -25,7 +25,7 @@ export default function StreamableListPage() {
     })
 
 
-    if (streamableGroups && !streamableItems) {
+    if (streamSource && streamableGroups && !streamableItems) {
         const chooseGroup = (group) => {
             setStreamableItems(streamSource.grouped_streamables[group])
         }
@@ -45,7 +45,7 @@ export default function StreamableListPage() {
         )
     }
 
-    if (streamableItems) {
+    if (streamSource && streamableItems) {
         const renderItem = (streamable, itemIndex) => {
             return (
                 <C.SnowTextButton

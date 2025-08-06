@@ -4,6 +4,7 @@ import api_models as am
 import nfo
 import ffmpeg
 import os
+import magick
 
 def prep(files,movie=None,show=None,show_season=None,show_episode=None):
     results = []
@@ -37,65 +38,88 @@ def prep(files,movie=None,show=None,show_season=None,show_episode=None):
 def handle(scope):
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a read_media_files job")
     metadata_files = None
+    image_files = None
     video_files = None
     ticket = db.model.Ticket(ignore_watch_group=True)
 
-    if not scope.update_metadata and not scope.update_videos:
-        db.op.update_job(job_id=scope.job_id, message="read_media_files requires either update_videos or update_metadata")
+    if not scope.update_metadata and not scope.update_videos and not scope.update_images:
+        db.op.update_job(job_id=scope.job_id, message="read_media_files requires update_videos, update_images, or update_metadata")
         return False
 
     if scope.is_unscoped():
         db.op.update_job(job_id=scope.job_id, message="Getting all entries from the database")
         if scope.update_metadata:
             metadata_files = db.op.get_metadata_file_list()
+        if scope.update_images:
+            image_files = db.op.get_image_file_list()
         if scope.update_videos:
             video_files = db.op.get_video_file_list()
     elif scope.is_directory():
         if scope.update_metadata:
             metadata_files = db.op.get_metadata_file_list(directory=scope.target_directory)
+        if scope.update_images:
+            image_files = db.op.get_image_file_list(directory=scope.target_directory)
         if scope.update_videos:
             video_files = db.op.get_video_file_list(directory=scope.target_directory)
     elif scope.is_shelf():
         if scope.update_metadata:
             metadata_files = db.op.get_metadata_files_by_shelf(shelf_id=scope.target_id)
+        if scope.update_images:
+            image_files = db.op.get_image_files_by_shelf(shelf_id=scope.target_id)
         if scope.update_videos:
             video_files = db.op.get_video_files_by_shelf(shelf_id=scope.target_id)
     elif scope.is_movie():
         movie = db.op.get_movie_by_id(ticket=ticket,movie_id=scope.target_id)
         if scope.update_metadata:
             metadata_files = prep(files=movie.metadata_files, movie=movie)
+        if scope.update_images:
+            image_files = prep(files=movie.image_files, movie=movie)
         if scope.update_videos:
             video_files = prep(files=movie.video_files, movie=movie)
     elif scope.is_show():
         show = db.op.get_show_by_id(ticket=ticket,show_id=scope.target_id)
-        if scope.update_metadata:
-            metadata_files = prep(files=show.metadata_files,show=show)
-            seasons = db.op.get_show_season_list_by_show_id(ticket=ticket,show_id=scope.target_id)
+        if scope.update_metadata or scope.update_images:
             if scope.update_metadata:
+                metadata_files = prep(files=show.metadata_files,show=show)
+            if scope.update_images:
+                image_files = prep(files=show.image_files,show=show)
+            seasons = db.op.get_show_season_list_by_show_id(ticket=ticket,show_id=scope.target_id)
+            if scope.update_metadata or scope.update_images:
                 for season in seasons:
-                    metadata_files += prep(files=season.metadata_files,show_season=season)
+                    if scope.update_metadata:
+                        metadata_files += prep(files=season.metadata_files,show_season=season)
+                    if scope.update_images:
+                        image_files += prep(files=season.image_files,show_season=season)
         episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=show.shelf.id,show_id=scope.target_id,load_episode_files=True,include_specials=True)
         video_files = []
         for episode in episodes:
             if scope.update_metadata:
                 metadata_files = list(metadata_files) + prep(files=episode.metadata_files,show_episode=episode)
+            if scope.update_images:
+                image_files = list(image_files) + prep(files=episode.image_files,show_episode=episode)
             if scope.update_videos:
                 video_files += prep(files=episode.video_files,show_episode=episode)
     elif scope.is_season():
         season = db.op.get_show_season_by_id(ticket=ticket,season_id=scope.target_id)
         if scope.update_metadata:
-            metadata_files = prep(files=season.metadata_files,season=season)
+            metadata_files = prep(files=season.metadata_files,show_season=season)
+        if scope.update_images:
+            image_files = prep(files=season.image_files,show_season=season)
         episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=season.show.shelf.id,show_season_id=scope.target_id,load_episode_files=True,include_specials=True)
         video_files = []
         for episode in episodes:
             if scope.update_metadata:
                 metadata_files = list(metadata_files) + prep(files=episode.metadata_files,show_episode=episode)
+            if scope.update_images:
+                image_files = list(image_files) + prep(files=episode.image_files,show_episode=episode)
             if scope.update_videos:
                 video_files += prep(files=episode.video_files, show_episode=episode)
     elif scope.is_episode():
         episode = db.op.get_show_episode_by_id(ticket=ticket,episode_id=scope.target_id)
         if scope.update_metadata:
             metadata_files = prep(files=episode.metadata_files,show_episode=episode)
+        if scope.update_images:
+            image_files = prep(files=episode.image_files,show_episode=episode)
         if scope.update_videos:
             video_files = prep(files=episode.video_files, show_episode=episode)
 
@@ -144,6 +168,20 @@ def handle(scope):
             for info in update_show_years:
                 db.op.update_job(job_id=scope.job_id, message=f"Update show [{info[0]}][{info[1]}] release year to {info[2]}")
                 db.op.update_show_release_year(show_id=info[0],release_year=info[2])
+
+    if scope.update_images and image_files:
+        db.op.update_job(job_id=scope.job_id, message=f"Updating {len(image_files)} image files")
+        progress_count = 0
+        for image_file in image_files:
+            progress_count += 1
+            if progress_count % 500 == 0:
+                db.op.update_job(job_id=scope.job_id, message=f'Read image file {progress_count} out of {len(image_files)}')
+            if not image_file.local_path:
+                continue
+            if not os.path.exists(image_file.local_path):
+                db.op.update_job(job_id=scope.job_id, message=f"WARNING An image_file db entry exists for a path that does not exist\n\t[{image_file.local_path}]")
+                continue
+            magick.create_thumbnail(local_path=image_file.local_path,force_overwrite=(not scope.skip_existing))
 
     if scope.update_videos and video_files:
         db.op.update_job(job_id=scope.job_id, message=f"Updating {len(video_files)} video files")
