@@ -28,6 +28,7 @@ class JobMediaScope:
         self.update_images = parse(raw_job_input,'update_images')
         self.update_metadata = parse(raw_job_input,'update_metadata')
         self.skip_existing = parse(raw_job_input,'skip_existing')
+        self.extract_only = parse(raw_job_input,'extract_only')
         self.is_subjob = parse(raw_job_input,'is_subjob')
         self.spawn_subjob = parse(raw_job_input,'spawn_subjob')
 

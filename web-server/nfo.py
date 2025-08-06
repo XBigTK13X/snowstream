@@ -69,9 +69,9 @@ def show_episode_to_xml(
     season:int,
     episode:int,
     title:str,
-    plot:str,
-    aired:str,
-    year:int,
+    plot:str=None,
+    aired:str=None,
+    year:int=None,
     end_episode:int=None,
     tvdbid:int=None,
     tmdbid:int=None,
@@ -81,12 +81,18 @@ def show_episode_to_xml(
         'episodedetails':{
             'season': season,
             'episode': episode,
-            'title': title,
-            'plot': plot,
-            'aired': aired,
-            'year': year
+            'title': title
         }
     }
+
+    if plot:
+        nfo_dict['episodedetails']['plot'] = plot
+
+    if year:
+        nfo_dict['episodedetails']['year'] = year
+
+    if aired:
+        nfo_dict['episodedetails']['aired'] = aired
 
     if end_episode:
         nfo_dict['episodedetails']['episodenumberend'] = end_episode

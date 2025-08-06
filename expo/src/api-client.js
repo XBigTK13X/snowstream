@@ -4,6 +4,21 @@ import { UAParser } from 'ua-parser-js'
 import { Platform } from 'react-native'
 import util from './util'
 
+const JOB_PROPERTIES = [
+    ['targetKind', 'target_kind'],
+    ['targetId', 'target_id'],
+    ['targetDirectory', 'target_directory'],
+    ['metadataId', 'metadata_Id'],
+    ['metadataSource', 'metadata_source'],
+    ['seasonOrder', 'season_order'],
+    ['episodeOrder', 'episode_order'],
+    ['updateMetadata', 'update_metadata'],
+    ['updateImages', 'update_images'],
+    ['updateVideos', 'update_videos'],
+    ['skipExisting', 'skip_existing'],
+    ['extractOnly', 'extract_only'],
+]
+
 export class ApiClient {
     constructor(details) {
         this.webApiUrl = details.webApiUrl
@@ -150,38 +165,10 @@ export class ApiClient {
         let payload = { name }
         if (details) {
             payload.input = {}
-            if (details.targetKind) {
-                payload.input.target_kind = details.targetKind
-            }
-            if (details.targetId) {
-                payload.input.target_id = details.targetId
-            }
-            if (details.targetDirectory) {
-                payload.input.target_directory = details.targetDirectory
-            }
-            if (details.metadataId) {
-                payload.input.metadata_id = details.metadataId
-            }
-            if (details.metadataSource) {
-                payload.input.metadata_source = details.metadataSource
-            }
-            if (details.seasonOrder) {
-                payload.input.season_order = details.seasonOrder
-            }
-            if (details.episodeOrder) {
-                payload.input.episode_order = details.episodeOrder
-            }
-            if (details.updateMetadata) {
-                payload.input.update_metadata = details.updateMetadata
-            }
-            if (details.updateImages) {
-                payload.input.update_images = details.updateImages
-            }
-            if (details.updateVideos) {
-                payload.input.update_videos = details.updateVideos
-            }
-            if (details.skipExisting) {
-                payload.input.skip_existing = details.skipExisting
+            for (const prop of JOB_PROPERTIES) {
+                if (details.hasOwnProperty(prop[0])) {
+                    payload.input[prop[1]] = details[prop[0]]
+                }
             }
         }
         return this.post('/job', payload)

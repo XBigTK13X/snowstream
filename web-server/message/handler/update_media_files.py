@@ -14,8 +14,8 @@ def handle(scope):
         db.op.update_job(job_id=scope.job_id, message="update_media_files must be scoped when run")
         return False
 
-    if not scope.metadata_id:
-        db.op.update_job(job_id=scope.job_id, message="update_media_files must be scoped with a metadata_id")
+    if not scope.metadata_id and not scope.extract_only:
+        db.op.update_job(job_id=scope.job_id, message="update_media_files must be scoped with a metadata_id or be limited to extract_only")
         return False
 
     if not scope.update_metadata and not scope.update_images:
@@ -42,9 +42,10 @@ def handle(scope):
         if handler.has_nfo() and scope.skip_existing_media():
             db.op.update_job(job_id=scope.job_id, message=f"Not overwriting existing metadata")
         else:
-            handler.read_remote_info()
-            handler.read_local_info()
-            handler.merge_remote_into_local()
+            if not scope.extract_only:
+                handler.read_remote_info()
+                handler.read_local_info()
+                handler.merge_remote_into_local()
             handler.save_info_to_local()
 
     if scope.update_images:

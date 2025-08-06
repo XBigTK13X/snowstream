@@ -3,31 +3,34 @@ import C from '../../../../common'
 export default function ShelfEditPage() {
     const { apiClient } = C.useAppContext()
     const { routes, config } = C.useAppContext()
-    const [targetKind, setTargetKind] = C.React.useState('')
-    const [targetId, setTargetId] = C.React.useState('')
-    const [targetDirectory, setTargetDirectory] = C.React.useState('')
+
+    const [episodeOrder, setEpisodeOrder] = C.React.useState('')
+    const [extractOnly, setExtractOnly] = C.React.useState('')
     const [metadataId, setMetadataId] = C.React.useState('')
     const [metadataSource, setMetadataSource] = C.React.useState('')
     const [seasonOrder, setSeasonOrder] = C.React.useState('')
-    const [episodeOrder, setEpisodeOrder] = C.React.useState('')
+    const [skipExisting, setSkipExisting] = C.React.useState('')
+    const [targetDirectory, setTargetDirectory] = C.React.useState('')
+    const [targetId, setTargetId] = C.React.useState('')
+    const [targetKind, setTargetKind] = C.React.useState('')
     const [updateImages, setUpdateImages] = C.React.useState('')
     const [updateMetadata, setUpdateMetadata] = C.React.useState('')
     const [updateVideos, setUpdateVideos] = C.React.useState('')
-    const [skipExisting, setSkipExisting] = C.React.useState('')
 
     const createJob = (apiCall) => {
         let details = {
-            targetKind,
-            targetId,
-            targetDirectory,
+            episodeOrder,
+            extractOnly,
             metadataId,
             metadataSource,
             seasonOrder,
-            episodeOrder,
+            skipExisting,
+            targetDirectory,
+            targetId,
+            targetKind,
             updateImages,
             updateMetadata,
             updateVideos,
-            skipExisting
         }
         return apiCall(details)
     }
@@ -41,7 +44,6 @@ export default function ShelfEditPage() {
         { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
         { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan },
         { name: 'Update Media Files', apiCall: apiClient.createJobUpdateMediaFiles },
-
     ]
 
     const renderItem = (item) => {
@@ -64,13 +66,15 @@ export default function ShelfEditPage() {
                 itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />
+            <C.SnowGrid shrink itemsPerRow={1}>
+                <C.SnowLabel>Target Directory</C.SnowLabel>
+                <C.SnowInput onValueChange={setTargetDirectory} value={targetDirectory} />
+            </C.SnowGrid>
             <C.SnowGrid itemsPerRow={6}>
                 <C.SnowLabel>Target Kind</C.SnowLabel>
                 <C.SnowInput onValueChange={setTargetKind} value={targetKind} />
                 <C.SnowLabel>Target Id</C.SnowLabel>
                 <C.SnowInput onValueChange={setTargetId} value={targetId} />
-                <C.SnowLabel>Target Directory</C.SnowLabel>
-                <C.SnowInput onValueChange={setTargetDirectory} value={targetDirectory} />
                 <C.SnowLabel>Metadata Id</C.SnowLabel>
                 <C.SnowInput onValueChange={setMetadataId} value={metadataId} />
                 <C.SnowLabel>Metadata Source</C.SnowLabel>
@@ -87,6 +91,8 @@ export default function ShelfEditPage() {
                 <C.SnowInput onValueChange={setUpdateVideos} value={updateVideos} />
                 <C.SnowLabel>Skip Existing</C.SnowLabel>
                 <C.SnowInput onValueChange={setSkipExisting} value={skipExisting} />
+                <C.SnowLabel>Extract Only</C.SnowLabel>
+                <C.SnowInput onValueChange={setExtractOnly} value={extractOnly} />
             </C.SnowGrid>
         </C.FillView>
     )

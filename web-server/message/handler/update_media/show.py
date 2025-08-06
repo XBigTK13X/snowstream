@@ -54,6 +54,8 @@ class Show(MediaUpdater):
         )
 
     def save_info_to_local(self):
+        if self.scope.extract_only:
+            return
         self.nfo.save_xml_as_nfo(nfo_path=self.show_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         if self.show_nfo_file.id:
             self.db.op.update_metadata_file_content(self.show_nfo_file.id, xml_content=self.new_nfo_xml)
@@ -76,6 +78,8 @@ class Show(MediaUpdater):
     # logo.png
     # landscape.jpg
     def download_images(self):
+        if self.scope.extract_only:
+            return
         images = self.media_provider.get_show_images(metadata_id=self.metadata_id)
         if not images:
             return False
@@ -100,5 +104,6 @@ class Show(MediaUpdater):
                 'update_images': self.scope.update_images,
                 'update_metadata': self.scope.update_metadata,
                 'skip_existing': self.scope.skip_existing_media(),
+                'extract_only': self.scope.extract_only,
                 'is_subjob': True
             })

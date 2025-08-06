@@ -56,6 +56,8 @@ class ShowSeason(MediaUpdater):
         )
 
     def save_info_to_local(self):
+        if self.scope.extract_only:
+            return
         self.nfo.save_xml_as_nfo(nfo_path=self.season_nfo_file.local_path, nfo_xml=self.new_nfo_xml)
         if self.season_nfo_file.id:
             self.db.op.update_metadata_file_content(self.season_nfo_file.id, xml_content=self.new_nfo_xml)
@@ -77,6 +79,8 @@ class ShowSeason(MediaUpdater):
     # Legacy images are
     # poster.jpg
     def download_images(self):
+        if self.scope.extract_only:
+            return
         images = self.media_provider.get_season_images(
             show_metadata_id=self.metadata_id,
             season_order=self.season_order
@@ -110,6 +114,7 @@ class ShowSeason(MediaUpdater):
                     'update_images': self.scope.update_images,
                     'update_metadata': self.scope.update_metadata,
                     'skip_existing': self.scope.skip_existing_media(),
+                    'extract_only': self.scope.extract_only,
                     'is_subjob': True
                 })
         if not self.is_subjob:
