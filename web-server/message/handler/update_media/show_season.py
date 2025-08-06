@@ -47,7 +47,7 @@ class ShowSeason(MediaUpdater):
             self.metadata['tvdbid'] = self.local_nfo_dict['tvdbid']
         self.new_nfo_xml = self.nfo.show_season_to_xml(
             title = self.show_season.name,
-            year = self.metadata['year'],
+            year = self.metadata['year']  if 'year' in self.metadata else None,
             release_date=self.metadata['release_date'],
             season_order=self.season_order,
             tvdbid=self.metadata['tvdbid'],
@@ -101,7 +101,8 @@ class ShowSeason(MediaUpdater):
         if self.episodes:
             for episode in self.episodes:
                 create_child_job(name='update_media_files',payload={
-                    'metadata_id': self.metadata_id,
+                    'metadata_id': self.scope.metadata_id,
+                    'metadata_source': self.scope.metadata_source,
                     'target_kind': 'episode',
                     'target_id': episode.id,
                     'season_order': self.show_season.season_order_counter,

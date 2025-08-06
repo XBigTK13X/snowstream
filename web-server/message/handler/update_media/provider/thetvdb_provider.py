@@ -230,7 +230,7 @@ class ThetvdbProvider(base.MediaProvider):
             'tagline': None,
             'plot': None,
             'release_date': None,
-            'year': int(metadata['year']),
+            'year': int(metadata['year']) if 'year' in metadata else None,
             'tvdbid': int(metadata['id']),
             'tmdbid': None,
             'name': metadata['name']
@@ -254,7 +254,7 @@ class ThetvdbProvider(base.MediaProvider):
             'episode': int(first['number']),
             'season': int(first['seasonNumber']),
             'name': first['name'],
-            'year': int(first['year']),
+            'year': int(first['year']) if 'year' in first else None,
             'aired': first['aired'] if 'aired' in first else None
         }
         if len(metadata) > 1:
@@ -280,7 +280,7 @@ class ThetvdbProvider(base.MediaProvider):
             'tvdbid': int(metadata['id']),
             'tmdbid': None,
             'release_date': metadata['firstAired'],
-            'year': int(metadata['year']),
+            'year': int(metadata['year']) if 'year' in metadata else None,
             'name': None
         }
 

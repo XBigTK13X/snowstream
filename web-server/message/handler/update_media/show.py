@@ -45,7 +45,7 @@ class Show(MediaUpdater):
             self.metadata['tvdbid'] = self.local_nfo_dict['tvdbid']
         self.new_nfo_xml = self.nfo.show_to_xml(
             title=self.metadata['name'],
-            year=self.metadata['year'],
+            year=self.metadata['year']  if 'year' in self.metadata else None,
             release_date=self.metadata['release_date'],
             plot=self.metadata['overview'],
             tvdbid=self.metadata['tvdbid'],
@@ -92,7 +92,8 @@ class Show(MediaUpdater):
     def schedule_subjobs(self):
         for season in self.show.seasons:
             create_child_job(name='update_media_files',payload={
-                'metadata_id': self.metadata_id,
+                'metadata_id': self.scope.metadata_id,
+                'metadata_source': self.scope.metadata_source,
                 'target_kind': 'season',
                 'target_id': season.id,
                 'season_order': season.season_order_counter,
