@@ -33,7 +33,7 @@ class JobMediaScope:
         self.spawn_subjob = parse(raw_job_input,'spawn_subjob')
 
     def is_unscoped(self):
-        return (self.target_kind == None or self.target_id == None) and self.target_directory == None
+        return (not self.target_kind or not self.target_id) and not self.target_directory
 
     def is_directory(self):
         return self.target_kind == 'directory' or ((self.target_kind == None or self.target_id == None) and self.target_directory != None)
