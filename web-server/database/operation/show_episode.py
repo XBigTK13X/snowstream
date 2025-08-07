@@ -434,7 +434,8 @@ def get_show_episode_metadata_file(show_episode_id: int, metadata_file_id: int):
 def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
     with DbSession() as db:
         existing = db.query(dm.ShowEpisodeTag).filter(
-            dm.ShowEpisodeTag.show_episode_id == show_episode_id and dm.ShowEpisodeTag.tag_id == tag_id
+            dm.ShowEpisodeTag.show_episode_id == show_episode_id,
+            dm.ShowEpisodeTag.tag_id == tag_id
         ).first()
         if existing:
             return existing

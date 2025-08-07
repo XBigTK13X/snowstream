@@ -77,8 +77,6 @@ def get_movie_by_directory(directory:str):
         return db.query(dm.Movie).filter(dm.Movie.directory == directory).first()
 
 def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
-    if not ticket.is_allowed(tag_id=tag_id):
-        return None
     with DbSession() as db:
         movies = (
             db.query(dm.Movie)
@@ -91,6 +89,8 @@ def get_movie_list_by_tag_id(ticket:dm.Ticket, tag_id):
         )
         results = []
         for movie in movies:
+            if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
+                continue
             if tag_id in movie.get_tag_ids():
                 movie = dm.set_primary_images(movie)
                 results.append(movie)

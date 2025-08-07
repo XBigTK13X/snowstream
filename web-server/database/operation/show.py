@@ -67,8 +67,6 @@ def add_show_to_shelf(show_id: int, shelf_id: int):
         return dbm
 
 def get_show_list_by_tag_id(ticket:dm.Ticket, tag_id:int):
-    if not ticket.is_allowed(tag_id=tag_id):
-        return None
     with DbSession() as db:
         shows = (
             db.query(dm.Show)
@@ -79,6 +77,8 @@ def get_show_list_by_tag_id(ticket:dm.Ticket, tag_id:int):
         )
         results = []
         for show in shows:
+            if not ticket.is_allowed(tag_provider=show.get_tag_ids):
+                continue
             if tag_id in show.get_tag_ids():
                 show = dm.set_primary_images(show)
                 results.append(show)
@@ -187,7 +187,13 @@ def get_show_metadata_file(show_id: int, metadata_file_id: int):
 
 def upsert_show_tag(show_id: int, tag_id: int):
     with DbSession() as db:
-        existing = db.query(dm.ShowTag).filter(dm.ShowTag.show_id == show_id and dm.ShowTag.tag_id == tag_id).first()
+        existing = (
+            db.query(dm.ShowTag)
+            .filter(
+                dm.ShowTag.show_id == show_id,
+                dm.ShowTag.tag_id == tag_id
+            ).first()
+        )
         if existing:
             return existing
         dbm = dm.ShowTag()

@@ -159,16 +159,18 @@ def handle(scope):
                     tag_id = defined_tag_ids[tag_name]
                     if metadata_file.movie != None:
                         db.op.upsert_movie_tag(metadata_file.movie.id,tag_id)
-                    if metadata_file.show != None:
-                        db.op.upsert_show_tag(metadata_file.show.id,tag_id)
+                    elif metadata_file.show != None:
+                        db.op.upsert_show_tag(show_id=metadata_file.show.id,tag_id=tag_id)
                         if not metadata_file.show.release_year and 'year' in nfo_content and nfo_content['year']:
                             if not metadata_file.show.id in updated_shows:
                                 update_show_years.append([metadata_file.show.id,metadata_file.show.name, nfo_content['year']])
                                 updated_shows[metadata_file.show.id] = True
-                    if metadata_file.show_season != None:
+                    elif metadata_file.show_season != None:
                         db.op.upsert_show_season_tag(metadata_file.show_season.id,tag_id)
-                    if metadata_file.show_episode != None:
+                    elif metadata_file.show_episode != None:
                         db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
+                    else:
+                        db.op.update_job(job_id=scope.job_id, message=f"Did not find any content to upsert for tag {tag_name} on metadata_file {metadata_file.local_path}")
             except Exception as e:
                 db.op.update_job(job_id=scope.job_id,message=f"An error occurred while processing metadata_file [{metadata_file.local_path}]")
                 import traceback

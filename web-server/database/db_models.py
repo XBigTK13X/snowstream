@@ -63,6 +63,9 @@ class Ticket:
         self.shelf_ids = None
         self.stream_source_ids = None
 
+    def tag_csv(self):
+        return ','.join([f'{xx}' for xx in self.tag_ids])
+
     def has_shelf_restrictions(self):
         return self.shelf_ids != None
 
