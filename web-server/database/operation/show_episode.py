@@ -184,7 +184,8 @@ def get_show_episode_list(
     first_result:bool=None,
     load_episode_files:bool=True,
     trim_episode_files:bool=False,
-    show_playlisted:bool=True
+    show_playlisted:bool=True,
+    bump_specials:bool=False
 ):
     if first_per_show and first_per_season:
         log.error("Only first_per_show OR first_per_season can be used to retrieve an episode list")
@@ -197,6 +198,14 @@ def get_show_episode_list(
             watch_group = ','.join([str(xx) for xx in ticket.watch_group])
         if search_query:
             search_query = search_query.replace("'","''")
+        season_order_query = 'season.season_order_counter'
+        if bump_specials:
+            season_order_query = '''
+        case
+            when season.season_order_counter = 0 then 100000
+            else season.season_order_counter
+        end
+        '''
         raw_query =f'''
         select
 
@@ -318,7 +327,7 @@ def get_show_episode_list(
             episode.name
         order by
             {f"show.name," if not first_per_season else ""}
-            season.season_order_counter,
+            {season_order_query},
             episode.episode_order_counter
         {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
         {f'limit 1' if first_result else ''}

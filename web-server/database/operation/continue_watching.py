@@ -109,7 +109,8 @@ def get_continue_watching_list(ticket:dm.Ticket):
                     include_specials=True,
                     only_unwatched=True,
                     first_per_show=True,
-                    load_episode_files=False
+                    load_episode_files=False,
+                    bump_specials=True
                 )
                 for episode in unwatched_episodes:
                     if episode.season.show.id in skip_episode:
