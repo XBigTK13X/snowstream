@@ -23,9 +23,13 @@ def prep(files,movie=None,show=None,show_season=None,show_episode=None):
         if movie:
             result.movie = db.model.Stub()
             result.movie.id = movie.id
+            result.movie.release_year = movie.release_year
+            result.movie.name = movie.name
         if show:
             result.show = db.model.Stub()
             result.show.id = show.id
+            result.show.release_year = show.release_year
+            result.show.name = show.name
         if show_season:
             result.show_season = db.model.Stub()
             result.show_season.id = show_season.id
@@ -138,32 +142,37 @@ def handle(scope):
             if not os.path.exists(metadata_file.local_path):
                 db.op.update_job(job_id=scope.job_id, message=f"WARNING A metadata_file db entry exists for a path that does not exist\n\t[{metadata_file.local_path}]")
                 continue
-            nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
-            if not 'tag' in nfo_content:
-                continue
-            for tag_name in nfo_content['tag']:
-                if not ':' in tag_name or 'Source:' in tag_name:
+            try:
+                nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
+                if not 'tag' in nfo_content:
                     continue
-                if not tag_name in defined_tag_ids:
-                    tag = db.op.get_tag_by_name(tag_name)
-                    if tag == None:
-                        tag = am.Tag(**{'name':tag_name})
-                        tag = db.op.upsert_tag(tag)
-                    defined_tag_ids[tag_name] = tag.id
-                    db.op.update_job(job_id=scope.job_id, message=f"Processed [{tag.name}] for the first time on {metadata_file.local_path}")
-                tag_id = defined_tag_ids[tag_name]
-                if metadata_file.movie != None:
-                    db.op.upsert_movie_tag(metadata_file.movie.id,tag_id)
-                if metadata_file.show != None:
-                    db.op.upsert_show_tag(metadata_file.show.id,tag_id)
-                    if not metadata_file.show.release_year and 'year' in nfo_content and nfo_content['year']:
-                        if not metadata_file.show.id in updated_shows:
-                            update_show_years.append([metadata_file.show.id,metadata_file.show.name, nfo_content['year']])
-                            updated_shows[metadata_file.show.id] = True
-                if metadata_file.show_season != None:
-                    db.op.upsert_show_season_tag(metadata_file.show_season.id,tag_id)
-                if metadata_file.show_episode != None:
-                    db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
+                for tag_name in nfo_content['tag']:
+                    if not ':' in tag_name or 'Source:' in tag_name:
+                        continue
+                    if not tag_name in defined_tag_ids:
+                        tag = db.op.get_tag_by_name(tag_name)
+                        if tag == None:
+                            tag = am.Tag(**{'name':tag_name})
+                            tag = db.op.upsert_tag(tag)
+                        defined_tag_ids[tag_name] = tag.id
+                        db.op.update_job(job_id=scope.job_id, message=f"Processed [{tag.name}] for the first time on {metadata_file.local_path}")
+                    tag_id = defined_tag_ids[tag_name]
+                    if metadata_file.movie != None:
+                        db.op.upsert_movie_tag(metadata_file.movie.id,tag_id)
+                    if metadata_file.show != None:
+                        db.op.upsert_show_tag(metadata_file.show.id,tag_id)
+                        if not metadata_file.show.release_year and 'year' in nfo_content and nfo_content['year']:
+                            if not metadata_file.show.id in updated_shows:
+                                update_show_years.append([metadata_file.show.id,metadata_file.show.name, nfo_content['year']])
+                                updated_shows[metadata_file.show.id] = True
+                    if metadata_file.show_season != None:
+                        db.op.upsert_show_season_tag(metadata_file.show_season.id,tag_id)
+                    if metadata_file.show_episode != None:
+                        db.op.upsert_show_episode_tag(metadata_file.show_episode.id,tag_id)
+            except Exception as e:
+                db.op.update_job(job_id=scope.job_id,message=f"An error occurred while processing metadata_file [{metadata_file.local_path}]")
+                import traceback
+                db.op.update_job(job_id=scope.job_id,message=f"{traceback.format_exc()}")
         if update_show_years:
             for info in update_show_years:
                 db.op.update_job(job_id=scope.job_id, message=f"Update show [{info[0]}][{info[1]}] release year to {info[2]}")
@@ -181,7 +190,12 @@ def handle(scope):
             if not os.path.exists(image_file.local_path):
                 db.op.update_job(job_id=scope.job_id, message=f"WARNING An image_file db entry exists for a path that does not exist\n\t[{image_file.local_path}]")
                 continue
-            magick.create_thumbnail(local_path=image_file.local_path,force_overwrite=(not scope.skip_existing))
+            try:
+                magick.create_thumbnail(local_path=image_file.local_path,force_overwrite=(not scope.skip_existing))
+            except Exception as e:
+                db.op.update_job(job_id=scope.job_id,message=f"An error occurred while processing image_file [{image_file.local_path}]")
+                import traceback
+                db.op.update_job(job_id=scope.job_id,message=f"{traceback.format_exc()}")
 
     if scope.update_videos and video_files:
         db.op.update_job(job_id=scope.job_id, message=f"Updating {len(video_files)} video files")
@@ -195,25 +209,30 @@ def handle(scope):
             if not os.path.exists(video_file.local_path):
                 db.op.update_job(job_id=scope.job_id, message=f"WARNING A video_file db entry exists for a path that does not exist\n\t[{video_file.local_path}]")
                 continue
-            if scope.skip_existing and video_file.ffprobe_raw_json and video_file.mediainfo_raw_json:
-                # Regenerate the snowstream info without running the file through mediainfo + ffprobe
-                info = ffmpeg.path_to_info_json(
-                    media_path=video_file.local_path,
-                    ffprobe_json=video_file.ffprobe_raw_json,
-                    mediainfo_json=video_file.mediainfo_raw_json
-                )
-                db.op.update_video_file_info(
-                    video_file_id=video_file.id,
-                    snowstream_info_json=info['snowstream_info']
-                )
-            else:
-                # First read fresh mediainfo + ffprobe from file, then regenerate the snowstream info
-                info = ffmpeg.path_to_info_json(media_path=video_file.local_path)
-                db.op.update_video_file_info(
-                    video_file_id=video_file.id,
-                    snowstream_info_json=info['snowstream_info'],
-                    ffprobe_json=info['ffprobe_raw'],
-                    mediainfo_json=info['mediainfo_raw']
-                )
+            try:
+                if scope.skip_existing and video_file.ffprobe_raw_json and video_file.mediainfo_raw_json:
+                    # Regenerate the snowstream info without running the file through mediainfo + ffprobe
+                    info = ffmpeg.path_to_info_json(
+                        media_path=video_file.local_path,
+                        ffprobe_json=video_file.ffprobe_raw_json,
+                        mediainfo_json=video_file.mediainfo_raw_json
+                    )
+                    db.op.update_video_file_info(
+                        video_file_id=video_file.id,
+                        snowstream_info_json=info['snowstream_info']
+                    )
+                else:
+                    # First read fresh mediainfo + ffprobe from file, then regenerate the snowstream info
+                    info = ffmpeg.path_to_info_json(media_path=video_file.local_path)
+                    db.op.update_video_file_info(
+                        video_file_id=video_file.id,
+                        snowstream_info_json=info['snowstream_info'],
+                        ffprobe_json=info['ffprobe_raw'],
+                        mediainfo_json=info['mediainfo_raw']
+                    )
+            except Exception as e:
+                db.op.update_job(job_id=scope.job_id,message=f"An error occurred while processing video_file [{video_file.local_path}]")
+                import traceback
+                db.op.update_job(job_id=scope.job_id,message=f"{traceback.format_exc()}")
 
     return True

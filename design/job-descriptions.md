@@ -16,6 +16,8 @@ Download new NFO and image content from provider to local disk
 Whatever changes have been made to known files on local disk
 Reprocess that data, overwriting existing info in the DB
 
+This can be used to force a show's thumbnails to be regenerated using update_images
+
 ## delete_media_records
 
 Completely remove a show or movie from the database.
