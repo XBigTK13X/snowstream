@@ -111,7 +111,7 @@ class MediaTrack:
 
     def score_audio_track(self, ffprobe, mediainfo, is_anime):
         if self.language:
-            if self.language == 'en':
+            if 'en' in self.language.lower():
                 if 'truehd' in ffprobe['codec_name']:
                     return 2100
                 return 2050
@@ -133,7 +133,7 @@ class MediaTrack:
         self.score = self.score_audio_track(ffprobe, mediainfo, is_anime)
 
     def score_subtitle_track(self, ffprobe, mediainfo, is_anime):
-        if self.language == 'en':
+        if 'en' in self.language.lower():
             low_title = self.title.lower()
             if not self.is_text:
                 return 2040
