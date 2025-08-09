@@ -26,7 +26,6 @@ import {
     View,
 } from 'react-native'
 
-
 import { useDebouncedCallback } from 'use-debounce';
 
 // https://www.npmjs.com/package/react-native-tvos

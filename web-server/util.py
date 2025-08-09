@@ -2,9 +2,11 @@ import threading
 import subprocess
 import sys
 from log import log
-import os
 from passlib.context import CryptContext
 import hashlib
+import io
+import qrcode
+import base64
 
 def run_cli(command, raw_output=False, background=False, log_path=None):
     stdout_target = subprocess.PIPE
@@ -96,3 +98,19 @@ def get_season_title(season):
 def string_to_md5(input_string:str):
     encoded_bytes = input_string.encode('utf-8')
     return hashlib.md5(encoded_bytes).hexdigest()
+
+def search_to_base64_qrcode(query:str):
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=10,
+        border=5
+    )
+    qr.add_data(f"https://www.google.com/search?q={query.replace(' ','+')}")
+    qr.make(fit=True)
+    image = qr.make_image(back_color="rgb(136, 98, 27)", fill_color="rgb(119, 139, 255)")
+
+    buffer = io.BytesIO()
+    image.save(buffer, format='PNG')
+    buffer.seek(0)
+    encoded = base64.b64encode(buffer.read()).decode('utf-8')
+    return f'data:image/png;base64,{encoded}'

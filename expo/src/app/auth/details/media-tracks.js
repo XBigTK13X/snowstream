@@ -279,13 +279,23 @@ export default function MediaTracksPage(props) {
                         subtitleTrack={subtitleTrack}
                     />
                 </C.View>
-                <C.View>
-                    <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
-                    <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
-                    <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
-                    <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
-                    <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
-                </C.View>
+                <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
+                <C.SnowGrid shrink itemsPerRow={2}>
+                    <C.View>
+                        <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
+                        <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
+                        <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
+                        <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
+                    </C.View>
+                    <C.View
+                        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <C.SnowLabel>Discussion</C.SnowLabel>
+                        <C.Image
+                            source={{ uri: media.discussion_image_url }}
+                            style={{ width: 200, height: 200 }}
+                        />
+                    </C.View>
+                </C.SnowGrid>
             </C.FillView>
         )
     }
