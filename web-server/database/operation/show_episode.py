@@ -5,6 +5,7 @@ from database.sql_alchemy import DbSession
 import sqlalchemy.orm as sorm
 from sqlalchemy import text as sql_text
 from settings import config
+import util
 
 SeasonTags = sorm.aliased(dm.Tag)
 
@@ -349,6 +350,8 @@ def get_show_episode_list(
                 continue
             if show_playlisted == False and any('Playlist:' in xx for xx in model.tag_names):
                 continue
+            if not model.name or 'TBA' in model.name:
+                model.name = util.get_episode_slug(model)
             results.append(model)
         if first_result == True:
             return results[0]

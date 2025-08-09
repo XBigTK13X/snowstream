@@ -10,7 +10,7 @@ export default function EpisodeDetailsPage() {
             return media.season.show.remote_metadata_id
         }}
         getMediaName={(localParams, media) => {
-            return `${localParams.showName} season ${localParams.seasonOrder} episode ${C.util.formatEpisodeTitle(media)}`
+            return `${localParams.showName} - ${media.name}`
         }}
         loadMedia={(apiClient, localParams) => {
             return apiClient.getEpisode(localParams.episodeId)
