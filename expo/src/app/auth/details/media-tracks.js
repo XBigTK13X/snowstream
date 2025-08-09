@@ -83,6 +83,9 @@ export default function MediaTracksPage(props) {
 
     if (shelf && media) {
         const videoFile = media.video_files[videoFileIndex]
+        if (!videoFile) {
+            return <SnowText>No video file found for this selection.</SnowText>
+        }
         const videoTrack = videoFile.info.tracks.video[0]
         if (showModal) {
             let fileInfos = []
