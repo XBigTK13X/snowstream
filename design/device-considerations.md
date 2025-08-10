@@ -2,6 +2,7 @@
 
 - Cannot hardware accel decode h264 10 bit (like star twinkle precure)
 - CPU is beefy enough to software decode h264 10 bit
+- Cannot decode HDR10+
 
 HDMI:2.0b
 Codecs: HEVC, VP9
