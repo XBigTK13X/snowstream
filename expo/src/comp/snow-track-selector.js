@@ -33,7 +33,7 @@ function TrackList(props) {
         )
     }
     return (
-        <FillView>
+        <View>
             {header}
 
             <SnowGrid short shrink itemsPerRow={4}>
@@ -58,7 +58,7 @@ function TrackList(props) {
                     return (
                         <SnowTextButton
                             key={trackKey}
-                            short
+                            tall
                             selected={relativeIndex === props.activeTrack}
                             title={display}
                             onPress={() => { props.selectTrack(track) }}
@@ -66,7 +66,7 @@ function TrackList(props) {
                     )
                 })}
             </SnowGrid>
-        </FillView>
+        </View>
     )
 }
 

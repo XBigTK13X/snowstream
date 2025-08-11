@@ -5,6 +5,12 @@ import SnowTextButton from './snow-text-button'
 import SnowText from './snow-text'
 import SnowLabel from './snow-label'
 
+const styles = {
+    fade: {
+
+    }
+}
+
 export function SnowDropdown(props) {
     if (!props.options) {
         return <View>No options defined!</View>
@@ -28,6 +34,7 @@ export function SnowDropdown(props) {
         }
         return <SnowTextButton
             tall
+            fade={!selected && props.fade}
             selected={selected}
             title={item.name ? item.name : item}
             onPress={() => { choose(item.index ? item.index : itemIndex) }} />
@@ -36,10 +43,10 @@ export function SnowDropdown(props) {
     if (props.title) {
         return <View>
             <SnowLabel center>{props.title}</SnowLabel>
-            <SnowGrid shrink items={props.options} renderItem={renderItem} />
+            <SnowGrid itemsPerRow={props.itemsPerRow} shrink items={props.options} renderItem={renderItem} />
         </View>
     }
-    return <SnowGrid shrink items={props.options} renderItem={renderItem} />
+    return <SnowGrid itemsPerRow={props.itemsPerRow} shrink items={props.options} renderItem={renderItem} />
 }
 
 export default SnowDropdown

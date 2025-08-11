@@ -217,9 +217,43 @@ export default function MediaTracksPage(props) {
             resumeControls = (
                 <C.SnowTextButton
                     shouldFocus
+                    tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
                     onPress={routes.func(routes.playMedia, resumePlayDestination)}
                 />
+            )
+        }
+        const tabs = [
+            'Control',
+            'Track',
+            'Info'
+        ]
+        let adminTab = null
+        if (isAdmin) {
+            tabs.push('Admin')
+            adminTab = (
+                <C.FillView>
+                    <C.SnowGrid shrink itemsPerRow={2}>
+                        <C.SnowTextButton
+                            title={`Rescan ${props.mediaKind}`}
+                            tall
+                            onPress={() => {
+                                const scanDetails = props.getScanDetails(localParams)
+                                return apiClient.createJobShelvesScan(scanDetails).then(() => {
+                                    let readDetails = { ...scanDetails, ...{ updateVideos: true, updateMetadata: true } }
+                                    return apiClient.createJobReadMediaFiles(readDetails)
+                                })
+                            }} />
+                        <C.SnowUpdateMediaButton
+                            tall
+                            remoteId={remoteMetadataId}
+                            kind={props.mediaKind}
+                            updateMediaJob={(promptDetails) => {
+                                const mediaDetails = props.getUpdateMediaJobDetails(localParams)
+                                return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
+                            }} />
+                    </C.SnowGrid>
+                </C.FillView>
             )
         }
         return (
@@ -228,75 +262,79 @@ export default function MediaTracksPage(props) {
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(localParams, media) : media.name}
                     </C.SnowLabel>
-                    <C.SnowGrid itemsPerRow={2}>
+                    <C.SnowGrid itemsPerRow={4}>
                         {resumeControls}
                         <C.SnowTextButton
+                            tall
                             shouldFocus={playFocus}
                             title={playTitle}
                             onPress={routes.func(routes.playMedia, combinedPlayDestination)}
                         />
-                        {/*<C.SnowTextButton
+                    </C.SnowGrid>
+                </C.View>
+                <C.FillView>
+                    <C.SnowTabs headers={tabs}>
+                        <C.FillView>
+                            <C.SnowGrid shrink itemsPerRow={4}>
+                                {/*<C.SnowTextButton
                         shouldFocus={playFocus}
                         title="Transcode"
                         onPress={routes.func(routes.playMedia, transcodePlayDestination)}
                     />*/}
-                        {mainFeatureButton}
-                        <C.SnowTextButton title={watchTitle} onLongPress={setWatchStatus} />
-                        <C.SnowTextButton title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
-                        {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
-                        {isAdmin ? <C.SnowTextButton title={`Rescan ${props.mediaKind}`}
-                            onPress={() => {
-                                const scanDetails = props.getScanDetails(localParams)
-                                return apiClient.createJobShelvesScan(scanDetails).then(() => {
-                                    let readDetails = { ...scanDetails, ...{ updateVideos: true, updateMetadata: true } }
-                                    return apiClient.createJobReadMediaFiles(readDetails)
-                                })
-                            }} /> : null}
-                        {isAdmin ? <C.SnowUpdateMediaButton
-                            remoteId={remoteMetadataId}
-                            kind={props.mediaKind}
-                            updateMediaJob={(promptDetails) => {
-                                const mediaDetails = props.getUpdateMediaJobDetails(localParams)
-                                return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
-                            }} /> : null}
-                        <C.SnowTextButton
-                            title={`Toggle Player [${player}]`}
-                            onPress={togglePlayer}
-                        />
-                        <C.SnowTextButton
-                            title="Info"
-                            onPress={showInfo}
-                        />
-                    </C.SnowGrid>
-                </C.View>
-                <C.View>
-                    {versionPicker}
-                    {extraPicker}
-                    <C.SnowTrackSelector
-                        tracks={videoFile.info.tracks}
-                        selectTrack={selectTrack}
-                        audioTrack={audioTrack}
-                        subtitleTrack={subtitleTrack}
-                    />
-                </C.View>
-                <C.SnowText>Path: {videoFile.network_path}</C.SnowText>
-                <C.SnowGrid shrink itemsPerRow={2}>
-                    <C.View>
-                        <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
-                        <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
-                        <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
-                        <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
-                    </C.View>
-                    <C.View
-                        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <C.SnowLabel>Discussion</C.SnowLabel>
-                        <C.Image
-                            source={{ uri: media.discussion_image_url }}
-                            style={{ width: 200, height: 200 }}
-                        />
-                    </C.View>
-                </C.SnowGrid>
-            </C.FillView>
+                                {mainFeatureButton}
+                                <C.SnowTextButton tall title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
+                                {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
+                            </C.SnowGrid>
+                            <C.SnowGrid itemsPerRow={4}>
+                                <C.SnowTextButton tall title={watchTitle} onLongPress={setWatchStatus} />
+                                <C.SnowTextButton
+                                    title={`Toggle Player [${player}]`}
+                                    tall
+                                    onPress={togglePlayer}
+                                />
+                            </C.SnowGrid>
+                        </C.FillView>
+                        <C.FillView>
+                            {versionPicker}
+                            {extraPicker}
+                            <C.SnowTrackSelector
+                                tracks={videoFile.info.tracks}
+                                selectTrack={selectTrack}
+                                audioTrack={audioTrack}
+                                subtitleTrack={subtitleTrack}
+                            />
+                        </C.FillView>
+                        <C.FillView>
+                            <C.SnowText center>Path: {videoFile.network_path}</C.SnowText>
+                            <C.SnowGrid shrink itemsPerRow={3}>
+                                <C.SnowTextButton
+                                    tall
+                                    title="Inspection"
+                                    onPress={showInfo}
+                                />
+                            </C.SnowGrid>
+                            <C.SnowGrid shrink itemsPerRow={2}>
+                                <C.View>
+
+                                    <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
+                                    <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
+                                    <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
+                                    <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
+                                </C.View>
+                                <C.View
+                                    style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <C.SnowLabel>Discussion</C.SnowLabel>
+                                    <C.Image
+                                        source={{ uri: media.discussion_image_url }}
+                                        style={{ width: 200, height: 200 }}
+                                    />
+                                </C.View>
+                            </C.SnowGrid>
+                        </C.FillView>
+                        {adminTab}
+                    </C.SnowTabs >
+                </C.FillView >
+            </C.FillView >
         )
     }
     return (

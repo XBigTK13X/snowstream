@@ -34,6 +34,10 @@ const styles = {
     disabled: {
         opacity: 0.5
     },
+    fade: {
+        backgroundColor: Style.color.fade,
+        borderColor: Style.color.fade
+    },
     text: {
         fontSize: Style.textButton.fontSize.normal,
         padding: 0,
@@ -67,6 +71,10 @@ export function SnowTextButton(props) {
         if (focused) {
             wrapperStyle.push(styles.focused)
         }
+    }
+
+    if (props.fade) {
+        wrapperStyle.push(styles.fade)
     }
 
     if (props.tall) {

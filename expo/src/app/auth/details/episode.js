@@ -35,11 +35,11 @@ export default function EpisodeDetailsPage() {
                 showName: localParams.showName,
             }
             return [
-                <C.SnowTextButton key="season" title={`Season ${localParams.seasonOrder} `}
-                    onPress={routes.func(routes.episodeList, episodeListPayload)}
-                />,
-                <C.SnowTextButton key="show" title={localParams.showName}
+                <C.SnowTextButton tall key="show" title={localParams.showName}
                     onPress={routes.func(routes.seasonList, seasonListPayload)}
+                />,
+                <C.SnowTextButton tall key="season" title={`Season ${localParams.seasonOrder} `}
+                    onPress={routes.func(routes.episodeList, episodeListPayload)}
                 />
             ]
         }}

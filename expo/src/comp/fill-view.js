@@ -2,6 +2,9 @@ import { ScrollView, View } from 'react-native'
 const styles = {
     default: {
         flex: 1
+    },
+    flexStart: {
+        justifyContent: 'flex-start'
     }
 }
 export default function FillView(props) {
@@ -14,8 +17,16 @@ export default function FillView(props) {
     if (props.shrink) {
         style = []
     }
-    const ViewKind = props.scroll ? ScrollView : View
+    if (props.flexStart) {
+        style.push(styles.flexStart)
+    }
+    if (props.scroll) {
+        return <ScrollView
+            contentContainerStyle={style}
+            children={props.children}
+        />
+    }
     return (
-        <ViewKind style={style} children={props.children} />
+        <View style={style} children={props.children} />
     )
 }

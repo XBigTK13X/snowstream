@@ -24,6 +24,7 @@ export const Style = {
         core: 'rgb(219, 158, 44)',
         coreDark: 'rgb(136, 98, 27)',
         outlineDark: 'rgb(63, 63, 63)',
+        fade: 'rgb(23, 23, 23)',
         transparentDark: 'rgba(0,0,0,0.6)'
     },
     fontSize: {

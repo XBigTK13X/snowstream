@@ -51,6 +51,7 @@ import SnowText from './comp/snow-text'
 import SnowScreencapGrid from './comp/snow-screencap-grid'
 import SnowVideoPlayer from './comp/snow-video-player'
 import SnowVideoControls from './comp/snow-video-controls'
+import SnowTabs from './comp/snow-tabs'
 import SnowTrackSelector from './comp/snow-track-selector'
 import SnowTextButton from './comp/snow-text-button'
 import SnowUpdateMediaButton from './comp/snow-update-media-button'
@@ -89,6 +90,7 @@ export default {
     SnowModal,
     SnowPosterGrid,
     SnowScreencapGrid,
+    SnowTabs,
     SnowText,
     SnowTextButton,
     SnowToggle,
