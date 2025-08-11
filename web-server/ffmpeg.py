@@ -106,8 +106,17 @@ class MediaTrack:
         self.resolution_width = int(mediainfo['Width'])
         self.resolution_height = int(mediainfo['Height'])
         self.is_hdr = 'HDR_Format' in mediainfo
+        if self.is_hdr:
+            self.hdr_format = mediainfo['HDR_Format']
+            self.hdr_compatibility = mediainfo['HDR_Format_Compatibility']
         if 'BitDepth' in mediainfo:
             self.bit_depth = mediainfo['BitDepth']
+        if "Format_Profile" in mediainfo:
+            self.format_profile = mediainfo['Format_Profile']
+        if "Format_Level" in mediainfo:
+            self.format_level = mediainfo['Format_Level']
+        if "Format_Tier" in mediainfo:
+            self.format_tier = mediainfo['Format_Tier']
 
     def score_audio_track(self, ffprobe, mediainfo, is_anime):
         if self.language:

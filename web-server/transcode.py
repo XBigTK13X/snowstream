@@ -112,8 +112,17 @@ class Transcode:
         self.close_on_disconnect(transcode_session=transcode_session)
         return binary_data
 
+    def refresh_known_processes(self):
+        self.pid_is_ffmpeg = {}
+        result = util.run_cli('jc -p ps aux',raw_output=True)
+        processes = json.loads(result['stdout'])
+        for process in processes:
+            if 'ffmpeg' in process['command']:
+                self.ffmpeg_process_by_pid[process['pid']] = process['command']
+
     @util.debounce(config.transcode_disconnect_seconds)
     def close_on_disconnect(self, transcode_session:dm.TranscodeSession):
+        self.refresh_known_processes()
         self.close(transcode_session=transcode_session)
 
     def close(self, transcode_session:dm.TranscodeSession=None,transcode_session_id:int=None):
@@ -121,21 +130,23 @@ class Transcode:
             if transcode_session_id:
                 transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
             try:
-                os.kill(transcode_session.process_id, signal.SIGTERM)
+                if transcode_session.process_id in self.ffmpeg_process_by_pid and f'{transcode_session.stream_port}' in self.ffmpeg_process_by_pid[transcode_session.process_id]:
+                    os.kill(transcode_session.process_id, signal.SIGTERM)
             except Exception as e:
                 log.error(f"{traceback.format_exc()}")
-                log.error(f"Unable to close transcode session {transcode_session.process_id}")
+                log.error(f"Unable to kill transcode session process {transcode_session.process_id}")
             try:
                 shutil.rmtree(transcode_session.transcode_directory,ignore_errors=True)
             except Exception as e:
                 log.error(f"{traceback.format_exc()}")
-                log.error(f"Unable to close transcode session {transcode_session.process_id}")
+                log.error(f"Unable to remove transcode session directory {transcode_session.transcode_directory}")
             db.op.delete_transcode_session(transcode_session_id=transcode_session.id)
         except Exception as e:
             log.error(f"{traceback.format_exc()}")
-            log.error(f"Unable to close transcode session {transcode_session.process_id}")
+            log.error(f"Unable to close transcode session {transcode_session.id}")
 
     def cleanup(self):
+        self.refresh_known_processes()
         transcode_sessions = db.op.get_transcode_session_list()
         if transcode_sessions and len(transcode_sessions) > 0:
             log.info(f"Cleaning up {len(transcode_sessions)} transcode child processes")
