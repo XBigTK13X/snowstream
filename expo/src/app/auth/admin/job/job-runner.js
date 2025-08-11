@@ -2,20 +2,21 @@ import C from '../../../../common'
 
 export default function ShelfEditPage() {
     const { apiClient } = C.useAppContext()
-    const { routes, config } = C.useAppContext()
+    const { routes } = C.useAppContext()
+    const localParams = C.useLocalSearchParams()
 
-    const [episodeOrder, setEpisodeOrder] = C.React.useState('')
-    const [extractOnly, setExtractOnly] = C.React.useState('')
-    const [metadataId, setMetadataId] = C.React.useState('')
-    const [metadataSource, setMetadataSource] = C.React.useState('')
-    const [seasonOrder, setSeasonOrder] = C.React.useState('')
-    const [skipExisting, setSkipExisting] = C.React.useState('')
-    const [targetDirectory, setTargetDirectory] = C.React.useState('')
-    const [targetId, setTargetId] = C.React.useState('')
-    const [targetKind, setTargetKind] = C.React.useState('')
-    const [updateImages, setUpdateImages] = C.React.useState('')
-    const [updateMetadata, setUpdateMetadata] = C.React.useState('')
-    const [updateVideos, setUpdateVideos] = C.React.useState('')
+    const [episodeOrder, setEpisodeOrder] = C.React.useState(localParams.episodeOrder ?? '')
+    const [extractOnly, setExtractOnly] = C.React.useState(localParams.extractOnly ?? '')
+    const [metadataId, setMetadataId] = C.React.useState(localParams.metadataId ? localParams.metadataId : '')
+    const [metadataSource, setMetadataSource] = C.React.useState(localParams.metadataSource ?? '')
+    const [seasonOrder, setSeasonOrder] = C.React.useState(localParams.seasonOrder ?? '')
+    const [skipExisting, setSkipExisting] = C.React.useState(localParams.skipExisting ?? '')
+    const [targetDirectory, setTargetDirectory] = C.React.useState(localParams.targetDirectory ?? '')
+    const [targetId, setTargetId] = C.React.useState(localParams.targetId ?? '')
+    const [targetKind, setTargetKind] = C.React.useState(localParams.targetKind ?? '')
+    const [updateImages, setUpdateImages] = C.React.useState(localParams.updateImages ?? '')
+    const [updateMetadata, setUpdateMetadata] = C.React.useState(localParams.updateMetadata ?? '')
+    const [updateVideos, setUpdateVideos] = C.React.useState(localParams.updateVideos ?? '')
 
     const createJob = (apiCall) => {
         let details = {
@@ -32,6 +33,44 @@ export default function ShelfEditPage() {
             updateMetadata,
             updateVideos,
         }
+        let params = {}
+        if (episodeOrder) {
+            params.episodeOrder = episodeOrder
+        }
+        if (extractOnly) {
+            params.extractOnly = extractOnly
+        }
+        if (metadataId) {
+            params.metadataId = metadataId
+        }
+        if (metadataSource) {
+            params.metadataSource = metadataSource
+        }
+        if (seasonOrder) {
+            params.seasonOrder = seasonOrder
+        }
+        if (skipExisting) {
+            params.skipExisting = skipExisting
+        }
+        if (targetDirectory) {
+            params.targetDirectory = targetDirectory
+        }
+        if (targetId) {
+            params.targetId = targetId
+        }
+        if (targetKind) {
+            params.targetKind = targetKind
+        }
+        if (updateImages) {
+            params.updateImages = updateImages
+        }
+        if (updateMetadata) {
+            params.updateMetadata = updateMetadata
+        }
+        if (updateVideos) {
+            params.updateVideos = updateVideos
+        }
+        routes.replace(routes.admin.jobRunner, params)
         return apiCall(details)
     }
 
