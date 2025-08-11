@@ -107,7 +107,7 @@ def search_to_base64_qrcode(query:str):
     )
     qr.add_data(f"https://www.google.com/search?q={query.replace(' ','+')}")
     qr.make(fit=True)
-    image = qr.make_image(back_color="rgb(136, 98, 27)", fill_color="rgb(119, 139, 255)")
+    image = qr.make_image(back_color="rgb(50, 50, 50)", fill_color="rgb(200, 200, 200)")
 
     buffer = io.BytesIO()
     image.save(buffer, format='PNG')
