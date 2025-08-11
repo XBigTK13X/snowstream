@@ -4,13 +4,9 @@ export function PlayMediaPage() {
     const { apiClient, routes, config, clientOptions } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
 
-    const videoFileIndex = localParams.videoFileIndex
     const forcePlayer = localParams.forcePlayer
 
     const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
-
-    const [playingQueueSource, setPlayingQueueSource] = C.React.useState(localParams.playingQueueSource)
-    const [playingQueue, setPlayingQueue] = C.React.useState(null)
 
     const [videoUrl, setVideoUrl] = C.React.useState(null)
 
@@ -19,8 +15,6 @@ export function PlayMediaPage() {
 
     const [tracks, setTracks] = C.React.useState(null)
     const [videoLoaded, setVideoLoaded] = C.React.useState(false)
-    const [videoTitle, setVideoTitle] = C.React.useState("")
-    const [videoIsHdr, setVideoIsHdr] = C.React.useState(false)
     const [countedWatch, setCountedWatch] = C.React.useState(false)
 
     const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
@@ -49,16 +43,18 @@ export function PlayMediaPage() {
             if (localParams.subtitleTrack) {
                 setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
             }
-            props.loadVideo(localParams)
-                .then((response) => {
-                    if (response.videoFile) {
-                        setTracks(response.videoFile.info.tracks)
-                        setVideoUrl(response.videoFile.network_path)
-                        setDurationSeconds(response.videoFile.info.duration_seconds)
-                        durationRef.current = response.videoFile.info.duration_seconds
-                        setVideoLoaded(true)
-                    }
-                })
+            if (props.loadVideo) {
+                props.loadVideo(localParams)
+                    .then((response) => {
+                        if (response.videoFile) {
+                            setTracks(response.videoFile.info.tracks)
+                            setVideoUrl(response.videoFile.network_path)
+                            setDurationSeconds(response.videoFile.info.duration_seconds)
+                            durationRef.current = response.videoFile.info.duration_seconds
+                            setVideoLoaded(true)
+                        }
+                    })
+            }
         }
     })
 
@@ -94,14 +90,16 @@ export function PlayMediaPage() {
     const onProgress = (progressSeconds, force) => {
         if (force || Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds) {
             setProgressSeconds(progressSeconds)
-            if (!playingQueueSource) {
-                const duration = durationRef.current
-                if (duration > 0 && progressSeconds > 0) {
+            const duration = durationRef.current
+            if (duration > 0 && progressSeconds > 0) {
+                if (props.updateProgress) {
                     return props.updateProgress(apiClient, localParams, progressSeconds, duration)
                         .then((isWatched) => {
                             if (isWatched && !countedWatch) {
                                 setCountedWatch(true)
-                                return props.increaseWatchCount(apiClient)
+                                if (props.increaseWatchCount) {
+                                    return props.increaseWatchCount(apiClient)
+                                }
                             }
                         })
                 }
@@ -123,14 +121,8 @@ export function PlayMediaPage() {
     const onComplete = () => {
         const duration = durationRef.current
         onProgress(duration).then(() => {
-            if (playingQueue) {
-                return apiClient.updatePlayingQueue(
-                    source = playingQueue.source,
-                    progress = playingQueue.progress + 1
-                )
-                    .then(() => {
-                        routes.replace(routes.playMedia, { playingQueueSource })
-                    })
+            if (props.onComplete) {
+                props.onComplete(apiClient, routes)
             } else {
                 routes.back()
             }

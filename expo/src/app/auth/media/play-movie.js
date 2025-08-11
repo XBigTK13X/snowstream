@@ -1,23 +1,16 @@
-import C from '../../../common'
-
 import PlayMediaPage from './play-media'
 
 export default function PlayMoviePage() {
-    const loadVideo = (localParams) => {
+    const loadVideo = (apiClient, localParams) => {
         apiClient.getMovie(localParams.movieId).then((response) => {
-            setMovie(response)
-            setMovieId(loadMovieId)
-            loadVideoFile(response)
-            let title = response.name
-            if (playingQueue) {
-                title = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${title}`
+            return {
+                videoFile: response.video_files[localParams.videoFileIndex ?? 0],
+                name: response.name
             }
-            setVideoTitle(title)
         })
     }
     const updateProgress = (apiClient, localParams, progressSeconds, duration) => {
         return apiClient.setMovieWatchProgress(localParams.movieId, progressSeconds, duration)
-
     }
 
     const increaseWatchCount = (apiClient, localParams) => {
@@ -26,6 +19,8 @@ export default function PlayMoviePage() {
     return (
         <PlayMediaPage
             loadVideo={loadVideo}
+            updateProgress={updateProgress}
+            increaseWatchCount={increaseWatchCount}
         />
     )
 }

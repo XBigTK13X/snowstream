@@ -1,19 +1,52 @@
-let title = response.name
-if (playingQueue) {
-    title = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${title}`
-}
+import C from '../../common'
 
-apiClient.getPlayingQueue({ source: playingQueueSource }).then(response => {
-    setPlayingQueue(response)
-    let entry = response.content[response.progress]
-    if (entry.kind === 'm') {
-        loadMovie(entry.id)
+import PlayMediaPage from './play-media'
+
+export default function PlayPlayingQueuePage() {
+    const [playingQueue, setPlayingQueue] = C.React.useState(null)
+    const loadVideo = (apiClient, localParams) => {
+        return apiClient.getPlayingQueue({ source: localParams.playingQueueSource }).then(response => {
+            setPlayingQueue(response)
+            // This needs to make sure the video file selected is main_feature
+            let entry = response.content[response.progress]
+            if (entry.kind === 'm') {
+                return apiClient.getMovie(entry.id).then((response) => {
+                    return {
+                        videoFile: response.video_files[localParams.videoFileIndex ?? 0],
+                        name: `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${response.name}`
+                    }
+                })
+            }
+            else if (entry.kind === 'e') {
+                return apiClient.getEpisode(entry.id).then((response) => {
+                    let name = `${response.season.show.name} - ${C.util.formatEpisodeTitle(response)}`
+                    name = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${name}`
+                    return {
+                        videoFile: response.video_files[localParams.videoFileIndex ?? 0],
+                        name: name
+                    }
+                })
+            }
+            else {
+                C.util.log("Unhandled playing queue entry")
+                C.util.log({ entry })
+            }
+        })
     }
-    else if (entry.kind === 'e') {
-        loadEpisode(entry.id)
+
+    const onComplete = (apiClient, routes) => {
+        return apiClient.updatePlayingQueue(
+            source = playingQueue.source,
+            progress = playingQueue.progress + 1
+        )
+            .then(() => {
+                routes.replace(routes.playMedia, { playingQueueSource })
+            })
     }
-    else {
-        C.util.log("Unhandled playing queue entry")
-        C.util.log({ entry })
-    }
-})
+    return (
+        <PlayMediaPage
+            loadVideo={loadVideo}
+            onComplete={onComplete}
+        />
+    )
+}
