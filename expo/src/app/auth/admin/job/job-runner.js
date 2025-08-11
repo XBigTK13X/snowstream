@@ -19,20 +19,6 @@ export default function ShelfEditPage() {
     const [updateVideos, setUpdateVideos] = C.React.useState(localParams.updateVideos ?? '')
 
     const createJob = (apiCall) => {
-        let details = {
-            episodeOrder,
-            extractOnly,
-            metadataId,
-            metadataSource,
-            seasonOrder,
-            skipExisting,
-            targetDirectory,
-            targetId,
-            targetKind,
-            updateImages,
-            updateMetadata,
-            updateVideos,
-        }
         let params = {}
         if (episodeOrder) {
             params.episodeOrder = episodeOrder
@@ -71,6 +57,20 @@ export default function ShelfEditPage() {
             params.updateVideos = updateVideos
         }
         routes.replace(routes.admin.jobRunner, params)
+        let details = {
+            episodeOrder,
+            extractOnly,
+            metadataId,
+            metadataSource,
+            seasonOrder,
+            skipExisting,
+            targetDirectory,
+            targetId,
+            targetKind,
+            updateImages,
+            updateMetadata,
+            updateVideos,
+        }
         return apiCall(details)
     }
 

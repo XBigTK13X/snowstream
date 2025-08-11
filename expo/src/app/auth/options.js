@@ -2,6 +2,7 @@ import C from '../../common'
 
 export default function OptionsPage() {
     const { clientOptions, changeClientOptions } = C.useAppContext()
+
     const resolutions = ['4K Ultra HD', '1080 Full HD']
     let storedResolution = 0
     if (clientOptions) {
@@ -12,11 +13,31 @@ export default function OptionsPage() {
     const [resolutionIndex, setResolutionIndex] = C.React.useState(storedResolution)
     const [resolutionWidth, setResolutionWidth] = C.React.useState(clientOptions ? clientOptions.resolutionWidth : '')
     const [resolutionHeight, setResolutionHeight] = C.React.useState(clientOptions ? clientOptions.resolutionHeight : '')
+
+    const deviceProfiles = [
+        'CCwGTV4K',
+        'Google Streamer',
+        'NVIDIA Shield',
+        'Web Browser'
+    ]
+    let storedDeviceProfile = 0
+    if (clientOptions) {
+        if (clientOptions.deviceProfile && clientOptions.deviceProfile !== deviceProfiles[0]) {
+            storedDeviceProfile = deviceProfiles.indexOf(clientOptions.deviceProfile)
+        }
+    }
+
+    const [deviceProfileIndex, setDeviceProfileIndex] = C.React.useState(storedDeviceProfile)
+    const [deviceProfile, setDeviceProfile] = C.React.useState(clientOptions ? clientOptions.deviceProfile : '')
+
+    const [deviceId, setDeviceId] = C.React.useState(clientOptions ? clientOptions.deviceId : '')
+
+
     const [audioCompression, setAudioCompression] = C.React.useState(clientOptions ? clientOptions.audioCompression : '')
     const [hardwareDecoder, setHardwareDecoder] = C.React.useState(clientOptions ? clientOptions.hardwareDecoder : '')
     const [alwaysTranscode, setAlwaysTranscode] = C.React.useState(clientOptions ? clientOptions.alwaysTranscode : '')
     const [alwaysUseExoPlayer, setAlwaysUseExoPlayer] = C.React.useState(clientOptions ? clientOptions.alwaysUseExoPlayer : '')
-    const [deviceId, setDeviceId] = C.React.useState(clientOptions ? clientOptions.deviceId : '')
+
 
     const chooseResolution = (selection) => {
         if (selection === 0) {
@@ -27,6 +48,11 @@ export default function OptionsPage() {
             setResolutionWidth(C.Style.surface.fhd.width)
         }
         setResolutionIndex(selection)
+    }
+
+    const chooseDeviceProfile = (selection) => {
+        setDeviceProfile(deviceProfiles[selection])
+        setDeviceProfileIndex(selection)
     }
 
     const chooseAudioCompression = (selection) => {
@@ -57,7 +83,8 @@ export default function OptionsPage() {
                         audioCompression,
                         hardwareDecoder,
                         alwaysTranscode,
-                        alwaysUseExoPlayer
+                        alwaysUseExoPlayer,
+                        deviceProfile
                     })
                 }} />
                 <C.View>
@@ -82,6 +109,11 @@ export default function OptionsPage() {
                         options={resolutions}
                         onValueChange={chooseResolution}
                         valueIndex={resolutionIndex} />
+                    <C.SnowDropdown
+                        title="Device Profile"
+                        options={deviceProfiles}
+                        onValueChange={chooseDeviceProfile}
+                        valueIndex={deviceProfileIndex} />
                     <C.SnowDropdown
                         title="Always Transcode"
                         options={['No', 'Yes']}

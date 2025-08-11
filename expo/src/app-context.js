@@ -130,7 +130,8 @@ export function AppContextProvider(props) {
                     hardwareDecoder: false,
                     deviceId: uuid.v4(),
                     alwaysTranscode: false,
-                    alwaysUseExoPlayer: false
+                    alwaysUseExoPlayer: false,
+                    deviceProfile: 'CCwGTV4K'
                 }
             }
             setClientOptions(storedOptions)
