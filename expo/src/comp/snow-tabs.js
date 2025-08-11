@@ -25,11 +25,13 @@ export function SnowTabs(props) {
     if (!props.children) {
         return null
     }
-    const tabs = React.Children.toArray(props.children)
+    let tabs = React.Children.toArray(props.children)
+    tabs = tabs.filter(child => child !== null)
     const [tabIndex, setTabIndex] = React.useState(0)
     return (
-        <FillView>
+        <View>
             <SnowDropdown
+                short
                 fade
                 options={props.headers}
                 onValueChange={setTabIndex}
@@ -38,7 +40,7 @@ export function SnowTabs(props) {
             <FillView style={styles.panel}>
                 {tabs[tabIndex]}
             </FillView>
-        </FillView>
+        </View>
     )
 
 }

@@ -26,8 +26,10 @@ function TrackList(props) {
     if (props.showDelay) {
         header = (
             <SnowGrid itemsPerRow={3} shrink>
-                {header}
-                <SnowInput short value={props.delay} onValueChange={props.setDelay} />
+                <SnowText>
+                    {props.title} ({props.tracks.length}) {activeBitRate}
+                </SnowText>
+                <SnowInput value={props.delay} onValueChange={props.setDelay} />
                 <SnowText>Seconds Delay</SnowText>
             </SnowGrid>
         )

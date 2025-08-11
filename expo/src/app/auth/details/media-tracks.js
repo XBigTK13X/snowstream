@@ -1,5 +1,14 @@
 import C from '../../../common'
 
+const styles = {
+    image: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10
+    }
+}
+
 export default function MediaTracksPage(props) {
     const { apiClient, isAdmin } = C.useAppContext();
     const { routes } = C.useAppContext();
@@ -322,7 +331,7 @@ export default function MediaTracksPage(props) {
                                     <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
                                 </C.View>
                                 <C.View
-                                    style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    style={styles.image}>
                                     <C.SnowLabel>Discussion</C.SnowLabel>
                                     <C.Image
                                         source={{ uri: media.discussion_image_url }}
