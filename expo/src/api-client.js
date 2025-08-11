@@ -411,8 +411,7 @@ export class ApiClient {
         })
     }
 
-    setMovieWatchProgress(movieId, playedSeconds, durationSeconds
-    ) {
+    setMovieWatchProgress(movieId, playedSeconds, durationSeconds) {
         return this.post(`/movie/progress`, {
             movie_id: movieId,
             played_seconds: playedSeconds,
