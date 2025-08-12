@@ -1,34 +1,29 @@
-from log import log
-import util
-
-from database.sql_alchemy import DbSession, desc
-import database.db_models as dm
-import sqlalchemy.orm as sorm
+from database.operation.db_internal import dbi
 
 import database.operation.shelf as db_shelf
 import database.operation.movie as db_movie
 import database.operation.show_episode as db_episode
 
-def get_continue_watching_list(ticket:dm.Ticket):
-    with DbSession() as db:
+def get_continue_watching_list(ticket:dbi.Ticket):
+    with dbi.session() as db:
         results = []
         skip_movie = {}
         in_progress = []
         movies_in_progress = (
-            db.query(dm.WatchProgress)
+            db.query(dbi.dm.WatchProgress)
             .filter(
-                dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
-                dm.WatchProgress.movie_id != None
+                dbi.dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
+                dbi.dm.WatchProgress.movie_id != None
             ).
             options(
-                sorm.joinedload(dm.WatchProgress.movie)
-                .joinedload(dm.Movie.shelf)
+                dbi.orm.joinedload(dbi.dm.WatchProgress.movie)
+                .joinedload(dbi.dm.Movie.shelf)
             )
             .all()
         )
         if movies_in_progress:
             for progress in movies_in_progress:
-                movie = dm.set_primary_images(progress.movie)
+                movie = dbi.dm.set_primary_images(progress.movie)
                 movie.progress_at = progress.updated_at
                 skip_movie[movie.id] = True
                 in_progress.append(movie)
@@ -36,17 +31,17 @@ def get_continue_watching_list(ticket:dm.Ticket):
 
         skip_episode = {}
         episodes_in_progress = (
-            db.query(dm.WatchProgress)
+            db.query(dbi.dm.WatchProgress)
             .filter(
-                dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
-                dm.WatchProgress.show_episode_id != None
+                dbi.dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
+                dbi.dm.WatchProgress.show_episode_id != None
             )
             .options(
-                sorm.joinedload(dm.WatchProgress.show_episode)
-                .joinedload(dm.ShowEpisode.season)
-                .joinedload(dm.ShowSeason.show)
-                .joinedload(dm.Show.shelf)
-            ).order_by(desc(dm.WatchProgress.updated_at)).all()
+                dbi.orm.joinedload(dbi.dm.WatchProgress.show_episode)
+                .joinedload(dbi.dm.ShowEpisode.season)
+                .joinedload(dbi.dm.ShowSeason.show)
+                .joinedload(dbi.dm.Show.shelf)
+            ).order_by(dbi.desc(dbi.dm.WatchProgress.updated_at)).all()
         )
 
         if episodes_in_progress:
@@ -60,12 +55,12 @@ def get_continue_watching_list(ticket:dm.Ticket):
                 episode.progress_at = progress.updated_at
                 skip_episode[episode.season.show.id] = True
                 show = episode.season.show
-                show = dm.set_primary_images(show)
+                show = dbi.dm.set_primary_images(show)
                 progress.show_episode.poster_image = show.poster_image
                 in_progress.append(episode)
                 show_dedupe[progress.show_episode.season.show.id] = True
             if delete_progress:
-                db.query(dm.WatchProgress).filter(dm.WatchProgress.id.in_(delete_progress)).delete()
+                db.query(dbi.dm.WatchProgress).filter(dbi.dm.WatchProgress.id.in_(delete_progress)).delete()
 
         if in_progress:
             in_progress.sort(key=lambda xx:xx.progress_at,reverse=True)

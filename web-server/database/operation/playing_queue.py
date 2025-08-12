@@ -1,20 +1,12 @@
+from database.operation.db_internal import dbi
+
 import random
-import database.db_models as dm
-import api_models as am
-from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
-from settings import config
-import database.operation.tag as db_tag
-import database.operation.movie as db_movie
-import database.operation.show as db_show
 import database.operation.show_episode as db_episode
 import database.operation.playlist as db_playlist
 
-def create_playing_queue(ticket:dm.Ticket, source:str, length:int, content:str):
-    with DbSession() as db:
-        dbm = dm.PlayingQueue()
+def create_playing_queue(ticket:dbi.dm.Ticket, source:str, length:int, content:str):
+    with dbi.session() as db:
+        dbm = dbi.dm.PlayingQueue()
         dbm.client_device_user_id = ticket.cduid
         dbm.source = source
         dbm.content = content
@@ -26,18 +18,18 @@ def create_playing_queue(ticket:dm.Ticket, source:str, length:int, content:str):
         return dbm
 
 def delete_playing_queue(playing_queue_id:int):
-    with DbSession() as db:
-        db.query(dm.PlayingQueue).filter(
-            dm.PlayingQueue.id == playing_queue_id
+    with dbi.session() as db:
+        db.query(dbi.dm.PlayingQueue).filter(
+            dbi.dm.PlayingQueue.id == playing_queue_id
         ).delete()
         db.commit()
         return True
 
-def update_playing_queue(ticket:dm.Ticket, source:str, progress:int):
-    with DbSession() as db:
-        existing = db.query(dm.PlayingQueue).filter(
-            dm.PlayingQueue.client_device_user_id == ticket.cduid,
-            dm.PlayingQueue.source == source
+def update_playing_queue(ticket:dbi.dm.Ticket, source:str, progress:int):
+    with dbi.session() as db:
+        existing = db.query(dbi.dm.PlayingQueue).filter(
+            dbi.dm.PlayingQueue.client_device_user_id == ticket.cduid,
+            dbi.dm.PlayingQueue.source == source
         ).first()
         if not existing:
             return None
@@ -60,7 +52,7 @@ def split_content(csv_content):
     return results
 
 def get_playing_queue(
-    ticket=dm.Ticket,
+    ticket=dbi.dm.Ticket,
     shelf_id:int=None,
     show_id:int=None,
     show_season_id:int=None,
@@ -76,11 +68,11 @@ def get_playing_queue(
             source = f'tag-{tag_id}'
         if shuffle:
             source += '-shuffle'
-    with DbSession() as db:
+    with dbi.session() as db:
         existing = (
-            db.query(dm.PlayingQueue).filter(
-                dm.PlayingQueue.client_device_user_id == ticket.cduid,
-                dm.PlayingQueue.source == source
+            db.query(dbi.dm.PlayingQueue).filter(
+                dbi.dm.PlayingQueue.client_device_user_id == ticket.cduid,
+                dbi.dm.PlayingQueue.source == source
             ).first()
         )
         if existing:

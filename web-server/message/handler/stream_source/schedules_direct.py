@@ -168,7 +168,7 @@ class SchedulesDirect(StreamSourceImporter):
                     channel = db.op.create_channel({"parsed_id": channel_name})
                 for program in val["programs"]:
                     program["channel_id"] = channel.id
-                db.sql.bulk_insert(db.model.StreamableSchedule, val["programs"])
+                db.op.create_schedules(val['programs'])
 
         db.op.update_job(job_id=self.job_id, message=f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
 

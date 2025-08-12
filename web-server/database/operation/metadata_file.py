@@ -1,12 +1,5 @@
-import database.db_models as dm
-import api_models as am
-from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
+from database.operation.db_internal import dbi
 import database.operation.shelf as db_shelf
-from settings import config
-
 
 def create_metadata_file(shelf_id: int, kind: str, local_path: str, xml_content:str):
     network_path = ''
@@ -14,9 +7,9 @@ def create_metadata_file(shelf_id: int, kind: str, local_path: str, xml_content:
     network_path = ''
     if shelf.network_path:
         network_path = local_path.replace(shelf.local_path,shelf.network_path)
-    web_path = config.web_media_url + local_path
-    with DbSession() as db:
-        dbm = dm.MetadataFile()
+    web_path = dbi.config.web_media_url + local_path
+    with dbi.session() as db:
+        dbm = dbi.dm.MetadataFile()
         dbm.local_path = local_path
         dbm.web_path = web_path
         dbm.network_path = network_path
@@ -30,9 +23,9 @@ def create_metadata_file(shelf_id: int, kind: str, local_path: str, xml_content:
 
 
 def get_metadata_file_by_path(local_path: str):
-    with DbSession() as db:
+    with dbi.session() as db:
         return (
-            db.query(dm.MetadataFile).filter(dm.MetadataFile.local_path == local_path).first()
+            db.query(dbi.dm.MetadataFile).filter(dbi.dm.MetadataFile.local_path == local_path).first()
         )
 
 def get_or_create_metadata_file(shelf_id: int, kind: str, local_path: str):
@@ -48,32 +41,32 @@ def get_or_create_metadata_file(shelf_id: int, kind: str, local_path: str):
     return metadata_file
 
 def get_metadata_files_by_shelf(shelf_id: int):
-    with DbSession() as db:
-        return db.query(dm.MetadataFile).filter(dm.MetadataFile.shelf_id == shelf_id)
+    with dbi.session() as db:
+        return db.query(dbi.dm.MetadataFile).filter(dbi.dm.MetadataFile.shelf_id == shelf_id)
 
 def get_metadata_file_list(directory:str=None):
-    with DbSession() as db:
+    with dbi.session() as db:
         query = (
-            db.query(dm.MetadataFile)
-            .options(sorm.joinedload(dm.MetadataFile.movie))
-            .options(sorm.joinedload(dm.MetadataFile.show))
-            .options(sorm.joinedload(dm.MetadataFile.show_season))
-            .options(sorm.joinedload(dm.MetadataFile.show_episode))
+            db.query(dbi.dm.MetadataFile)
+            .options(dbi.orm.joinedload(dbi.dm.MetadataFile.movie))
+            .options(dbi.orm.joinedload(dbi.dm.MetadataFile.show))
+            .options(dbi.orm.joinedload(dbi.dm.MetadataFile.show_season))
+            .options(dbi.orm.joinedload(dbi.dm.MetadataFile.show_episode))
         )
 
         if directory:
-            query = query.filter(dm.MetadataFile.local_path.contains(directory))
+            query = query.filter(dbi.dm.MetadataFile.local_path.contains(directory))
 
         query = (query
-            .order_by(dm.MetadataFile.local_path)
+            .order_by(dbi.dm.MetadataFile.local_path)
             .all()
         )
 
         return query
 
 def update_metadata_file_content(metadata_file_id:int,xml_content:str):
-    with DbSession() as db:
-        dbm = db.query(dm.MetadataFile).filter(dm.MetadataFile.id == metadata_file_id).first()
+    with dbi.session() as db:
+        dbm = db.query(dbi.dm.MetadataFile).filter(dbi.dm.MetadataFile.id == metadata_file_id).first()
         if not dbm:
             return None
         dbm.xml_content = xml_content

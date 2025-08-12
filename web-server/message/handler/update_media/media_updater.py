@@ -19,7 +19,7 @@ class MediaUpdater:
         self.kind = kind
         self.db = db
         self.nfo = nfo
-        self.ticket = db.model.Ticket(ignore_watch_group=True)
+        self.ticket = db.Ticket(ignore_watch_group=True)
         self.log = log
         self.config = config
         self.FileStub = FileStub

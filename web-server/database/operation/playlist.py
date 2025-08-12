@@ -1,12 +1,9 @@
-import database.db_models as dm
-import api_models as am
-from database.sql_alchemy import DbSession
+from database.operation.db_internal import dbi
 import database.operation.movie as db_movie
 import database.operation.show as db_show
-from sqlalchemy import text as sql_text
 
-def get_movie_playlist_list(ticket:dm.Ticket,tags:list,found_tags:dict):
-    with DbSession() as db:
+def get_movie_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
+    with dbi.session() as db:
         movie_query = '''
         select
             distinct on (tag.id)
@@ -57,12 +54,12 @@ def get_movie_playlist_list(ticket:dm.Ticket,tags:list,found_tags:dict):
             group by
                 playlist_tags.tag_id
             '''
-            cursor = db.execute(sql_text(movie_check_query))
+            cursor = db.execute(dbi.sql_text(movie_check_query))
             for row in cursor:
                 movie_tag_allowed[row.tag_id] = True
 
 
-        cursor = db.execute(sql_text(movie_query))
+        cursor = db.execute(dbi.sql_text(movie_query))
         for row in cursor:
             if row.tag_id in found_tags:
                 continue
@@ -79,8 +76,8 @@ def get_movie_playlist_list(ticket:dm.Ticket,tags:list,found_tags:dict):
 
     return tags,found_tags
 
-def get_show_playlist_list(ticket:dm.Ticket,tags:list,found_tags:dict):
-    with DbSession() as db:
+def get_show_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
+    with dbi.session() as db:
         show_query = '''
         select
             distinct on (tag.id)
@@ -129,11 +126,11 @@ def get_show_playlist_list(ticket:dm.Ticket,tags:list,found_tags:dict):
             group by
                 playlist_tags.tag_id
             '''
-            cursor = db.execute(sql_text(show_check_query))
+            cursor = db.execute(dbi.sql_text(show_check_query))
             for row in cursor:
                 show_tag_allowed[row.tag_id] = True
 
-        cursor = db.execute(sql_text(show_query))
+        cursor = db.execute(dbi.sql_text(show_query))
         for row in cursor:
             if row.tag_id in found_tags:
                 continue
@@ -150,7 +147,7 @@ def get_show_playlist_list(ticket:dm.Ticket,tags:list,found_tags:dict):
     return tags,found_tags
 
 
-def get_playlist_list(ticket:dm.Ticket):
+def get_playlist_list(ticket:dbi.dm.Ticket):
     tags = []
     found_tags = {}
     tags,found_tags = get_movie_playlist_list(ticket=ticket,tags=[],found_tags={})
@@ -160,8 +157,8 @@ def get_playlist_list(ticket:dm.Ticket):
     tags = sorted(tags,key=lambda xx:xx['name'])
     return tags
 
-def get_playlist_by_tag_id(ticket:dm.Ticket, tag_id:int):
-    with DbSession() as db:
+def get_playlist_by_tag_id(ticket:dbi.dm.Ticket, tag_id:int):
+    with dbi.session() as db:
         movies = db_movie.get_movie_list_by_tag_id(ticket=ticket, tag_id=tag_id)
         if not movies:
             movies = []

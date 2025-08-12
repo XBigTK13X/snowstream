@@ -1,21 +1,14 @@
-from log import log
-import database.db_models as dm
+from database.operation.db_internal import dbi
 import api_models as am
-from database.sql_alchemy import DbSession
-import sqlalchemy.orm as sorm
-from sqlalchemy import text as sql_text
-from settings import config
-import util
-
-SeasonTags = sorm.aliased(dm.Tag)
+SeasonTags = dbi.orm.aliased(dbi.dm.Tag)
 
 def create_show_episode(
     show_season_id: int,
     episode_order_counter: int,
     episode_end_order_counter: int = None,
     name:str=None):
-    with DbSession() as db:
-        dbm = dm.ShowEpisode()
+    with dbi.session() as db:
+        dbm = dbi.dm.ShowEpisode()
         dbm.episode_order_counter = episode_order_counter
         dbm.episode_end_order_counter = episode_end_order_counter
         dbm.show_season_id = show_season_id
@@ -26,8 +19,8 @@ def create_show_episode(
         return dbm
 
 def update_show_episode_name(show_episode_id:int,name:str):
-    with DbSession() as db:
-        episode = db.query(dm.ShowEpisode).filter(dm.ShowEpisode.id == show_episode_id).first()
+    with dbi.session() as db:
+        episode = db.query(dbi.dm.ShowEpisode).filter(dbi.dm.ShowEpisode.id == show_episode_id).first()
         episode.name = name
         db.commit()
         return episode
@@ -38,31 +31,31 @@ def sql_row_to_api_result(
         load_episode_files=True,
         trim_episode_files=False
 ):
-    episode = dm.Stub()
+    episode = dbi.dm.Stub()
     episode.model_kind = 'show_episode'
     episode.id = row.episode_id
     episode.episode_order_counter = row.episode_order
     episode.episode_end_order_counter = row.episode_end_order
     episode.name = row.episode_name
-    episode.watch_count = dm.Stub()
+    episode.watch_count = dbi.dm.Stub()
     episode.watch_count.amount = 0
     if watch_group:
         episode.watched = bool(row.episode_watched_list)
         episode.watch_count.amount = row.episode_watch_count_list[0] if row.episode_watch_count_list else 0
-        episode.in_progress = dm.Stub()
+        episode.in_progress = dbi.dm.Stub()
         episode.in_progress.played_seconds = row.episode_in_progress_list[0] if row.episode_in_progress_list else None
 
-    episode.season = dm.Stub()
+    episode.season = dbi.dm.Stub()
     episode.season.model_kind = 'show_season'
     episode.season.id = row.season_id
     episode.season.season_order_counter = row.season_order
 
-    episode.season.show = dm.Stub()
+    episode.season.show = dbi.dm.Stub()
     episode.season.show.model_kind = 'show'
     episode.season.show.id = row.show_id
     episode.season.show.name = row.show_name
 
-    episode.season.show.shelf = dm.Stub()
+    episode.season.show.shelf = dbi.dm.Stub()
     episode.season.show.shelf.model_kind = 'shelf'
     episode.season.show.shelf.id = row.shelf_id
 
@@ -95,7 +88,7 @@ def sql_row_to_api_result(
         if f'i-{image_ids[ii]}' in dedupe:
             continue
         dedupe[f'i-{image_ids[ii]}'] = 1
-        image_file = dm.Stub()
+        image_file = dbi.dm.Stub()
         image_file.model_kind = 'image_file'
         image_file.id = image_ids[ii]
         image_file.local_path = image_local_paths[ii]
@@ -119,7 +112,7 @@ def sql_row_to_api_result(
             if f'v-{row.video_id_list[ii]}' in dedupe:
                 continue
             dedupe[f'v-{row.video_id_list[ii]}'] = 1
-            video_file = dm.Stub()
+            video_file = dbi.dm.Stub()
             video_file.model_kind = 'video_file'
             video_file.id = row.video_id_list[ii]
             video_file.local_path = row.video_local_path_list[ii]
@@ -137,7 +130,7 @@ def sql_row_to_api_result(
             if f'm-{row.metadata_id_list[ii]}' in dedupe:
                 continue
             dedupe[f'm-{row.metadata_id_list[ii]}'] = 1
-            metadata_file = dm.Stub()
+            metadata_file = dbi.dm.Stub()
             metadata_file.model_kind = 'metadata_file'
             metadata_file.id = row.metadata_id_list[ii]
             metadata_file.kind = row.metadata_kind_list[ii]
@@ -155,7 +148,7 @@ def sql_row_to_api_result(
         if f't-{tag_ids[ii]}' in dedupe:
             continue
         dedupe[f't-{tag_ids[ii]}'] = 1
-        tag = dm.Stub()
+        tag = dbi.dm.Stub()
         tag.id = tag_ids[ii]
         episode.tag_ids.append(tag.id)
         tag.name = tag_names[ii]
@@ -171,7 +164,7 @@ def sql_row_to_api_result(
     return episode
 
 def get_show_episode_list(
-    ticket:dm.Ticket,
+    ticket:dbi.dm.Ticket,
     shelf_id:int=None,
     show_id:int=None,
     show_season_id:int=None,
@@ -189,11 +182,11 @@ def get_show_episode_list(
     bump_specials:bool=False
 ):
     if first_per_show and first_per_season:
-        log.error("Only first_per_show OR first_per_season can be used to retrieve an episode list")
+        dbi.log.error("Only first_per_show OR first_per_season can be used to retrieve an episode list")
         return []
     if shelf_id != None and not ticket.is_allowed(shelf_id=shelf_id):
         return []
-    with DbSession() as db:
+    with dbi.session() as db:
         watch_group = None
         if ticket.watch_group:
             watch_group = ','.join([str(xx) for xx in ticket.watch_group])
@@ -330,10 +323,10 @@ def get_show_episode_list(
             {f"show.name," if not first_per_season else ""}
             {season_order_query},
             episode.episode_order_counter
-        {f'limit {config.search_results_per_shelf_limit}' if search_query else ''}
+        {f'limit {dbi.config.search_results_per_shelf_limit}' if search_query else ''}
         {f'limit 1' if first_result else ''}
         '''
-        cursor = db.execute(sql_text(raw_query))
+        cursor = db.execute(dbi.sql_text(raw_query))
         results = []
         raw_result_count = 0
         for xx in cursor:
@@ -351,14 +344,14 @@ def get_show_episode_list(
             if show_playlisted == False and any('Playlist:' in xx for xx in model.tag_names):
                 continue
             if not model.name or 'TBA' in model.name:
-                model.name = util.get_episode_slug(model)
+                model.name = dbi.util.get_episode_slug(model)
             results.append(model)
         if first_result == True:
             return results[0]
         return results
 
-def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
-    with DbSession() as db:
+def get_show_episode_by_id(ticket:dbi.dm.Ticket,episode_id: int):
+    with dbi.session() as db:
         return get_show_episode_list(
             ticket=ticket,
             show_episode_id=episode_id,
@@ -368,18 +361,18 @@ def get_show_episode_by_id(ticket:dm.Ticket,episode_id: int):
         )
 
 def get_show_episode_by_season_order(show_season_id: int, episode_order_counter: int):
-    with DbSession() as db:
+    with dbi.session() as db:
         return (
-            db.query(dm.ShowEpisode)
-            .options(sorm.joinedload(dm.ShowEpisode.tags))
-            .filter(dm.ShowEpisode.show_season_id == show_season_id)
-            .filter(dm.ShowEpisode.episode_order_counter == episode_order_counter)
+            db.query(dbi.dm.ShowEpisode)
+            .options(dbi.orm.joinedload(dbi.dm.ShowEpisode.tags))
+            .filter(dbi.dm.ShowEpisode.show_season_id == show_season_id)
+            .filter(dbi.dm.ShowEpisode.episode_order_counter == episode_order_counter)
             .first()
         )
 
 def create_show_episode_video_file(show_episode_id: int, video_file_id: int):
-    with DbSession() as db:
-        dbm = dm.ShowEpisodeVideoFile()
+    with dbi.session() as db:
+        dbm = dbi.dm.ShowEpisodeVideoFile()
         dbm.show_episode_id = show_episode_id
         dbm.video_file_id = video_file_id
         db.add(dbm)
@@ -388,17 +381,17 @@ def create_show_episode_video_file(show_episode_id: int, video_file_id: int):
         return dbm
 
 def get_show_episode_video_file(show_episode_id: int, video_file_id: int):
-    with DbSession() as db:
+    with dbi.session() as db:
         return (
-            db.query(dm.ShowEpisodeVideoFile)
-            .filter(dm.ShowEpisodeVideoFile.show_episode_id == show_episode_id)
-            .filter(dm.ShowEpisodeVideoFile.video_file_id == video_file_id)
+            db.query(dbi.dm.ShowEpisodeVideoFile)
+            .filter(dbi.dm.ShowEpisodeVideoFile.show_episode_id == show_episode_id)
+            .filter(dbi.dm.ShowEpisodeVideoFile.video_file_id == video_file_id)
             .first()
         )
 
 def create_show_episode_image_file(show_episode_id: int, image_file_id: int):
-    with DbSession() as db:
-        dbm = dm.ShowEpisodeImageFile()
+    with dbi.session() as db:
+        dbm = dbi.dm.ShowEpisodeImageFile()
         dbm.show_episode_id = show_episode_id
         dbm.image_file_id = image_file_id
         db.add(dbm)
@@ -407,17 +400,17 @@ def create_show_episode_image_file(show_episode_id: int, image_file_id: int):
         return dbm
 
 def get_show_episode_image_file(show_episode_id: int, image_file_id: int):
-    with DbSession() as db:
+    with dbi.session() as db:
         return (
-            db.query(dm.ShowEpisodeImageFile)
-            .filter(dm.ShowEpisodeImageFile.show_episode_id == show_episode_id)
-            .filter(dm.ShowEpisodeImageFile.image_file_id == image_file_id)
+            db.query(dbi.dm.ShowEpisodeImageFile)
+            .filter(dbi.dm.ShowEpisodeImageFile.show_episode_id == show_episode_id)
+            .filter(dbi.dm.ShowEpisodeImageFile.image_file_id == image_file_id)
             .first()
         )
 
 def create_show_episode_metadata_file(show_episode_id: int, metadata_file_id: int):
-    with DbSession() as db:
-        dbm = dm.ShowEpisodeMetadataFile()
+    with dbi.session() as db:
+        dbm = dbi.dm.ShowEpisodeMetadataFile()
         dbm.show_episode_id = show_episode_id
         dbm.metadata_file_id = metadata_file_id
         db.add(dbm)
@@ -426,23 +419,23 @@ def create_show_episode_metadata_file(show_episode_id: int, metadata_file_id: in
         return dbm
 
 def get_show_episode_metadata_file(show_episode_id: int, metadata_file_id: int):
-    with DbSession() as db:
+    with dbi.session() as db:
         return (
-            db.query(dm.ShowEpisodeMetadataFile)
-            .filter(dm.ShowEpisodeMetadataFile.show_episode_id == show_episode_id)
-            .filter(dm.ShowEpisodeMetadataFile.metadata_file_id == metadata_file_id)
+            db.query(dbi.dm.ShowEpisodeMetadataFile)
+            .filter(dbi.dm.ShowEpisodeMetadataFile.show_episode_id == show_episode_id)
+            .filter(dbi.dm.ShowEpisodeMetadataFile.metadata_file_id == metadata_file_id)
             .first()
         )
 
 def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
-    with DbSession() as db:
-        existing = db.query(dm.ShowEpisodeTag).filter(
-            dm.ShowEpisodeTag.show_episode_id == show_episode_id,
-            dm.ShowEpisodeTag.tag_id == tag_id
+    with dbi.session() as db:
+        existing = db.query(dbi.dm.ShowEpisodeTag).filter(
+            dbi.dm.ShowEpisodeTag.show_episode_id == show_episode_id,
+            dbi.dm.ShowEpisodeTag.tag_id == tag_id
         ).first()
         if existing:
             return existing
-        dbm = dm.ShowEpisodeTag()
+        dbm = dbi.dm.ShowEpisodeTag()
         dbm.show_episode_id = show_episode_id
         dbm.tag_id = tag_id
         db.add(dbm)
@@ -450,22 +443,22 @@ def upsert_show_episode_tag(show_episode_id: int, tag_id: int):
         db.refresh(dbm)
         return dbm
 
-def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=True):
+def set_show_episode_watched(ticket:dbi.dm.Ticket,episode_id:int,is_watched:bool=True):
     episode = get_show_episode_by_id(ticket=ticket,episode_id=episode_id)
     if not episode:
         return False
-    with DbSession() as db:
-        db.query(dm.Watched).filter(
-            dm.Watched.client_device_user_id.in_(ticket.watch_group),
-            dm.Watched.show_episode_id == episode_id
+    with dbi.session() as db:
+        db.query(dbi.dm.Watched).filter(
+            dbi.dm.Watched.client_device_user_id.in_(ticket.watch_group),
+            dbi.dm.Watched.show_episode_id == episode_id
         ).delete()
-        db.query(dm.WatchProgress).filter(
-            dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
-            dm.WatchProgress.show_episode_id == episode_id
+        db.query(dbi.dm.WatchProgress).filter(
+            dbi.dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
+            dbi.dm.WatchProgress.show_episode_id == episode_id
         ).delete()
         db.commit()
         if is_watched:
-            dbm = dm.Watched()
+            dbm = dbi.dm.Watched()
             dbm.client_device_user_id = ticket.cduid
             dbm.show_episode_id = episode_id
             db.add(dbm)
@@ -473,20 +466,20 @@ def set_show_episode_watched(ticket:dm.Ticket,episode_id:int,is_watched:bool=Tru
             return True
     return is_watched
 
-def set_show_episode_list_watched(ticket:dm.Ticket, episode_ids:list[int]):
-    with DbSession() as db:
+def set_show_episode_list_watched(ticket:dbi.dm.Ticket, episode_ids:list[int]):
+    with dbi.session() as db:
         episodes_watched = []
         for episode_id in episode_ids:
             episodes_watched.append({
                 'client_device_user_id': ticket.cduid,
                 'show_episode_id': episode_id
             })
-        db.bulk_insert_mappings(dm.Watched,episodes_watched)
+        db.bulk_insert_mappings(dbi.dm.Watched,episodes_watched)
         db.commit()
         return True
     return False
 
-def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchProgress):
+def set_show_episode_watch_progress(ticket:dbi.dm.Ticket, watch_progress:am.WatchProgress):
     if not watch_progress.played_seconds:
         return False
     if not watch_progress.duration_seconds:
@@ -495,22 +488,22 @@ def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchPro
     if not episode:
         return False
     is_watched = False
-    with DbSession() as db:
-        db.query(dm.WatchProgress).filter(
-                dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
-                dm.WatchProgress.show_episode_id == watch_progress.show_episode_id
+    with dbi.session() as db:
+        db.query(dbi.dm.WatchProgress).filter(
+                dbi.dm.WatchProgress.client_device_user_id.in_(ticket.watch_group),
+                dbi.dm.WatchProgress.show_episode_id == watch_progress.show_episode_id
             ).delete()
         db.commit()
         watch_percent = float(watch_progress.played_seconds) / float(watch_progress.duration_seconds)
-        if watch_percent <= config.watch_progress_unwatched_threshold:
+        if watch_percent <= dbi.config.watch_progress_unwatched_threshold:
             if episode.watched:
                 set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=False)
-        elif watch_percent >= config.watch_progress_watched_threshold:
+        elif watch_percent >= dbi.config.watch_progress_watched_threshold:
             if not episode.watched:
                 is_watched = True
                 set_show_episode_watched(ticket=ticket,episode_id=watch_progress.show_episode_id,is_watched=True)
         else:
-            dbm = dm.WatchProgress()
+            dbm = dbi.dm.WatchProgress()
             dbm.client_device_user_id = ticket.cduid
             dbm.show_episode_id = watch_progress.show_episode_id
             dbm.duration_seconds = watch_progress.duration_seconds
@@ -521,22 +514,22 @@ def set_show_episode_watch_progress(ticket:dm.Ticket, watch_progress:am.WatchPro
     return is_watched
 
 def make_show_episode_watch_count(cduid:int,show_episode_id:int):
-    dbm = dm.WatchCount()
+    dbm = dbi.dm.WatchCount()
     dbm.client_device_user_id = cduid
     dbm.show_episode_id = show_episode_id
     dbm.amount = 1
     return dbm
 
-def increase_show_episode_watch_count(ticket:dm.Ticket,show_episode_id:int):
+def increase_show_episode_watch_count(ticket:dbi.dm.Ticket,show_episode_id:int):
     episode = get_show_episode_by_id(ticket=ticket,episode_id=show_episode_id)
     if not episode:
         return False
-    with DbSession() as db:
+    with dbi.session() as db:
         existing_count = (
-            db.query(dm.WatchCount)
+            db.query(dbi.dm.WatchCount)
             .filter(
-                dm.WatchCount.client_device_user_id.in_(ticket.watch_group),
-                dm.WatchCount.show_episode_id == show_episode_id
+                dbi.dm.WatchCount.client_device_user_id.in_(ticket.watch_group),
+                dbi.dm.WatchCount.show_episode_id == show_episode_id
             ).first()
         )
         if existing_count:
@@ -549,22 +542,22 @@ def increase_show_episode_watch_count(ticket:dm.Ticket,show_episode_id:int):
             db.commit()
             return new_count
 
-def reset_show_episode_watch_count(ticket:dm.Ticket,show_episode_id:int):
-    with DbSession as db:
+def reset_show_episode_watch_count(ticket:dbi.dm.Ticket,show_episode_id:int):
+    with dbi.session() as db:
         (
-            db.query(dm.WatchCount)
+            db.query(dbi.dm.WatchCount)
             .filter(
-                dm.WatchCount.client_device_user_id.in_(ticket.watch_group),
-                dm.WatchCount.show_episode_id == show_episode_id
+                dbi.dm.WatchCount.client_device_user_id.in_(ticket.watch_group),
+                dbi.dm.WatchCount.show_episode_id == show_episode_id
             ).delete()
         )
         db.commit()
         return True
 
-def delete_show_episode_records(ticket:dm.Ticket, show_episode_id:int):
+def delete_show_episode_records(ticket:dbi.dm.Ticket, show_episode_id:int):
     if not show_episode_id:
         return False
-    with DbSession() as db:
-        db.execute(sql_text(f'delete from show_episode where show_episode.id = {show_episode_id};'))
+    with dbi.session() as db:
+        db.execute(dbi.sql_text(f'delete from show_episode where show_episode.id = {show_episode_id};'))
         db.commit()
         return True

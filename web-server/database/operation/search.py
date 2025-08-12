@@ -1,18 +1,12 @@
-import database.db_models as dm
-import api_models as am
-from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
-from settings import config
+from database.operation.db_internal import dbi
 import database.operation.shelf as db_shelf
 import database.operation.movie as db_movie
 import database.operation.show as db_show
 import database.operation.show_episode as db_episode
 
-def perform_search(ticket:dm.Ticket,query:str):
+def perform_search(ticket:dbi.dm.Ticket,query:str):
     result = {}
-    with DbSession() as db:
+    with dbi.session() as db:
         shelves = db_shelf.get_shelf_list(ticket=ticket)
         results = []
         movie_results = []

@@ -7,7 +7,7 @@ from message.job_media_scope import JobMediaScope
 def handle(scope:JobMediaScope):
     db.op.update_job(job_id=scope.job_id,message=f"[WORKER] Handling a delete_media_records job")
 
-    ticket = db.model.Ticket(ignore_watch_group=True)
+    ticket = db.Ticket(ignore_watch_group=True)
 
     if not scope or scope.is_unscoped():
         db.op.update_job(job_id=scope.job_id, message="delete_media_records must be scoped when run")

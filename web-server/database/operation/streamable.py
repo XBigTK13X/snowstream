@@ -1,14 +1,8 @@
-import database.db_models as dm
-import api_models as am
-from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
-
+from database.operation.db_internal import dbi
 
 def create_streamable(stream_source_id: int, url: str, name: str, group: str=None):
-    with DbSession() as db:
-        dbm = dm.Streamable()
+    with dbi.session() as db:
+        dbm = dbi.dm.Streamable()
         dbm.name = name
         dbm.url = url
         dbm.stream_source_id = stream_source_id
@@ -20,10 +14,10 @@ def create_streamable(stream_source_id: int, url: str, name: str, group: str=Non
 
 
 def get_streamable_by_id(streamable_id: int):
-    with DbSession() as db:
+    with dbi.session() as db:
         return (
-            db.query(dm.Streamable)
-            .options(sorm.joinedload(dm.Streamable.stream_source))
-            .filter(dm.Streamable.id == streamable_id)
+            db.query(dbi.dm.Streamable)
+            .options(dbi.orm.joinedload(dbi.dm.Streamable.stream_source))
+            .filter(dbi.dm.Streamable.id == streamable_id)
             .first()
         )

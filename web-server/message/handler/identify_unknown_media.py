@@ -9,7 +9,7 @@ def handle(scope:JobMediaScope):
 
     movies = []
     shows = []
-    ticket = db.model.Ticket(ignore_watch_group=True)
+    ticket = db.Ticket(ignore_watch_group=True)
     if scope.is_unscoped():
         movies = db.op.get_unknown_movie_list()
         shows = db.op.get_unknown_show_list()

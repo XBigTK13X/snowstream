@@ -9,7 +9,7 @@ import magick
 def prep(files,movie=None,show=None,show_season=None,show_episode=None):
     results = []
     for ff in files:
-        result = db.model.Stub()
+        result = db.Stub()
         result.id = ff.id
         result.local_path = ff.local_path
         result.movie = None
@@ -21,20 +21,20 @@ def prep(files,movie=None,show=None,show_season=None,show_episode=None):
             result.ffprobe_raw_json = ff.ffprobe_raw_json
             result.mediainfo_raw_json = ff.mediainfo_raw_json
         if movie:
-            result.movie = db.model.Stub()
+            result.movie = db.Stub()
             result.movie.id = movie.id
             result.movie.release_year = movie.release_year
             result.movie.name = movie.name
         if show:
-            result.show = db.model.Stub()
+            result.show = db.Stub()
             result.show.id = show.id
             result.show.release_year = show.release_year
             result.show.name = show.name
         if show_season:
-            result.show_season = db.model.Stub()
+            result.show_season = db.Stub()
             result.show_season.id = show_season.id
         if show_episode:
-            result.show_episode = db.model.Stub()
+            result.show_episode = db.Stub()
             result.show_episode.id = show_episode.id
         results.append(result)
     return results
@@ -44,7 +44,7 @@ def handle(scope):
     metadata_files = None
     image_files = None
     video_files = None
-    ticket = db.model.Ticket(ignore_watch_group=True)
+    ticket = db.Ticket(ignore_watch_group=True)
 
     if not scope.update_metadata and not scope.update_videos and not scope.update_images:
         db.op.update_job(job_id=scope.job_id, message="read_media_files requires update_videos, update_images, or update_metadata")

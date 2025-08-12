@@ -1,10 +1,4 @@
-import database.db_models as dm
-import api_models as am
-from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
-
+from database.operation.db_internal import dbi
 
 def create_transcode_session(
     cduid:int,
@@ -14,8 +8,8 @@ def create_transcode_session(
     streamable_id:int=None,
     stream_port:int=None
 ):
-    with DbSession() as db:
-        dbm = dm.TranscodeSession()
+    with dbi.session() as db:
+        dbm = dbi.dm.TranscodeSession()
         dbm.client_device_user_id = cduid
         dbm.video_file_id = video_file_id
         dbm.streamable_id = streamable_id
@@ -31,8 +25,8 @@ def set_transcode_process_id(
     transcode_session_id:int,
     process_id:int
 ):
-    with DbSession() as db:
-        transcode_session = db.query(dm.TranscodeSession).filter(dm.TranscodeSession.id == transcode_session_id).first()
+    with dbi.session() as db:
+        transcode_session = db.query(dbi.dm.TranscodeSession).filter(dbi.dm.TranscodeSession.id == transcode_session_id).first()
         if not transcode_session:
             return False
         transcode_session.process_id = process_id
@@ -42,25 +36,25 @@ def set_transcode_process_id(
 def get_transcode_session_by_id(
     transcode_session_id:int
 ):
-    with DbSession() as db:
+    with dbi.session() as db:
         return (
-            db.query(dm.TranscodeSession)
+            db.query(dbi.dm.TranscodeSession)
             .filter(
-                dm.TranscodeSession.id == transcode_session_id
+                dbi.dm.TranscodeSession.id == transcode_session_id
             )
             .first()
         )
 
 def get_transcode_session_list():
-    with DbSession() as db:
-        return db.query(dm.TranscodeSession).all()
+    with dbi.session() as db:
+        return db.query(dbi.dm.TranscodeSession).all()
 
 def delete_transcode_session(
     transcode_session_id:int
 ):
-    with DbSession() as db:
-        result = db.query(dm.TranscodeSession).filter(
-            dm.TranscodeSession.id == transcode_session_id
+    with dbi.session() as db:
+        result = db.query(dbi.dm.TranscodeSession).filter(
+            dbi.dm.TranscodeSession.id == transcode_session_id
         ).delete()
         db.commit()
         return result

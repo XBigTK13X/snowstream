@@ -18,7 +18,7 @@ def handle(scope:JobMediaScope):
 
     shelves = []
     target_directory = None
-    ticket = db.model.Ticket(ignore_watch_group=True)
+    ticket = db.Ticket(ignore_watch_group=True)
     is_show = False
     if scope.is_unscoped():
         shelves = db.op.get_shelf_list()

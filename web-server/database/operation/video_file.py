@@ -1,14 +1,6 @@
-import database.db_models as dm
-import api_models as am
-from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
-import json
+from database.operation.db_internal import dbi
 import ffmpeg
 import database.operation.shelf as db_shelf
-from settings import config
-import os
 
 def create_video_file(
     shelf_id: int,
@@ -22,13 +14,13 @@ def create_video_file(
     network_path = ''
     if shelf.network_path:
         network_path = local_path.replace(shelf.local_path,shelf.network_path)
-    web_path = config.web_media_url + local_path
+    web_path = dbi.config.web_media_url + local_path
     version = None
-    file_name = os.path.basename(local_path)
+    file_name = dbi.os.path.basename(local_path)
     if '[' in file_name and ']' in file_name:
         version = file_name.split('[')[-1].split(']')[0]
-    with DbSession() as db:
-        dbm = dm.VideoFile()
+    with dbi.session() as db:
+        dbm = dbi.dm.VideoFile()
         dbm.local_path = local_path
         dbm.web_path = web_path
         dbm.network_path = network_path
@@ -38,7 +30,7 @@ def create_video_file(
         dbm.ffprobe_raw_json = ffprobe_raw_json
         dbm.mediainfo_raw_json = mediainfo_raw_json
         dbm.version = version
-        dbm.name = os.path.splitext(file_name)[0]
+        dbm.name = dbi.os.path.splitext(file_name)[0]
         db.add(dbm)
         db.commit()
         db.refresh(dbm)
@@ -46,8 +38,8 @@ def create_video_file(
 
 
 def get_video_file_by_path(local_path: str):
-    with DbSession() as db:
-        return db.query(dm.VideoFile).filter(dm.VideoFile.local_path == local_path).first()
+    with dbi.session() as db:
+        return db.query(dbi.dm.VideoFile).filter(dbi.dm.VideoFile.local_path == local_path).first()
 
 def get_or_create_video_file(shelf_id: int, kind: str, local_path: str):
     video_file = get_video_file_by_path(local_path=local_path)
@@ -70,8 +62,8 @@ def update_video_file_info(
     ffprobe_json:str=None,
     mediainfo_json:str=None
 ):
-    with DbSession() as db:
-        video_file = db.query(dm.VideoFile).filter(dm.VideoFile.id == video_file_id).first()
+    with dbi.session() as db:
+        video_file = db.query(dbi.dm.VideoFile).filter(dbi.dm.VideoFile.id == video_file_id).first()
         video_file.snowstream_info_json = snowstream_info_json
         if ffprobe_json:
             video_file.ffprobe_raw_json = ffprobe_json
@@ -81,22 +73,22 @@ def update_video_file_info(
         return video_file
 
 def get_video_file_by_id(video_file_id: int):
-    with DbSession() as db:
-        return db.query(dm.VideoFile).filter(dm.VideoFile.id == video_file_id).first()
+    with dbi.session() as db:
+        return db.query(dbi.dm.VideoFile).filter(dbi.dm.VideoFile.id == video_file_id).first()
 
 def get_video_files_by_shelf(shelf_id: int):
-    with DbSession() as db:
-        return db.query(dm.VideoFile).filter(dm.VideoFile.shelf_id == shelf_id)
+    with dbi.session() as db:
+        return db.query(dbi.dm.VideoFile).filter(dbi.dm.VideoFile.shelf_id == shelf_id)
 
 def get_video_file_list(directory:str=None):
-    with DbSession() as db:
-        query = db.query(dm.VideoFile)
+    with dbi.session() as db:
+        query = db.query(dbi.dm.VideoFile)
 
         if directory:
-            query = query.filter(dm.VideoFile.local_path.contains(directory))
+            query = query.filter(dbi.dm.VideoFile.local_path.contains(directory))
 
         query = (query
-            .order_by(dm.VideoFile.local_path)
+            .order_by(dbi.dm.VideoFile.local_path)
             .all()
         )
 

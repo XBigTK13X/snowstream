@@ -630,8 +630,8 @@ def auth_required(router):
     def deployment_hotfix(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
     ):
-        db.sql.truncate('streamable')
-        db.sql.truncate('cached_text')
+        #db.sql.truncate('streamable')
+        #db.sql.truncate('cached_text')
         return True
 
         # return db.op.fix_image_file_thumbnail_paths()

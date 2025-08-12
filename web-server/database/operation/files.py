@@ -1,161 +1,153 @@
-import database.db_models as dm
-import api_models as am
-from database.sql_alchemy import DbSession
-from log import log
-import sqlalchemy as sa
-import sqlalchemy.orm as sorm
-from sqlalchemy import text as sql_text
-from settings import config
-import os
+from database.operation.db_internal import dbi
 import database.operation.movie as db_movie
 import database.operation.show_episode as db_episode
 
 def purge_missing_video_file_records():
     deleted_records = []
-    with DbSession() as db:
-        movie_video_files = db.query(dm.MovieVideoFile).options(sorm.joinedload(dm.MovieVideoFile.video_file)).all()
+    with dbi.session() as db:
+        movie_video_files = db.query(dbi.dm.MovieVideoFile).options(dbi.orm.joinedload(dbi.dm.MovieVideoFile.video_file)).all()
         for movie_video_file in movie_video_files:
-            if not os.path.exists(movie_video_file.video_file.local_path):
+            if not dbi.os.path.exists(movie_video_file.video_file.local_path):
                 deleted_records.append(movie_video_file.video_file.local_path)
-                db.query(dm.MovieVideoFile).filter(
-                    dm.MovieVideoFile.movie_id == movie_video_file.movie_id,
-                    dm.MovieVideoFile.video_file_id == movie_video_file.video_file_id
+                db.query(dbi.dm.MovieVideoFile).filter(
+                    dbi.dm.MovieVideoFile.movie_id == movie_video_file.movie_id,
+                    dbi.dm.MovieVideoFile.video_file_id == movie_video_file.video_file_id
                 ).delete()
-                db.query(dm.VideoFile).filter(
-                    dm.VideoFile.id == movie_video_file.video_file_id
+                db.query(dbi.dm.VideoFile).filter(
+                    dbi.dm.VideoFile.id == movie_video_file.video_file_id
                 ).delete()
         db.commit()
 
-        show_episode_video_files = db.query(dm.ShowEpisodeVideoFile).options(sorm.joinedload(dm.ShowEpisodeVideoFile.video_file)).all()
+        show_episode_video_files = db.query(dbi.dm.ShowEpisodeVideoFile).options(dbi.orm.joinedload(dbi.dm.ShowEpisodeVideoFile.video_file)).all()
         for show_episode_video_file in show_episode_video_files:
-            if not os.path.exists(show_episode_video_file.video_file.local_path):
+            if not dbi.os.path.exists(show_episode_video_file.video_file.local_path):
                 deleted_records.append(show_episode_video_file.video_file.local_path)
-                db.query(dm.ShowEpisodeVideoFile).filter(
-                    dm.ShowEpisodeVideoFile.show_episode_id == show_episode_video_file.show_episode_id,
-                    dm.ShowEpisodeVideoFile.video_file_id == show_episode_video_file.video_file_id
+                db.query(dbi.dm.ShowEpisodeVideoFile).filter(
+                    dbi.dm.ShowEpisodeVideoFile.show_episode_id == show_episode_video_file.show_episode_id,
+                    dbi.dm.ShowEpisodeVideoFile.video_file_id == show_episode_video_file.video_file_id
                 ).delete()
-                db.query(dm.VideoFile).filter(
-                    dm.VideoFile.id == show_episode_video_file.video_file_id
+                db.query(dbi.dm.VideoFile).filter(
+                    dbi.dm.VideoFile.id == show_episode_video_file.video_file_id
                 ).delete()
         db.commit()
     return deleted_records
 
 def purge_missing_image_file_records():
     deleted_records = []
-    with DbSession() as db:
-        movie_image_files = db.query(dm.MovieImageFile).options(sorm.joinedload(dm.MovieImageFile.image_file)).all()
+    with dbi.session() as db:
+        movie_image_files = db.query(dbi.dm.MovieImageFile).options(dbi.orm.joinedload(dbi.dm.MovieImageFile.image_file)).all()
         for movie_image_file in movie_image_files:
-            if not os.path.exists(movie_image_file.image_file.local_path):
+            if not dbi.os.path.exists(movie_image_file.image_file.local_path):
                 deleted_records.append(movie_image_file.image_file.local_path)
-                db.query(dm.MovieImageFile).filter(
-                    dm.MovieImageFile.movie_id == movie_image_file.movie_id,
-                    dm.MovieImageFile.image_file_id == movie_image_file.image_file_id
+                db.query(dbi.dm.MovieImageFile).filter(
+                    dbi.dm.MovieImageFile.movie_id == movie_image_file.movie_id,
+                    dbi.dm.MovieImageFile.image_file_id == movie_image_file.image_file_id
                 ).delete()
-                db.query(dm.ImageFile).filter(
-                    dm.ImageFile.id == movie_image_file.image_file_id
+                db.query(dbi.dm.ImageFile).filter(
+                    dbi.dm.ImageFile.id == movie_image_file.image_file_id
                 ).delete()
         db.commit()
 
-        show_image_files = db.query(dm.ShowImageFile).options(sorm.joinedload(dm.ShowImageFile.image_file)).all()
+        show_image_files = db.query(dbi.dm.ShowImageFile).options(dbi.orm.joinedload(dbi.dm.ShowImageFile.image_file)).all()
         for show_image_file in show_image_files:
-            if not os.path.exists(show_image_file.image_file.local_path):
+            if not dbi.os.path.exists(show_image_file.image_file.local_path):
                 deleted_records.append(show_image_file.image_file.local_path)
-                db.query(dm.ShowImageFile).filter(
-                    dm.ShowImageFile.show_id == show_image_file.show_id,
-                    dm.ShowImageFile.image_file_id == show_image_file.image_file_id
+                db.query(dbi.dm.ShowImageFile).filter(
+                    dbi.dm.ShowImageFile.show_id == show_image_file.show_id,
+                    dbi.dm.ShowImageFile.image_file_id == show_image_file.image_file_id
                 ).delete()
-                db.query(dm.ImageFile).filter(
-                    dm.ImageFile.id == show_image_file.image_file_id
+                db.query(dbi.dm.ImageFile).filter(
+                    dbi.dm.ImageFile.id == show_image_file.image_file_id
                 ).delete()
         db.commit()
 
-        show_season_image_files = db.query(dm.ShowSeasonImageFile).options(sorm.joinedload(dm.ShowSeasonImageFile.image_file)).all()
+        show_season_image_files = db.query(dbi.dm.ShowSeasonImageFile).options(dbi.orm.joinedload(dbi.dm.ShowSeasonImageFile.image_file)).all()
         for show_season_image_file in show_season_image_files:
-            if not os.path.exists(show_season_image_file.image_file.local_path):
+            if not dbi.os.path.exists(show_season_image_file.image_file.local_path):
                 deleted_records.append(show_season_image_file.image_file.local_path)
-                db.query(dm.ShowSeasonImageFile).filter(
-                    dm.ShowSeasonImageFile.show_season_id == show_season_image_file.show_season_id,
-                    dm.ShowSeasonImageFile.image_file_id == show_season_image_file.image_file_id
+                db.query(dbi.dm.ShowSeasonImageFile).filter(
+                    dbi.dm.ShowSeasonImageFile.show_season_id == show_season_image_file.show_season_id,
+                    dbi.dm.ShowSeasonImageFile.image_file_id == show_season_image_file.image_file_id
                 ).delete()
-                db.query(dm.ImageFile).filter(
-                    dm.ImageFile.id == show_season_image_file.image_file_id
+                db.query(dbi.dm.ImageFile).filter(
+                    dbi.dm.ImageFile.id == show_season_image_file.image_file_id
                 ).delete()
         db.commit()
 
-        show_episode_image_files = db.query(dm.ShowEpisodeImageFile).options(sorm.joinedload(dm.ShowEpisodeImageFile.image_file)).all()
+        show_episode_image_files = db.query(dbi.dm.ShowEpisodeImageFile).options(dbi.orm.joinedload(dbi.dm.ShowEpisodeImageFile.image_file)).all()
         for show_episode_image_file in show_episode_image_files:
-            if not os.path.exists(show_episode_image_file.image_file.local_path):
+            if not dbi.os.path.exists(show_episode_image_file.image_file.local_path):
                 deleted_records.append(show_episode_image_file.image_file.local_path)
-                db.query(dm.ShowEpisodeImageFile).filter(
-                    dm.ShowEpisodeImageFile.show_episode_id == show_episode_image_file.show_episode_id,
-                    dm.ShowEpisodeImageFile.image_file_id == show_episode_image_file.image_file_id
+                db.query(dbi.dm.ShowEpisodeImageFile).filter(
+                    dbi.dm.ShowEpisodeImageFile.show_episode_id == show_episode_image_file.show_episode_id,
+                    dbi.dm.ShowEpisodeImageFile.image_file_id == show_episode_image_file.image_file_id
                 ).delete()
-                db.query(dm.ImageFile).filter(
-                    dm.ImageFile.id == show_episode_image_file.image_file_id
+                db.query(dbi.dm.ImageFile).filter(
+                    dbi.dm.ImageFile.id == show_episode_image_file.image_file_id
                 ).delete()
         db.commit()
     return deleted_records
 
 def purge_missing_metadata_file_records():
     deleted_records = []
-    with DbSession() as db:
-        movie_metadata_files = db.query(dm.MovieMetadataFile).options(sorm.joinedload(dm.MovieMetadataFile.metadata_file)).all()
+    with dbi.session() as db:
+        movie_metadata_files = db.query(dbi.dm.MovieMetadataFile).options(dbi.orm.joinedload(dbi.dm.MovieMetadataFile.metadata_file)).all()
         for movie_metadata_file in movie_metadata_files:
-            if not os.path.exists(movie_metadata_file.metadata_file.local_path):
+            if not dbi.os.path.exists(movie_metadata_file.metadata_file.local_path):
                 deleted_records.append(movie_metadata_file.metadata_file.local_path)
-                db.query(dm.MovieMetadataFile).filter(
-                    dm.MovieMetadataFile.movie_id == movie_metadata_file.movie_id,
-                    dm.MovieMetadataFile.metadata_file_id == movie_metadata_file.metadata_file_id
+                db.query(dbi.dm.MovieMetadataFile).filter(
+                    dbi.dm.MovieMetadataFile.movie_id == movie_metadata_file.movie_id,
+                    dbi.dm.MovieMetadataFile.metadata_file_id == movie_metadata_file.metadata_file_id
                 ).delete()
-                db.query(dm.MetadataFile).filter(
-                    dm.MetadataFile.id == movie_metadata_file.metadata_file_id
+                db.query(dbi.dm.MetadataFile).filter(
+                    dbi.dm.MetadataFile.id == movie_metadata_file.metadata_file_id
                 ).delete()
         db.commit()
 
-        show_metadata_files = db.query(dm.ShowMetadataFile).options(sorm.joinedload(dm.ShowMetadataFile.metadata_file)).all()
+        show_metadata_files = db.query(dbi.dm.ShowMetadataFile).options(dbi.orm.joinedload(dbi.dm.ShowMetadataFile.metadata_file)).all()
         for show_metadata_file in show_metadata_files:
-            if not os.path.exists(show_metadata_file.metadata_file.local_path):
+            if not dbi.os.path.exists(show_metadata_file.metadata_file.local_path):
                 deleted_records.append(show_metadata_file.metadata_file.local_path)
-                db.query(dm.ShowMetadataFile).filter(
-                    dm.ShowMetadataFile.show_id == show_metadata_file.show_id,
-                    dm.ShowMetadataFile.metadata_file_id == show_metadata_file.metadata_file_id
+                db.query(dbi.dm.ShowMetadataFile).filter(
+                    dbi.dm.ShowMetadataFile.show_id == show_metadata_file.show_id,
+                    dbi.dm.ShowMetadataFile.metadata_file_id == show_metadata_file.metadata_file_id
                 ).delete()
-                db.query(dm.MetadataFile).filter(
-                    dm.MetadataFile.id == show_metadata_file.metadata_file_id
+                db.query(dbi.dm.MetadataFile).filter(
+                    dbi.dm.MetadataFile.id == show_metadata_file.metadata_file_id
                 ).delete()
         db.commit()
 
-        show_season_metadata_files = db.query(dm.ShowSeasonMetadataFile).options(sorm.joinedload(dm.ShowSeasonMetadataFile.metadata_file)).all()
+        show_season_metadata_files = db.query(dbi.dm.ShowSeasonMetadataFile).options(dbi.orm.joinedload(dbi.dm.ShowSeasonMetadataFile.metadata_file)).all()
         for show_season_metadata_file in show_season_metadata_files:
-            if not os.path.exists(show_season_metadata_file.metadata_file.local_path):
+            if not dbi.os.path.exists(show_season_metadata_file.metadata_file.local_path):
                 deleted_records.append(show_season_metadata_file.metadata_file.local_path)
-                db.query(dm.ShowSeasonMetadataFile).filter(
-                    dm.ShowSeasonMetadataFile.show_season_id == show_season_metadata_file.show_season_id,
-                    dm.ShowSeasonMetadataFile.metadata_file_id == show_season_metadata_file.metadata_file_id
+                db.query(dbi.dm.ShowSeasonMetadataFile).filter(
+                    dbi.dm.ShowSeasonMetadataFile.show_season_id == show_season_metadata_file.show_season_id,
+                    dbi.dm.ShowSeasonMetadataFile.metadata_file_id == show_season_metadata_file.metadata_file_id
                 ).delete()
-                db.query(dm.MetadataFile).filter(
-                    dm.MetadataFile.id == show_season_metadata_file.metadata_file_id
+                db.query(dbi.dm.MetadataFile).filter(
+                    dbi.dm.MetadataFile.id == show_season_metadata_file.metadata_file_id
                 ).delete()
         db.commit()
 
-        show_episode_metadata_files = db.query(dm.ShowEpisodeMetadataFile).options(sorm.joinedload(dm.ShowEpisodeMetadataFile.metadata_file)).all()
+        show_episode_metadata_files = db.query(dbi.dm.ShowEpisodeMetadataFile).options(dbi.orm.joinedload(dbi.dm.ShowEpisodeMetadataFile.metadata_file)).all()
         for show_episode_metadata_file in show_episode_metadata_files:
-            if not os.path.exists(show_episode_metadata_file.metadata_file.local_path):
+            if not dbi.os.path.exists(show_episode_metadata_file.metadata_file.local_path):
                 deleted_records.append(show_episode_metadata_file.metadata_file.local_path)
-                db.query(dm.ShowEpisodeMetadataFile).filter(
-                    dm.ShowEpisodeMetadataFile.show_episode_id == show_episode_metadata_file.show_episode_id,
-                    dm.ShowEpisodeMetadataFile.metadata_file_id == show_episode_metadata_file.metadata_file_id
+                db.query(dbi.dm.ShowEpisodeMetadataFile).filter(
+                    dbi.dm.ShowEpisodeMetadataFile.show_episode_id == show_episode_metadata_file.show_episode_id,
+                    dbi.dm.ShowEpisodeMetadataFile.metadata_file_id == show_episode_metadata_file.metadata_file_id
                 ).delete()
-                db.query(dm.MetadataFile).filter(
-                    dm.MetadataFile.id == show_episode_metadata_file.metadata_file_id
+                db.query(dbi.dm.MetadataFile).filter(
+                    dbi.dm.MetadataFile.id == show_episode_metadata_file.metadata_file_id
                 ).delete()
         db.commit()
     return deleted_records
 
 def find_shelf_content_without_video_files():
     results = []
-    with DbSession() as db:
-        ticket = dm.Ticket(ignore_watch_group=True)
+    with dbi.session() as db:
+        ticket = dbi.dm.Ticket(ignore_watch_group=True)
         movies = db_movie.get_movie_list(ticket=ticket)
         for movie in movies:
             if not movie.video_files:
@@ -169,7 +161,7 @@ def find_shelf_content_without_video_files():
 
 def purge_orphaned_records():
     results = []
-    with DbSession() as db:
+    with dbi.session() as db:
         kinds = ['metadata_file','image_file','video_file']
         for kind in kinds:
             file_query = f'''
@@ -187,14 +179,14 @@ def purge_orphaned_records():
                     {'' if kind == 'video_file' else f'and show_season_{kind}.id is null'}
                     ;
             '''
-            cursor = db.execute(sql_text(file_query))
+            cursor = db.execute(dbi.sql_text(file_query))
             file_ids = []
             for row in cursor:
                 results.append(f'{kind} - {row.file_id}')
                 file_ids.append(str(row.file_id))
             if file_ids:
                 group = ",".join(file_ids)
-                db.execute(sql_text(f'delete from {kind} where {kind}.id in ({group});'))
+                db.execute(dbi.sql_text(f'delete from {kind} where {kind}.id in ({group});'))
                 db.commit()
 
         episode_query = f'''
@@ -205,14 +197,14 @@ def purge_orphaned_records():
             where
                 show_season.id is null;
         '''
-        episode_cursor = db.execute(sql_text(episode_query))
+        episode_cursor = db.execute(dbi.sql_text(episode_query))
         episode_ids = []
         for row in episode_cursor:
             results.append(f'show_episode - {row.episode_id}')
             episode_ids.append(str(row.episode_id))
         if episode_ids:
             group = ",".join(episode_ids)
-            db.execute(sql_text(f'delete from show_episode where show_episode.id in ({group});'))
+            db.execute(dbi.sql_text(f'delete from show_episode where show_episode.id in ({group});'))
             db.commit()
 
         season_query = f'''
@@ -223,14 +215,14 @@ def purge_orphaned_records():
             where
                 show.id is null;
         '''
-        season_cursor = db.execute(sql_text(season_query))
+        season_cursor = db.execute(dbi.sql_text(season_query))
         season_ids = []
         for row in season_cursor:
             results.append(f'show_season - {row.season_id}')
             season_ids.append(str(row.season_id))
         if season_ids:
             group = ",".join(season_ids)
-            db.execute(sql_text(f'delete from show_season where show_season.id in ({group});'))
+            db.execute(dbi.sql_text(f'delete from show_season where show_season.id in ({group});'))
             db.commit()
 
         show_query = f'''
@@ -243,14 +235,14 @@ def purge_orphaned_records():
                 show_shelf.id is null
                 or shelf.id is null;
         '''
-        show_cursor = db.execute(sql_text(show_query))
+        show_cursor = db.execute(dbi.sql_text(show_query))
         show_ids = []
         for row in show_cursor:
             results.append(f'show - {row.show_id}')
             show_ids.append(str(row.show_id))
         if show_ids:
             group = ",".join(show_ids)
-            db.execute(sql_text(f'delete from show where show.id in ({group});'))
+            db.execute(dbi.sql_text(f'delete from show where show.id in ({group});'))
             db.commit()
 
         movie_query = f'''
@@ -263,14 +255,14 @@ def purge_orphaned_records():
                 movie_shelf.id is null
                 or shelf.id is null;
         '''
-        movie_cursor = db.execute(sql_text(movie_query))
+        movie_cursor = db.execute(dbi.sql_text(movie_query))
         movie_ids = []
         for row in movie_cursor:
             results.append(f'movie - {row.movie_id}')
             movie_ids.append(str(row.movie_id))
         if movie_ids:
             group = ",".join(movie_ids)
-            db.execute(sql_text(f'delete from movie where movie.id in ({group});'))
+            db.execute(dbi.sql_text(f'delete from movie where movie.id in ({group});'))
             db.commit()
 
     return results
