@@ -268,7 +268,7 @@ export default function MediaTracksPage(props) {
         }
         return (
             <C.FillView>
-                <C.View>
+                <C.FillView>
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(localParams, media) : media.name}
                     </C.SnowLabel>
@@ -281,7 +281,7 @@ export default function MediaTracksPage(props) {
                             onPress={routes.func(props.getPlayRoute(routes), combinedPlayDestination)}
                         />
                     </C.SnowGrid>
-                </C.View>
+                </C.FillView>
                 <C.FillView>
                     <C.SnowTabs headers={tabs}>
                         <C.FillView>

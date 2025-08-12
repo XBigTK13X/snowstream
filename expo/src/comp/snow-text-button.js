@@ -35,8 +35,7 @@ const styles = {
         opacity: 0.5
     },
     fade: {
-        backgroundColor: Style.color.fade,
-        borderColor: Style.color.fade
+        backgroundColor: Style.color.fade
     },
     text: {
         fontSize: Style.textButton.fontSize.normal,
@@ -77,7 +76,7 @@ export function SnowTextButton(props) {
         wrapperStyle.push(styles.fade)
     }
 
-    if (props.tall) {
+    if (props.tall && Style.isWeb) {
         wrapperStyle.push(styles.tallWrapper)
     }
 

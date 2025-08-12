@@ -2,6 +2,7 @@ import { Platform, Dimensions } from 'react-native';
 
 const isTV = Platform.isTV
 const isAndroid = Platform.OS === 'android'
+const isWeb = Platform.OS === 'web'
 const isPortrait = Dimensions.get('window').width < Dimensions.get('window').height
 
 let scaleMultiplier = 0.75

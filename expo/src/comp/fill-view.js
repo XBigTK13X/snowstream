@@ -10,21 +10,34 @@ const styles = {
 export default function FillView(props) {
     // FlatList often overflows outside of the viewport without enabling scrolling.
     // This commonly happens when any parent container is not set to flex: 1
-    let style = [styles.default]
-    if (props.style) {
-        style.push(props.style)
+    if (props.scroll) {
+        let viewStyle = []
+        let scrollStyle = []
+        if (!props.shrink) {
+            viewStyle = [styles.default]
+        }
+        if (props.flexStart) {
+            scrollStyle = [styles.flexStart]
+        }
+        if (props.style) {
+            viewStyle.push(props.style)
+        }
+        return <ScrollView
+            style={viewStyle}
+            contentContainerStyle={scrollStyle}
+            children={props.children}
+        />
     }
-    if (props.shrink) {
-        style = []
+
+    let style = []
+    if (!props.shrink) {
+        style = [styles.default]
     }
     if (props.flexStart) {
         style.push(styles.flexStart)
     }
-    if (props.scroll) {
-        return <ScrollView
-            contentContainerStyle={style}
-            children={props.children}
-        />
+    if (props.style) {
+        style.push(props.style)
     }
     return (
         <View style={style} children={props.children} />

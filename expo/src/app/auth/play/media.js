@@ -45,7 +45,6 @@ export function PlayMediaPage(props) {
     }
 
     const loadVideo = (response) => {
-        console.log({ response })
         if (response.url) {
             setVideoUrl(response.url)
         }

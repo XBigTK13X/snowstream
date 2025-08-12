@@ -73,8 +73,7 @@ export default function OptionsPage() {
 
     return (
         <C.FillView>
-            <C.SnowGrid itemsPerRow={3} shrink>
-
+            <C.SnowGrid shrink itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={() => {
                     changeClientOptions({
                         deviceId,
@@ -102,40 +101,38 @@ export default function OptionsPage() {
                     }}
                 />
             </C.SnowGrid>
-            <C.FillView>
-                <C.SnowGrid shrink itemsPerRow={3}>
-                    <C.SnowDropdown
-                        title="Video Resolution"
-                        options={resolutions}
-                        onValueChange={chooseResolution}
-                        valueIndex={resolutionIndex} />
-                    <C.SnowDropdown
-                        title="Device Profile"
-                        options={deviceProfiles}
-                        onValueChange={chooseDeviceProfile}
-                        valueIndex={deviceProfileIndex} />
-                    <C.SnowDropdown
-                        title="Always Transcode"
-                        options={['No', 'Yes']}
-                        onValueChange={chooseAlwaysTranscode}
-                        valueIndex={alwaysTranscode === true ? 1 : 0} />
-                    <C.SnowDropdown
-                        title="Always Use ExoPlayer"
-                        options={['No', 'Yes']}
-                        onValueChange={chooseAlwaysUseExoPlayer}
-                        valueIndex={alwaysUseExoPlayer === true ? 1 : 0} />
-                    <C.SnowDropdown
-                        title="Audio Compression (mpv)"
-                        options={['No', 'Yes']}
-                        onValueChange={chooseAudioCompression}
-                        valueIndex={audioCompression === true ? 1 : 0} />
-                    <C.SnowDropdown
-                        title="Hardware Decoder (mpv)"
-                        options={['No', 'Yes']}
-                        onValueChange={chooseHardwareDecoder}
-                        valueIndex={hardwareDecoder === true ? 1 : 0} />
-                </C.SnowGrid>
-            </C.FillView>
+            <C.SnowGrid itemsPerRow={3}>
+                <C.SnowDropdown
+                    title="Video Resolution"
+                    options={resolutions}
+                    onValueChange={chooseResolution}
+                    valueIndex={resolutionIndex} />
+                <C.SnowDropdown
+                    title="Device Profile"
+                    options={deviceProfiles}
+                    onValueChange={chooseDeviceProfile}
+                    valueIndex={deviceProfileIndex} />
+                <C.SnowDropdown
+                    title="Always Transcode"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseAlwaysTranscode}
+                    valueIndex={alwaysTranscode === true ? 1 : 0} />
+                <C.SnowDropdown
+                    title="Always Use ExoPlayer"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseAlwaysUseExoPlayer}
+                    valueIndex={alwaysUseExoPlayer === true ? 1 : 0} />
+                <C.SnowDropdown
+                    title="Audio Compression (mpv)"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseAudioCompression}
+                    valueIndex={audioCompression === true ? 1 : 0} />
+                <C.SnowDropdown
+                    title="Hardware Decoder (mpv)"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseHardwareDecoder}
+                    valueIndex={hardwareDecoder === true ? 1 : 0} />
+            </C.SnowGrid>
         </C.FillView>
 
     )

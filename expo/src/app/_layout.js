@@ -44,7 +44,7 @@ function Header() {
     }
     return (
         <C.View style={styles.header}>
-            <C.SnowGrid>
+            <C.SnowGrid shrink>
                 <C.SnowTextButton title="Home" onPress={routes.func(routes.landing)} />
                 <C.SnowTextButton title="Sign Out" onPress={routes.func(routes.signOut)} />
                 {isAdmin ? <C.SnowTextButton
