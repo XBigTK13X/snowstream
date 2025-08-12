@@ -13,19 +13,27 @@ export default function PlayMoviePage() {
         })
     }
 
-    const loadTranscode = (apiClient, localParams) => {
-        return apiClient.getMovie(localParams.movieId)
-            .then((movie) => {
-                const videoFile = movie.video_files[localParams.videoFileIndex ?? 0]
-                return apiClient.createVideoFileTranscodeSession(videoFile.id, localParams.audioTrackIndex, localParams.subtitleTrackIndex)
-                    .then((transcodeSession) => {
-                        return {
-                            name: movie.name,
-                            url: transcodeSession.trancode_url,
-                            durationSeconds: videoFile.duration_seconds
-                        }
-                    })
-            })
+    const loadTranscode = (apiClient, localParams, deviceProfile) => {
+        return new Promise((resolve) => {
+            apiClient.getMovie(localParams.movieId)
+                .then((movie) => {
+                    const videoFile = movie.video_files[localParams.videoFileIndex ?? 0]
+                    return apiClient.createVideoFileTranscodeSession(
+                        videoFile.id,
+                        localParams.audioTrack,
+                        localParams.subtitleTrack,
+                        deviceProfile
+                    )
+                        .then((transcodeSession) => {
+                            return resolve({
+                                name: movie.name,
+                                url: transcodeSession.transcode_url,
+                                durationSeconds: videoFile.info.duration_seconds
+                            })
+                        })
+                })
+        })
+
     }
 
     const updateProgress = (apiClient, localParams, progressSeconds, duration) => {

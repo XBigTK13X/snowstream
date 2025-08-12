@@ -90,6 +90,9 @@ export class ApiClient {
         this.toggleShowShelfWatchStatus = this.toggleShowShelfWatchStatus.bind(this)
         this.toggleShowWatchStatus = this.toggleShowWatchStatus.bind(this)
 
+        this.createVideoFileTranscodeSession = this.createVideoFileTranscodeSession.bind(this)
+        this.createStreamableTranscodeSession = this.createStreamableTranscodeSession.bind(this)
+
         this.handleError = (err) => {
             util.log(err)
             if (err) {
@@ -360,8 +363,8 @@ export class ApiClient {
         return this.delete(`/tag/${tagId}`)
     }
 
-    createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex) {
-        let requestUrl = `${this.baseURL}/transcode/session?video_file_id=${videoFileId}`
+    createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex, deviceProfile) {
+        let requestUrl = `${this.baseURL}/transcode/session?video_file_id=${videoFileId}&device_profile=${deviceProfile}`
         if (audioTrackIndex !== -1) {
             requestUrl += `&audio_track_index=${audioTrackIndex}`
         }
@@ -372,7 +375,7 @@ export class ApiClient {
     }
 
     createStreamableTranscodeSession(streamableId) {
-        return this.post(`${this.baseURL}/transcode/session?streamable_id=${streamableId}`)
+        return this.post(`${this.baseURL}/transcode/session?streamable_id=${streamableId}&device_profile=${deviceProfile}`)
     }
 
     setShelfWatchStatus(shelfId, watched) {

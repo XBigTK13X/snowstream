@@ -45,6 +45,7 @@ export function PlayMediaPage(props) {
     }
 
     const loadVideo = (response) => {
+        console.log({ response })
         if (response.url) {
             setVideoUrl(response.url)
         }
@@ -69,9 +70,9 @@ export function PlayMediaPage(props) {
             if (localParams.subtitleTrack) {
                 setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
             }
-            if (props.transcode) {
+            if (shouldTranscode) {
                 if (props.loadTranscode) {
-                    props.loadTranscode(apiClient, localParams)
+                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile)
                         .then(loadVideo)
                 }
             }
@@ -136,6 +137,7 @@ export function PlayMediaPage(props) {
 
     const onError = (err) => {
         if (!props.transcode) {
+            setVideoLoaded(false)
             routes.replace(pathname, { ...localParams, ...{ transcode: true } })
         }
         else {
@@ -164,8 +166,8 @@ export function PlayMediaPage(props) {
     }
 
     if (!videoUrl) {
-        if (props.transcode) {
-            return <C.SnowText>"Preparing a transcode. This can take quite a while to load if subtitles are enabled."</C.SnowText>
+        if (shouldTranscode) {
+            return <C.SnowText>Preparing a transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
         }
         return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
     }
@@ -173,7 +175,7 @@ export function PlayMediaPage(props) {
         <C.SnowVideoPlayer
             videoTitle={videoTitle}
             videoUrl={videoUrl}
-            isTranscode={props.transcode}
+            isTranscode={shouldTranscode}
             onError={onError}
             tracks={tracks}
             subtitleIndex={subtitleTrackIndex}

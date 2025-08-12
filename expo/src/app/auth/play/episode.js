@@ -15,19 +15,26 @@ export default function PlayEpisodePage() {
         })
     }
 
-    const loadTranscode = (apiClient, localParams) => {
-        return apiClient.getEpisode(localParams.episodeId)
-            .then((episode) => {
-                const videoFile = episode.video_files[localParams.videoFileIndex ?? 0]
-                return apiClient.createVideoFileTranscodeSession(videoFile.id, localParams.audioTrackIndex, localParams.subtitleTrackIndex)
-                    .then((transcodeSession) => {
-                        return {
-                            name: movie.name,
-                            url: transcodeSession.trancode_url,
-                            durationSeconds: videoFile.duration_seconds
-                        }
-                    })
-            })
+    const loadTranscode = (apiClient, localParams, deviceProfile) => {
+        return new Promise((resolve) => {
+            apiClient.getEpisode(localParams.episodeId)
+                .then((episode) => {
+                    const videoFile = episode.video_files[localParams.videoFileIndex ?? 0]
+                    return apiClient.createVideoFileTranscodeSession(
+                        videoFile.id,
+                        localParams.audioTrackIndex,
+                        localParams.subtitleTrackIndex,
+                        deviceProfile
+                    )
+                        .then((transcodeSession) => {
+                            return resolve({
+                                name: movie.name,
+                                url: transcodeSession.transcode_url,
+                                durationSeconds: videoFile.info.duration_seconds
+                            })
+                        })
+                })
+        })
     }
 
     const updateProgress = (apiClient, localParams, progressSeconds, duration) => {
@@ -40,6 +47,7 @@ export default function PlayEpisodePage() {
     return (
         <PlayMediaPage
             loadVideo={loadVideo}
+            loadTranscode={loadTranscode}
             updateProgress={updateProgress}
             increaseWatchCount={increaseWatchCount}
         />

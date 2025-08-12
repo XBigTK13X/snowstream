@@ -36,6 +36,7 @@ class Transcode:
     def create_session(
         self,
         cduid:int,
+        device_profile:str=None,
         video_file_id:int=None,
         streamable_id:int=None,
         audio_track_index:int=None,
@@ -66,6 +67,7 @@ class Transcode:
             stream_port=stream_port
         )
         command,streaming_url = ffmpeg.transcode_command(
+            device_profile=device_profile,
             input_url=input_path,
             snowstream_info=snowstream_info,
             stream_port=stream_port,

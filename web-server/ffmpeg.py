@@ -5,6 +5,7 @@ import util
 import datetime
 
 def transcode_command(
+    device_profile:str,
     input_url:str,
     snowstream_info:dict,
     stream_port:int,
