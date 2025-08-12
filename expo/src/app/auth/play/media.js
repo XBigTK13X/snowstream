@@ -1,14 +1,14 @@
 import C from '../../../common'
 
-export function PlayMediaPage() {
+export function PlayMediaPage(props) {
     const { apiClient, routes, config, clientOptions } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
-
-    const forcePlayer = localParams.forcePlayer
+    const pathname = C.usePathname()
 
     const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
 
     const [videoUrl, setVideoUrl] = C.React.useState(null)
+    const [videoTitle, setVideoTitle] = C.React.useState(null)
 
     const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
@@ -24,15 +24,41 @@ export function PlayMediaPage() {
     const initialSeekRef = C.React.useRef(initialSeekComplete)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
 
+    const forcePlayer = localParams.forcePlayer
     let forceExo = false
     if (forcePlayer === 'exo') {
         forceExo = true
     }
-    else if (videoIsHdr && forcePlayer !== 'mpv') {
+    else if (localParams.videoIsHdr && forcePlayer !== 'mpv') {
         forceExo = true
     }
     else if (clientOptions.alwaysUseExoPlayer) {
         forceExo = true
+    }
+
+    let shouldTranscode = false
+    if (localParams.transcode) {
+        shouldTranscode = localParams.transcode
+    }
+    if (clientOptions.alwaysTranscode) {
+        shouldTranscode = true
+    }
+
+    const loadVideo = (response) => {
+        if (response.url) {
+            setVideoUrl(response.url)
+        }
+        if (response.name) {
+            setVideoTitle(response.name)
+        }
+        if (response.durationSeconds) {
+            setDurationSeconds(response.durationSeconds)
+            durationRef.current = response.durationSeconds
+        }
+        if (response.tracks) {
+            setTracks(response.tracks)
+        }
+        setVideoLoaded(true)
     }
 
     C.React.useEffect(() => {
@@ -43,17 +69,17 @@ export function PlayMediaPage() {
             if (localParams.subtitleTrack) {
                 setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
             }
-            if (props.loadVideo) {
-                props.loadVideo(localParams)
-                    .then((response) => {
-                        if (response.videoFile) {
-                            setTracks(response.videoFile.info.tracks)
-                            setVideoUrl(response.videoFile.network_path)
-                            setDurationSeconds(response.videoFile.info.duration_seconds)
-                            durationRef.current = response.videoFile.info.duration_seconds
-                            setVideoLoaded(true)
-                        }
-                    })
+            if (props.transcode) {
+                if (props.loadTranscode) {
+                    props.loadTranscode(apiClient, localParams)
+                        .then(loadVideo)
+                }
+            }
+            else {
+                if (props.loadVideo) {
+                    props.loadVideo(apiClient, localParams)
+                        .then(loadVideo)
+                }
             }
         }
     })
@@ -109,9 +135,8 @@ export function PlayMediaPage() {
     }
 
     const onError = (err) => {
-        if (!transcode && !streamableId) {
-            setTranscode(true)
-            setShelf(null)
+        if (!props.transcode) {
+            routes.replace(pathname, { ...localParams, ...{ transcode: true } })
         }
         else {
             setPlaybackFailed(err)
@@ -138,29 +163,33 @@ export function PlayMediaPage() {
         )
     }
 
-    if (videoUrl) {
-        return (
-            <C.SnowVideoPlayer
-                videoTitle={videoTitle}
-                videoUrl={videoUrl}
-                isTranscode={transcodeReady}
-                onError={onError}
-                tracks={tracks}
-                subtitleIndex={subtitleTrackIndex}
-                audioIndex={audioTrackIndex}
-                selectTrack={selectTrack}
-                onSeek={onSeek}
-                onProgress={onProgress}
-                onComplete={onComplete}
-                durationSeconds={durationSeconds}
-                forceExoPlayer={forceExo}
-                initialSeekSeconds={initialSeekSeconds}
-                initialSeekComplete={initialSeekRef}
-                onReadyToSeek={onReadyToSeek}
-            />
-        )
+    if (!videoUrl) {
+        if (props.transcode) {
+            return <C.SnowText>"Preparing a transcode. This can take quite a while to load if subtitles are enabled."</C.SnowText>
+        }
+        return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
     }
-    return <C.SnowText>Loading video info...</C.SnowText>
+    return (
+        <C.SnowVideoPlayer
+            videoTitle={videoTitle}
+            videoUrl={videoUrl}
+            isTranscode={props.transcode}
+            onError={onError}
+            tracks={tracks}
+            subtitleIndex={subtitleTrackIndex}
+            audioIndex={audioTrackIndex}
+            selectTrack={selectTrack}
+            onSeek={onSeek}
+            onProgress={onProgress}
+            onComplete={onComplete}
+            durationSeconds={durationSeconds}
+            forceExoPlayer={forceExo}
+            initialSeekSeconds={initialSeekSeconds}
+            initialSeekComplete={initialSeekRef}
+            onReadyToSeek={onReadyToSeek}
+        />
+    )
+
 }
 
 export default PlayMediaPage

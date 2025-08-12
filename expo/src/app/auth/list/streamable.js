@@ -53,11 +53,11 @@ export default function StreamableListPage() {
                     shouldFocus={itemIndex === 0}
                     key={streamable.id}
                     title={streamable.name}
-                    onPress={routes.func(routes.playMedia, {
+                    onPress={routes.func(routes.streamablePlay, {
                         streamSourceId: streamSource.id,
                         streamableId: streamable.id,
                     })}
-                    onLongPress={routes.func(routes.playMedia, {
+                    onLongPress={routes.func(routes.streamablePlay, {
                         streamSourceId: streamSource.id,
                         streamableId: streamable.id,
                         forcePlayer: 'exo'

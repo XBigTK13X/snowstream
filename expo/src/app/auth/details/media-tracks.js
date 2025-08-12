@@ -162,7 +162,8 @@ export default function MediaTracksPage(props) {
             videoFileIndex: videoFileIndex,
             audioTrack: audioTrack,
             subtitleTrack: subtitleTrack,
-            shelfId: shelfId
+            shelfId: shelfId,
+            videoIsHdr: videoFile.is_hdr
         }
         let mainFeatureButton = null
         if (media.has_extras) {
@@ -208,7 +209,7 @@ export default function MediaTracksPage(props) {
         else if (props.getRemoteMetadataId) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
-        const mediaDestination = props.getPlayDestination(localParams)
+        const mediaDestination = props.getPlayParameters(localParams)
         let combinedPlayDestination = { ...playDestination, ...mediaDestination }
         if (forcePlayer !== null) {
             combinedPlayDestination = { ...combinedPlayDestination, ...{ forcePlayer: player } }
@@ -228,7 +229,7 @@ export default function MediaTracksPage(props) {
                     shouldFocus
                     tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
-                    onPress={routes.func(routes.playMedia, resumePlayDestination)}
+                    onPress={routes.func(props.getPlayRoute(routes), resumePlayDestination)}
                 />
             )
         }
@@ -277,7 +278,7 @@ export default function MediaTracksPage(props) {
                             tall
                             shouldFocus={playFocus}
                             title={playTitle}
-                            onPress={routes.func(routes.playMedia, combinedPlayDestination)}
+                            onPress={routes.func(props.getPlayRoute(routes), combinedPlayDestination)}
                         />
                     </C.SnowGrid>
                 </C.View>
@@ -288,7 +289,7 @@ export default function MediaTracksPage(props) {
                                 {/*<C.SnowTextButton
                         shouldFocus={playFocus}
                         title="Transcode"
-                        onPress={routes.func(routes.playMedia, transcodePlayDestination)}
+                        onPress={routes.func(props.getPlayRoute(routes), transcodePlayDestination)}
                     />*/}
                                 {mainFeatureButton}
                                 <C.SnowTextButton tall title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />

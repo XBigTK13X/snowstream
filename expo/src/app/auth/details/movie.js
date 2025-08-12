@@ -15,7 +15,10 @@ export default function MovieDetailsPage() {
         gotoShelf={(routes, localParams) => {
             return routes.func(routes.movieList, { shelfId: localParams.shelfId })
         }}
-        getPlayDestination={(localParams) => {
+        getPlayRoute={(routes) => {
+            return routes.moviePlay
+        }}
+        getPlayParameters={(localParams) => {
             return {
                 movieId: localParams.movieId
             }

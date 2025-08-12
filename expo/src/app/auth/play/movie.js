@@ -1,0 +1,46 @@
+import PlayMediaPage from './media'
+
+export default function PlayMoviePage() {
+    const loadVideo = (apiClient, localParams) => {
+        return apiClient.getMovie(localParams.movieId).then((response) => {
+            const videoFile = response.video_files[localParams.videoFileIndex ?? 0]
+            return {
+                url: videoFile.network_path,
+                name: response.name,
+                durationSeconds: videoFile.info.duration_seconds,
+                tracks: videoFile.info.tracks
+            }
+        })
+    }
+
+    const loadTranscode = (apiClient, localParams) => {
+        return apiClient.getMovie(localParams.movieId)
+            .then((movie) => {
+                const videoFile = movie.video_files[localParams.videoFileIndex ?? 0]
+                return apiClient.createVideoFileTranscodeSession(videoFile.id, localParams.audioTrackIndex, localParams.subtitleTrackIndex)
+                    .then((transcodeSession) => {
+                        return {
+                            name: movie.name,
+                            url: transcodeSession.trancode_url,
+                            durationSeconds: videoFile.duration_seconds
+                        }
+                    })
+            })
+    }
+
+    const updateProgress = (apiClient, localParams, progressSeconds, duration) => {
+        return apiClient.setMovieWatchProgress(localParams.movieId, progressSeconds, duration)
+    }
+
+    const increaseWatchCount = (apiClient, localParams) => {
+        return apiClient.increaseMovieWatchCount(localParams.movieId)
+    }
+    return (
+        <PlayMediaPage
+            loadVideo={loadVideo}
+            loadTranscode={loadTranscode}
+            updateProgress={updateProgress}
+            increaseWatchCount={increaseWatchCount}
+        />
+    )
+}

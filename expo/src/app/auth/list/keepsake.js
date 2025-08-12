@@ -29,7 +29,7 @@ export function KeepsakeListPage(props) {
 
         const shuffleAll = () => {
             props.shuffleAll(apiClient).then(response => {
-                routes.goto(routes.playMedia, { playingQueueSource: response.source })
+                routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
             })
         }
 

@@ -65,13 +65,13 @@ export function WatchableListPage(props) {
 
         const watchAll = () => {
             props.watchAll(apiClient, shelfId).then(response => {
-                routes.goto(routes.playMedia, { playingQueueSource: response.source })
+                routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
             })
         }
 
         const shuffleAll = () => {
             props.shuffleAll(apiClient, shelfId).then(response => {
-                routes.goto(routes.playMedia, { playingQueueSource: response.source })
+                routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
             })
         }
 

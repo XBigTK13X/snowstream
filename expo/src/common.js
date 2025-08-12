@@ -7,6 +7,7 @@ import {
     Stack,
     useLocalSearchParams,
     useNavigation,
+    usePathname,
     useRouter
 } from 'expo-router'
 
@@ -69,6 +70,7 @@ export default {
     useKeepAwake,
     useLocalSearchParams,
     useNavigation,
+    usePathname,
     useRouter,
     useTVEventHandler,
     util,

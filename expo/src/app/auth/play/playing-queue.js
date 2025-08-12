@@ -1,6 +1,6 @@
-import C from '../../common'
+import C from '../../../common'
 
-import PlayMediaPage from './play-media'
+import PlayMediaPage from './media'
 
 export default function PlayPlayingQueuePage() {
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
@@ -11,9 +11,13 @@ export default function PlayPlayingQueuePage() {
             let entry = response.content[response.progress]
             if (entry.kind === 'm') {
                 return apiClient.getMovie(entry.id).then((response) => {
+                    const videoFile = response.video_files[localParams.videoFileIndex ?? 0]
+                    const name = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${response.name}`
                     return {
-                        videoFile: response.video_files[localParams.videoFileIndex ?? 0],
-                        name: `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${response.name}`
+                        url: videoFile.network_path,
+                        name: name,
+                        durationSeconds: videoFile.info.duration_seconds,
+                        tracks: videoFile.info.tracks
                     }
                 })
             }
@@ -21,9 +25,12 @@ export default function PlayPlayingQueuePage() {
                 return apiClient.getEpisode(entry.id).then((response) => {
                     let name = `${response.season.show.name} - ${C.util.formatEpisodeTitle(response)}`
                     name = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${name}`
+                    const videoFile = response.video_files[localParams.videoFileIndex ?? 0]
                     return {
-                        videoFile: response.video_files[localParams.videoFileIndex ?? 0],
-                        name: name
+                        url: videoFile.network_path,
+                        name: name,
+                        durationSeconds: videoFile.info.duration_seconds,
+                        tracks: videoFile.info.tracks
                     }
                 })
             }
@@ -40,7 +47,7 @@ export default function PlayPlayingQueuePage() {
             progress = playingQueue.progress + 1
         )
             .then(() => {
-                routes.replace(routes.playMedia, { playingQueueSource })
+                routes.replace(routes.playPlayingQueue, { playingQueueSource })
             })
     }
     return (

@@ -1,7 +1,7 @@
 import React from 'react'
 import Slider from '@react-native-community/slider';
 import { View } from 'react-native'
-import { useLocalSearchParams } from 'expo-router'
+import { usePathname, useLocalSearchParams } from 'expo-router'
 
 import util from '../util'
 import Style from '../snow-style'
@@ -46,6 +46,7 @@ export default function SnowVideoControls(props) {
 
     const { apiClient, routes } = useAppContext()
     const localParams = useLocalSearchParams()
+    const currentRoute = usePathname()
     const [showLogs, setShowLogs] = React.useState(false)
     const [logTitle, setLogTitle] = React.useState(props.playerKind !== 'rnv' ? props.playerKind + ' Logs' : 'exo Logs')
 
@@ -190,7 +191,7 @@ export default function SnowVideoControls(props) {
                                     newParams.forcePlayer = 'exo'
                                 }
                                 newParams.seekToSeconds = props.progressSeconds
-                                routes.replace(routes.playMedia, newParams)
+                                routes.replace(currentRoute, newParams)
                             }} />
                         </SnowGrid>
                     </SnowTabs>
