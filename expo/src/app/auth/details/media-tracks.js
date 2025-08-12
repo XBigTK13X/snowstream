@@ -22,6 +22,7 @@ export default function MediaTracksPage(props) {
     const [player, setPlayer] = C.React.useState(C.isWeb ? 'exo' : 'mpv')
     const [forcePlayer, setForcePlayer] = C.React.useState(null)
     const [showModal, setShowModal] = C.React.useState(false)
+    const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
 
     const shelfId = localParams.shelfId;
 
@@ -88,6 +89,10 @@ export default function MediaTracksPage(props) {
 
     const showInfo = () => {
         setShowModal(true)
+    }
+
+    const toggleTranscode = () => {
+        setShouldTranscode(!shouldTranscode)
     }
 
     if (shelf && media) {
@@ -210,11 +215,10 @@ export default function MediaTracksPage(props) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
         const mediaDestination = props.getPlayParameters(localParams)
-        let combinedPlayDestination = { ...playDestination, ...mediaDestination }
+        let combinedPlayDestination = { ...playDestination, ...mediaDestination, transcode: shouldTranscode }
         if (forcePlayer !== null) {
-            combinedPlayDestination = { ...combinedPlayDestination, ...{ forcePlayer: player } }
+            combinedPlayDestination = { ...combinedPlayDestination, forcePlayer: player }
         }
-        const transcodePlayDestination = { ...combinedPlayDestination, ...{ transcode: true } }
         let playTitle = 'Play'
         let resumeControls = null
         let playFocus = true
@@ -222,7 +226,8 @@ export default function MediaTracksPage(props) {
             playFocus = false
             playTitle = 'Play from Start'
             const resumePlayDestination = {
-                ...combinedPlayDestination, ...{ seekToSeconds: media.in_progress.played_seconds }
+                ...combinedPlayDestination,
+                seekToSeconds: media.in_progress.played_seconds
             }
             resumeControls = (
                 <C.SnowTextButton
@@ -286,11 +291,6 @@ export default function MediaTracksPage(props) {
                     <C.SnowTabs headers={tabs}>
                         <C.FillView>
                             <C.SnowGrid shrink itemsPerRow={4}>
-                                {/*<C.SnowTextButton
-                        shouldFocus={playFocus}
-                        title="Transcode"
-                        onPress={routes.func(props.getPlayRoute(routes), transcodePlayDestination)}
-                    />*/}
                                 {mainFeatureButton}
                                 <C.SnowTextButton tall title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
                                 {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
@@ -301,6 +301,11 @@ export default function MediaTracksPage(props) {
                                     title={`Toggle Player [${player}]`}
                                     tall
                                     onPress={togglePlayer}
+                                />
+                                <C.SnowTextButton
+                                    title={`Should Transcode [${shouldTranscode}]`}
+                                    tall
+                                    onPress={toggleTranscode}
                                 />
                             </C.SnowGrid>
                         </C.FillView>

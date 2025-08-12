@@ -130,6 +130,14 @@ export function PlayMediaPage(props) {
                         })
                 }
             }
+            // Transcode streams have no seek capability
+            // Destroy and create a new one instead at the requested timestamp
+            if (shouldTranscode) {
+                if (props.loadTranscode) {
+                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, progressSeconds)
+                        .then(loadVideo)
+                }
+            }
         }
         return new Promise((resolve) => { resolve() })
     }

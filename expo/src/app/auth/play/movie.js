@@ -13,7 +13,7 @@ export default function PlayMoviePage() {
         })
     }
 
-    const loadTranscode = (apiClient, localParams, deviceProfile) => {
+    const loadTranscode = (apiClient, localParams, deviceProfile, progressSeconds) => {
         return new Promise((resolve) => {
             apiClient.getMovie(localParams.movieId)
                 .then((movie) => {
@@ -22,7 +22,8 @@ export default function PlayMoviePage() {
                         videoFile.id,
                         localParams.audioTrack,
                         localParams.subtitleTrack,
-                        deviceProfile
+                        deviceProfile,
+                        progressSeconds ?? localParams.seekToSeconds
                     )
                         .then((transcodeSession) => {
                             return resolve({

@@ -363,7 +363,7 @@ export class ApiClient {
         return this.delete(`/tag/${tagId}`)
     }
 
-    createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex, deviceProfile) {
+    createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex, deviceProfile, seekToSeconds) {
         let requestUrl = `${this.baseURL}/transcode/session?video_file_id=${videoFileId}&device_profile=${deviceProfile}`
         if (audioTrackIndex !== -1) {
             requestUrl += `&audio_track_index=${audioTrackIndex}`
@@ -371,11 +371,18 @@ export class ApiClient {
         if (subtitleTrackIndex !== -1) {
             requestUrl += `&subtitle_track_index=${subtitleTrackIndex}`
         }
+        if (seekToSeconds) {
+            requestUrl += `&seek_to_seconds=${Math.floor(seekToSeconds)}`
+        }
         return this.post(requestUrl)
     }
 
-    createStreamableTranscodeSession(streamableId) {
-        return this.post(`${this.baseURL}/transcode/session?streamable_id=${streamableId}&device_profile=${deviceProfile}`)
+    createStreamableTranscodeSession(streamableId, seekToSeconds) {
+        let requestUrl = `${this.baseURL}/transcode/session?streamable_id=${streamableId}&device_profile=${deviceProfile}`
+        if (seekToSeconds) {
+            requestUrl += `&seek_to_seconds=${Math.floor(seekToSeconds)}`
+        }
+        return this.post(requestUrl)
     }
 
     setShelfWatchStatus(shelfId, watched) {

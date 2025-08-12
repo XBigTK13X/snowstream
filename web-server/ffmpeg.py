@@ -10,10 +10,16 @@ def transcode_command(
     snowstream_info:dict,
     stream_port:int,
     audio_track_index:int=None,
-    subtitle_track_index:int=None
+    subtitle_track_index:int=None,
+    seek_to_seconds:int=None
 ):
     streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.flv'
-    command =  f'ffmpeg  -i "{input_url}"'
+    command =  f'ffmpeg'
+
+    if seek_to_seconds:
+        command += f' -ss {seek_to_seconds}'
+
+    command += f' -i "{input_url}"'
 
     # All devices in the current pool can decode 8 bit h264 video with aac audio
 

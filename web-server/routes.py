@@ -561,7 +561,8 @@ def auth_required(router):
         streamable_id:int=None,
         audio_track_index:int=None,
         subtitle_track_index:int=None,
-        device_profile:str=None
+        device_profile:str=None,
+        seek_to_seconds:int=None
     ):
         transcode_session = transcode.create_session(
             cduid=auth_user.cduid,
@@ -569,7 +570,8 @@ def auth_required(router):
             video_file_id=video_file_id,
             streamable_id=streamable_id,
             audio_track_index=audio_track_index,
-            subtitle_track_index=subtitle_track_index
+            subtitle_track_index=subtitle_track_index,
+            seek_to_seconds=seek_to_seconds
         )
         return transcode_session
 

@@ -40,7 +40,8 @@ class Transcode:
         video_file_id:int=None,
         streamable_id:int=None,
         audio_track_index:int=None,
-        subtitle_track_index:int=None
+        subtitle_track_index:int=None,
+        seek_to_seconds:int=None
     ):
         input_path = None
         snowstream_info = None
@@ -72,7 +73,8 @@ class Transcode:
             snowstream_info=snowstream_info,
             stream_port=stream_port,
             audio_track_index=audio_track_index,
-            subtitle_track_index=subtitle_track_index
+            subtitle_track_index=subtitle_track_index,
+            seek_to_seconds=seek_to_seconds
         )
         log_path = os.path.join(config.transcode_log_dir,f'{transcode_session.id}.log')
         transcode_process = util.run_cli(command, background=True, log_path=log_path)

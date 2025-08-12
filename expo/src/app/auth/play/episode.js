@@ -15,7 +15,7 @@ export default function PlayEpisodePage() {
         })
     }
 
-    const loadTranscode = (apiClient, localParams, deviceProfile) => {
+    const loadTranscode = (apiClient, localParams, deviceProfile, progressSeconds) => {
         return new Promise((resolve) => {
             apiClient.getEpisode(localParams.episodeId)
                 .then((episode) => {
@@ -24,7 +24,8 @@ export default function PlayEpisodePage() {
                         videoFile.id,
                         localParams.audioTrackIndex,
                         localParams.subtitleTrackIndex,
-                        deviceProfile
+                        deviceProfile,
+                        progressSeconds ?? localParams.seekToSeconds
                     )
                         .then((transcodeSession) => {
                             return resolve({
