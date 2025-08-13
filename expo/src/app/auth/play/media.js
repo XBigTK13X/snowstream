@@ -22,6 +22,7 @@ export function PlayMediaPage(props) {
     const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(0)
     const [initialSeekComplete, setInitialSeekComplete] = C.React.useState(false)
     const initialSeekRef = C.React.useRef(initialSeekComplete)
+    const [manualSeekSeconds, setManualSeekSeconds] = C.React.useState(0)
     const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
 
     const forcePlayer = localParams.forcePlayer
@@ -71,7 +72,7 @@ export function PlayMediaPage(props) {
             }
             if (shouldTranscode) {
                 if (props.loadTranscode) {
-                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile)
+                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, initialSeekSeconds)
                         .then(loadVideo)
                 }
             }
@@ -113,8 +114,8 @@ export function PlayMediaPage(props) {
         return onProgress(seekedToSeconds, true)
     }
 
-    const onProgress = (progressSeconds, force) => {
-        if (force || Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds) {
+    const onProgress = (progressSeconds, manualSeek) => {
+        if (manualSeek || Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds) {
             setProgressSeconds(progressSeconds)
             const duration = durationRef.current
             if (duration > 0 && progressSeconds > 0) {
@@ -132,8 +133,9 @@ export function PlayMediaPage(props) {
             }
             // Transcode streams have no seek capability
             // Destroy and create a new one instead at the requested timestamp
-            if (shouldTranscode) {
+            if (shouldTranscode && manualSeek) {
                 if (props.loadTranscode) {
+                    setManualSeekSeconds(progressSeconds)
                     props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, progressSeconds)
                         .then(loadVideo)
                 }
@@ -178,6 +180,7 @@ export function PlayMediaPage(props) {
         }
         return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
     }
+    console.log({ shouldTranscode, durationSeconds, initialSeekSeconds, throttledProgressSeconds })
     return (
         <C.SnowVideoPlayer
             videoTitle={videoTitle}
@@ -191,6 +194,7 @@ export function PlayMediaPage(props) {
             onSeek={onSeek}
             onProgress={onProgress}
             onComplete={onComplete}
+            manualSeekSeconds={manualSeekSeconds}
             durationSeconds={durationSeconds}
             forceExoPlayer={forceExo}
             initialSeekSeconds={initialSeekSeconds}

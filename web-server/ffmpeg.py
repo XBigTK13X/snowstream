@@ -57,6 +57,9 @@ def transcode_command(
                 command += f"[v][0:s:0]overlay;"
     command += f"\" -map '{video_out}'"
 
+    # Cap the video output bitrate
+    command += f' -b:v 5M -maxrate 5M -bufsize 1M'
+
     command += f' -c:a aac'
     if audio_track_index != None:
         command += f' -map 0:a:{audio_track_index}'

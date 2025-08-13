@@ -143,18 +143,25 @@ export default function SnowVideoPlayer(props) {
         }
 
         if (!props.initialSeekComplete.current && props.initialSeekSeconds) {
-            if (playerKind === 'mpv') {
-                if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('Starting playback') !== -1) {
-                    setSeekToSeconds(props.initialSeekSeconds)
-                    setProgressSeconds(props.initialSeekSeconds)
-                    props.onReadyToSeek()
-                }
+            if (props.isTranscode) {
+                setSeekToSeconds(props.initialSeekSeconds)
+                setProgressSeconds(props.initialSeekSeconds)
+                props.onReadyToSeek()
             }
-            else if (playerKind === 'rnv') {
-                if (info && info.kind === 'rnvevent' && info.data.event === 'onReadyForDisplay') {
-                    setSeekToSeconds(props.initialSeekSeconds)
-                    setProgressSeconds(props.initialSeekSeconds)
-                    props.onReadyToSeek()
+            else {
+                if (playerKind === 'mpv') {
+                    if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('Starting playback') !== -1) {
+                        setSeekToSeconds(props.initialSeekSeconds)
+                        setProgressSeconds(props.initialSeekSeconds)
+                        props.onReadyToSeek()
+                    }
+                }
+                else if (playerKind === 'rnv') {
+                    if (info && info.kind === 'rnvevent' && info.data.event === 'onReadyForDisplay') {
+                        setSeekToSeconds(props.initialSeekSeconds)
+                        setProgressSeconds(props.initialSeekSeconds)
+                        props.onReadyToSeek()
+                    }
                 }
             }
         }
@@ -162,6 +169,7 @@ export default function SnowVideoPlayer(props) {
         if (info && info.kind && info.kind === 'rnvevent') {
             if (info.data) {
                 if (info.data.data && info.data.data.currentTime) {
+                    // When this fires during a transcode, it needs to be offset by the manual seek amount
                     setProgressSeconds(info.data.data.currentTime)
                     if (props.onProgress) {
                         props.onProgress(info.data.data.currentTime)
@@ -181,9 +189,19 @@ export default function SnowVideoPlayer(props) {
             let mpvEvent = info.libmpvEvent
             if (mpvEvent.property) {
                 if (mpvEvent.property === 'time-pos') {
-                    setProgressSeconds(mpvEvent.value)
+                    // When this fires during a transcode, it needs to be offset by the manual seek amount
+                    let seconds = mpvEvent.value
+                    if (props.isTranscode) {
+                        if (props.initialSeekSeconds && !props.manualSeekSeconds) {
+                            seconds += props.initialSeekSeconds
+                        }
+                        else {
+                            seconds += props.manualSeekSeconds
+                        }
+                    }
+                    setProgressSeconds(seconds)
                     if (props.onProgress) {
-                        props.onProgress(mpvEvent.value)
+                        props.onProgress(seconds)
                     }
                 }
                 else {
@@ -294,6 +312,7 @@ export default function SnowVideoPlayer(props) {
                 isReady={isReady}
                 isTranscode={props.isTranscode}
                 seekToSeconds={seekToSeconds}
+                manualSeekSeconds={props.manualSeekSeconds}
                 audioIndex={props.audioIndex}
                 audioDelay={audioDelaySeconds}
                 subtitleIndex={props.subtitleIndex}

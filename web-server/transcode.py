@@ -1,5 +1,4 @@
 from log import log
-from pathlib import Path
 import atexit
 import ffmpeg
 import json
@@ -31,6 +30,7 @@ class Transcode:
         return open_port
 
     def register_cleanup(self):
+        self.cleanup()
         atexit.register(self.cleanup)
 
     def create_session(
@@ -122,7 +122,7 @@ class Transcode:
         processes = json.loads(result['stdout'])
         for process in processes:
             if 'ffmpeg' in process['command']:
-                self.ffmpeg_process_by_pid[process['pid']] = process['command']
+                self.pid_is_ffmpeg[process['pid']] = process['command']
 
     @util.debounce(config.transcode_disconnect_seconds)
     def close_on_disconnect(self, transcode_session:dm.TranscodeSession):
@@ -134,7 +134,7 @@ class Transcode:
             if transcode_session_id:
                 transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
             try:
-                if transcode_session.process_id in self.ffmpeg_process_by_pid and f'{transcode_session.stream_port}' in self.ffmpeg_process_by_pid[transcode_session.process_id]:
+                if transcode_session.process_id in self.pid_is_ffmpeg and f'{transcode_session.stream_port}' in self.pid_is_ffmpeg[transcode_session.process_id]:
                     os.kill(transcode_session.process_id, signal.SIGTERM)
             except Exception as e:
                 log.error(f"{traceback.format_exc()}")
