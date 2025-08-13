@@ -3,9 +3,9 @@ import Slider from '@react-native-community/slider';
 import { View } from 'react-native'
 import { usePathname, useLocalSearchParams } from 'expo-router'
 
-import util from '../util'
 import Style from '../snow-style'
 import { useAppContext } from '../app-context'
+import { usePlayerContext } from '../player-context'
 
 import FillView from './fill-view'
 import SnowTrackSelector from './snow-track-selector'
@@ -40,7 +40,8 @@ const styles = {
 }
 
 export default function SnowVideoControls(props) {
-    if (!props.controlsVisible) {
+    const player = usePlayerContext()
+    if (!player.info.controlsVisible) {
         return null
     }
 
@@ -49,16 +50,6 @@ export default function SnowVideoControls(props) {
     const currentRoute = usePathname()
     const [showLogs, setShowLogs] = React.useState(false)
     const [logTitle, setLogTitle] = React.useState(props.playerKind !== 'rnv' ? props.playerKind + ' Logs' : 'exo Logs')
-
-    let progressPercent = null
-    let progressDisplay = null
-    let durationDisplay = null
-
-    if (props.durationSeconds > 0) {
-        progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
-        progressDisplay = util.secondsToTimestamp(props.progressSeconds)
-        durationDisplay = util.secondsToTimestamp(props.durationSeconds)
-    }
 
     if (showLogs) {
         return (
@@ -71,7 +62,7 @@ export default function SnowVideoControls(props) {
                 <FillView scroll>
                     <SnowGrid
                         itemsPerRow={1}
-                        items={props.logs}
+                        items={player.info.logs}
                         renderItem={(log) => { return <SnowText shrink>{log}</SnowText> }} />
                 </FillView>
                 <SnowGrid shrink itemsPerRow={1}>
@@ -82,7 +73,7 @@ export default function SnowVideoControls(props) {
     }
 
     const persistLogs = () => {
-        apiClient.savePlaybackLogs(props.logs).then((response) => {
+        apiClient.savePlaybackLogs(player.info.logs).then((response) => {
             setLogTitle(response.cache_key)
         })
     }
@@ -104,13 +95,13 @@ export default function SnowVideoControls(props) {
         subtitleControls = (
             <SnowGrid itemsPerRow={4}>
                 <SnowTextButton title="Sub Smaller" onPress={() => {
-                    props.setSubtitleFontSize(fontSize => { return fontSize - 4 })
+                    player.action.setSubtitleFontSize(fontSize => { return fontSize - 4 })
                 }} />
                 <SnowTextButton title="Sub Bigger" onPress={() => {
-                    props.setSubtitleFontSize(fontSize => { return fontSize + 4 })
+                    player.action.setSubtitleFontSize(fontSize => { return fontSize + 4 })
                 }} />
                 <SnowTextButton title="Sub Darker" onPress={() => {
-                    props.setSubtitleColor(fontColor => {
+                    player.action.setSubtitleColor(fontColor => {
                         newColor = { ...fontColor }
                         newColor.shade -= 0.15;
                         if (newColor.shade < 0) {
@@ -120,7 +111,7 @@ export default function SnowVideoControls(props) {
                     })
                 }} />
                 <SnowTextButton title="Sub Lighter" onPress={() => {
-                    props.setSubtitleColor(fontColor => {
+                    player.action.setSubtitleColor(fontColor => {
                         newColor = { ...fontColor }
                         newColor.shade += 0.15;
                         if (newColor.shade > 1.0) {
@@ -140,21 +131,21 @@ export default function SnowVideoControls(props) {
                 modalStyle={styles.prompt}
                 style={styles.background}
                 transparent
-                visible={props.controlsVisible}
-                onRequestClose={props.resumeVideo}
+                visible={player.info.controlsVisible}
+                onRequestClose={player.action.resumeVideo}
             >
                 <FillView flexStart scroll>
-                    {props.durationSeconds > 0 ?
+                    {player.info.durationSeconds > 0 ?
                         <View>
-                            <SnowText>{props.videoTitle}</SnowText>
+                            <SnowText>{player.info.videoTitle}</SnowText>
                             <Slider
                                 minimumValue={0}
                                 maximumValue={100}
-                                value={progressPercent}
+                                value={player.info.progressPercent}
                                 minimumTrackTintColor="#FFFFFF"
                                 maximumTrackTintColor="#cccccc"
-                                onSlidingComplete={props.onSeek}
-                                onValueChange={props.onSeek}
+                                onSlidingComplete={player.action.onSeek}
+                                onValueChange={player.action.onSeek}
                             />
                             <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
                         </View>
@@ -163,8 +154,8 @@ export default function SnowVideoControls(props) {
                         <View>
                             <SnowGrid itemsPerRow={3}>
                                 <SnowTextButton shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
-                                <SnowTextButton title="Stop" onPress={() => { props.stopVideo() }} />
-                                <SnowTextButton title="Home" onPress={() => { props.stopVideo(true) }} />
+                                <SnowTextButton title="Stop" onPress={() => { player.action.stopVideo() }} />
+                                <SnowTextButton title="Home" onPress={() => { player.action.stopVideo(true) }} />
                             </SnowGrid>
                         </View>
                         {subtitleControls}
@@ -172,14 +163,14 @@ export default function SnowVideoControls(props) {
                             <SnowTrackSelector
                                 style={styles.row}
                                 showDelay={true}
-                                audioDelay={props.audioDelay}
-                                setAudioDelay={props.setAudioDelay}
-                                subtitleDelay={props.subtitleDelay}
-                                setSubtitleDelay={props.setSubtitleDelay}
-                                tracks={props.tracks}
-                                selectTrack={props.selectTrack}
-                                audioTrack={props.audioTrack}
-                                subtitleTrack={props.subtitleTrack}
+                                audioDelay={player.info.audioDelay}
+                                setAudioDelay={player.action.setAudioDelay}
+                                subtitleDelay={player.info.subtitleDelay}
+                                setSubtitleDelay={player.action.setSubtitleDelay}
+                                tracks={player.info.tracks}
+                                selectTrack={player.action.selectTrack}
+                                audioTrack={player.info.audioTrackIndex}
+                                subtitleTrack={player.info.subtitleTrackIndex}
                             />
                         </View>
                         <SnowGrid short shrink itemsPerRow={2}>
@@ -190,7 +181,7 @@ export default function SnowVideoControls(props) {
                                 if (props.playerKind === 'mpv') {
                                     newParams.forcePlayer = 'exo'
                                 }
-                                newParams.seekToSeconds = props.progressSeconds
+                                newParams.seekToSeconds = player.info.progressSeconds
                                 routes.replace(currentRoute, newParams)
                             }} />
                         </SnowGrid>

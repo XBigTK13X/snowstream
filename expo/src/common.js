@@ -37,6 +37,8 @@ import Style from './snow-style'
 
 import { useAppContext } from './app-context'
 
+import { usePlayerContext } from './player-context'
+
 import FillView from './comp/fill-view'
 
 import SnowImageButton from './comp/snow-image-button'
@@ -66,6 +68,7 @@ export default {
     isTV,
     isWeb,
     useAppContext,
+    usePlayerContext,
     useDebouncedCallback,
     useKeepAwake,
     useLocalSearchParams,

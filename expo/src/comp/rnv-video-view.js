@@ -6,6 +6,7 @@ import Style from '../snow-style'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
 import SnowModal from './snow-modal'
+import { usePlayerContext } from '../player-context'
 
 const isWeb = Platform.OS === 'web'
 
@@ -24,6 +25,7 @@ const bufferConfig = {
 // https://docs.thewidlarzgroup.com/react-native-video/component/props
 
 export default function RnvVideoView(props) {
+    const player = usePlayerContext()
     const styles = {
         touchable: {
             width: Style.window.width(),
@@ -76,24 +78,22 @@ export default function RnvVideoView(props) {
     let userClickedPlay = null
     if (isWeb) {
         userClickedPlay = () => {
-            props.onReady()
+            player.action.onReady()
             setUserPlayed(true)
         }
     }
 
     const onError = (err) => {
-        if (props.onError) {
-            err.kind = 'rnv'
-            props.onError(err)
-        }
+        err.kind = 'rnv'
+        player.action.onError(err)
     }
 
     React.useEffect(() => {
-        if (!isWeb && !props.isReady && props.onReady) {
-            props.onReady()
+        if (!isWeb && !player.info.isReady) {
+            player.action.onReady()
         }
         if (isWeb && !requestTranscode) {
-            if (!props.isTranscode && (props.audioIndex !== 0 || props.subtitleIndex !== 0)) {
+            if (!player.info.isTranscode && (player.info.audioTrackIndex > 0 || player.info.subtitleTrackIndex > 0)) {
                 setRequestTranscode(true)
                 onError({ message: 'web video player cannot select tracks', error: { code: 4 } })
             }
@@ -101,7 +101,7 @@ export default function RnvVideoView(props) {
     })
 
     React.useEffect(() => {
-        if (props.seekToSeconds !== seekSeconds) {
+        if (player.info.seekToSeconds !== seekSeconds) {
             if (videoRef && videoRef.current) {
                 videoRef.current.seek(props.seekToSeconds)
             }
@@ -117,42 +117,40 @@ export default function RnvVideoView(props) {
                 </View>
             )
         }
-        if (!props.isTranscode && (props.audioIndex !== 0 || props.subtitleIndex !== 0)) {
+        if (!player.info.isTranscode && (player.info.audioTrackIndex > 0 || player.info.subtitleTrackIndex > 0)) {
             return <View><SnowText>Waiting on transcode...</SnowText></View>
         }
-        if (requestTranscode && !props.isTranscode) {
+        if (requestTranscode && !player.info.isTranscode) {
             return <View><SnowText>Waiting on transcode...</SnowText></View>
         }
     }
 
     const onUpdate = (kind) => {
         return (payload) => {
-            if (props.onUpdate) {
-                props.onUpdate({
-                    kind: 'rnvevent',
-                    data: {
-                        event: kind,
-                        data: payload
-                    }
-                })
-            }
+            player.action.onUpdate({
+                kind: 'rnvevent',
+                data: {
+                    event: kind,
+                    data: payload
+                }
+            })
         }
     }
 
     return (
         <SnowModal
             wrapper={false}
-            onRequestClose={() => { props.stopVideo() }}
+            onRequestClose={() => { player.action.stopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity
                 transparent
-                hasTVPreferredFocus={props.shouldFocus}
+                hasTVPreferredFocus={player.info.shouldFocus}
                 style={styles.touchable}
-                onPress={props.pauseVideo}>
+                onPress={player.action.pauseVideo}>
                 <Video
                     style={styles.video}
                     source={{
-                        uri: props.videoUrl,
+                        uri: player.info.videoUrl,
                         bufferConfig: bufferConfig
                     }}
                     ref={videoRef}
@@ -163,15 +161,15 @@ export default function RnvVideoView(props) {
                     focusable={true}
                     shutterColor="transparent"
                     resizeMode="contain"
-                    paused={!props.isPlaying}
+                    paused={!player.info.isPlaying}
                     playWhenInactive={false}
                     playInBackground={false}
-                    muted={!props.isPlaying}
-                    selectedAudioTrack={{ type: 'index', value: props.audioIndex }}
-                    selectedTextTrack={{ type: 'index', value: props.subtitleIndex }}
+                    muted={!player.info.isPlaying}
+                    selectedAudioTrack={{ type: 'index', value: player.info.audioTrackIndex }}
+                    selectedTextTrack={{ type: 'index', value: player.info.audioTrackIndex }}
                     subtitleStyle={{
-                        fontSize: props.subtitleFontSize * .6,
-                        opacity: props.subtitleColor.shade
+                        fontSize: player.info.subtitleFontSize * .6,
+                        opacity: player.info.subtitleColor.shade
                     }}
 
                     // The main events needed by snowstream
