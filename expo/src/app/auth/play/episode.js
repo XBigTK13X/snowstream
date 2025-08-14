@@ -39,11 +39,11 @@ export default function PlayEpisodePage() {
     }
 
     const updateProgress = (apiClient, localParams, progressSeconds, duration) => {
-        return apiClient.setEpisodeWatchProgress(episodeId, progressSeconds, duration, countedWatch)
+        return apiClient.setEpisodeWatchProgress(localParams.episodeId, progressSeconds, duration)
     }
 
     const increaseWatchCount = (apiClient, localParams) => {
-        return apiClient.increaseShowEpisodeWatchCount(episodeId)
+        return apiClient.increaseShowEpisodeWatchCount(localParams.episodeId)
     }
     return (
         <PlayMediaPage

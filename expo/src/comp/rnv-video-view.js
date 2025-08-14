@@ -136,13 +136,13 @@ export default function RnvVideoView(props) {
     return (
         <SnowModal
             wrapper={false}
-            onRequestClose={() => { player.action.stopVideo() }}
+            onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity
                 transparent
                 hasTVPreferredFocus={player.info.shouldFocus}
                 style={styles.touchable}
-                onPress={player.action.pauseVideo}>
+                onPress={player.action.onPauseVideo}>
                 <Video
                     style={styles.video}
                     source={{

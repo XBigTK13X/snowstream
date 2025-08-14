@@ -65,12 +65,12 @@ export function PlayerContextProvider(props) {
         forceExo = true
     }
 
-    let shouldTranscode = false
+    let isTranscode = false
     if (localParams.transcode) {
-        shouldTranscode = localParams.transcode
+        isTranscode = localParams.transcode
     }
     if (clientOptions.alwaysTranscode) {
-        shouldTranscode = true
+        isTranscode = true
     }
 
     let progressPercent = null
@@ -154,32 +154,32 @@ export function PlayerContextProvider(props) {
         }
     }
 
-    const onProgress = (progressSeconds, source) => {
+    const onProgress = (nextProgressSeconds, source, nextProgressPercent) => {
+        console.log({ nextProgressSeconds, source })
         if (source === 'manual-seek') {
-            if (progressSeconds < 0) {
-                progressSeconds = 0
+            if (nextProgressSeconds < 0) {
+                nextProgressSeconds = 0
             }
             if (durationSeconds) {
-                if (progressSeconds > durationSeconds) {
-                    progressSeconds = durationSeconds
+                if (nextProgressSeconds > durationSeconds) {
+                    nextProgressSeconds = durationSeconds
                 }
             }
-            if (!progressSeconds) {
-                progressSeconds = (progressPercent / 100) * durationSeconds
+            if (!nextProgressSeconds) {
+                nextProgressSeconds = (nextProgressPercent / 100) * durationSeconds
             }
-            if (progressPercent >= 100) {
+            if (nextProgressPercent >= 100) {
                 setCompleteOnResume(true)
             } else {
                 setCompleteOnResume(false)
             }
-            setSeekToSeconds(progressSeconds)
-            setProgressSeconds(progressSeconds)
+            setSeekToSeconds(nextProgressSeconds)
         }
-        if (source === 'manual-seek' || Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds) {
-            setProgressSeconds(progressSeconds)
+        if (source === 'manual-seek' || Math.abs(nextProgressSeconds - progressSeconds) >= config.progressMinDeltaSeconds) {
+            setProgressSeconds(nextProgressSeconds)
             if (durationSeconds > 0 && progressSeconds > 0) {
                 if (props.updateProgress) {
-                    return props.updateProgress(apiClient, localParams, progressSeconds, duration)
+                    return props.updateProgress(apiClient, localParams, nextProgressSeconds, durationSeconds)
                         .then((isWatched) => {
                             if (isWatched && !countedWatch) {
                                 setCountedWatch(true)
@@ -192,10 +192,11 @@ export function PlayerContextProvider(props) {
             }
             // Transcode streams have no seek capability
             // Destroy and create a new one instead at the requested timestamp
-            if (shouldTranscode && manualSeek) {
+            if (isTranscode && manualSeek) {
+                console.log("Should be transcoding to " + nextProgressSeconds)
                 if (props.loadTranscode) {
-                    setManualSeekSeconds(progressSeconds)
-                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, progressSeconds)
+                    setManualSeekSeconds(nextProgressSeconds)
+                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, nextProgressSeconds)
                         .then(loadVideo)
                 }
             }
@@ -211,7 +212,7 @@ export function PlayerContextProvider(props) {
         }
 
         if (!initialSeekComplete && initialSeekSeconds) {
-            if (props.isTranscode) {
+            if (isTranscode) {
                 setSeekToSeconds(initialSeekSeconds)
                 setProgressSeconds(initialSeekSeconds)
                 onReadyToSeek()
@@ -238,6 +239,15 @@ export function PlayerContextProvider(props) {
             if (info.data) {
                 if (info.data.data && info.data.data.currentTime) {
                     // When this fires during a transcode, it needs to be offset by the manual seek amount
+                    let seconds = info.data.data.currentTime
+                    if (isTranscode) {
+                        if (props.initialSeekSeconds && !props.manualSeekSeconds) {
+                            seconds += props.initialSeekSeconds
+                        }
+                        else {
+                            seconds += props.manualSeekSeconds
+                        }
+                    }
                     setProgressSeconds(info.data.data.currentTime)
                     if (props.onProgress) {
                         props.onProgress(info.data.data.currentTime)
@@ -259,7 +269,7 @@ export function PlayerContextProvider(props) {
                 if (mpvEvent.property === 'time-pos') {
                     // When this fires during a transcode, it needs to be offset by the manual seek amount
                     let seconds = mpvEvent.value
-                    if (props.isTranscode) {
+                    if (isTranscode) {
                         if (props.initialSeekSeconds && !props.manualSeekSeconds) {
                             seconds += props.initialSeekSeconds
                         }
@@ -362,7 +372,7 @@ export function PlayerContextProvider(props) {
             if (localParams.subtitleTrack) {
                 setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
             }
-            if (shouldTranscode) {
+            if (isTranscode) {
                 if (props.loadTranscode) {
                     props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, initialSeekSeconds)
                         .then(loadVideo)
@@ -433,7 +443,7 @@ export function PlayerContextProvider(props) {
         initialSeekSeconds,
         isPlaying,
         isReady,
-        isTranscode: shouldTranscode,
+        isTranscode,
         logs,
         manualSeekSeconds,
         playbackFailed,

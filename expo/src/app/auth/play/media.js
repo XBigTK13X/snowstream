@@ -13,7 +13,7 @@ export function InnerPlayMediaPage(props) {
     }
 
     if (!player.info.videoUrl) {
-        if (player.info.shouldTranscode) {
+        if (player.info.isTranscode) {
             return <C.SnowText>Preparing a transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
         }
         return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>

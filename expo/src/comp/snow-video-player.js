@@ -12,8 +12,11 @@ import { usePlayerContext } from '../player-context'
 import { useAppContext } from '../app-context'
 
 export default function SnowVideoPlayer(props) {
-    const { config } = useAppContext()
     const player = usePlayerContext()
+    if (!player) {
+        return null
+    }
+    const { config } = useAppContext()
     const VideoView = player.VideoView
     const styles = {
         videoOverlay: {

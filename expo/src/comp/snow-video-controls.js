@@ -40,16 +40,17 @@ const styles = {
 }
 
 export default function SnowVideoControls(props) {
-    const player = usePlayerContext()
-    if (!player.info.controlsVisible) {
-        return null
-    }
-
     const { apiClient, routes } = useAppContext()
     const localParams = useLocalSearchParams()
     const currentRoute = usePathname()
+    const player = usePlayerContext()
+
     const [showLogs, setShowLogs] = React.useState(false)
-    const [logTitle, setLogTitle] = React.useState(props.playerKind !== 'rnv' ? props.playerKind + ' Logs' : 'exo Logs')
+    const [logTitle, setLogTitle] = React.useState(player.info.playerKind !== 'rnv' ? player.info.playerKind + ' Logs' : 'exo Logs')
+
+    if (!player || !player.info.controlsVisible) {
+        return null
+    }
 
     if (showLogs) {
         return (
@@ -79,19 +80,26 @@ export default function SnowVideoControls(props) {
     }
 
     let swapTitle = "Swap to mpv"
-    if (props.playerKind === 'mpv') {
+    if (player.info.playerKind === 'mpv') {
         swapTitle = 'Swap to exo'
     }
 
-    const tabs = [
-        'Playback',
-        'Style',
-        'Track',
-        'Advanced'
+    let tabs = [
+        'Playback'
     ]
 
+    if (player.info.playerKind !== 'rnv') {
+        tabs.push('Style')
+    }
+
+    if (player.info.mediaTracks) {
+        tabs.push('Track')
+    }
+
+    tabs.push('Advanced')
+
     let subtitleControls = null
-    if (props.playerKind !== 'rnv') {
+    if (player.info.playerKind !== 'rnv') {
         subtitleControls = (
             <SnowGrid itemsPerRow={4}>
                 <SnowTextButton title="Sub Smaller" onPress={() => {
@@ -124,6 +132,25 @@ export default function SnowVideoControls(props) {
             </SnowGrid>
         )
     }
+    let trackControls = null
+    if (player.info.mediaTracks) {
+        trackControls = (
+            <View>
+                <SnowTrackSelector
+                    style={styles.row}
+                    showDelay={true}
+                    audioDelay={player.info.audioDelaySeconds}
+                    setAudioDelay={player.action.setAudioDelay}
+                    subtitleDelay={player.info.subtitleDelaySeconds}
+                    setSubtitleDelay={player.action.setSubtitleDelay}
+                    tracks={player.info.tracks}
+                    selectTrack={player.action.onSelectTrack}
+                    audioTrack={player.info.audioTrackIndex}
+                    subtitleTrack={player.info.subtitleTrackIndex}
+                />
+            </View>
+        )
+    }
 
     return (
         (
@@ -132,7 +159,7 @@ export default function SnowVideoControls(props) {
                 style={styles.background}
                 transparent
                 visible={player.info.controlsVisible}
-                onRequestClose={player.action.resumeVideo}
+                onRequestClose={player.action.onResumeVideo}
             >
                 <FillView flexStart scroll>
                     {player.info.durationSeconds > 0 ?
@@ -144,41 +171,28 @@ export default function SnowVideoControls(props) {
                                 value={player.info.progressPercent}
                                 minimumTrackTintColor="#FFFFFF"
                                 maximumTrackTintColor="#cccccc"
-                                onSlidingComplete={() => { player.action.onProgressDebounced(player.info.progressPercent) }}
-                                onValueChange={() => { player.action.onProgressDebounced(player.info.progressSeconds) }}
+                                onSlidingComplete={(percent) => { player.action.onProgressDebounced(null, 'manual-seek', percent) }}
+                                onValueChange={(percent) => { player.action.onProgressDebounced(null, 'manual-seek', percent) }}
                             />
-                            <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
+                            <SnowText style={styles.progress}>{player.info.progressDisplay} / {player.info.durationDisplay}</SnowText>
                         </View>
                         : null}
                     <SnowTabs headers={tabs}>
                         <View>
                             <SnowGrid itemsPerRow={3}>
-                                <SnowTextButton shouldFocus={true} title="Resume" onPress={props.resumeVideo} />
-                                <SnowTextButton title="Stop" onPress={() => { player.action.stopVideo() }} />
-                                <SnowTextButton title="Home" onPress={() => { player.action.stopVideo(true) }} />
+                                <SnowTextButton shouldFocus={true} title="Resume" onPress={player.action.onResumeVideo} />
+                                <SnowTextButton title="Stop" onPress={() => { player.action.onStopVideo() }} />
+                                <SnowTextButton title="Home" onPress={() => { player.action.onStopVideo(true) }} />
                             </SnowGrid>
                         </View>
                         {subtitleControls}
-                        <View>
-                            <SnowTrackSelector
-                                style={styles.row}
-                                showDelay={true}
-                                audioDelay={player.info.audioDelaySeconds}
-                                setAudioDelay={player.action.setAudioDelay}
-                                subtitleDelay={player.info.subtitleDelaySeconds}
-                                setSubtitleDelay={player.action.setSubtitleDelay}
-                                tracks={player.info.tracks}
-                                selectTrack={player.action.selectTrack}
-                                audioTrack={player.info.audioTrackIndex}
-                                subtitleTrack={player.info.subtitleTrackIndex}
-                            />
-                        </View>
+                        {trackControls}
                         <SnowGrid short shrink itemsPerRow={2}>
                             <SnowTextButton title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
                             <SnowTextButton title={swapTitle} onPress={() => {
                                 let newParams = { ...localParams }
                                 newParams.forcePlayer = 'mpv'
-                                if (props.playerKind === 'mpv') {
+                                if (player.info.playerKind === 'mpv') {
                                     newParams.forcePlayer = 'exo'
                                 }
                                 newParams.seekToSeconds = player.info.progressSeconds
