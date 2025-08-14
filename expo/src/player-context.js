@@ -24,21 +24,19 @@ export function PlayerContextProvider(props) {
     const [controlsVisible, setControlsVisible] = React.useState(false)
     const [countedWatch, setCountedWatch] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
-    const [playbackFailed, setPlaybackFailed] = React.useState(null)
+    const [playbackFailed, setPlaybackFailed] = React.useState(false)
 
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [videoTitle, setVideoTitle] = React.useState(null)
     const [videoLoaded, setVideoLoaded] = React.useState(false)
 
     const [initialSeekComplete, setInitialSeekComplete] = React.useState(false)
-    const initialSeekRef = React.useRef(initialSeekComplete)
     const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
 
     const [manualSeekSeconds, setManualSeekSeconds] = React.useState(0)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
     const [seekToSeconds, setSeekToSeconds] = React.useState(1)
     const [durationSeconds, setDurationSeconds] = React.useState(0.0)
-    const durationRef = React.useRef(durationSeconds)
 
     const [logs, setLogs] = React.useState([])
 
@@ -107,8 +105,7 @@ export function PlayerContextProvider(props) {
     }
 
     const onPlaybackComplete = () => {
-        const duration = durationRef.current
-        onProgress(duration).then(() => {
+        onProgress(durationSeconds, 'playback-complete').then(() => {
             if (props.onComplete) {
                 props.onComplete(apiClient, routes)
             } else {
@@ -152,8 +149,7 @@ export function PlayerContextProvider(props) {
     }
 
     const onReadyToSeek = () => {
-        if (!initialSeekRef.current) {
-            initialSeekRef.current = true
+        if (!initialSeekComplete) {
             setInitialSeekComplete(true)
         }
     }
@@ -163,13 +159,13 @@ export function PlayerContextProvider(props) {
             if (progressSeconds < 0) {
                 progressSeconds = 0
             }
-            if (props.durationSeconds) {
-                if (progressSeconds > props.durationSeconds) {
-                    progressSeconds = props.durationSeconds
+            if (durationSeconds) {
+                if (progressSeconds > durationSeconds) {
+                    progressSeconds = durationSeconds
                 }
             }
             if (!progressSeconds) {
-                progressSeconds = (progressPercent / 100) * props.durationSeconds
+                progressSeconds = (progressPercent / 100) * durationSeconds
             }
             if (progressPercent >= 100) {
                 setCompleteOnResume(true)
@@ -181,8 +177,7 @@ export function PlayerContextProvider(props) {
         }
         if (source === 'manual-seek' || Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds) {
             setProgressSeconds(progressSeconds)
-            const duration = durationRef.current
-            if (duration > 0 && progressSeconds > 0) {
+            if (durationSeconds > 0 && progressSeconds > 0) {
                 if (props.updateProgress) {
                     return props.updateProgress(apiClient, localParams, progressSeconds, duration)
                         .then((isWatched) => {
@@ -215,11 +210,11 @@ export function PlayerContextProvider(props) {
             util.log({ info })
         }
 
-        if (!props.initialSeekComplete.current && props.initialSeekSeconds) {
+        if (!initialSeekComplete && initialSeekSeconds) {
             if (props.isTranscode) {
-                setSeekToSeconds(props.initialSeekSeconds)
-                setProgressSeconds(props.initialSeekSeconds)
-                props.onReadyToSeek()
+                setSeekToSeconds(initialSeekSeconds)
+                setProgressSeconds(initialSeekSeconds)
+                onReadyToSeek()
             }
             else {
                 if (playerKind === 'mpv') {
@@ -352,7 +347,6 @@ export function PlayerContextProvider(props) {
         }
         if (response.durationSeconds) {
             setDurationSeconds(response.durationSeconds)
-            durationRef.current = response.durationSeconds
         }
         if (response.tracks) {
             setMediaTracks(response.tracks)
@@ -403,7 +397,7 @@ export function PlayerContextProvider(props) {
     if (Platform.isTV) {
         const tvRemoteHandler = (remoteEvent) => {
             if (!controlsVisible && isReady) {
-                if (initialSeekComplete.current || !initialSeekSeconds) {
+                if (initialSeekComplete || !initialSeekSeconds) {
                     if (remoteEvent.eventType === 'right') {
                         onProgress(progressSeconds + 90, 'manual-seek')
                     }
@@ -435,7 +429,7 @@ export function PlayerContextProvider(props) {
         controlsVisible,
         durationSeconds,
         forceExoPlayer: forceExo,
-        initialSeekComplete: initialSeekRef,
+        initialSeekComplete,
         initialSeekSeconds,
         isPlaying,
         isReady,
@@ -483,6 +477,8 @@ export function PlayerContextProvider(props) {
         action,
         VideoView
     }
+
+    console.log({ info })
 
     return (
         <PlayerContext.Provider

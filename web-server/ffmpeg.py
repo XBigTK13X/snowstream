@@ -3,6 +3,26 @@ from log import log
 import json
 import util
 import datetime
+import device
+
+def video_encoder(codec):
+    if codec == 'h264':
+        if config.transcode_dialect == 'nvidia':
+            return f' -c:v h264_nvenc -cq 25'
+        elif config.transcode_dialect == 'quicksync':
+            return f' -c:v h264_qsv -global_quality 25 -look_ahead 1'
+    elif codec == 'vp9':
+        if config.transcode_dialect == 'quicksync':
+            return f' -c:v vp9_qsv'
+        return f' -c:v libvpx-vp9'
+    raise Exception(f"Unable to handle transcode video codec {codec} for dialect {config.transcode_dialect}")
+
+def audio_encoder(codec):
+    if codec == 'aac':
+        return f' -c:a aac'
+    elif codec == 'opus':
+        return f' -c:a libopus'
+    raise Exception(f"Unable to handle transcode audio codec {codec}")
 
 def transcode_command(
     device_profile:str,
@@ -13,7 +33,8 @@ def transcode_command(
     subtitle_track_index:int=None,
     seek_to_seconds:int=None
 ):
-    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.flv'
+    client = device.device_lookup[device_profile]
+    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{client.transcode.container}'
     command =  f'ffmpeg'
 
     if seek_to_seconds:
@@ -21,12 +42,7 @@ def transcode_command(
 
     command += f' -i "{input_url}"'
 
-    # All devices in the current pool can decode 8 bit h264 video with aac audio
-
-    if config.transcode_dialect == 'nvidia':
-        command += f' -c:v h264_nvenc -cq 25'
-    elif config.transcode_dialect == 'quicksync':
-        command += f' -c:v h264_qsv -global_quality 25 -look_ahead 1'
+    command += video_encoder(client.transcode.video_codec)
 
     # Force 8 bit color depth
     video_out = '[v]'
@@ -60,11 +76,12 @@ def transcode_command(
     # Cap the video output bitrate
     command += f' -b:v 5M -maxrate 5M -bufsize 1M'
 
-    command += f' -c:a aac'
+    command += audio_encoder(client.transcode.audio_codec)
     if audio_track_index != None:
         command += f' -map 0:a:{audio_track_index}'
 
-    command += f' -f flv -listen 1'
+
+    command += f' -f {client.transcode.container} -listen 1'
     command += f' "{streaming_url}"'
     log.info(command)
     return command,streaming_url

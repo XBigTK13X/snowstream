@@ -11,6 +11,11 @@ class DeviceProfile:
         self.video.resolution.width = config.get('video_width')
         self.video.resolution.height = config.get('video_height')
 
+        self.transcode = Stub()
+        self.transcode.container = config.get('transcode_container','flv')
+        self.transcode.video_codec = config.get('transcode_video_codec', 'h264')
+        self.transcode.audio_codec = config.get('transcode_audio_codec', 'aac')
+
         self.video.h264 = Stub()
         self.video.h264.eight = config.get('h264_eight')
         self.video.h264.ten = config.get('h264_ten')
@@ -37,7 +42,7 @@ class DeviceProfile:
         self.audio.dolby.atmos = config.get('dolby_atmos')
         self.audio.dolby.hd = config.get('dolby_hd')
 
-profiles = [
+device_list = [
     DeviceProfile({
         'name': 'NVIDIA Shield',
         'hdr': 'hard',
@@ -75,7 +80,7 @@ profiles = [
         'h265_eight': 'hard',
         'h265_ten': 'hard',
         'h264_eight': 'hard',
-    })
+    }),
     DeviceProfile({
         'name': 'Web Browser',
         'h264_eight': 'hard',
@@ -84,5 +89,12 @@ profiles = [
         'h265_ten': 'hard',
         'av1': 'hard',
         'vp9': 'hard',
+        'transcode_container': 'webm',
+        'transcode_video_codec': 'vp9',
+        'transcode_audio_codec': 'opus'
     })
 ]
+
+device_lookup = {}
+for device in device_list:
+    device_lookup[device.name] = device

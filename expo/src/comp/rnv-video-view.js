@@ -72,7 +72,6 @@ export default function RnvVideoView(props) {
     const videoRef = React.useRef(null);
     const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
-    const [seekSeconds, setSeekSeconds] = React.useState(0)
 
     // Workaround for web not allowing videos to autoplay
     let userClickedPlay = null
@@ -85,7 +84,7 @@ export default function RnvVideoView(props) {
 
     const onError = (err) => {
         err.kind = 'rnv'
-        player.action.onError(err)
+        player.action.onVideoError(err)
     }
 
     React.useEffect(() => {
@@ -101,13 +100,10 @@ export default function RnvVideoView(props) {
     })
 
     React.useEffect(() => {
-        if (player.info.seekToSeconds !== seekSeconds) {
-            if (videoRef && videoRef.current) {
-                videoRef.current.seek(props.seekToSeconds)
-            }
-            setSeekSeconds(props.seekToSeconds)
+        if (player.info.seekToSeconds > -1 && videoRef && videoRef.current) {
+            videoRef.current.seek(player.info.seekToSeconds)
         }
-    })
+    }, [player.info.seekToSeconds])
 
     if (isWeb) {
         if (!userPlayed) {

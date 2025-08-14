@@ -34,7 +34,10 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
-    useKeepAwake();
+    if (Platform.OS !== 'web') {
+        useKeepAwake();
+    }
+
 
     React.useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', appState => {
