@@ -35,9 +35,9 @@ import { useDebouncedCallback } from 'use-debounce';
 import util from './util'
 import Style from './snow-style'
 
-import { useAppContext } from './app-context'
+import { AppContextProvider, useAppContext } from './app-context'
 
-import { usePlayerContext } from './player-context'
+import { PlayerContextProvider, usePlayerContext } from './player-context'
 
 import FillView from './comp/fill-view'
 
@@ -77,12 +77,14 @@ export default {
     useRouter,
     useTVEventHandler,
     util,
+    AppContextProvider,
     AppState,
     FillView,
     Image,
     Link,
     Linking,
     Platform,
+    PlayerContextProvider,
     React,
     Redirect,
     Slot,

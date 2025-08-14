@@ -1,6 +1,6 @@
 import C from '../../../common'
 
-function InnerPlayMediaPage(props) {
+export function InnerPlayMediaPage(props) {
     const player = C.usePlayerContext()
 
     if (player.info.playbackFailed) {

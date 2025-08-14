@@ -82,7 +82,7 @@ export default function MpvVideoView(props) {
     return (
         <SnowModal
             wrapper={false}
-            onRequestClose={() => { player.stopVideo() }}
+            onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
 
             <Libmpv.LibmpvVideo
@@ -93,10 +93,10 @@ export default function MpvVideoView(props) {
                 surfaceWidth={player.info.videoWidth}
                 surfaceHeight={player.info.videoHeight}
                 onLibmpvEvent={(libmpvEvent) => {
-                    player.action.onUpdate({ kind: 'mpvevent', libmpvEvent })
+                    player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
                 }}
                 onLibmpvLog={(libmpvLog) => {
-                    player.action.onUpdate({ kind: 'mpvlog', libmpvLog })
+                    player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
                 }}
                 selectedAudioTrack={player.info.audioIndex}
                 selectedSubtitleTrack={player.info.subtitleIndex}
@@ -105,7 +105,7 @@ export default function MpvVideoView(props) {
             <TouchableOpacity
                 hasTVPreferredFocus={player.info.shouldFocus}
                 style={styles.touchable}
-                onPress={player.action.pauseVideo}>
+                onPress={player.action.onPauseVideo}>
             </TouchableOpacity>
         </SnowModal >
     )

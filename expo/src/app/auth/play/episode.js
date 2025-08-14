@@ -22,14 +22,14 @@ export default function PlayEpisodePage() {
                     const videoFile = episode.video_files[localParams.videoFileIndex ?? 0]
                     return apiClient.createVideoFileTranscodeSession(
                         videoFile.id,
-                        localParams.audioTrackIndex,
-                        localParams.subtitleTrackIndex,
+                        localParams.audioTrack,
+                        localParams.subtitleTrack,
                         deviceProfile,
                         progressSeconds ?? localParams.seekToSeconds
                     )
                         .then((transcodeSession) => {
                             return resolve({
-                                name: movie.name,
+                                name: episode.name,
                                 url: transcodeSession.transcode_url,
                                 durationSeconds: videoFile.info.duration_seconds
                             })

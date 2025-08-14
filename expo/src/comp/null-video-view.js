@@ -5,6 +5,7 @@ import Style from '../snow-style'
 
 
 export default function NullVideoView(props) {
+    const player = usePlayerContext()
     const styles = {
         touchable: {
             width: Style.window.width(),
@@ -16,30 +17,7 @@ export default function NullVideoView(props) {
             right: 0,
             alignItems: 'center',
             justifyContent: 'center',
-        },
-        wrapper: {
-            width: Style.window.width(),
-            height: Style.window.height(),
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'black'
-        },
-        video: {
-            width: Style.window.width(),
-            height: Style.window.height(),
-            position: 'absolute',
-            alignSelf: 'center',
-            backgroundColor: 'black',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0
-        },
+        }
     }
     const [updateInterval, setUpdateInterval] = React.useState(null)
     const [lastSeek, setLastSeek] = React.useState(0)
@@ -48,26 +26,26 @@ export default function NullVideoView(props) {
     const playingRef = React.useRef(props.isPlaying)
     playingRef.current = props.isPlaying
     React.useEffect(() => {
-        if (props.seekToSeconds && props.seekToSeconds != lastSeek) {
-            progressRef.current = props.seekToSeconds
-            props.onUpdate({
+        if (player.info.seekToSeconds && player.info.seekToSeconds != lastSeek) {
+            progressRef.current = player.info.seekToSeconds
+            player.action.onVideoUpdate({
                 kind: 'nullevent',
                 nullEvent: {
                     progress: progressRef.current
                 }
             })
-            setLastSeek(props.seekToSeconds)
+            setLastSeek(player.info.seekToSeconds)
         }
-        if (!props.isReady && props.onReady) {
-            props.onReady()
+        if (!player.info.isReady) {
+            player.action.onVideoReady()
         }
     })
     React.useEffect(() => {
-        if (!updateInterval && props.onReady) {
+        if (!updateInterval) {
             const progressInterval = setInterval(() => {
                 if (playingRef.current) {
                     progressRef.current = progressRef.current + 1
-                    props.onUpdate({
+                    player.action.onVideoUpdate({
                         kind: 'nullevent',
                         nullEvent: {
                             progress: progressRef.current
@@ -86,11 +64,11 @@ export default function NullVideoView(props) {
             <TouchableOpacity
                 hasTVPreferredFocus={props.shouldFocus}
                 style={styles.touchable}
-                onPress={props.pauseVideo}>
-                <SnowText>The video {props.videoUrl} is {props.isPlaying ? 'playing' : 'paused'}.</SnowText>
+                onPress={player.action.onPauseVideo}>
+                <SnowText>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</SnowText>
                 <SnowText>Here is a whole bunch of text.</SnowText>
                 <SnowText>It makes it easier to see how the transparency controls function.</SnowText>
-                <SnowText>{JSON.stringify(props, null, 4)}</SnowText>
+                <SnowText>{JSON.stringify(player.info, null, 4)}</SnowText>
             </TouchableOpacity>
         </View>
     )

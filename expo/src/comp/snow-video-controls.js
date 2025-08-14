@@ -144,8 +144,8 @@ export default function SnowVideoControls(props) {
                                 value={player.info.progressPercent}
                                 minimumTrackTintColor="#FFFFFF"
                                 maximumTrackTintColor="#cccccc"
-                                onSlidingComplete={player.action.onSeek}
-                                onValueChange={player.action.onSeek}
+                                onSlidingComplete={() => { player.action.onProgressDebounced(player.info.progressPercent) }}
+                                onValueChange={() => { player.action.onProgressDebounced(player.info.progressSeconds) }}
                             />
                             <SnowText style={styles.progress}>{progressDisplay} / {durationDisplay}</SnowText>
                         </View>
@@ -163,9 +163,9 @@ export default function SnowVideoControls(props) {
                             <SnowTrackSelector
                                 style={styles.row}
                                 showDelay={true}
-                                audioDelay={player.info.audioDelay}
+                                audioDelay={player.info.audioDelaySeconds}
                                 setAudioDelay={player.action.setAudioDelay}
-                                subtitleDelay={player.info.subtitleDelay}
+                                subtitleDelay={player.info.subtitleDelaySeconds}
                                 setSubtitleDelay={player.action.setSubtitleDelay}
                                 tracks={player.info.tracks}
                                 selectTrack={player.action.selectTrack}

@@ -14,6 +14,7 @@ import { useAppContext } from '../app-context'
 export default function SnowVideoPlayer(props) {
     const { config } = useAppContext()
     const player = usePlayerContext()
+    const VideoView = player.VideoView
     const styles = {
         videoOverlay: {
             backgroundColor: 'transparent',
@@ -34,23 +35,6 @@ export default function SnowVideoPlayer(props) {
     }
 
     useKeepAwake();
-
-    let VideoView = null
-    let playerKind = null
-    if (config.useNullVideoView) {
-        VideoView = require('./null-video-view').default
-        playerKind = 'null'
-    }
-    else {
-        if (Platform.OS === 'web' || player.info.forceExoPlayer) {
-            VideoView = require('./rnv-video-view').default
-            playerKind = 'rnv'
-        }
-        else {
-            VideoView = require('./mpv-video-view').default
-            playerKind = 'mpv'
-        }
-    }
 
     React.useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', appState => {
@@ -75,7 +59,7 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             <VideoView />
-            <SnowVideoControls playerKind={playerKind} />
+            <SnowVideoControls playerKind={player.playerKind} />
         </View >
     )
 }

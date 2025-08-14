@@ -1,14 +1,9 @@
 import React from 'react';
-import { Platform } from 'react-native';
-import util from './util'
-import { config } from './settings'
-import { routes } from './routes'
+import { Platform, useTVEventHandler } from 'react-native';
+import { useLocalSearchParams, usePathname } from 'expo-router'
 import { useDebouncedCallback } from 'use-debounce'
-import { useAppContext } from '../app-context'
-import {
-    Platform,
-    useTVEventHandler,
-} from 'react-native'
+import { useAppContext } from './app-context'
+import util from './util'
 
 const PlayerContext = React.createContext({});
 
@@ -21,45 +16,44 @@ export function usePlayerContext() {
 }
 
 export function PlayerContextProvider(props) {
-    const localParams = C.useLocalSearchParams()
-    const { clientOptions } = useAppContext()
+    const localParams = useLocalSearchParams()
+    const { apiClient, clientOptions, config, routes } = useAppContext()
 
     const [isPlaying, setIsPlaying] = React.useState(false)
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
     const [controlsVisible, setControlsVisible] = React.useState(false)
-    const [countedWatch, setCountedWatch] = C.React.useState(false)
+    const [countedWatch, setCountedWatch] = React.useState(false)
     const [isReady, setIsReady] = React.useState(false)
-    const [playbackFailed, setPlaybackFailed] = C.React.useState(null)
+    const [playbackFailed, setPlaybackFailed] = React.useState(null)
 
-    const [videoUrl, setVideoUrl] = C.React.useState(null)
-    const [videoTitle, setVideoTitle] = C.React.useState(null)
-    const [videoLoaded, setVideoLoaded] = C.React.useState(false)
+    const [videoUrl, setVideoUrl] = React.useState(null)
+    const [videoTitle, setVideoTitle] = React.useState(null)
+    const [videoLoaded, setVideoLoaded] = React.useState(false)
 
-    const [initialSeekComplete, setInitialSeekComplete] = C.React.useState(false)
-    const initialSeekRef = C.React.useRef(initialSeekComplete)
+    const [initialSeekComplete, setInitialSeekComplete] = React.useState(false)
+    const initialSeekRef = React.useRef(initialSeekComplete)
     const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
 
-    const [manualSeekSeconds, setManualSeekSeconds] = C.React.useState(0)
+    const [manualSeekSeconds, setManualSeekSeconds] = React.useState(0)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
     const [seekToSeconds, setSeekToSeconds] = React.useState(1)
-    const [throttledProgressSeconds, setProgressSeconds] = C.React.useState(0)
-    const [durationSeconds, setDurationSeconds] = C.React.useState(0.0)
-    const durationRef = C.React.useRef(durationSeconds)
+    const [durationSeconds, setDurationSeconds] = React.useState(0.0)
+    const durationRef = React.useRef(durationSeconds)
 
     const [logs, setLogs] = React.useState([])
 
-    const [tracks, setTracks] = C.React.useState(null)
+    const [mediaTracks, setMediaTracks] = React.useState(null)
 
     const [audioDelaySeconds, setAudioDelaySeconds] = React.useState(0)
-    const [audioTrackIndex, setAudioTrackIndex] = C.React.useState(0)
+    const [audioTrackIndex, setAudioTrackIndex] = React.useState(0)
 
     const [subtitleColor, setSubtitleColor] = React.useState({ shade: 1.0, alpha: 1.0 })
     const [subtitleDelaySeconds, setSubtitleDelaySeconds] = React.useState(0)
     const [subtitleFontSize, setSubtitleFontSize] = React.useState(42)
-    const [subtitleTrackIndex, setSubtitleTrackIndex] = C.React.useState(0)
+    const [subtitleTrackIndex, setSubtitleTrackIndex] = React.useState(0)
 
 
-    const pathname = C.usePathname()
+    const pathname = usePathname()
 
     const forcePlayer = localParams.forcePlayer
     let forceExo = false
@@ -85,28 +79,53 @@ export function PlayerContextProvider(props) {
     let progressDisplay = null
     let durationDisplay = null
 
-    if (props.durationSeconds > 0) {
-        progressPercent = 100 * (props.progressSeconds / props.durationSeconds)
-        progressDisplay = util.secondsToTimestamp(props.progressSeconds)
-        durationDisplay = util.secondsToTimestamp(props.durationSeconds)
+    if (durationSeconds > 0) {
+        progressPercent = 100 * (progressSeconds / durationSeconds)
+        progressDisplay = util.secondsToTimestamp(progressSeconds)
+        durationDisplay = util.secondsToTimestamp(durationSeconds)
     }
 
-    const pauseVideo = () => {
+    let playerKind = null
+    if (config.useNullVideoView) {
+        VideoView = require('./comp/null-video-view').default
+        playerKind = 'null'
+    }
+    else {
+        if (Platform.OS === 'web' || player.info.forceExoPlayer) {
+            VideoView = require('./comp/rnv-video-view').default
+            playerKind = 'rnv'
+        }
+        else {
+            VideoView = require('./comp/mpv-video-view').default
+            playerKind = 'mpv'
+        }
+    }
+
+    const onPauseVideo = () => {
         setControlsVisible(true)
         setIsPlaying(false)
     }
 
-    const resumeVideo = () => {
+    const onPlaybackComplete = () => {
+        const duration = durationRef.current
+        onProgress(duration).then(() => {
+            if (props.onComplete) {
+                props.onComplete(apiClient, routes)
+            } else {
+                routes.back()
+            }
+        })
+    }
+
+    const onResumeVideo = () => {
         setControlsVisible(false)
         setIsPlaying(true)
         if (completeOnResume) {
-            if (props.onComplete) {
-                props.onComplete()
-            }
+            onPlaybackComplete()
         }
     }
 
-    const stopVideo = (goHome) => {
+    const onStopVideo = (goHome) => {
         setControlsVisible(false)
         setIsPlaying(false)
         if (goHome) {
@@ -122,7 +141,7 @@ export function PlayerContextProvider(props) {
         setIsPlaying(true)
     }
 
-    const addLog = (logEvent) => {
+    const onAddLog = (logEvent) => {
         try {
             logs.push(JSON.stringify(logEvent))
             setLogs(logs)
@@ -132,31 +151,64 @@ export function PlayerContextProvider(props) {
         }
     }
 
-    const immediateSeek = (progressPercent, progressSeconds) => {
-        if (progressSeconds < 0) {
-            progressSeconds = 0
+    const onReadyToSeek = () => {
+        if (!initialSeekRef.current) {
+            initialSeekRef.current = true
+            setInitialSeekComplete(true)
         }
-        if (props.durationSeconds) {
-            if (progressSeconds > props.durationSeconds) {
-                progressSeconds = props.durationSeconds
-            }
-        }
-        if (!progressSeconds) {
-            progressSeconds = (progressPercent / 100) * props.durationSeconds
-        }
-        if (progressPercent >= 100) {
-            setCompleteOnResume(true)
-        } else {
-            setCompleteOnResume(false)
-            if (props.onSeek) {
-                props.onSeek(progressSeconds)
-            }
-        }
-        setSeekToSeconds(progressSeconds)
-        setProgressSeconds(progressSeconds)
     }
 
-    const onSeek = useDebouncedCallback(immediateSeek, config.debounceMilliseconds)
+    const onProgress = (progressSeconds, source) => {
+        if (source === 'manual-seek') {
+            if (progressSeconds < 0) {
+                progressSeconds = 0
+            }
+            if (props.durationSeconds) {
+                if (progressSeconds > props.durationSeconds) {
+                    progressSeconds = props.durationSeconds
+                }
+            }
+            if (!progressSeconds) {
+                progressSeconds = (progressPercent / 100) * props.durationSeconds
+            }
+            if (progressPercent >= 100) {
+                setCompleteOnResume(true)
+            } else {
+                setCompleteOnResume(false)
+            }
+            setSeekToSeconds(progressSeconds)
+            setProgressSeconds(progressSeconds)
+        }
+        if (source === 'manual-seek' || Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds) {
+            setProgressSeconds(progressSeconds)
+            const duration = durationRef.current
+            if (duration > 0 && progressSeconds > 0) {
+                if (props.updateProgress) {
+                    return props.updateProgress(apiClient, localParams, progressSeconds, duration)
+                        .then((isWatched) => {
+                            if (isWatched && !countedWatch) {
+                                setCountedWatch(true)
+                                if (props.increaseWatchCount) {
+                                    return props.increaseWatchCount(apiClient)
+                                }
+                            }
+                        })
+                }
+            }
+            // Transcode streams have no seek capability
+            // Destroy and create a new one instead at the requested timestamp
+            if (shouldTranscode && manualSeek) {
+                if (props.loadTranscode) {
+                    setManualSeekSeconds(progressSeconds)
+                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, progressSeconds)
+                        .then(loadVideo)
+                }
+            }
+        }
+        return new Promise((resolve) => { resolve() })
+    }
+
+    const onProgressDebounced = useDebouncedCallback(onProgress, config.debounceMilliseconds)
 
     const onVideoUpdate = (info) => {
         if (config.debugVideoPlayer) {
@@ -197,11 +249,11 @@ export function PlayerContextProvider(props) {
                     }
                 }
                 else {
-                    addLog(info)
+                    onAddLog(info)
                 }
                 if (info.data.event === 'onEnd') {
-                    if (props.onComplete) {
-                        props.onComplete()
+                    if (props.onPlaybackComplete) {
+                        props.onPlaybackComplete()
                     }
                 }
             }
@@ -227,12 +279,12 @@ export function PlayerContextProvider(props) {
                 }
                 else {
                     if (mpvEvent.property !== 'demuxer-cache-time' && mpvEvent.property !== 'track-list') {
-                        addLog(info)
+                        onAddLog(info)
                     }
                 }
                 if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
-                    if (props.onComplete) {
-                        props.onComplete()
+                    if (props.onPlaybackComplete) {
+                        props.onPlaybackComplete()
                     }
                 }
             }
@@ -243,14 +295,24 @@ export function PlayerContextProvider(props) {
                 setProgressSeconds(nullEvent.progress)
             }
             else {
-                addLog(info)
+                onAddLog(info)
             }
         }
 
         else {
             if (info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('Description:') === -1) {
-                addLog(info)
+                onAddLog(info)
             }
+        }
+    }
+
+    const onCriticalError = (err) => {
+        if (!props.transcode) {
+            setVideoLoaded(false)
+            routes.replace(pathname, { ...localParams, ...{ transcode: true } })
+        }
+        else {
+            setPlaybackFailed(err)
         }
     }
 
@@ -259,15 +321,15 @@ export function PlayerContextProvider(props) {
             util.log({ err })
         }
 
-        addLog(err)
+        onAddLog(err)
 
         if (props.onError) {
             if (err && err.kind && err.kind == 'rnv') {
                 if (err.error.code === 4) {
-                    props.onError(err)
+                    onCriticalError(err)
                 }
                 if (err.error.code === 24001) {
-                    props.onError(err)
+                    onCriticalError(err)
                 }
                 else {
                     util.log("Unhandled error kind")
@@ -281,7 +343,24 @@ export function PlayerContextProvider(props) {
         }
     }
 
-    C.React.useEffect(() => {
+    const loadVideo = (response) => {
+        if (response.url) {
+            setVideoUrl(response.url)
+        }
+        if (response.name) {
+            setVideoTitle(response.name)
+        }
+        if (response.durationSeconds) {
+            setDurationSeconds(response.durationSeconds)
+            durationRef.current = response.durationSeconds
+        }
+        if (response.tracks) {
+            setMediaTracks(response.tracks)
+        }
+        setVideoLoaded(true)
+    }
+
+    React.useEffect(() => {
         if (!videoLoaded) {
             if (localParams.audioTrack) {
                 setAudioTrackIndex(parseInt(localParams.audioTrack), 10)
@@ -304,24 +383,7 @@ export function PlayerContextProvider(props) {
         }
     })
 
-    const loadVideo = (response) => {
-        if (response.url) {
-            setVideoUrl(response.url)
-        }
-        if (response.name) {
-            setVideoTitle(response.name)
-        }
-        if (response.durationSeconds) {
-            setDurationSeconds(response.durationSeconds)
-            durationRef.current = response.durationSeconds
-        }
-        if (response.tracks) {
-            setTracks(response.tracks)
-        }
-        setVideoLoaded(true)
-    }
-
-    const selectTrack = (track) => {
+    const onSelectTrack = (track) => {
         if (track.kind === 'audio') {
             if (audioTrackIndex === track.audio_index) {
                 setAudioTrackIndex(-1)
@@ -338,77 +400,15 @@ export function PlayerContextProvider(props) {
         }
     }
 
-    const onReadyToSeek = () => {
-        if (!initialSeekRef.current) {
-            initialSeekRef.current = true
-            setInitialSeekComplete(true)
-        }
-    }
-
-    const onSeek = (seekedToSeconds) => {
-        return onProgress(seekedToSeconds, true)
-    }
-
-    const onProgress = (progressSeconds, manualSeek) => {
-        if (manualSeek || Math.abs(progressSeconds - throttledProgressSeconds) >= config.progressMinDeltaSeconds) {
-            setProgressSeconds(progressSeconds)
-            const duration = durationRef.current
-            if (duration > 0 && progressSeconds > 0) {
-                if (props.updateProgress) {
-                    return props.updateProgress(apiClient, localParams, progressSeconds, duration)
-                        .then((isWatched) => {
-                            if (isWatched && !countedWatch) {
-                                setCountedWatch(true)
-                                if (props.increaseWatchCount) {
-                                    return props.increaseWatchCount(apiClient)
-                                }
-                            }
-                        })
-                }
-            }
-            // Transcode streams have no seek capability
-            // Destroy and create a new one instead at the requested timestamp
-            if (shouldTranscode && manualSeek) {
-                if (props.loadTranscode) {
-                    setManualSeekSeconds(progressSeconds)
-                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, progressSeconds)
-                        .then(loadVideo)
-                }
-            }
-        }
-        return new Promise((resolve) => { resolve() })
-    }
-
-    const onError = (err) => {
-        if (!props.transcode) {
-            setVideoLoaded(false)
-            routes.replace(pathname, { ...localParams, ...{ transcode: true } })
-        }
-        else {
-            setPlaybackFailed(err)
-        }
-    }
-
-    const onComplete = () => {
-        const duration = durationRef.current
-        onProgress(duration).then(() => {
-            if (props.onComplete) {
-                props.onComplete(apiClient, routes)
-            } else {
-                routes.back()
-            }
-        })
-    }
-
     if (Platform.isTV) {
         const tvRemoteHandler = (remoteEvent) => {
             if (!controlsVisible && isReady) {
-                if (props.initialSeekComplete.current || !props.initialSeekSeconds) {
+                if (initialSeekComplete.current || !initialSeekSeconds) {
                     if (remoteEvent.eventType === 'right') {
-                        immediateSeek(null, progressSeconds + 90)
+                        onProgress(progressSeconds + 90, 'manual-seek')
                     }
                     else if (remoteEvent.eventType === 'left') {
-                        immediateSeek(null, progressSeconds - 5)
+                        onProgress(progressSeconds - 5, 'manual-seek')
                     }
                     else if (remoteEvent.eventType === 'down') {
                         setSubtitleFontSize((fontSize) => { return fontSize -= 4 })
@@ -430,58 +430,58 @@ export function PlayerContextProvider(props) {
     }
 
     const info = {
-        audioDelay: audioDelaySeconds,
-        audioTrackIndex: audioTrackIndex,
-        controlsVisible: controlsVisible,
-        durationSeconds: durationSeconds,
+        audioDelaySeconds,
+        audioTrackIndex,
+        controlsVisible,
+        durationSeconds,
         forceExoPlayer: forceExo,
         initialSeekComplete: initialSeekRef,
-        initialSeekSeconds: initialSeekSeconds,
-        isPlaying: isPlaying,
-        isReady: isReady,
+        initialSeekSeconds,
+        isPlaying,
+        isReady,
         isTranscode: shouldTranscode,
-        logs: logs,
-        manualSeekSeconds: manualSeekSeconds,
-        playerKind: playerKind,
-        progressSeconds: progressSeconds,
-        progressPercent: progressPercent,
-        progressDisplay: progressDisplay,
-        durationDisplay: durationDisplay,
-        seekToSeconds: seekToSeconds,
-        subtitleColor: subtitleColor,
-        subtitleDelay: subtitleDelaySeconds,
-        subtitleFontSize: subtitleFontSize,
-        subtitleTrackIndex: subtitleTrackIndex,
-        tracks: tracks,
+        logs,
+        manualSeekSeconds,
+        playbackFailed,
+        playerKind,
+        progressSeconds,
+        progressPercent,
+        progressDisplay,
+        durationDisplay,
+        seekToSeconds,
+        subtitleColor,
+        subtitleDelaySeconds,
+        subtitleFontSize,
+        subtitleTrackIndex,
+        mediaTracks,
         videoHeight: clientOptions.resolutionHeight,
-        videoTitle: videoTitle,
-        videoUrl: videoUrl,
+        videoTitle,
+        videoUrl,
         videoWidth: clientOptions.resolutionWidth
     }
 
     const action = {
-        onComplete: onComplete,
-        onError: onError,
-        onError: onVideoError,
-        onProgress: onProgress,
-        onReady: onVideoReady,
-        onReadyToSeek: onReadyToSeek,
-        onSeek: onSeek,
-        onUpdate: onVideoUpdate,
-        selectTrack: selectTrack,
-        setAudioDelay: setAudioDelaySeconds,
-        setSubtitleColor: setSubtitleColor,
-        setSubtitleDelay: setSubtitleDelaySeconds,
-        setSubtitleFontSize: setSubtitleFontSize,
-        stopVideo: stopVideo,
-        pauseVideo: pauseVideo,
-        resumeVideo: resumeVideo,
-        selectTrack: props.selectTrack
+        onPlaybackComplete,
+        onVideoError,
+        onPauseVideo,
+        onProgress,
+        onProgressDebounced,
+        onVideoReady,
+        onReadyToSeek,
+        onResumeVideo,
+        onSelectTrack,
+        onStopVideo,
+        onVideoUpdate,
+        setAudioDelaySeconds,
+        setSubtitleColor,
+        setSubtitleDelaySeconds,
+        setSubtitleFontSize
     }
 
     const playerContext = {
         info,
-        action
+        action,
+        VideoView
     }
 
     return (

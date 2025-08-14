@@ -78,7 +78,7 @@ export default function RnvVideoView(props) {
     let userClickedPlay = null
     if (isWeb) {
         userClickedPlay = () => {
-            player.action.onReady()
+            player.action.onVideoReady()
             setUserPlayed(true)
         }
     }
@@ -90,7 +90,7 @@ export default function RnvVideoView(props) {
 
     React.useEffect(() => {
         if (!isWeb && !player.info.isReady) {
-            player.action.onReady()
+            player.action.onVideoReady()
         }
         if (isWeb && !requestTranscode) {
             if (!player.info.isTranscode && (player.info.audioTrackIndex > 0 || player.info.subtitleTrackIndex > 0)) {
@@ -125,9 +125,9 @@ export default function RnvVideoView(props) {
         }
     }
 
-    const onUpdate = (kind) => {
+    const onRnvEvent = (kind) => {
         return (payload) => {
-            player.action.onUpdate({
+            player.action.onVideoUpdate({
                 kind: 'rnvevent',
                 data: {
                     event: kind,
@@ -174,35 +174,35 @@ export default function RnvVideoView(props) {
 
                     // The main events needed by snowstream
                     onError={onError}
-                    onEnd={onUpdate('onEnd')}
-                    onProgress={onUpdate('onProgress')}
-                    onReadyForDisplay={onUpdate('onReadyForDisplay')}
+                    onEnd={onRnvEvent('onEnd')}
+                    onProgress={onRnvEvent('onProgress')}
+                    onReadyForDisplay={onRnvEvent('onReadyForDisplay')}
 
                     // Events used primarily for debugging
-                    onAudioBecomingNoisy={onUpdate('onAudioBecomingNoisy')}
-                    onAudioFocusChanged={onUpdate('onAudioFocusChanged')}
-                    onAudioTracks={onUpdate('onAudioTracks')}
-                    onBandwidthUpdate={onUpdate('onBandwidthUpdate')}
-                    onBuffer={onUpdate('onBuffer')}
-                    onControlsVisibilityChange={onUpdate('onControlsVisibilityChange')}
-                    onExternalPlaybackChange={onUpdate('onExternalPlaybackChange')}
-                    onFullscreenPlayerWillPresent={onUpdate('onFullscreenPlayerWillPresent')}
-                    onFullscreenPlayerDidPresent={onUpdate('onFullscreenPlayerDidPresent')}
-                    onFullscreenPlayerWillDismiss={onUpdate('onFullscreenPlayerWillDismiss')}
-                    onFullscreenPlayerDidDismiss={onUpdate('onFullscreenPlayerDidDismiss')}
-                    onLoad={onUpdate('onLoad')}
-                    onLoadStart={onUpdate('onLoadStart')}
-                    onPlaybackStateChanged={onUpdate('onPlaybackStateChanged')}
-                    onPictureInPictureStatusChanged={onUpdate('onPictureInPictureStatusChanged')}
-                    onPlaybackRateChange={onUpdate('onPlaybackRateChange')}
-                    onReceiveAdEvent={onUpdate('onReceiveAdEvent')}
-                    onRestoreUserInterfaceForPictureInPictureStop={onUpdate('onRestoreUserInterfaceForPictureInPictureStop')}
-                    onSeek={onUpdate('onSeek')}
-                    onTimedMetadata={onUpdate('onTimedMetadata')}
-                    onTextTrackDataChanged={onUpdate('onTextTrackDataChanged')}
-                    onTextTracks={onUpdate('onTextTracks')}
-                    onVideoTracks={onUpdate('onVideoTracks')}
-                    onVolumeChange={onUpdate('onVolumeChange')}
+                    onAudioBecomingNoisy={onRnvEvent('onAudioBecomingNoisy')}
+                    onAudioFocusChanged={onRnvEvent('onAudioFocusChanged')}
+                    onAudioTracks={onRnvEvent('onAudioTracks')}
+                    onBandwidthUpdate={onRnvEvent('onBandwidthUpdate')}
+                    onBuffer={onRnvEvent('onBuffer')}
+                    onControlsVisibilityChange={onRnvEvent('onControlsVisibilityChange')}
+                    onExternalPlaybackChange={onRnvEvent('onExternalPlaybackChange')}
+                    onFullscreenPlayerWillPresent={onRnvEvent('onFullscreenPlayerWillPresent')}
+                    onFullscreenPlayerDidPresent={onRnvEvent('onFullscreenPlayerDidPresent')}
+                    onFullscreenPlayerWillDismiss={onRnvEvent('onFullscreenPlayerWillDismiss')}
+                    onFullscreenPlayerDidDismiss={onRnvEvent('onFullscreenPlayerDidDismiss')}
+                    onLoad={onRnvEvent('onLoad')}
+                    onLoadStart={onRnvEvent('onLoadStart')}
+                    onPlaybackStateChanged={onRnvEvent('onPlaybackStateChanged')}
+                    onPictureInPictureStatusChanged={onRnvEvent('onPictureInPictureStatusChanged')}
+                    onPlaybackRateChange={onRnvEvent('onPlaybackRateChange')}
+                    onReceiveAdEvent={onRnvEvent('onReceiveAdEvent')}
+                    onRestoreUserInterfaceForPictureInPictureStop={onRnvEvent('onRestoreUserInterfaceForPictureInPictureStop')}
+                    onSeek={onRnvEvent('onSeek')}
+                    onTimedMetadata={onRnvEvent('onTimedMetadata')}
+                    onTextTrackDataChanged={onRnvEvent('onTextTrackDataChanged')}
+                    onTextTracks={onRnvEvent('onTextTracks')}
+                    onVideoTracks={onRnvEvent('onVideoTracks')}
+                    onVolumeChange={onRnvEvent('onVolumeChange')}
 
                 />
             </TouchableOpacity>

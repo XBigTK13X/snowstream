@@ -1,5 +1,4 @@
 import C from '../common'
-import { AppContextProvider } from '../app-context'
 import { SystemBars } from "react-native-edge-to-edge";
 
 const styles = {
@@ -75,12 +74,12 @@ export default function RootLayout() {
     }
     return (
         <SafeAreaView>
-            <AppContextProvider>
+            <C.AppContextProvider>
                 <C.FillView scroll style={styles.page}>
                     <Header />
                     <C.Slot />
                 </C.FillView>
-            </AppContextProvider>
+            </C.AppContextProvider>
         </SafeAreaView>
     )
 }
