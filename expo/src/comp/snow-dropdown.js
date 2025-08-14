@@ -34,7 +34,7 @@ export function SnowDropdown(props) {
         }
         return <SnowTextButton
             tall={!props.short}
-            fade={!selected && props.fade}
+            fade={selected && props.fade}
             selected={selected}
             title={item.name ? item.name : item}
             onPress={() => { choose(item.index ? item.index : itemIndex) }} />

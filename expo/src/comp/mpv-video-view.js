@@ -32,8 +32,7 @@ export default function MpvVideoView(props) {
             bottom: 0,
             right: 0,
             alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'black'
+            justifyContent: 'center'
         }
     }
 
@@ -85,27 +84,28 @@ export default function MpvVideoView(props) {
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
-            <Libmpv.LibmpvVideo
-                ref={nativeRef}
-                playUrl={player.info.videoUrl}
-                isPlaying={player.info.isPlaying}
-                useHardwareDecoder={clientOptions.hardwareDecoder}
-                surfaceWidth={player.info.videoWidth}
-                surfaceHeight={player.info.videoHeight}
-                onLibmpvEvent={(libmpvEvent) => {
-                    player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
-                }}
-                onLibmpvLog={(libmpvLog) => {
-                    player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
-                }}
-                selectedAudioTrack={player.info.audioTrackIndex}
-                selectedSubtitleTrack={player.info.subtitleTrackIndex}
-                seekToSeconds={player.info.seekToSeconds}
-            />
             <TouchableOpacity
+                transparent
                 hasTVPreferredFocus={player.info.shouldFocus}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
+                <Libmpv.LibmpvVideo
+                    ref={nativeRef}
+                    playUrl={player.info.videoUrl}
+                    isPlaying={player.info.isPlaying}
+                    useHardwareDecoder={clientOptions.hardwareDecoder}
+                    surfaceWidth={player.info.videoWidth}
+                    surfaceHeight={player.info.videoHeight}
+                    onLibmpvEvent={(libmpvEvent) => {
+                        player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
+                    }}
+                    onLibmpvLog={(libmpvLog) => {
+                        player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
+                    }}
+                    selectedAudioTrack={player.info.audioTrackIndex}
+                    selectedSubtitleTrack={player.info.subtitleTrackIndex}
+                    seekToSeconds={player.info.seekToSeconds}
+                />
             </TouchableOpacity>
         </SnowModal >
     )

@@ -36,6 +36,9 @@ const styles = {
         backgroundColor: Style.color.transparentDark,
         zIndex: Style.depth.video.controls,
         elevation: Style.depth.video.controls
+    },
+    slider: {
+        height: 50
     }
 }
 
@@ -82,6 +85,11 @@ export default function SnowVideoControls(props) {
     let swapTitle = "Swap to mpv"
     if (player.info.playerKind === 'mpv') {
         swapTitle = 'Swap to exo'
+    }
+
+    let transcodeTitle = "Start Transcoding"
+    if (player.info.isTranscode) {
+        transcodeTitle = "Stop Transcoding"
     }
 
     let tabs = [
@@ -166,6 +174,7 @@ export default function SnowVideoControls(props) {
                         <View>
                             <SnowText>{player.info.videoTitle}</SnowText>
                             <Slider
+                                style={styles.slider}
                                 minimumValue={0}
                                 maximumValue={100}
                                 value={player.info.progressPercent}
@@ -195,6 +204,12 @@ export default function SnowVideoControls(props) {
                                 if (player.info.playerKind === 'mpv') {
                                     newParams.forcePlayer = 'exo'
                                 }
+                                newParams.seekToSeconds = player.info.progressSeconds
+                                routes.replace(currentRoute, newParams)
+                            }} />
+                            <SnowTextButton title={transcodeTitle} onPress={() => {
+                                let newParams = { ...localParams }
+                                newParams.transcode = !player.info.isTranscode
                                 newParams.seekToSeconds = player.info.progressSeconds
                                 routes.replace(currentRoute, newParams)
                             }} />

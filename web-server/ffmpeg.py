@@ -33,6 +33,8 @@ def transcode_command(
     subtitle_track_index:int=None,
     seek_to_seconds:int=None
 ):
+    if device_profile == 'undefined':
+        device_profile = 'CCwGTV4K'
     client = device.device_lookup[device_profile]
     streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{client.transcode.container}'
     command =  f'ffmpeg'

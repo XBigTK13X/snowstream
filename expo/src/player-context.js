@@ -183,14 +183,15 @@ export function PlayerContextProvider(props) {
                         })
                 }
             }
-            // Transcode streams have no seek capability
-            // Destroy and create a new one instead at the requested timestamp
-            if (isTranscode && manualSeek) {
-                if (props.loadTranscode) {
-                    setManualSeekSeconds(nextProgressSeconds)
-                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, nextProgressSeconds)
-                        .then(loadVideo)
-                }
+        }
+        // Transcode streams have no seek capability
+        // Destroy and create a new one instead at the requested timestamp
+        if (source === 'manual-seek' && isTranscode) {
+            if (props.loadTranscode) {
+                setVideoUrl(null)
+                setManualSeekSeconds(nextProgressSeconds)
+                props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, nextProgressSeconds)
+                    .then(loadVideo)
             }
         }
         return new Promise((resolve) => { resolve() })
