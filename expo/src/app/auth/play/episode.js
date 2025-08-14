@@ -4,11 +4,15 @@ import PlayMediaPage from './media'
 
 export default function PlayEpisodePage() {
     const loadVideo = (apiClient, localParams) => {
-        return apiClient.getEpisode(localParams.episodeId).then((response) => {
-            const videoFile = response.video_files[localParams.videoFileIndex ?? 0]
+        return apiClient.getEpisode(localParams.episodeId).then((episode) => {
+            let videoFileIndex = 0
+            if (localParams.videoFileIndex) {
+                videoFileIndex = parseInt(localParams.videoFileIndex, 10)
+            }
+            const videoFile = episode.video_files[videoFileIndex]
             return {
                 url: videoFile.network_path,
-                name: `${response.season.show.name} - ${C.util.formatEpisodeTitle(response)}`,
+                name: `${episode.season.show.name} - ${C.util.formatEpisodeTitle(episode)}`,
                 durationSeconds: videoFile.info.duration_seconds,
                 tracks: videoFile.info.tracks
             }
@@ -19,7 +23,11 @@ export default function PlayEpisodePage() {
         return new Promise((resolve) => {
             apiClient.getEpisode(localParams.episodeId)
                 .then((episode) => {
-                    const videoFile = episode.video_files[localParams.videoFileIndex ?? 0]
+                    let videoFileIndex = 0
+                    if (localParams.videoFileIndex) {
+                        videoFileIndex = parseInt(localParams.videoFileIndex, 10)
+                    }
+                    const videoFile = episode.video_files[videoFileIndex]
                     return apiClient.createVideoFileTranscodeSession(
                         videoFile.id,
                         localParams.audioTrack,

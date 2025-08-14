@@ -21,6 +21,7 @@ export default function MpvVideoView(props) {
             right: 0,
             alignItems: 'center',
             justifyContent: 'center',
+            backgroundColor: 'black'
         },
         wrapper: {
             width: Style.window.width(),
@@ -48,7 +49,7 @@ export default function MpvVideoView(props) {
                 // Loudness normalization from Snowby
                 nativeRef.current.runMpvCommand(`set|af|acompressor=ratio=4,loudnorm`)
             }
-            player.action.onReady()
+            player.action.onVideoReady()
         }
     })
 
@@ -84,7 +85,6 @@ export default function MpvVideoView(props) {
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
-
             <Libmpv.LibmpvVideo
                 ref={nativeRef}
                 playUrl={player.info.videoUrl}
@@ -98,8 +98,8 @@ export default function MpvVideoView(props) {
                 onLibmpvLog={(libmpvLog) => {
                     player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
                 }}
-                selectedAudioTrack={player.info.audioIndex}
-                selectedSubtitleTrack={player.info.subtitleIndex}
+                selectedAudioTrack={player.info.audioTrackIndex}
+                selectedSubtitleTrack={player.info.subtitleTrackIndex}
                 seekToSeconds={player.info.seekToSeconds}
             />
             <TouchableOpacity

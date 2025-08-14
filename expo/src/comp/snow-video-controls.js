@@ -143,7 +143,7 @@ export default function SnowVideoControls(props) {
                     setAudioDelay={player.action.setAudioDelay}
                     subtitleDelay={player.info.subtitleDelaySeconds}
                     setSubtitleDelay={player.action.setSubtitleDelay}
-                    tracks={player.info.tracks}
+                    tracks={player.info.mediaTracks}
                     selectTrack={player.action.onSelectTrack}
                     audioTrack={player.info.audioTrackIndex}
                     subtitleTrack={player.info.subtitleTrackIndex}

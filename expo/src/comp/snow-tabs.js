@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import SnowText from './snow-text'
 import Style from '../snow-style'
 import SnowDropdown from './snow-dropdown'
@@ -29,7 +29,7 @@ export function SnowTabs(props) {
     tabs = tabs.filter(child => child !== null)
     const [tabIndex, setTabIndex] = React.useState(0)
     return (
-        <FillView scroll>
+        <FillView scroll={Platform.OS !== 'web'}>
             <SnowDropdown
                 short
                 fade

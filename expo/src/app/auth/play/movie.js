@@ -2,11 +2,16 @@ import PlayMediaPage from './media'
 
 export default function PlayMoviePage() {
     const loadVideo = (apiClient, localParams) => {
-        return apiClient.getMovie(localParams.movieId).then((response) => {
-            const videoFile = response.video_files[localParams.videoFileIndex ?? 0]
+
+        return apiClient.getMovie(localParams.movieId).then((movie) => {
+            let videoFileIndex = 0
+            if (localParams.videoFileIndex) {
+                videoFileIndex = parseInt(localParams.videoFileIndex, 10)
+            }
+            const videoFile = movie.video_files[videoFileIndex]
             return {
                 url: videoFile.network_path,
-                name: response.name,
+                name: movie.name,
                 durationSeconds: videoFile.info.duration_seconds,
                 tracks: videoFile.info.tracks
             }
@@ -17,7 +22,11 @@ export default function PlayMoviePage() {
         return new Promise((resolve) => {
             apiClient.getMovie(localParams.movieId)
                 .then((movie) => {
-                    const videoFile = movie.video_files[localParams.videoFileIndex ?? 0]
+                    let videoFileIndex = 0
+                    if (localParams.videoFileIndex) {
+                        videoFileIndex = parseInt(localParams.videoFileIndex, 10)
+                    }
+                    const videoFile = movie.video_files[videoFileIndex]
                     return apiClient.createVideoFileTranscodeSession(
                         videoFile.id,
                         localParams.audioTrack,

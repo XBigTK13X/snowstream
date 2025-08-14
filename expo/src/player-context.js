@@ -31,7 +31,7 @@ export function PlayerContextProvider(props) {
     const [videoLoaded, setVideoLoaded] = React.useState(false)
 
     const [initialSeekComplete, setInitialSeekComplete] = React.useState(false)
-    const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(localParams.seekToSeconds) : 0
+    const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(parseFloat(localParams.seekToSeconds, 10)) : 0
 
     const [manualSeekSeconds, setManualSeekSeconds] = React.useState(0)
     const [progressSeconds, setProgressSeconds] = React.useState(null)
@@ -66,8 +66,8 @@ export function PlayerContextProvider(props) {
     }
 
     let isTranscode = false
-    if (localParams.transcode) {
-        isTranscode = localParams.transcode
+    if (localParams.transcode === 'true') {
+        isTranscode = true
     }
     if (clientOptions.alwaysTranscode) {
         isTranscode = true
@@ -89,7 +89,7 @@ export function PlayerContextProvider(props) {
         playerKind = 'null'
     }
     else {
-        if (Platform.OS === 'web' || player.info.forceExoPlayer) {
+        if (Platform.OS === 'web' || forceExo) {
             VideoView = require('./comp/rnv-video-view').default
             playerKind = 'rnv'
         }
@@ -148,14 +148,7 @@ export function PlayerContextProvider(props) {
         }
     }
 
-    const onReadyToSeek = () => {
-        if (!initialSeekComplete) {
-            setInitialSeekComplete(true)
-        }
-    }
-
     const onProgress = (nextProgressSeconds, source, nextProgressPercent) => {
-        console.log({ nextProgressSeconds, source })
         if (source === 'manual-seek') {
             if (nextProgressSeconds < 0) {
                 nextProgressSeconds = 0
@@ -193,7 +186,6 @@ export function PlayerContextProvider(props) {
             // Transcode streams have no seek capability
             // Destroy and create a new one instead at the requested timestamp
             if (isTranscode && manualSeek) {
-                console.log("Should be transcoding to " + nextProgressSeconds)
                 if (props.loadTranscode) {
                     setManualSeekSeconds(nextProgressSeconds)
                     props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, nextProgressSeconds)
@@ -215,21 +207,21 @@ export function PlayerContextProvider(props) {
             if (isTranscode) {
                 setSeekToSeconds(initialSeekSeconds)
                 setProgressSeconds(initialSeekSeconds)
-                onReadyToSeek()
+                setInitialSeekComplete(true)
             }
             else {
                 if (playerKind === 'mpv') {
                     if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('Starting playback') !== -1) {
-                        setSeekToSeconds(props.initialSeekSeconds)
-                        setProgressSeconds(props.initialSeekSeconds)
-                        props.onReadyToSeek()
+                        setSeekToSeconds(initialSeekSeconds)
+                        setProgressSeconds(initialSeekSeconds)
+                        setInitialSeekComplete(true)
                     }
                 }
                 else if (playerKind === 'rnv') {
                     if (info && info.kind === 'rnvevent' && info.data.event === 'onReadyForDisplay') {
-                        setSeekToSeconds(props.initialSeekSeconds)
-                        setProgressSeconds(props.initialSeekSeconds)
-                        props.onReadyToSeek()
+                        setSeekToSeconds(initialSeekSeconds)
+                        setProgressSeconds(initialSeekSeconds)
+                        setInitialSeekComplete(true)
                     }
                 }
             }
@@ -241,25 +233,21 @@ export function PlayerContextProvider(props) {
                     // When this fires during a transcode, it needs to be offset by the manual seek amount
                     let seconds = info.data.data.currentTime
                     if (isTranscode) {
-                        if (props.initialSeekSeconds && !props.manualSeekSeconds) {
-                            seconds += props.initialSeekSeconds
+                        if (initialSeekSeconds && !manualSeekSeconds) {
+                            seconds += initialSeekSeconds
                         }
                         else {
-                            seconds += props.manualSeekSeconds
+                            seconds += manualSeekSeconds
                         }
                     }
-                    setProgressSeconds(info.data.data.currentTime)
-                    if (props.onProgress) {
-                        props.onProgress(info.data.data.currentTime)
-                    }
+                    setProgressSeconds(seconds)
+                    onProgress(seconds, 'player-event')
                 }
                 else {
                     onAddLog(info)
                 }
                 if (info.data.event === 'onEnd') {
-                    if (props.onPlaybackComplete) {
-                        props.onPlaybackComplete()
-                    }
+                    onPlaybackComplete()
                 }
             }
         }
@@ -270,17 +258,15 @@ export function PlayerContextProvider(props) {
                     // When this fires during a transcode, it needs to be offset by the manual seek amount
                     let seconds = mpvEvent.value
                     if (isTranscode) {
-                        if (props.initialSeekSeconds && !props.manualSeekSeconds) {
-                            seconds += props.initialSeekSeconds
+                        if (initialSeekSeconds && manualSeekSeconds) {
+                            seconds += manualSeekSeconds
                         }
                         else {
-                            seconds += props.manualSeekSeconds
+                            seconds += manualSeekSeconds
                         }
                     }
                     setProgressSeconds(seconds)
-                    if (props.onProgress) {
-                        props.onProgress(seconds)
-                    }
+                    onProgress(seconds, 'player-event')
                 }
                 else {
                     if (mpvEvent.property !== 'demuxer-cache-time' && mpvEvent.property !== 'track-list') {
@@ -288,9 +274,7 @@ export function PlayerContextProvider(props) {
                     }
                 }
                 if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
-                    if (props.onPlaybackComplete) {
-                        props.onPlaybackComplete()
-                    }
+                    onPlaybackComplete()
                 }
             }
         }
@@ -312,7 +296,7 @@ export function PlayerContextProvider(props) {
     }
 
     const onCriticalError = (err) => {
-        if (!props.transcode) {
+        if (!isTranscode) {
             setVideoLoaded(false)
             routes.replace(pathname, { ...localParams, ...{ transcode: true } })
         }
@@ -328,23 +312,21 @@ export function PlayerContextProvider(props) {
 
         onAddLog(err)
 
-        if (props.onError) {
-            if (err && err.kind && err.kind == 'rnv') {
-                if (err.error.code === 4) {
-                    onCriticalError(err)
-                }
-                if (err.error.code === 24001) {
-                    onCriticalError(err)
-                }
-                else {
-                    util.log("Unhandled error kind")
-                    util.log({ err })
-                }
+        if (err && err.kind && err.kind == 'rnv') {
+            if (err.error.code === 4) {
+                onCriticalError(err)
+            }
+            if (err.error.code === 24001) {
+                onCriticalError(err)
             }
             else {
-                util.log("Unhandled error source")
+                util.log("Unhandled error kind")
                 util.log({ err })
             }
+        }
+        else {
+            util.log("Unhandled error source")
+            util.log({ err })
         }
     }
 
@@ -363,29 +345,6 @@ export function PlayerContextProvider(props) {
         }
         setVideoLoaded(true)
     }
-
-    React.useEffect(() => {
-        if (!videoLoaded) {
-            if (localParams.audioTrack) {
-                setAudioTrackIndex(parseInt(localParams.audioTrack), 10)
-            }
-            if (localParams.subtitleTrack) {
-                setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
-            }
-            if (isTranscode) {
-                if (props.loadTranscode) {
-                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, initialSeekSeconds)
-                        .then(loadVideo)
-                }
-            }
-            else {
-                if (props.loadVideo) {
-                    props.loadVideo(apiClient, localParams)
-                        .then(loadVideo)
-                }
-            }
-        }
-    })
 
     const onSelectTrack = (track) => {
         if (track.kind === 'audio') {
@@ -433,12 +392,34 @@ export function PlayerContextProvider(props) {
         useTVEventHandler(tvRemoteHandler);
     }
 
+    React.useEffect(() => {
+        if (!videoLoaded) {
+            if (localParams.audioTrack) {
+                setAudioTrackIndex(parseInt(localParams.audioTrack), 10)
+            }
+            if (localParams.subtitleTrack) {
+                setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
+            }
+            if (isTranscode) {
+                if (props.loadTranscode) {
+                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, initialSeekSeconds)
+                        .then(loadVideo)
+                }
+            }
+            else {
+                if (props.loadVideo) {
+                    props.loadVideo(apiClient, localParams)
+                        .then(loadVideo)
+                }
+            }
+        }
+    })
+
     const info = {
         audioDelaySeconds,
         audioTrackIndex,
         controlsVisible,
         durationSeconds,
-        forceExoPlayer: forceExo,
         initialSeekComplete,
         initialSeekSeconds,
         isPlaying,
@@ -471,7 +452,6 @@ export function PlayerContextProvider(props) {
         onProgress,
         onProgressDebounced,
         onVideoReady,
-        onReadyToSeek,
         onResumeVideo,
         onSelectTrack,
         onStopVideo,
@@ -487,8 +467,6 @@ export function PlayerContextProvider(props) {
         action,
         VideoView
     }
-
-    console.log({ info })
 
     return (
         <PlayerContext.Provider
