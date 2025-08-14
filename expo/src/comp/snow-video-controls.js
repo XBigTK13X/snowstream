@@ -1,5 +1,5 @@
 import React from 'react'
-import Slider from '@react-native-community/slider';
+import { Slider } from '@react-native-assets/slider'
 import { View } from 'react-native'
 import { usePathname, useLocalSearchParams } from 'expo-router'
 
@@ -8,6 +8,7 @@ import { useAppContext } from '../app-context'
 import { usePlayerContext } from '../player-context'
 
 import FillView from './fill-view'
+import SnowLabel from './snow-label'
 import SnowTrackSelector from './snow-track-selector'
 import SnowText from './snow-text';
 import SnowTextButton from './snow-text-button'
@@ -159,6 +160,26 @@ export default function SnowVideoControls(props) {
             </View>
         )
     }
+    let slider = null
+    if (player.info.durationSeconds > 0 && player.info.progressPercent && player.info.progressDisplay) {
+        slider = (
+            <View>
+                <Slider
+                    trackHeight={25}
+                    thumbSize={50}
+                    thumbTintColor={Style.color.core}
+                    minimumValue={0}
+                    maximumValue={100}
+                    value={player.info.progressPercent}
+                    minimumTrackTintColor={Style.color.coreDark}
+                    maximumTrackTintColor={Style.color.outlineDark}
+                    onSlidingComplete={(percent) => { player.action.onProgressDebounced(null, 'manual-seek', percent) }}
+                    onValueChange={(percent) => { player.action.onProgressDebounced(null, 'manual-seek', percent) }}
+                />
+                <SnowText style={styles.progress}>{player.info.progressDisplay} / {player.info.durationDisplay}</SnowText>
+            </View>
+        )
+    }
 
     return (
         (
@@ -170,22 +191,8 @@ export default function SnowVideoControls(props) {
                 onRequestClose={player.action.onResumeVideo}
             >
                 <FillView flexStart scroll>
-                    {player.info.durationSeconds > 0 ?
-                        <View>
-                            <SnowText>{player.info.videoTitle}</SnowText>
-                            <Slider
-                                style={styles.slider}
-                                minimumValue={0}
-                                maximumValue={100}
-                                value={player.info.progressPercent}
-                                minimumTrackTintColor="#FFFFFF"
-                                maximumTrackTintColor="#cccccc"
-                                onSlidingComplete={(percent) => { player.action.onProgressDebounced(null, 'manual-seek', percent) }}
-                                onValueChange={(percent) => { player.action.onProgressDebounced(null, 'manual-seek', percent) }}
-                            />
-                            <SnowText style={styles.progress}>{player.info.progressDisplay} / {player.info.durationDisplay}</SnowText>
-                        </View>
-                        : null}
+                    <SnowLabel center>{player.info.videoTitle}</SnowLabel>
+                    {slider}
                     <SnowTabs headers={tabs}>
                         <View>
                             <SnowGrid itemsPerRow={3}>

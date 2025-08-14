@@ -166,7 +166,9 @@ export function PlayerContextProvider(props) {
             } else {
                 setCompleteOnResume(false)
             }
-            setSeekToSeconds(nextProgressSeconds)
+            if (!isTranscode) {
+                setSeekToSeconds(nextProgressSeconds)
+            }
         }
         if (source === 'manual-seek' || Math.abs(nextProgressSeconds - progressSeconds) >= config.progressMinDeltaSeconds) {
             setProgressSeconds(nextProgressSeconds)
