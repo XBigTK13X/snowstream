@@ -163,7 +163,6 @@ export default function SnowVideoControls(props) {
     let slider = null
     if (player.info.durationSeconds > 0) {
         const onPercentChange = (percent) => {
-            console.log({ percent });
             player.action.onProgressDebounced(null, 'manual-seek', percent);
         }
         slider = (

@@ -32,6 +32,8 @@ export function PlayerContextProvider(props) {
     const [controlsVisible, setControlsVisible] = React.useState(false)
     // If a user moved the progress slider all the way to the right, then finish playing the video when they hit resume
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
+    // When seeking during a transcode, don't take action until resume is clicked
+    const [transcodeOnResume, setTranscodeOnResume] = React.useState(false)
 
     // Prevent the end of a video stream from triggering dozens of watch count updates
     const [countedWatch, setCountedWatch] = React.useState(false)
@@ -56,7 +58,7 @@ export function PlayerContextProvider(props) {
     const [seekToSeconds, setSeekToSeconds] = React.useState(1)
     // a transcode doesn't have the real progress/duration info for the player
     // manual serves as an offset to progress to provide the ability to seek
-    const [manualSeekSeconds, setManualSeekSeconds] = React.useState(0)
+    const [manualSeekSeconds, setManualSeekSeconds] = React.useState(null)
 
     const [logs, setLogs] = React.useState([])
 
@@ -123,11 +125,22 @@ export function PlayerContextProvider(props) {
         })
     }
 
+    const onTranscodeSeek = () => {
+        setVideoLoaded(false)
+        setVideoUrl(null)
+        setTranscodeOnResume(false)
+        props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, manualSeekSeconds)
+            .then(loadVideo)
+    }
+
     const onResumeVideo = () => {
         setControlsVisible(false)
         setIsPlaying(true)
         if (completeOnResume) {
             onPlaybackComplete()
+        }
+        if (transcodeOnResume) {
+            onTranscodeSeek()
         }
     }
 
@@ -158,7 +171,6 @@ export function PlayerContextProvider(props) {
     }
 
     const onProgress = (nextProgressSeconds, source, nextProgressPercent) => {
-        console.log({ nextProgressSeconds, source, nextProgressPercent, videoLoaded })
         if (!videoLoaded) {
             return
         }
@@ -192,7 +204,7 @@ export function PlayerContextProvider(props) {
             setProgressSeconds(nextProgressSeconds)
             if (durationSeconds > 0 && progressSeconds > 0) {
                 if (props.updateProgress) {
-                    return props.updateProgress(apiClient, localParams, nextProgressSeconds, durationSeconds)
+                    props.updateProgress(apiClient, localParams, nextProgressSeconds, durationSeconds)
                         .then((isWatched) => {
                             if (isWatched && !countedWatch) {
                                 setCountedWatch(true)
@@ -209,11 +221,8 @@ export function PlayerContextProvider(props) {
         // Destroy and create a new one instead at the requested timestamp
         if (source === 'manual-seek' && isTranscode) {
             if (props.loadTranscode) {
-                setVideoLoaded(false)
-                setVideoUrl(null)
                 setManualSeekSeconds(nextProgressSeconds)
-                props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, nextProgressSeconds)
-                    .then(loadVideo)
+                setTranscodeOnResume(true)
             }
         }
         return new Promise((resolve) => { resolve() })
@@ -232,8 +241,8 @@ export function PlayerContextProvider(props) {
     const onVideoProgressEvent = (seconds) => {
         // When this fires during a transcode, it needs to be offset by the manual seek amount
         if (isTranscode) {
-            if (initialSeekSeconds && manualSeekSeconds) {
-                seconds += manualSeekSeconds
+            if (manualSeekSeconds == null) {
+                seconds += initialSeekSeconds
             }
             else {
                 seconds += manualSeekSeconds
@@ -404,7 +413,8 @@ export function PlayerContextProvider(props) {
     }
 
     React.useEffect(() => {
-        if (!videoLoaded) {
+        // If manualSeekSeconds is set, then a user triggered a video load by seeking during a transcode
+        if (!videoLoaded && !manualSeekSeconds) {
             if (localParams.audioTrack) {
                 setAudioTrackIndex(parseInt(localParams.audioTrack), 10)
             }
