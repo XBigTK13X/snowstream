@@ -3,7 +3,6 @@
     "version": "0.14.8",
     "main": "expo-router/entry",
     "dependencies": {
-        "@react-native-community/slider": "4.5.7",
         "axios": "1.9.0",
         "expo": "53.0.20",
         "expo-build-properties": "0.14.8",

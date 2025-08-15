@@ -41,23 +41,24 @@ import { PlayerContextProvider, usePlayerContext } from './player-context'
 
 import FillView from './comp/fill-view'
 
-import SnowImageButton from './comp/snow-image-button'
 import SnowDropdown from './comp/snow-dropdown'
 import SnowGrid from './comp/snow-grid'
 import SnowHeader from './comp/snow-header'
+import SnowImageButton from './comp/snow-image-button'
 import SnowInput from './comp/snow-input'
 import SnowLabel from './comp/snow-label'
 import SnowModal from './comp/snow-modal'
 import SnowPosterGrid from './comp/snow-poster-grid'
-import SnowToggle from './comp/snow-toggle'
-import SnowText from './comp/snow-text'
+import SnowRangeSlider from './comp/snow-range-slider'
 import SnowScreencapGrid from './comp/snow-screencap-grid'
-import SnowVideoPlayer from './comp/snow-video-player'
-import SnowVideoControls from './comp/snow-video-controls'
 import SnowTabs from './comp/snow-tabs'
-import SnowTrackSelector from './comp/snow-track-selector'
+import SnowText from './comp/snow-text'
 import SnowTextButton from './comp/snow-text-button'
+import SnowToggle from './comp/snow-toggle'
+import SnowTrackSelector from './comp/snow-track-selector'
 import SnowUpdateMediaButton from './comp/snow-update-media-button'
+import SnowVideoControls from './comp/snow-video-controls'
+import SnowVideoPlayer from './comp/snow-video-player'
 
 const isWeb = Platform.OS === 'web'
 const isAndroid = Platform.OS === 'android'
@@ -96,6 +97,7 @@ export default {
     SnowLabel,
     SnowModal,
     SnowPosterGrid,
+    SnowRangeSlider,
     SnowScreencapGrid,
     SnowTabs,
     SnowText,

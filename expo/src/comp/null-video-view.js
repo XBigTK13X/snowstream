@@ -1,5 +1,7 @@
 import React from 'react'
 import { TouchableOpacity, View } from 'react-native'
+import { usePlayerContext } from '../player-context'
+import FillView from './fill-view'
 import SnowText from './snow-text'
 import Style from '../snow-style'
 
@@ -60,16 +62,18 @@ export default function NullVideoView(props) {
         }
     }, [])
     return (
-        <View>
-            <TouchableOpacity
-                hasTVPreferredFocus={props.shouldFocus}
-                style={styles.touchable}
-                onPress={player.action.onPauseVideo}>
+        <TouchableOpacity
+            hasTVPreferredFocus={props.shouldFocus}
+            style={styles.touchable}
+            onPress={player.action.onPauseVideo}>
+            <View>
                 <SnowText>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</SnowText>
                 <SnowText>Here is a whole bunch of text.</SnowText>
                 <SnowText>It makes it easier to see how the transparency controls function.</SnowText>
+            </View>
+            <FillView>
                 <SnowText>{JSON.stringify(player.info, null, 4)}</SnowText>
-            </TouchableOpacity>
-        </View>
+            </FillView>
+        </TouchableOpacity>
     )
 }

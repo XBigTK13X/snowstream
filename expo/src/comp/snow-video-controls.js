@@ -1,5 +1,4 @@
 import React from 'react'
-import Slider from '@react-native-community/slider'
 import { View } from 'react-native'
 import { usePathname, useLocalSearchParams } from 'expo-router'
 
@@ -8,13 +7,14 @@ import { useAppContext } from '../app-context'
 import { usePlayerContext } from '../player-context'
 
 import FillView from './fill-view'
+import SnowGrid from './snow-grid'
 import SnowLabel from './snow-label'
-import SnowTrackSelector from './snow-track-selector'
+import SnowModal from './snow-modal'
+import SnowRangeSlider from './snow-range-slider'
+import SnowTabs from './snow-tabs'
 import SnowText from './snow-text';
 import SnowTextButton from './snow-text-button'
-import SnowGrid from './snow-grid'
-import SnowModal from './snow-modal'
-import SnowTabs from './snow-tabs'
+import SnowTrackSelector from './snow-track-selector'
 
 
 const styles = {
@@ -37,9 +37,6 @@ const styles = {
         backgroundColor: Style.color.transparentDark,
         zIndex: Style.depth.video.controls,
         elevation: Style.depth.video.controls
-    },
-    slider: {
-        height: 50
     }
 }
 
@@ -167,14 +164,9 @@ export default function SnowVideoControls(props) {
         }
         slider = (
             <View>
-                <Slider
-                    thumbTintColor={Style.color.core}
-                    minimumValue={0}
-                    maximumValue={100}
-                    value={player.info.progressPercent ?? 0}
-                    minimumTrackTintColor={Style.color.coreDark}
-                    maximumTrackTintColor={Style.color.outlineDark}
-                    onSlidingComplete={onPercentChange}
+                <SnowRangeSlider
+                    width={800}
+                    percent={player.info.progressPercent ?? 0}
                     onValueChange={onPercentChange}
                 />
                 <SnowText style={styles.progress}>{player.info.progressDisplay ?? ''} / {player.info.durationDisplay}</SnowText>

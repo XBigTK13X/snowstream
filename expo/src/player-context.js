@@ -89,7 +89,7 @@ export function PlayerContextProvider(props) {
     let durationDisplay = null
 
     if (durationSeconds > 0) {
-        progressPercent = 100 * (progressSeconds / durationSeconds)
+        progressPercent = progressSeconds / durationSeconds
         progressDisplay = util.secondsToTimestamp(progressSeconds)
         durationDisplay = util.secondsToTimestamp(durationSeconds)
     }
@@ -171,11 +171,15 @@ export function PlayerContextProvider(props) {
     }
 
     const onProgress = (nextProgressSeconds, source, nextProgressPercent) => {
+        console.log({ nextProgressSeconds, source, nextProgressPercent })
         if (!videoLoaded) {
             return
         }
         // Slider provides a percent, convert that to seconds and act accordingly
         if (source === 'manual-seek') {
+            if (nextProgressSeconds === null && nextProgressPercent !== null) {
+                nextProgressSeconds = nextProgressPercent * durationSeconds
+            }
             if (nextProgressSeconds < 0) {
                 nextProgressSeconds = 0
             }
@@ -184,10 +188,7 @@ export function PlayerContextProvider(props) {
                     nextProgressSeconds = durationSeconds
                 }
             }
-            if (!nextProgressSeconds) {
-                nextProgressSeconds = (nextProgressPercent / 100) * durationSeconds
-            }
-            if (nextProgressPercent >= 100) {
+            if (nextProgressPercent >= 1.0) {
                 setCompleteOnResume(true)
             } else {
                 setCompleteOnResume(false)
@@ -209,7 +210,7 @@ export function PlayerContextProvider(props) {
                             if (isWatched && !countedWatch) {
                                 setCountedWatch(true)
                                 if (props.increaseWatchCount) {
-                                    return props.increaseWatchCount(apiClient)
+                                    return props.increaseWatchCount(apiClient, localParams)
                                 }
                             }
                         })
