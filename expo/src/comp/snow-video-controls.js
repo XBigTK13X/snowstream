@@ -165,7 +165,7 @@ export default function SnowVideoControls(props) {
         slider = (
             <View>
                 <SnowRangeSlider
-                    width={800}
+                    width={750}
                     percent={player.info.progressPercent ?? 0}
                     onValueChange={onPercentChange}
                 />

@@ -1,14 +1,18 @@
 import React from "react";
-import { View, PanResponder, Pressable, useTVEventHandler, Platform } from "react-native";
+import {
+    PanResponder,
+    Platform,
+    Pressable,
+    TouchableOpacity,
+    useTVEventHandler,
+    View,
+} from "react-native";
 import Style from '../snow-style'
+import { useAppContext } from '../app-context'
 
 // This is a tricky component because props.value can be debounced by the parent
-// The numerical value the component tracks and reports is `percent`
+// The numerical value the component provides is `percent`
 // This is a float between 0.0 and 1.0, to ease multiplication
-// The parent provides a `min` and `max`
-// In addition to the parent receiving the percent, it also receives the value bounded by this `min` and `max`
-// Finally, a `step` is provided which dictates how much the value can change.
-// The third value provided to the parent is a `stepValue` which is the value rounded to the nearest step
 
 // The slider has two primary components, the thumb and the track.
 // The thumb's position within the track determines the `percent` used throughout the component
@@ -22,11 +26,11 @@ import Style from '../snow-style'
 // I then tried @react-native-assets/slider
 // It completely breaks in Android or Web, depending on the version of react I override it to use
 
-// After a handful of other libraries still had problems, I decided to just roll my own for snowstream
+// After a handful of other libraries still had problems, I rolled my own
 
 const borderRadius = 16
-const thumbSize = 80
-const trackSize = 40
+const thumbSize = 60
+const trackSize = 30
 
 const styles = {
     wrapper: {
@@ -69,18 +73,21 @@ const max = 1.0
 const step = 0.01
 
 export function SnowRangeSlider(props) {
+    const { setLockedElement } = useAppContext()
     const isDraggingRef = React.useRef(false)
-    const trackXRef = React.useRef(0)
-    const trackRef = React.useRef(null)
     const [percent, setPercent] = React.useState(0)
+    const percentRef = React.useRef(percent)
+    const [thumbFocus, setThumbFocus] = React.useState(false)
+    const thumbFocusRef = React.useRef(thumbFocus)
+    const elementRef = React.useRef(null)
+
 
     const thumbPositionToPercent = (positionX) => {
-        const trackX = trackXRef.current
         if (positionX < 0) {
             positionX = 0
         }
         if (positionX > props.width) {
-            positionX = props.width
+            positionX = props.widthconst
         }
         let newPercent = positionX / props.width
         if (newPercent < 0) {
@@ -122,19 +129,24 @@ export function SnowRangeSlider(props) {
         }
     }, [props.percent])
 
-    const onTrackLayout = () => {
-        if (trackRef && trackRef.current) {
-            trackRef.current.measure((x, y, width, height, pageX, pageY) => {
-                trackXRef.current = pageX
-            })
-        }
-    }
+    React.useEffect(() => {
+        percentRef.current = percent
+    }, [percent])
+
+    React.useEffect(() => {
+        thumbFocusRef.current = thumbFocus
+    }, [thumbFocus])
 
     if (Platform.isTV) {
         const tvRemoteHandler = (remoteEvent) => {
-            if (isDraggingRef.current) {
-                if (remoteEvent.eventType === 'right') {
-                    let result = percent + step
+            console.log({ remoteEvent, thumbFocus: thumbFocusRef.current })
+            if (thumbFocusRef.current) {
+                const kind = remoteEvent.eventType
+                const action = remoteEvent.eventKeyAction
+                // action 0  = start, action 1 = end for longpresses
+                // Do a set interval
+                if (kind === 'right' || kind === 'longRight') {
+                    let result = percentRef.current + step
                     if (result < min) {
                         result = min
                     }
@@ -142,10 +154,10 @@ export function SnowRangeSlider(props) {
                         result = max
                     }
                     setPercent(result)
-                    //props.onValueChange(result)
+                    props.onValueChange(result)
                 }
-                else if (remoteEvent.eventType === 'left') {
-                    let result = percent - step
+                else if (kind === 'left' || kind === 'longLeft') {
+                    let result = percentRef.current - step
                     if (result < min) {
                         result = min
                     }
@@ -153,7 +165,11 @@ export function SnowRangeSlider(props) {
                         result = max
                     }
                     setPercent(result)
-                    //props.onValueChange(result)
+                    props.onValueChange(result)
+                }
+                else if (kind === 'down') {
+                    setThumbFocus(false)
+                    setLockedElement(null)
                 }
             }
         };
@@ -176,19 +192,37 @@ export function SnowRangeSlider(props) {
         }
     ]
 
-    const thumbStyle = [
+    let thumbStyle = [
         styles.thumb,
         {
             left: thumbX - styles.thumb.width / 2
         }
     ]
+    if (thumbFocus) {
+        thumbStyle.push({
+            backgroundColor: 'white'
+        })
+    }
+
+    const focusThumb = () => {
+        setLockedElement(elementRef.current)
+        setThumbFocus(true)
+    }
+
+    console.log({ thumbFocus })
 
     return (
         <View style={styles.wrapper}>
-            <View {...panRef.current.panHandlers} style={trackWrapperStyle} onLayout={onTrackLayout} >
-                <View ref={trackRef} style={leftTrackStyle} />
+            <View {...panRef.current.panHandlers} style={trackWrapperStyle}>
+                <View style={leftTrackStyle} />
                 <View style={styles.rightTrack} />
-                <View style={thumbStyle} />
+                <Pressable
+                    hasTVPreferredFocus={thumbFocus}
+                    ref={elementRef}
+                    autoFocus={thumbFocus}
+                    onFocus={focusThumb}
+                    focusable={true}
+                    style={thumbStyle} />
             </View>
         </View>
     );

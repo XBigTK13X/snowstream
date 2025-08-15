@@ -86,7 +86,7 @@ export default function MpvVideoView(props) {
             style={styles.wrapper}>
             <TouchableOpacity
                 transparent
-                hasTVPreferredFocus={player.info.shouldFocus}
+                hasTVPreferredFocus={!player.info.controlVisible}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
                 <Libmpv.LibmpvVideo

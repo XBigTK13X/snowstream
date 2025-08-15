@@ -28,8 +28,13 @@ function SafeAreaView(props) {
             </C.View>
         )
     }
+    const { lockedElement } = C.useAppContext()
+    console.log({ lockedElement })
     return (
-        <C.TVFocusGuideView style={styles.safeArea}>
+        <C.TVFocusGuideView
+            autoFocus
+            destinations={lockedElement ? [C.findNodeHandle(lockedElement)] : []}
+            style={styles.safeArea}>
             {props.children}
         </C.TVFocusGuideView>
     )
@@ -73,13 +78,13 @@ export default function RootLayout() {
         SystemBars.setHidden(true)
     }
     return (
-        <SafeAreaView>
-            <C.AppContextProvider>
+        <C.AppContextProvider>
+            <SafeAreaView>
                 <C.FillView scroll style={styles.page}>
                     <Header />
                     <C.Slot />
                 </C.FillView>
-            </C.AppContextProvider>
-        </SafeAreaView>
+            </SafeAreaView>
+        </C.AppContextProvider>
     )
 }

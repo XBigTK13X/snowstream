@@ -57,23 +57,7 @@ const getStoredValue = (key) => {
     return value
 }
 
-const AppContext = React.createContext({
-    config: null,
-    routes: null,
-    session: null,
-    isLoading: false,
-    apiClient: null,
-    isAdmin: false,
-    displayName: null,
-    message: null,
-    setMessageDisplay: (message) => null,
-    signIn: () => null,
-    signOut: () => null,
-    useStorageStage: () => null,
-    setWebApiUrl: () => null,
-    clientOptions: null,
-    changeClientOptions: () => null
-});
+const AppContext = React.createContext({});
 
 export function useAppContext() {
     const value = React.useContext(AppContext);
@@ -93,6 +77,7 @@ export function AppContextProvider(props) {
     const [displayName, setDisplayName] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [clientOptions, setClientOptions] = React.useState(null)
+    const [lockedElement, setLockedElement] = React.useState(null)
 
     React.useEffect(() => {
         if (!apiClient) {
@@ -153,6 +138,7 @@ export function AppContextProvider(props) {
     }
 
     const login = (username, password) => {
+        AppContextProvider
         return new Promise(resolve => {
             if (!apiClient) {
                 return resolve({ loading: true })
@@ -171,6 +157,7 @@ export function AppContextProvider(props) {
                         setIsAdmin(loginResponse.isAdmin)
                         setStoredValue('displayName', loginResponse.displayName)
                             .then(() => {
+                                AppContextProvider
                                 return setStoredValue('session', loginResponse.authToken);
                             }).then(() => {
                                 return setStoredValue('isAdmin', loginResponse.isAdmin)
@@ -258,7 +245,9 @@ export function AppContextProvider(props) {
         signOut: logout,
         setWebApiUrl,
         clientOptions,
-        changeClientOptions
+        changeClientOptions,
+        lockedElement,
+        setLockedElement
     }
 
     return (

@@ -8,8 +8,6 @@ const missingPosterImage = require('../image/asset/missing-poster.jpeg')
 const missingScreencapImage = require('../image/asset/missing-screencap.jpeg')
 // TODO hiddenPoster / hiddenScreencap
 
-
-
 const styles = {
     wrapper: {
         height: Style.imageButton.wrapper.normal.height,

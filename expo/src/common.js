@@ -1,6 +1,19 @@
 import React from 'react'
 
 import {
+    AppState,
+    findNodeHandle,
+    Linking,
+    Platform,
+    Text,
+    TouchableOpacity,
+    TVEventHandler,
+    TVFocusGuideView,
+    useTVEventHandler,
+    View,
+} from 'react-native'
+
+import {
     Link,
     Redirect,
     Slot,
@@ -14,18 +27,6 @@ import {
 import { Image } from 'expo-image'
 
 import { useKeepAwake } from 'expo-keep-awake';
-
-import {
-    AppState,
-    Linking,
-    Platform,
-    Text,
-    TouchableOpacity,
-    TVEventHandler,
-    TVFocusGuideView,
-    useTVEventHandler,
-    View,
-} from 'react-native'
 
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -65,6 +66,7 @@ const isAndroid = Platform.OS === 'android'
 const isTV = Platform.isTV
 
 export default {
+    findNodeHandle,
     isAndroid,
     isTV,
     isWeb,
