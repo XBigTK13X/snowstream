@@ -1,7 +1,4 @@
 import axios from 'axios'
-import DeviceInfo from 'react-native-device-info';
-import { UAParser } from 'ua-parser-js'
-import { Platform } from 'react-native'
 import util from './util'
 
 const JOB_PROPERTIES = [

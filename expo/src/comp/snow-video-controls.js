@@ -1,5 +1,5 @@
 import React from 'react'
-import { Slider } from '@react-native-assets/slider'
+import Slider from '@react-native-community/slider'
 import { View } from 'react-native'
 import { usePathname, useLocalSearchParams } from 'expo-router'
 
@@ -161,22 +161,24 @@ export default function SnowVideoControls(props) {
         )
     }
     let slider = null
-    if (player.info.durationSeconds > 0 && player.info.progressPercent && player.info.progressDisplay) {
+    if (player.info.durationSeconds > 0) {
+        const onPercentChange = (percent) => {
+            console.log({ percent });
+            player.action.onProgressDebounced(null, 'manual-seek', percent);
+        }
         slider = (
             <View>
                 <Slider
-                    trackHeight={25}
-                    thumbSize={50}
                     thumbTintColor={Style.color.core}
                     minimumValue={0}
                     maximumValue={100}
-                    value={player.info.progressPercent}
+                    value={player.info.progressPercent ?? 0}
                     minimumTrackTintColor={Style.color.coreDark}
                     maximumTrackTintColor={Style.color.outlineDark}
-                    onSlidingComplete={(percent) => { player.action.onProgressDebounced(null, 'manual-seek', percent) }}
-                    onValueChange={(percent) => { player.action.onProgressDebounced(null, 'manual-seek', percent) }}
+                    onSlidingComplete={onPercentChange}
+                    onValueChange={onPercentChange}
                 />
-                <SnowText style={styles.progress}>{player.info.progressDisplay} / {player.info.durationDisplay}</SnowText>
+                <SnowText style={styles.progress}>{player.info.progressDisplay ?? ''} / {player.info.durationDisplay}</SnowText>
             </View>
         )
     }
