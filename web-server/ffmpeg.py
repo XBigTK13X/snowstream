@@ -39,10 +39,11 @@ def transcode_command(
     streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{client.transcode.container}'
     command =  f'ffmpeg'
 
+    command += f' -i "{input_url}"'
+
+    # -ss after the input is slower, but more compatible
     if seek_to_seconds:
         command += f' -ss {seek_to_seconds}'
-
-    command += f' -i "{input_url}"'
 
     command += video_encoder(client.transcode.video_codec)
 

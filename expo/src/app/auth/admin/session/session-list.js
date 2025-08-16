@@ -7,7 +7,7 @@ export default function SessionListPage() {
     C.React.useEffect(() => {
         if (!sessions) {
             apiClient.getSessionList().then((response) => {
-                setSessions(response.transcodes)
+                setSessions(response)
             })
         }
     })
@@ -18,7 +18,7 @@ export default function SessionListPage() {
             transcodes = (
                 <C.View>
                     <C.SnowLabel>Activate Transcodes</C.SnowLabel>
-                    <C.SnowGrid>
+                    <C.SnowGrid itemsPerRow={1}>
                         {sessions.transcodes.map((session, sessionIndex) => {
                             return (
                                 <C.SnowText key={sessionIndex}>{JSON.stringify(session)}</C.SnowText>
@@ -45,10 +45,8 @@ export default function SessionListPage() {
         }
         return (
             <C.View >
-                <C.SnowGrid>
-                    {transcodes}
-                    {updaters}
-                </C.SnowGrid>
+                {transcodes}
+                {updaters}
             </C.View>
         )
     }

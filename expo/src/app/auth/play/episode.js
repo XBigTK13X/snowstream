@@ -39,7 +39,8 @@ export default function PlayEpisodePage() {
                             return resolve({
                                 name: episode.name,
                                 url: transcodeSession.transcode_url,
-                                durationSeconds: videoFile.info.duration_seconds
+                                durationSeconds: videoFile.info.duration_seconds,
+                                transcodeId: transcodeSession.transcode_session_id
                             })
                         })
                 })

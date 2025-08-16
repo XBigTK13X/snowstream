@@ -66,7 +66,7 @@ export class ApiClient {
         this.login = this.login.bind(this)
 
         // An example of this is the job runner
-        this.createScopedJob = this.createScopedJob.bind(this)
+        this.closeAllTranscodeSessions = this.closeAllTranscodeSessions.bind(this)
         this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
         this.createJobDeleteMediaRecords = this.createJobDeleteMediaRecords.bind(this)
         this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
@@ -74,6 +74,7 @@ export class ApiClient {
         this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
         this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
         this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
+        this.createScopedJob = this.createScopedJob.bind(this)
         this.deleteAllCachedText = this.deleteAllCachedText.bind(this)
 
         // Another example is the watched status setters used by onLongPress event handlers
@@ -361,7 +362,7 @@ export class ApiClient {
     }
 
     createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex, deviceProfile, seekToSeconds) {
-        let requestUrl = `${this.baseURL}/transcode/session?video_file_id=${videoFileId}&device_profile=${deviceProfile}`
+        let requestUrl = `/transcode/session?video_file_id=${videoFileId}&device_profile=${deviceProfile}`
         if (audioTrackIndex !== -1) {
             requestUrl += `&audio_track_index=${audioTrackIndex}`
         }
@@ -375,11 +376,19 @@ export class ApiClient {
     }
 
     createStreamableTranscodeSession(streamableId, seekToSeconds) {
-        let requestUrl = `${this.baseURL}/transcode/session?streamable_id=${streamableId}&device_profile=${deviceProfile}`
+        let requestUrl = `/transcode/session?streamable_id=${streamableId}&device_profile=${deviceProfile}`
         if (seekToSeconds) {
             requestUrl += `&seek_to_seconds=${Math.floor(seekToSeconds)}`
         }
         return this.post(requestUrl)
+    }
+
+    closeTranscodeSession(transcodeId) {
+        return this.delete(`/transcode/session?transcode_session_id=${transcodeId}`)
+    }
+
+    closeAllTranscodeSessions(transcodeId) {
+        return this.delete(`/transcode/session`)
     }
 
     setShelfWatchStatus(shelfId, watched) {

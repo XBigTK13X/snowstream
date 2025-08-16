@@ -584,6 +584,14 @@ def auth_required(router):
             'transcodes': transcodes
         }
 
+    @router.delete("/transcode/session",tags=['Unauthed Video'])
+    def close_transcode_session(transcode_session_id:int=None):
+        if transcode_session_id == None:
+            transcode.cleanup()
+        else:
+            transcode.close(transcode_session_id=transcode_session_id)
+        return True
+
     @router.get("/playing/queue",tags=['User'])
     def get_playing_queue(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -701,11 +709,6 @@ def no_auth_required(router):
             transcode_session_id=transcode_session_id, segment_file=segment_file
         )
         return Response(segment, status_code=200, media_type="video/mp4")
-
-    @router.delete("/transcode/playlist",tags=['Unauthed Video'])
-    def delete_transcode_session(transcode_session_id:int,tags=['Unauthed']):
-        transcode.close(transcode_session_id=transcode_session_id)
-        return True
 
     async def webhook(kind:str, request:Request):
         headers = dict(request.headers)

@@ -38,7 +38,8 @@ export default function PlayMoviePage() {
                             return resolve({
                                 name: movie.name,
                                 url: transcodeSession.transcode_url,
-                                durationSeconds: videoFile.info.duration_seconds
+                                durationSeconds: videoFile.info.duration_seconds,
+                                transcodeId: transcodeSession.transcode_session_id
                             })
                         })
                 })

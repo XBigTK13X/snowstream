@@ -76,6 +76,7 @@ export default function ShelfEditPage() {
 
     const buttons = [
         { name: 'Clean File Records', apiCall: apiClient.createJobCleanFileRecords },
+        { name: 'Close Transcode Sessions', apiCall: apiClient.closeAllTranscodeSessions },
         { name: 'Delete Cached Text', apiCall: apiClient.deleteAllCachedText },
         { name: 'Delete Media Records', apiCall: apiClient.createJobDeleteMediaRecords },
         { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia },

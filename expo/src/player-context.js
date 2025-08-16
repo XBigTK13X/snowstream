@@ -35,6 +35,7 @@ export function PlayerContextProvider(props) {
     const [completeOnResume, setCompleteOnResume] = React.useState(false)
     // When seeking during a transcode, don't take action until resume is clicked
     const [transcodeOnResume, setTranscodeOnResume] = React.useState(false)
+    const [transcodeId, setTranscodeId] = React.useState(null)
 
     // Prevent the end of a video stream from triggering dozens of watch count updates
     const [countedWatch, setCountedWatch] = React.useState(false)
@@ -146,6 +147,7 @@ export function PlayerContextProvider(props) {
     }
 
     const onStopVideo = (goHome) => {
+        onCloseTranscodeSession()
         setControlsVisible(false)
         setIsPlaying(false)
         if (goHome) {
@@ -350,6 +352,12 @@ export function PlayerContextProvider(props) {
         }
     }
 
+    const onCloseTranscodeSession = () => {
+        if (transcodeId) {
+            apiClient.closeTranscodeSession(transcodeId)
+        }
+    }
+
     // The page received a response from the server for the specific kind of video to play
     const loadVideo = (response) => {
         if (response.url) {
@@ -363,6 +371,10 @@ export function PlayerContextProvider(props) {
         }
         if (response.tracks) {
             setMediaTracks(response.tracks)
+        }
+        if (response.transcodeId) {
+            onCloseTranscodeSession()
+            setTranscodeId(response.transcodeId)
         }
         setVideoLoaded(true)
     }
@@ -469,6 +481,7 @@ export function PlayerContextProvider(props) {
     }
 
     const action = {
+        onCloseTranscodeSession,
         onPlaybackComplete,
         onVideoError,
         onPauseVideo,

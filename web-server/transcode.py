@@ -133,6 +133,8 @@ class Transcode:
         try:
             if transcode_session_id:
                 transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
+                if not transcode_session:
+                    return True
             try:
                 if transcode_session.process_id in self.pid_is_ffmpeg and f'{transcode_session.stream_port}' in self.pid_is_ffmpeg[transcode_session.process_id]:
                     os.kill(transcode_session.process_id, signal.SIGTERM)
@@ -140,7 +142,8 @@ class Transcode:
                 log.error(f"{traceback.format_exc()}")
                 log.error(f"Unable to kill transcode session process {transcode_session.process_id}")
             try:
-                shutil.rmtree(transcode_session.transcode_directory,ignore_errors=True)
+                if transcode_session.transcode_directory:
+                    shutil.rmtree(transcode_session.transcode_directory,ignore_errors=True)
             except Exception as e:
                 log.error(f"{traceback.format_exc()}")
                 log.error(f"Unable to remove transcode session directory {transcode_session.transcode_directory}")
