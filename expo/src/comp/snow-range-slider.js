@@ -83,6 +83,7 @@ export function SnowRangeSlider(props) {
     const percentRef = React.useRef(percent)
     const [thumbFocus, setThumbFocus] = React.useState(false)
     const elementRef = React.useRef(null)
+    const [applyStepInterval, setApplyStepInterval] = React.useState(null)
 
     let onValueChange = props.onValueChange
     if (props.debounce) {
@@ -151,6 +152,29 @@ export function SnowRangeSlider(props) {
         }
     }
 
+    const applyStep = (amount) => {
+        let result = percentRef.current + step
+        if (result < min) {
+            result = min
+        }
+        if (result > max) {
+            result = max
+        }
+        percentRef.current = result
+        setPercent(result)
+        props.onValueChange(result)
+    }
+
+    const longPress = (amount, action) => {
+        if (action === 0) {
+            applyStep(amount)
+            setApplyStepInterval(setInterval(() => { applyStep(step) }, 100))
+        }
+        if (action === 1) {
+            clearInterval(applyStepInterval)
+        }
+    }
+
     if (Platform.isTV) {
         const tvRemoteHandler = (remoteEvent) => {
             if (lockedElement) {
@@ -158,27 +182,17 @@ export function SnowRangeSlider(props) {
                 const action = remoteEvent.eventKeyAction
                 // action 0  = start, action 1 = end for longpresses
                 // Do a set interval
-                if (kind === 'right' || kind === 'longRight') {
-                    let result = percentRef.current + step
-                    if (result < min) {
-                        result = min
-                    }
-                    if (result > max) {
-                        result = max
-                    }
-                    setPercent(result)
-                    props.onValueChange(result)
+                if (kind === 'right') {
+                    applyStep(step)
                 }
-                else if (kind === 'left' || kind === 'longLeft') {
-                    let result = percentRef.current - step
-                    if (result < min) {
-                        result = min
-                    }
-                    if (result > max) {
-                        result = max
-                    }
-                    setPercent(result)
-                    props.onValueChange(result)
+                else if (kind === 'longRight') {
+                    longPress(step, action)
+                }
+                else if (kind === 'left') {
+                    applyStep(-step)
+                }
+                else if (kind === 'longLeft') {
+                    longPress(-step, action)
                 }
                 else if (kind === 'down') {
                     focusThumb(false)
