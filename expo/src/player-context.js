@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform, useTVEventHandler } from 'react-native';
 import { useLocalSearchParams, usePathname } from 'expo-router'
 import { useAppContext } from './app-context'
+import { useFocusContext } from './focus-context'
 import util from './util'
 
 const PlayerContext = React.createContext({});
@@ -16,6 +17,7 @@ export function usePlayerContext() {
 
 export function PlayerContextProvider(props) {
     const localParams = useLocalSearchParams()
+    const { focusIsLocked } = useFocusContext()
     const { apiClient, clientOptions, config, routes } = useAppContext()
     const pathname = usePathname()
 
@@ -170,7 +172,6 @@ export function PlayerContextProvider(props) {
     }
 
     const onProgress = (nextProgressSeconds, source, nextProgressPercent) => {
-        console.log({ nextProgressSeconds, source, nextProgressPercent })
         if (!videoLoaded) {
             return
         }
@@ -385,7 +386,7 @@ export function PlayerContextProvider(props) {
 
     if (Platform.isTV) {
         const tvRemoteHandler = (remoteEvent) => {
-            if (!controlsVisible && isReady) {
+            if (!controlsVisible && isReady && !focusIsLocked) {
                 if (initialSeekComplete || !initialSeekSeconds) {
                     if (remoteEvent.eventType === 'right') {
                         onProgress(progressSeconds + 90, 'manual-seek')

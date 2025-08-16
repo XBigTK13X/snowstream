@@ -37,7 +37,7 @@ import util from './util'
 import Style from './snow-style'
 
 import { AppContextProvider, useAppContext } from './app-context'
-
+import { FocusContextProvider, useFocusContext } from './focus-context'
 import { PlayerContextProvider, usePlayerContext } from './player-context'
 
 import FillView from './comp/fill-view'
@@ -73,6 +73,7 @@ export default {
     useAppContext,
     usePlayerContext,
     useDebouncedCallback,
+    useFocusContext,
     useKeepAwake,
     useLocalSearchParams,
     useNavigation,
@@ -83,6 +84,7 @@ export default {
     AppContextProvider,
     AppState,
     FillView,
+    FocusContextProvider,
     Image,
     Link,
     Linking,

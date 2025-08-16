@@ -2,11 +2,6 @@ import C from '../common'
 import { SystemBars } from "react-native-edge-to-edge";
 
 const styles = {
-    safeArea: {
-        padding: 30,
-        backgroundColor: C.Style.color.background,
-        flex: 1
-    },
     header: {
         width: '100%',
         height: 'auto'
@@ -18,26 +13,6 @@ const styles = {
     page: {
         flex: 1
     }
-}
-
-function SafeAreaView(props) {
-    if (C.isWeb) {
-        return (
-            <C.View style={styles.safeArea}>
-                {props.children}
-            </C.View>
-        )
-    }
-    const { lockedElement } = C.useAppContext()
-    console.log({ lockedElement })
-    return (
-        <C.TVFocusGuideView
-            autoFocus
-            destinations={lockedElement ? [C.findNodeHandle(lockedElement)] : []}
-            style={styles.safeArea}>
-            {props.children}
-        </C.TVFocusGuideView>
-    )
 }
 
 function Header() {
@@ -79,12 +54,12 @@ export default function RootLayout() {
     }
     return (
         <C.AppContextProvider>
-            <SafeAreaView>
+            <C.FocusContextProvider>
                 <C.FillView scroll style={styles.page}>
                     <Header />
                     <C.Slot />
                 </C.FillView>
-            </SafeAreaView>
+            </C.FocusContextProvider>
         </C.AppContextProvider>
     )
 }

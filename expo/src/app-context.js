@@ -77,7 +77,6 @@ export function AppContextProvider(props) {
     const [displayName, setDisplayName] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [clientOptions, setClientOptions] = React.useState(null)
-    const [lockedElement, setLockedElement] = React.useState(null)
 
     React.useEffect(() => {
         if (!apiClient) {
@@ -245,9 +244,7 @@ export function AppContextProvider(props) {
         signOut: logout,
         setWebApiUrl,
         clientOptions,
-        changeClientOptions,
-        lockedElement,
-        setLockedElement
+        changeClientOptions
     }
 
     return (

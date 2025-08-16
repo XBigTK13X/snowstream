@@ -6,10 +6,12 @@ import {
     TouchableOpacity,
     useTVEventHandler,
     View,
+    findNodeHandle
 } from "react-native";
 import Style from '../snow-style'
 import { useDebouncedCallback } from 'use-debounce'
 import { useAppContext } from '../app-context'
+import { useFocusContext } from '../focus-context'
 
 // This is a tricky component because props.value can be debounced by the parent
 // The numerical value the component provides is `percent`
@@ -74,12 +76,12 @@ const max = 1.0
 const step = 0.01
 
 export function SnowRangeSlider(props) {
-    const { setLockedElement, config } = useAppContext()
+    const { setLockedElement, lockedElement } = useFocusContext()
+    const { config } = useAppContext()
     const isDraggingRef = React.useRef(false)
     const [percent, setPercent] = React.useState(0)
     const percentRef = React.useRef(percent)
     const [thumbFocus, setThumbFocus] = React.useState(false)
-    const thumbFocusRef = React.useRef(thumbFocus)
     const elementRef = React.useRef(null)
 
     let onValueChange = props.onValueChange
@@ -138,14 +140,20 @@ export function SnowRangeSlider(props) {
         percentRef.current = percent
     }, [percent])
 
-    React.useEffect(() => {
-        thumbFocusRef.current = thumbFocus
-    }, [thumbFocus])
+    const focusThumb = (focus) => {
+        if (focus !== thumbFocus) {
+            if (focus) {
+                setLockedElement(findNodeHandle(elementRef.current))
+            } else {
+                setLockedElement(null)
+            }
+            setThumbFocus(focus)
+        }
+    }
 
     if (Platform.isTV) {
         const tvRemoteHandler = (remoteEvent) => {
-            console.log({ remoteEvent, thumbFocus: thumbFocusRef.current })
-            if (thumbFocusRef.current) {
+            if (lockedElement) {
                 const kind = remoteEvent.eventType
                 const action = remoteEvent.eventKeyAction
                 // action 0  = start, action 1 = end for longpresses
@@ -173,11 +181,10 @@ export function SnowRangeSlider(props) {
                     props.onValueChange(result)
                 }
                 else if (kind === 'down') {
-                    setThumbFocus(false)
-                    setLockedElement(null)
+                    focusThumb(false)
                 }
             }
-        };
+        }
         useTVEventHandler(tvRemoteHandler);
     }
 
@@ -209,23 +216,15 @@ export function SnowRangeSlider(props) {
         })
     }
 
-    const focusThumb = () => {
-        setLockedElement(elementRef.current)
-        setThumbFocus(true)
-    }
-
-    console.log({ thumbFocus })
-
     return (
         <View style={styles.wrapper}>
             <View {...panRef.current.panHandlers} style={trackWrapperStyle}>
                 <View style={leftTrackStyle} />
                 <View style={styles.rightTrack} />
                 <Pressable
-                    hasTVPreferredFocus={thumbFocus}
                     ref={elementRef}
-                    autoFocus={thumbFocus}
-                    onFocus={focusThumb}
+                    onPress={() => { focusThumb(true) }}
+                    onFocus={() => { focusThumb(true) }}
                     focusable={true}
                     style={thumbStyle} />
             </View>

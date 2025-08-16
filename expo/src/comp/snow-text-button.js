@@ -1,5 +1,6 @@
 import React from 'react'
 import { TouchableOpacity, Keyboard } from 'react-native';
+import { useFocusContext } from '../focus-context'
 import SnowText from './snow-text'
 import Style from '../snow-style'
 
@@ -11,7 +12,7 @@ const styles = {
         justifyContent: 'center', // Horizontally center each line
         alignItems: 'center', // Vertically center each line
         alignContent: 'center', // Multiline vertical center of parent
-        textAlign: 'center', // Ensure text objects are horitzontally centered
+        textAlign: 'center', // Ensure text objects are horizontally centered
         backgroundColor: Style.color.core,
         borderWidth: 5,
         borderColor: Style.color.core,
@@ -50,6 +51,7 @@ const styles = {
 }
 
 export function SnowTextButton(props) {
+    const { focusIsLocked } = useFocusContext()
     const [focused, setFocused] = React.useState(false)
     const touchRef = React.useRef(null)
 
@@ -106,21 +108,30 @@ export function SnowTextButton(props) {
         }
     }
 
-    const allowFocus = props.shouldFocus && !Keyboard.isVisible()
+    let allowFocus = props.shouldFocus && !Keyboard.isVisible()
+    if (focusIsLocked) {
+        allowFocus = false
+    }
+
+    const changeFocus = (focus) => {
+        if (!focusIsLocked) {
+            setFocused(focus)
+        }
+        else {
+            setFocused(false)
+        }
+    }
 
     return (
         <TouchableOpacity
             ref={touchRef}
             style={wrapperStyle}
             activeOpacity={1.0}
-
             onPress={onPressUnlessTyping}
             onLongPress={onLongPressUnlessTyping}
-
             hasTVPreferredFocus={allowFocus || focused}
-            autoFocus={allowFocus}
-            onFocus={() => { setFocused(true) }}
-            onBlur={() => { setFocused(false) }}
+            onFocus={() => { changeFocus(true) }}
+            onBlur={() => { changeFocus(false) }}
             disabled={props.disabled}>
             <SnowText style={textStyle}>{props.title}</SnowText>
         </TouchableOpacity>

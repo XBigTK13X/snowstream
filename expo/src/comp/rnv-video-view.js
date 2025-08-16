@@ -140,7 +140,7 @@ export default function RnvVideoView(props) {
             style={styles.wrapper}>
             <TouchableOpacity
                 transparent
-                hasTVPreferredFocus={!player.info.controlVisible}
+                hasTVPreferredFocus={!player.info.controlsVisible}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
                 <Video
