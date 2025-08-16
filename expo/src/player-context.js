@@ -1,7 +1,6 @@
 import React from 'react';
 import { Platform, useTVEventHandler } from 'react-native';
 import { useLocalSearchParams, usePathname } from 'expo-router'
-import { useDebouncedCallback } from 'use-debounce'
 import { useAppContext } from './app-context'
 import util from './util'
 
@@ -229,7 +228,7 @@ export function PlayerContextProvider(props) {
         return new Promise((resolve) => { resolve() })
     }
 
-    const onProgressDebounced = useDebouncedCallback(onProgress, config.debounceMilliseconds)
+
 
     const performInitialSeek = () => {
         if (!initialSeekComplete && initialSeekSeconds) {
@@ -473,7 +472,6 @@ export function PlayerContextProvider(props) {
         onVideoError,
         onPauseVideo,
         onProgress,
-        onProgressDebounced,
         onVideoReady,
         onResumeVideo,
         onSelectTrack,

@@ -160,13 +160,14 @@ export default function SnowVideoControls(props) {
     let slider = null
     if (player.info.durationSeconds > 0) {
         const onPercentChange = (percent) => {
-            player.action.onProgressDebounced(null, 'manual-seek', percent);
+            player.action.onProgress(null, 'manual-seek', percent);
         }
         slider = (
             <View>
                 <SnowRangeSlider
                     width={750}
                     percent={player.info.progressPercent ?? 0}
+                    debounce
                     onValueChange={onPercentChange}
                 />
                 <SnowText style={styles.progress}>{player.info.progressDisplay ?? ''} / {player.info.durationDisplay}</SnowText>

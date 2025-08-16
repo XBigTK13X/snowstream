@@ -8,6 +8,7 @@ import {
     View,
 } from "react-native";
 import Style from '../snow-style'
+import { useDebouncedCallback } from 'use-debounce'
 import { useAppContext } from '../app-context'
 
 // This is a tricky component because props.value can be debounced by the parent
@@ -73,7 +74,7 @@ const max = 1.0
 const step = 0.01
 
 export function SnowRangeSlider(props) {
-    const { setLockedElement } = useAppContext()
+    const { setLockedElement, config } = useAppContext()
     const isDraggingRef = React.useRef(false)
     const [percent, setPercent] = React.useState(0)
     const percentRef = React.useRef(percent)
@@ -81,6 +82,10 @@ export function SnowRangeSlider(props) {
     const thumbFocusRef = React.useRef(thumbFocus)
     const elementRef = React.useRef(null)
 
+    let onValueChange = props.onValueChange
+    if (props.debounce) {
+        onValueChange = useDebouncedCallback(props.onValueChange, config.debounceMilliseconds)
+    }
 
     const thumbPositionToPercent = (positionX) => {
         if (positionX < 0) {
@@ -97,7 +102,7 @@ export function SnowRangeSlider(props) {
             newPercent = 1
         }
         setPercent(newPercent)
-        props.onValueChange(newPercent);
+        onValueChange(newPercent)
     }
 
     const panRef = React.useRef(
