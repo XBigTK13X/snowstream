@@ -4,8 +4,8 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "0.14.8"
-        self.server_build_date = "August 10, 2025"
+        self.server_version = "0.15.0"
+        self.server_build_date = "August 16, 2025"
         self.server_build_dev_number = 1
         self.app_data_dir = '.snowstream/'
 
@@ -46,6 +46,8 @@ class Config:
         self.transcode_disconnect_seconds = 60
         self.transcode_port_range = "11910-11950"
         self.transcode_stream_host = '0.0.0.0'
+        self.transcode_max_rate = None
+        self.transcode_buffer_size = None
         self.watch_progress_unwatched_threshold = 0.05
         self.watch_progress_watched_threshold = 0.90
         self.web_api_url = "http://localhost:8000"

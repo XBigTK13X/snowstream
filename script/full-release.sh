@@ -1,5 +1,7 @@
 #! /bin/bash
 
+source script/variables.sh
+
 export NODE_ENV="production"
 
 MODE="all"

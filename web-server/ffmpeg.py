@@ -76,8 +76,10 @@ def transcode_command(
                 command += f"[v][0:s:0]overlay;"
     command += f"\" -map '{video_out}'"
 
-    # Cap the video output bitrate
-    command += f' -b:v 5M -maxrate 5M -bufsize 1M'
+    if config.transcode_max_rate and config.transcode_buffer_size:
+        # Cap the video output bitrate
+        # EX: tmr - 5M and tbr 3M
+        command += f' -b:v {config.transcode_max_rate} -maxrate {config.transcode_max_rate} -bufsize {config.transcode_buffer_size}'
 
     command += audio_encoder(client.transcode.audio_codec)
     if audio_track_index != None:
