@@ -1,5 +1,5 @@
 import React from 'react';
-import { findNodeHandle, TVFocusGuideView, Platform, View } from 'react-native'
+import { TVFocusGuideView, Platform, View } from 'react-native'
 import Style from './snow-style'
 
 const FocusContext = React.createContext({});
@@ -20,7 +20,7 @@ const styles = {
     }
 }
 
-function AppFocusView(props) {
+function AppView(props) {
     return (
         <View style={styles.safeArea}>
             {props.children}
@@ -42,11 +42,13 @@ function TvFocusView(props) {
 export function FocusContextProvider(props) {
     const [lockedElement, setLockedElement] = React.useState(null)
     const focusIsLocked = !!lockedElement
-    let FocusView = AppFocusView
-    if (Platform.isTV) {
+    const allowFocusing = Platform.isTV
+    let FocusView = AppView
+    if (allowFocusing) {
         FocusView = TvFocusView
     }
     const focusContext = {
+        allowFocusing,
         lockedElement,
         setLockedElement,
         focusIsLocked

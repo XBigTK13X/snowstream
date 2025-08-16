@@ -76,7 +76,7 @@ const max = 1.0
 const step = 0.01
 
 export function SnowRangeSlider(props) {
-    const { setLockedElement, lockedElement } = useFocusContext()
+    const { allowFocusing, setLockedElement, lockedElement } = useFocusContext()
     const { config } = useAppContext()
     const isDraggingRef = React.useRef(false)
     const [percent, setPercent] = React.useState(0)
@@ -95,7 +95,7 @@ export function SnowRangeSlider(props) {
             positionX = 0
         }
         if (positionX > props.width) {
-            positionX = props.widthconst
+            positionX = props.width
         }
         let newPercent = positionX / props.width
         if (newPercent < 0) {
@@ -142,13 +142,15 @@ export function SnowRangeSlider(props) {
     }, [percent])
 
     const focusThumb = (focus) => {
-        if (focus !== thumbFocus) {
-            if (focus) {
-                setLockedElement(findNodeHandle(elementRef.current))
-            } else {
-                setLockedElement(null)
+        if (allowFocusing) {
+            if (focus !== thumbFocus) {
+                if (focus) {
+                    setLockedElement(findNodeHandle(elementRef.current))
+                } else {
+                    setLockedElement(null)
+                }
+                setThumbFocus(focus)
             }
-            setThumbFocus(focus)
         }
     }
 
