@@ -1,8 +1,12 @@
 #! /bin/bash
 
-script/prod-build-web-client.sh
+source script/variables.sh
 
+# script/prod-build-web-client.sh
+
+set -e
 docker build -t $SNOWSTREAM_DOCKER_IMAGE .
+set +e
 
 version=`script/update-version.py read`
 

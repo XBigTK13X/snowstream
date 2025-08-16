@@ -13,7 +13,9 @@ fi
 if [ "$MODE" == "server" ] || [ "$MODE" == "all" ]; then
 
 echo "=-=- Building the container image -=-="
+set -e
 script/docker-build.sh push
+set +e
 
 echo "=-=- Running the latest version container on beast -=-="
 ssh access@beast.9914.us "bash -c \"cd /mnt/docker; ./on/snowstream.sh\""

@@ -46,6 +46,7 @@ class Config:
         self.transcode_disconnect_seconds = 60
         self.transcode_port_range = "11910-11950"
         self.transcode_stream_host = '0.0.0.0'
+        self.transcode_ffmpeg_host = '0.0.0.0'
         self.transcode_max_rate = None
         self.transcode_buffer_size = None
         self.watch_progress_unwatched_threshold = 0.05

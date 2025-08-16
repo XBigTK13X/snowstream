@@ -1,9 +1,18 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11
 
-RUN apt update; apt install -y postgresql postgresql-common \
+COPY docker/debian.sources /etc/apt/sources.list.d/debian.sources
+
+RUN apt update
+
+RUN apt install -y postgresql postgresql-common \
     rabbitmq-server postgresql-client \
     postgresql-contrib supervisor nginx gosu \
-    ffmpeg imagemagick mediainfo jc
+    ffmpeg imagemagick mediainfo jc \
+    intel-gpu-tools intel-media-va-driver-non-free vainfo
+
+RUN userdel Debian-exim
+
+RUN groupadd -g 107 render
 
 # https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(Native-GPU-Support)
 ENV NVIDIA_VISIBLE_DEVICES=all
