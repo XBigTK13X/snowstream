@@ -2,7 +2,7 @@ import os
 from log import log
 from db import db
 from message.handler.scan_shelf.shelf_scanner import ShelfScanner
-import nfo
+from media import nfo
 
 
 def parse_keepsake_info(file_path):

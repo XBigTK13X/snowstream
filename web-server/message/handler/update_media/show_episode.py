@@ -1,8 +1,7 @@
 from log import log
 from message.handler.update_media.media_updater import MediaUpdater
 import os
-import ffmpeg
-import magick
+import media.image
 import json
 from db import db
 
@@ -135,13 +134,13 @@ class ShowEpisode(MediaUpdater):
 
     def take_screencap(self,local_path:str):
         info = json.loads(self.show_episode.video_files[0].snowstream_info_json)
-        ffmpeg.extract_screencap(
+        media.image.extract_screencap(
             video_path=self.show_episode.video_files[0].local_path,
             duration_seconds=info['duration_seconds'],
             output_path=local_path
         )
         db.op.update_job(job_id=self.job_id, message=f"Took a screencap from {self.show_episode.name} to {local_path}")
-        magick.create_thumbnail(local_path=local_path,force_overwrite=True)
+        media.image.create_thumbnail(local_path=local_path,force_overwrite=True)
 
     # Legacy images are
     # episode-name.jpg

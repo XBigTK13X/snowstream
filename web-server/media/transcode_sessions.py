@@ -1,6 +1,6 @@
 from log import log
 import atexit
-import ffmpeg
+import media.transcode_cli
 import json
 import os
 import shutil
@@ -13,7 +13,7 @@ from db import db
 from database import db_models as dm
 from settings import config
 
-class Transcode:
+class TranscodeSessions:
     def __init__(self):
         parts = config.transcode_port_range.split('-')
         self.port_start = int(parts[0])
@@ -67,7 +67,7 @@ class Transcode:
             streamable_id=streamable_id,
             stream_port=stream_port
         )
-        command,streaming_url = ffmpeg.transcode_command(
+        command,streaming_url = media.transcode_cli.transcode_command(
             device_profile=device_profile,
             input_url=input_path,
             snowstream_info=snowstream_info,
@@ -160,4 +160,4 @@ class Transcode:
             for transcode_session in transcode_sessions:
                 self.close(transcode_session=transcode_session)
 
-transcode = Transcode()
+transcode_sessions = TranscodeSessions()

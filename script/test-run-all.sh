@@ -2,4 +2,4 @@
 
 cd web-server
 
-python -m pytest -p no:warnings --verbose -s test/*
+python -m pytest -p no:warnings --verbose -s bin/test/*

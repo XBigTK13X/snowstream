@@ -1,6 +1,6 @@
 import re
 import os
-import nfo
+from media import nfo
 from enum import Flag, auto
 from log import log
 from pathlib import Path

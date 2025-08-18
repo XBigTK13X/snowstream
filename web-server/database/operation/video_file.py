@@ -1,5 +1,5 @@
 from database.operation.db_internal import dbi
-import ffmpeg
+import media.video
 import database.operation.shelf as db_shelf
 
 def create_video_file(
@@ -44,7 +44,7 @@ def get_video_file_by_path(local_path: str):
 def get_or_create_video_file(shelf_id: int, kind: str, local_path: str):
     video_file = get_video_file_by_path(local_path=local_path)
     if not video_file:
-        info = ffmpeg.path_to_info_json(media_path=local_path)
+        info = media.video.path_to_info_json(media_path=local_path)
         return create_video_file(
             shelf_id=shelf_id,
             kind=kind,

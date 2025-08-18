@@ -361,6 +361,10 @@ export class ApiClient {
         return this.delete(`/tag/${tagId}`)
     }
 
+    getDeviceProfileList() {
+        return this.get('/device/profile/list')
+    }
+
     createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex, deviceProfile, seekToSeconds) {
         let requestUrl = `/transcode/session?video_file_id=${videoFileId}&device_profile=${deviceProfile}`
         if (audioTrackIndex !== -1) {

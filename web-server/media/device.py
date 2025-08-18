@@ -44,6 +44,17 @@ class DeviceProfile:
 
 device_list = [
     DeviceProfile({
+        'name': 'CCwGTV4K',
+        'hdr': 'hard',
+        'hdr10': 'hard',
+        'hdr10Plus': 'hard',
+        'hdrHlg': 'hard',
+        'dolbyVision': 'hard',
+        'h265_eight': 'hard',
+        'h265_ten': 'hard',
+        'h264_eight': 'hard',
+    }),
+    DeviceProfile({
         'name': 'NVIDIA Shield',
         'hdr': 'hard',
         'hdr_ten': 'hard',
@@ -71,17 +82,6 @@ device_list = [
         'av1': 'hard'
     }),
     DeviceProfile({
-        'name': 'CCwGTV4K',
-        'hdr': 'hard',
-        'hdr10': 'hard',
-        'hdr10Plus': 'hard',
-        'hdrHlg': 'hard',
-        'dolbyVision': 'hard',
-        'h265_eight': 'hard',
-        'h265_ten': 'hard',
-        'h264_eight': 'hard',
-    }),
-    DeviceProfile({
         'name': 'Web Browser',
         'h264_eight': 'hard',
         'h264_ten': 'hard',
@@ -92,6 +92,13 @@ device_list = [
         'transcode_container': 'webm',
         'transcode_video_codec': 'vp9',
         'transcode_audio_codec': 'opus'
+    }),
+    DeviceProfile({
+        'name': 'Fire Max 11',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'h265Eight': 'hard',
+        'h265Ten': 'hard',
     })
 ]
 

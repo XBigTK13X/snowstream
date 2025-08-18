@@ -11,7 +11,7 @@ IMAGE_KINDS = {
 SPONGEBOB = 75886
 
 # To run use
-# `python -m bin.tvdbapi`
+# `python -m bin.dev.tvdbapi`
 
 tvdb_client = tvdb_v4_official.TVDB(config.thetvdb_api_key)
 

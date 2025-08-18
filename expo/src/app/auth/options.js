@@ -1,7 +1,7 @@
 import C from '../../common'
 
 export default function OptionsPage() {
-    const { clientOptions, changeClientOptions } = C.useAppContext()
+    const { apiClient, clientOptions, changeClientOptions } = C.useAppContext()
 
     const resolutions = ['4K Ultra HD', '1080 Full HD']
     let storedResolution = 0
@@ -14,21 +14,9 @@ export default function OptionsPage() {
     const [resolutionWidth, setResolutionWidth] = C.React.useState(clientOptions ? clientOptions.resolutionWidth : '')
     const [resolutionHeight, setResolutionHeight] = C.React.useState(clientOptions ? clientOptions.resolutionHeight : '')
 
-    const deviceProfiles = [
-        'CCwGTV4K',
-        'Google Streamer',
-        'NVIDIA Shield',
-        'Web Browser'
-    ]
-    let storedDeviceProfile = 0
-    if (clientOptions) {
-        if (clientOptions.deviceProfile && clientOptions.deviceProfile !== deviceProfiles[0]) {
-            storedDeviceProfile = deviceProfiles.indexOf(clientOptions.deviceProfile)
-        }
-    }
-
-    const [deviceProfileIndex, setDeviceProfileIndex] = C.React.useState(storedDeviceProfile)
-    const [deviceProfile, setDeviceProfile] = C.React.useState(clientOptions ? clientOptions.deviceProfile : '')
+    const [deviceProfiles, setDeviceProfiles] = C.React.useState(null)
+    const [deviceProfileIndex, setDeviceProfileIndex] = C.React.useState(null)
+    const [deviceProfile, setDeviceProfile] = C.React.useState('')
 
     const [deviceId, setDeviceId] = C.React.useState(clientOptions ? clientOptions.deviceId : '')
 
@@ -38,6 +26,22 @@ export default function OptionsPage() {
     const [alwaysTranscode, setAlwaysTranscode] = C.React.useState(clientOptions ? clientOptions.alwaysTranscode : '')
     const [alwaysUseExoPlayer, setAlwaysUseExoPlayer] = C.React.useState(clientOptions ? clientOptions.alwaysUseExoPlayer : '')
 
+    C.React.useEffect(() => {
+        if (!deviceProfiles) {
+            apiClient.getDeviceProfileList().then((response) => {
+                const profiles = response.devices
+                let storedDeviceProfile = 0
+                if (clientOptions) {
+                    if (clientOptions.deviceProfile && clientOptions.deviceProfile !== profiles[0]) {
+                        storedDeviceProfile = profiles.indexOf(clientOptions.deviceProfile)
+                    }
+                }
+                setDeviceProfiles(profiles)
+                setDeviceProfileIndex(storedDeviceProfile)
+                setDeviceProfile(clientOptions ? clientOptions.deviceProfile : '')
+            })
+        }
+    })
 
     const chooseResolution = (selection) => {
         if (selection === 0) {
@@ -69,6 +73,10 @@ export default function OptionsPage() {
 
     const chooseAlwaysUseExoPlayer = (selection) => {
         setAlwaysUseExoPlayer(selection === 0 ? false : true)
+    }
+
+    if (!deviceProfiles) {
+        return null
     }
 
     return (

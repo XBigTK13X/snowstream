@@ -4,7 +4,7 @@ from themoviedb import TMDb
 from message.handler.update_media.provider.themoviedb_provider import ThemoviedbProvider
 
 # To run use
-# `python -m bin.tmdbapi`
+# `python -m bin.dev.tmdbapi`
 
 def test_search_raw():
     tmdb_client = TMDb(key=config.themoviedb_api_key, language="EN", region="US")

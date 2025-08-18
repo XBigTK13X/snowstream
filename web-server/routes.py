@@ -12,11 +12,11 @@ from auth import get_current_user
 from db import db
 from log import log
 from settings import config
-from transcode import transcode
+from media.transcode_sessions import transcode_sessions
 from typing import Annotated
 import api_models as am
 import message.write
-import ffmpeg
+import media
 
 def register(router):
     router = no_auth_required(router)
@@ -86,7 +86,7 @@ def auth_required(router):
     ):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
         if streamable.stream_source.kind == 'TubeArchivist':
-            info = ffmpeg.get_snowstream_info(streamable.url)
+            info = media.video.get_snowstream_info(streamable.url)
             streamable.duration_seconds = info['snowstream_info']['duration_seconds']
         return streamable
 
@@ -554,6 +554,12 @@ def auth_required(router):
     ):
         return db.op.get_continue_watching_list(ticket=auth_user.ticket)
 
+    @router.get("/device/profile/list",tags=['User'])
+    def get_device_profile_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+    ):
+        return {'devices':[xx.name for xx in media.device.device_list]}
+
     @router.post("/transcode/session",tags=['User'])
     def create_transcode_session(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -564,7 +570,7 @@ def auth_required(router):
         device_profile:str=None,
         seek_to_seconds:int=None
     ):
-        transcode_session = transcode.create_session(
+        transcode_session = transcode_sessions.create_session(
             cduid=auth_user.cduid,
             device_profile=device_profile,
             video_file_id=video_file_id,
@@ -587,9 +593,9 @@ def auth_required(router):
     @router.delete("/transcode/session",tags=['Unauthed Video'])
     def close_transcode_session(transcode_session_id:int=None):
         if transcode_session_id == None:
-            transcode.cleanup()
+            transcode_sessions.cleanup()
         else:
-            transcode.close(transcode_session_id=transcode_session_id)
+            transcode_sessions.close(transcode_session_id=transcode_session_id)
         return True
 
     @router.get("/playing/queue",tags=['User'])
@@ -699,13 +705,13 @@ def no_auth_required(router):
     @router.get("/transcode/playlist.m3u8",tags=['Unauthed Video'])
     @router.head("/transcode/playlist.m3u8",tags=['Unauthed Video'])
     def get_transcode_playlist(transcode_session_id:int):
-        playlist_content = transcode.get_playlist_content(transcode_session_id=transcode_session_id)
+        playlist_content = transcode_sessions.get_playlist_content(transcode_session_id=transcode_session_id)
         return Response(playlist_content, status_code=200, media_type="video/mp4")
 
     @router.get("/transcode/segment",tags=['Unauthed Video'])
     @router.head("/transcode/segment",tags=['Unauthed Video'])
     def get_transcode_file_segment(transcode_session_id: int, segment_file: str):
-        segment = transcode.get_stream_segment(
+        segment = transcode_sessions.get_stream_segment(
             transcode_session_id=transcode_session_id, segment_file=segment_file
         )
         return Response(segment, status_code=200, media_type="video/mp4")

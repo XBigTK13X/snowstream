@@ -12,9 +12,9 @@ import routes
 from settings import config
 config.validate(log)
 
-from transcode import transcode
+from media.transcode_sessions import transcode_sessions
 
-transcode.register_cleanup()
+transcode_sessions.register_cleanup()
 
 # This should only happen inside a deployed docker container
 if os.environ.get("SNOWSTREAM_WEB_API_URL"):

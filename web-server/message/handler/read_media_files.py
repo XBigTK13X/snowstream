@@ -1,10 +1,8 @@
 from log import log
 from db import db
 import api_models as am
-import nfo
-import ffmpeg
 import os
-import magick
+import media
 
 def prep(files,movie=None,show=None,show_season=None,show_episode=None):
     results = []
@@ -193,7 +191,7 @@ def handle(scope):
                 db.op.update_job(job_id=scope.job_id, message=f"WARNING An image_file db entry exists for a path that does not exist\n\t[{image_file.local_path}]")
                 continue
             try:
-                magick.create_thumbnail(local_path=image_file.local_path,force_overwrite=(not scope.skip_existing))
+                media.image.create_thumbnail(local_path=image_file.local_path,force_overwrite=(not scope.skip_existing))
             except Exception as e:
                 db.op.update_job(job_id=scope.job_id,message=f"An error occurred while processing image_file [{image_file.local_path}]")
                 import traceback
@@ -214,7 +212,7 @@ def handle(scope):
             try:
                 if scope.skip_existing and video_file.ffprobe_raw_json and video_file.mediainfo_raw_json:
                     # Regenerate the snowstream info without running the file through mediainfo + ffprobe
-                    info = ffmpeg.path_to_info_json(
+                    info = media.video.path_to_info_json(
                         media_path=video_file.local_path,
                         ffprobe_json=video_file.ffprobe_raw_json,
                         mediainfo_json=video_file.mediainfo_raw_json
@@ -225,7 +223,7 @@ def handle(scope):
                     )
                 else:
                     # First read fresh mediainfo + ffprobe from file, then regenerate the snowstream info
-                    info = ffmpeg.path_to_info_json(media_path=video_file.local_path)
+                    info = media.video.path_to_info_json(media_path=video_file.local_path)
                     db.op.update_video_file_info(
                         video_file_id=video_file.id,
                         snowstream_info_json=info['snowstream_info'],

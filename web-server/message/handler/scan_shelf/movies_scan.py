@@ -4,7 +4,7 @@ from log import log
 from pathlib import Path
 from db import db
 from message.handler.scan_shelf.shelf_scanner import ShelfScanner
-import nfo
+from media import nfo
 
 MOVIE_ASSETS_REGEX = re.compile(
     r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)"
