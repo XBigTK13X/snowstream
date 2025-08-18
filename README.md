@@ -55,8 +55,6 @@ During first time setup, you may need to create a virtualenv under `web-server` 
 
 # Creating an Android TV APK
 
-Swap the `settings.js` to use the prod `webApiUrl`.
-
 Update any needed settings in beast's docker script.
 
 For a single APK test,

@@ -42,7 +42,7 @@ class Config:
         self.thetvdb_api_key = None
         self.thumbnail_dimensions = "340x500"
         self.transcode_create_max_wait_seconds = 10
-        self.transcode_dialect = 'nvidia'
+        self.transcode_dialect = 'quicksync'
         self.transcode_disconnect_seconds = 60
         self.transcode_port_range = "11910-11950"
         self.transcode_stream_host = '0.0.0.0'

@@ -1,15 +1,15 @@
 import message.handler.scan_shelf.movies_scan as movies
-
+from log import log
 def test_copy_paste_regex():
-    print('')
-    print('Movie Asset')
-    print(movies.MOVIE_ASSETS_REGEX.pattern)
-    print('Movie Video File')
-    print(movies.MOVIE_VIDEO_FILE_REGEX.pattern)
-    print('Movie Extra Asset')
-    print(movies.MOVIE_EXTRAS_ASSETS_REGEX.pattern)
-    print('Movie Extra Video File')
-    print(movies.MOVIE_EXTRAS_VIDEO_FILE_REGEX.pattern)
+    log.info('')
+    log.info('Movie Asset')
+    log.info(movies.MOVIE_ASSETS_REGEX.pattern)
+    log.info('Movie Video File')
+    log.info(movies.MOVIE_VIDEO_FILE_REGEX.pattern)
+    log.info('Movie Extra Asset')
+    log.info(movies.MOVIE_EXTRAS_ASSETS_REGEX.pattern)
+    log.info('Movie Extra Video File')
+    log.info(movies.MOVIE_EXTRAS_VIDEO_FILE_REGEX.pattern)
     assert True
 
 def test_movie():

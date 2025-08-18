@@ -5,6 +5,12 @@ import util
 import datetime
 import device
 
+# Working qsv
+# ffmpeg -i "$VIDEO_PATH" -c:v hevc_qsv -f flv -listen 1 "http://0.0.0.0:11910/stream.flv"
+
+# Working vaapi
+# ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format vaapi -i "$VIDEO_PATH" -c:v hevc_vaapi -g 60 -b:v 15M -profile:v main10 -pix_fmt p010le -color_primaries bt2020 -color_trc smpte2084 -colorspace bt2020nc -f flv -listen 1 "http://0.0.0.0:11910/stream.flv"
+
 def video_encoder(codec):
     if codec == 'h264':
         if config.transcode_dialect == 'nvidia':

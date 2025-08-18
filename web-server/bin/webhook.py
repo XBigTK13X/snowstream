@@ -1,3 +1,4 @@
+from log import log
 import requests
 
 web_api_url = 'http://192.168.101.10:8000/api'
@@ -7,8 +8,8 @@ auth_headers = {
 }
 
 def test_sonarr_hook_with_id():
-    print("Test the sonarr hook")
-    print(requests.post(
+    log.info("Test the sonarr hook")
+    log.info(requests.post(
         f'{web_api_url}/hook/sonarr',
         headers=auth_headers,
         json={
@@ -20,8 +21,8 @@ def test_sonarr_hook_with_id():
     ).text)
 
 def test_sonarr_hook_no_id():
-    print("Test the sonarr hook")
-    print(requests.post(
+    log.info("Test the sonarr hook")
+    log.info(requests.post(
         f'{web_api_url}/hook/sonarr',
         headers=auth_headers,
         json={
@@ -32,8 +33,8 @@ def test_sonarr_hook_no_id():
     ).text)
 
 def test_radarr_hook_with_id():
-    print("Test the radarr hook")
-    print(requests.post(
+    log.info("Test the radarr hook")
+    log.info(requests.post(
         f'{web_api_url}/hook/radarr',
         headers=auth_headers,
         json={
@@ -45,8 +46,8 @@ def test_radarr_hook_with_id():
     ).text)
 
 def test_radarr_hook_no_id():
-    print("Test the radarr hook")
-    print(requests.post(
+    log.info("Test the radarr hook")
+    log.info(requests.post(
         f'{web_api_url}/hook/radarr',
         headers=auth_headers,
         json={

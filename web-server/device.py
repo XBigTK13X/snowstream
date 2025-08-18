@@ -98,3 +98,5 @@ device_list = [
 device_lookup = {}
 for device in device_list:
     device_lookup[device.name] = device
+    if device.name == ' CCwGTV4K':
+        device_lookup['default'] = device

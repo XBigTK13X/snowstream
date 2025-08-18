@@ -1,13 +1,14 @@
 import message.handler.scan_shelf.shows_scan as shows
+from log import log
 
 def test_copy_paste_regex():
-    print('')
-    print('Show')
-    print(shows.SHOW_REGEX.pattern)
-    print('Season')
-    print(shows.SHOW_SEASON_REGEX.pattern)
-    print('Episode')
-    print(shows.SHOW_EPISODE_REGEX.pattern)
+    log.info('')
+    log.info('Show')
+    log.info(shows.SHOW_REGEX.pattern)
+    log.info('Season')
+    log.info(shows.SHOW_SEASON_REGEX.pattern)
+    log.info('Episode')
+    log.info(shows.SHOW_EPISODE_REGEX.pattern)
     assert True
 
 def get_show_info(file_path:str):
