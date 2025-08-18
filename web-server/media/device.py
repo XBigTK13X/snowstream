@@ -13,7 +13,7 @@ class DeviceProfile:
 
         self.transcode = Stub()
         self.transcode.container = config.get('transcode_container','flv')
-        self.transcode.video_codec = config.get('transcode_video_codec', 'h264')
+        self.transcode.video_codec = config.get('transcode_video_codec', 'h265')
         self.transcode.audio_codec = config.get('transcode_audio_codec', 'aac')
 
         self.video.h264 = Stub()
@@ -102,8 +102,7 @@ device_list = [
     })
 ]
 
+default_device = 'CCwGTV4K'
 device_lookup = {}
 for device in device_list:
     device_lookup[device.name] = device
-    if device.name == ' CCwGTV4K':
-        device_lookup['default'] = device
