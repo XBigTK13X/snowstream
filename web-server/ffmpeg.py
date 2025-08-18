@@ -11,6 +11,8 @@ def video_encoder(codec):
             return f' -c:v h264_nvenc -cq 25'
         elif config.transcode_dialect == 'quicksync':
             return f' -c:v h264_qsv -global_quality 25 -look_ahead 1'
+        elif config.transcode_dialect == 'vaapi':
+            return f' '
     elif codec == 'vp9':
         if config.transcode_dialect == 'quicksync':
             return f' -c:v vp9_qsv'

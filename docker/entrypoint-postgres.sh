@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeo pipefail
 
-PATH=/usr/lib/postgresql/15/bin:$PATH
+PATH=/usr/lib/postgresql/17/bin:$PATH
 
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'

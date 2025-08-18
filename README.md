@@ -75,3 +75,23 @@ Otherwise use,
 # Escape the dreaded Android emulator pinch to zoom
 
 Double click the magnifying glass twice on the external controls.
+
+# Upgrade the container postgres version
+
+1. `ssh` into beast
+2. Make sure the snowstream container is running the previous postgres version
+3. Generate a full backup
+    - `docker exec snowstream pg_dumpall -U snowstream > volume/snowstream/pg-upgrade/15-to-17.sql`
+4. Kill the snowstream container
+    - `docker rm -f snowstream`
+5. Backup the previous postgres dir
+    - `mv volume/snowstream/postgresql volume/snowstream/bup-postgres=15`
+6. Switch snowstream to the new container version, and run it
+7. After the new empty postgres db is ready, ensure the snowstream bootstrapping is deleted
+    - `docker exec -it snowstream bash`
+    - `psql -U snowstream`
+    - `DO $$ DECLARE r record; BEGIN FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname='public') LOOP EXECUTE 'DROP TABLE ' || quote_ident(r.tablename) || ' CASCADE'; END LOOP; END $$;`
+    - `exit`
+8. Restore the backup into the now empty db
+    - `cat volume/snowstream/pg-upgrade/15-to-17.sql | docker exec -i snowstream psql -U snowstream`
+
