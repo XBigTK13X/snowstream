@@ -5,6 +5,7 @@ import media.transcode_dialect.default
 import media.transcode_dialect.nvidia
 import media.transcode_dialect.quicksync
 import media.transcode_dialect.vaapi
+import media.filter_kind
 
 # Working qsv
 # ffmpeg -i "$VIDEO_PATH" -c:v hevc_qsv -f flv -listen 1 "http://0.0.0.0:11910/stream.flv"
@@ -46,63 +47,68 @@ def build_command(
     if seek_to_seconds:
         command += f' -ss {seek_to_seconds}'
 
-    video_out = '[0:v:0]'
+    # Determine filters that could be before or after `-c:v X`
     video_filter_kind = None
     if snowstream_info and 'tracks' in snowstream_info and 'video' in snowstream_info['tracks']:
         video_track = snowstream_info['tracks']['video'][0]
         if 'hdr_compatibility' in video_track:
             hdr_kind = video_track['hdr_compatibility'].lower()
             if '10+' in hdr_kind and not client_device.video.hdr.ten_plus:
-                video_filter_kind = '10plus-to-hdr10'
-        if 'hdr_format' in video_track:
+                video_filter_kind = media.filter_kind.hdr_ten_plus_to_hdr_ten
+        elif 'hdr_format' in video_track:
             hdr_kind = video_track['hdr_format'].lower()
             if 'dolby vision' in hdr_kind and not client_device.video.hdr.dolby_vision:
-                video_filter_kind = 'dolbyvision-to-hdr10'
+                video_filter_kind = media.filter_kind.dolby_vision_to_hdr_ten
+
+    before_filter = None
     if video_filter_kind:
-        video_out = '[v]'
+        for dd in dialects:
+            before_filter = dd.before_encode_filter(video_filter_kind)
+            if before_filter:
+                command += ' -filter_complex "{before_filter};"'
+                break
 
     encode_video_codec = client_device.transcode.video_codec
     found_match = False
     for dd in dialects:
-        video_options = None
-        if encode_video_codec == 'h265':
-            video_options = dd.encode_h265(video_filter_kind)
-        elif encode_video_codec == 'h264' and (not video_filter_kind or not 'hdr10' in video_filter_kind):
-            video_options = dd.encode_h264(video_filter_kind)
-        elif encode_video_codec == 'vp9':
-            video_options = dd.encode_vp9(video_filter_kind)
-        if video_options:
-            command += video_options
+        video_encode = dd.encode(encode_video_codec)
+        if video_encode:
+            command += video_encode
             found_match = True
             break
     if not found_match:
         raise Exception(f"Unable to handle transcode video codec {encode_video_codec} for dialect {config.transcode_dialect} for {client_device.name}")
 
-    # This subtitles filter for text based subs is PART of the filter_complex
+    complex_filters = []
+    after_filter = None
+    if video_filter_kind:
+        for dd in dialects:
+            after_filter = dd.after_encode_filter(video_filter_kind)
+            if after_filter:
+                complex_filters.append(after_filter)
+                break
+
+    # The subtitle filters are part of the 'after' video filter_complex above
+    subtitle_filter = None
     valid_sub_index = True
     if subtitle_track_index != None:
         sub_is_text = True
         if snowstream_info:
-            if subtitle_track_index < len(snowstream_info['tracks']['subtitle']):
+            if subtitle_track_index >= len(snowstream_info['tracks']['subtitle']):
                 valid_sub_index = False
             sub_track = snowstream_info['tracks']['subtitle'][subtitle_track_index]
             sub_is_text = sub_track['is_text']
         if valid_sub_index:
             if sub_is_text:
-                command += f';[v]subtitles=\'{input_url}\':si={subtitle_track_index}'
-                # TODO Apply client-side subtitle style changes to the burned in subtitles
-                command += f":force_style='"
-                command += f"FontName=Arial,"
-                command += f"PrimaryColour=&H00FFFFFF,"
-                command += f"OutlineColour=&H00000000,"
-                command += f"BackColour=&HA0000000,"
-                command += f"BorderStyle=4,"
-                command += f"Fontsize=18'[outv];"
-                video_out = '[outv]'
+                subtitle_filter = media.transcode_dialect.default.text_subtitle_filter(input_url,subtitle_track_index)
+                complex_filters.append(subtitle_filter)
             else:
-                command += f";[v][0:s:0]overlay;"
-    command += f"\" -map '{video_out}'"
+                subtitle_filter  = media.transcode_dialect.default.image_subtitle_filter()
+                complex_filters.append(subtitle_filter)
 
+    if complex_filters:
+        filters = ';'.join(complex_filters)
+        command += f' -filter_complex "{filters};"'
     if config.transcode_max_rate:
         # Cap the video output bitrate
         # EX: tmr - 5M
@@ -111,11 +117,7 @@ def build_command(
     found_match = False
     encode_audio_codec = client_device.transcode.audio_codec
     for dd in dialects:
-        audio_options = None
-        if encode_audio_codec == 'aac':
-            audio_options = dd.encode_aac()
-        elif encode_audio_codec == 'opus':
-            audio_options = dd.encode_opus()
+        audio_options = dd.encode(encode_audio_codec)
         if audio_options:
             command += audio_options
             found_match = True
