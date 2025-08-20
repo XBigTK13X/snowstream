@@ -42,6 +42,11 @@ export default function PlayMoviePage() {
                                 transcodeId: transcodeSession.transcode_session_id
                             })
                         })
+                        .catch((err) => {
+                            return resolve({
+                                error: err
+                            })
+                        })
                 })
         })
 

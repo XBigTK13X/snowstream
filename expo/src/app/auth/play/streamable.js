@@ -22,6 +22,11 @@ export default function PlayStreamablePage() {
                             durationSeconds: streamable.duration_seconds
                         }
                     })
+                    .catch((err) => {
+                        return resolve({
+                            error: err
+                        })
+                    })
             })
     }
 

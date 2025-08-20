@@ -29,14 +29,16 @@ export function SnowTabs(props) {
     tabs = tabs.filter(child => child !== null)
     const [tabIndex, setTabIndex] = React.useState(0)
     return (
-        <FillView scroll={Platform.OS !== 'web'}>
-            <SnowDropdown
-                short
-                fade
-                options={props.headers}
-                onValueChange={setTabIndex}
-                valueIndex={tabIndex}
-                itemsPerRow={props.headers.length} />
+        <FillView scroll>
+            <View>
+                <SnowDropdown
+                    short
+                    fade
+                    options={props.headers}
+                    onValueChange={setTabIndex}
+                    valueIndex={tabIndex}
+                    itemsPerRow={props.headers.length} />
+            </View>
             <FillView style={styles.panel}>
                 {tabs[tabIndex]}
             </FillView>

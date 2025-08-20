@@ -43,6 +43,11 @@ export default function PlayEpisodePage() {
                                 transcodeId: transcodeSession.transcode_session_id
                             })
                         })
+                        .catch((err) => {
+                            return resolve({
+                                error: err
+                            })
+                        })
                 })
         })
     }

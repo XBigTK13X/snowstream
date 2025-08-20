@@ -367,6 +367,9 @@ export function PlayerContextProvider(props) {
 
     // The page received a response from the server for the specific kind of video to play
     const loadVideo = (response) => {
+        if (response.error) {
+            return onCriticalError(response.error)
+        }
         if (response.url) {
             setVideoUrl(response.url)
         }

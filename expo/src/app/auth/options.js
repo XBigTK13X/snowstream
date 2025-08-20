@@ -110,16 +110,16 @@ export default function OptionsPage() {
                 />
             </C.SnowGrid>
             <C.SnowDropdown
-                title="Video Resolution"
-                options={resolutions}
-                onValueChange={chooseResolution}
-                valueIndex={resolutionIndex} />
-            <C.SnowDropdown
                 title="Device Profile"
                 options={deviceProfiles}
                 onValueChange={chooseDeviceProfile}
                 valueIndex={deviceProfileIndex} />
-            <C.SnowGrid itemsPerRow={3}>
+            <C.SnowDropdown
+                title="Video Resolution"
+                options={resolutions}
+                onValueChange={chooseResolution}
+                valueIndex={resolutionIndex} />
+            <C.SnowGrid itemsPerRow={2}>
                 <C.SnowDropdown
                     title="Always Transcode"
                     options={['No', 'Yes']}

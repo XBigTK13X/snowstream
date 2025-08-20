@@ -570,7 +570,7 @@ def auth_required(router):
         device_profile:str=None,
         seek_to_seconds:int=None
     ):
-        transcode_session = transcode_sessions.create_session(
+        return transcode_sessions.create_session(
             cduid=auth_user.cduid,
             device_profile=device_profile,
             video_file_id=video_file_id,
@@ -579,7 +579,6 @@ def auth_required(router):
             subtitle_track_index=subtitle_track_index,
             seek_to_seconds=seek_to_seconds
         )
-        return transcode_session
 
     @router.get("/session/list",tags=['User'])
     def get_session_list(
