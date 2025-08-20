@@ -43,10 +43,13 @@ def build_command(
         device_profile = media.device.default_device
     client_device = media.device.device_lookup[device_profile]
 
+    container = client_device.transcode.container
     # Help dialect determine what extra actions need to be taken to transcode
     video_filter_kind = None
     if snowstream_info and 'tracks' in snowstream_info and 'video' in snowstream_info['tracks']:
         video_track = snowstream_info['tracks']['video'][0]
+        if 'hdr_format' in video_track:
+            container = client_device.transcode.hdr_container
         if 'hdr_compatibility' in video_track:
             hdr_kind = video_track['hdr_compatibility'].lower()
             if '10+' in hdr_kind and not client_device.video.hdr.ten_plus:
@@ -65,8 +68,8 @@ def build_command(
         elif config.transcode_dialect == 'nvidia':
             dialect = NvidiaTranscodeDialect(video_filter_kind=video_filter_kind)
 
-    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{client_device.transcode.container}'
-    ffmpeg_url = f'http://{config.transcode_ffmpeg_host}:{stream_port}/stream.{client_device.transcode.container}'
+    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{container}'
+    ffmpeg_url = f'http://{config.transcode_ffmpeg_host}:{stream_port}/stream.{container}'
     command =  FfmpegCommand()
 
     # Apply any dialect input settings
@@ -145,7 +148,7 @@ def build_command(
     if audio_track_index != None:
         command.append(f'-map 0:a:{audio_track_index}')
 
-    command.append(f'-f {client_device.transcode.container} -listen 1')
+    command.append(f'-f {container} -listen 1')
     command.append(f'"{ffmpeg_url}"')
     log.info(command.get_command())
     return command.get_command(),streaming_url

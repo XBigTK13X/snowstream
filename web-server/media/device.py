@@ -12,9 +12,10 @@ class DeviceProfile:
         self.video.resolution.height = config.get('video_height')
 
         self.transcode = Stub()
-        self.transcode.container = config.get('transcode_container','flv')
+        self.transcode.container = config.get('transcode_container','matroska')
         self.transcode.video_codec = config.get('transcode_video_codec', 'h265')
         self.transcode.audio_codec = config.get('transcode_audio_codec', 'aac')
+        self.transcode.hdr_container = config.get('transcode_hdr_container', 'matroska')
 
         self.video.h264 = Stub()
         self.video.h264.eight = config.get('h264_eight')
@@ -67,7 +68,7 @@ device_list = [
         'dts_x': 'hard',
         'dts_hd': 'hard',
         'dolby_atmos': 'hard',
-        'dolby_hd': 'hard'
+        'dolby_hd': 'hard',
     }),
     DeviceProfile({
         'name': 'Google Streamer',
