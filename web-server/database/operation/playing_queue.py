@@ -35,7 +35,6 @@ def update_playing_queue(ticket:dbi.dm.Ticket, source:str, progress:int):
             return None
         existing.progress = progress
         db.commit()
-
         return existing
 
 def split_content(csv_content):
@@ -68,6 +67,16 @@ def get_playing_queue(
             source = f'tag-{tag_id}'
         if shuffle:
             source += '-shuffle'
+    else:
+        if '-shuffle' in source:
+            shuffle = True
+        source = source.replace('-shuffle','')
+        if 'show-' in source:
+            show_id = int(source.replace('show-',''))
+        elif 'show_season-' in source:
+            show_season_id = int(source.replace('show_season-',''))
+        elif 'tag-' in source:
+            tag_id = int(source.replace('tag-',''))
     with dbi.session() as db:
         existing = (
             db.query(dbi.dm.PlayingQueue).filter(

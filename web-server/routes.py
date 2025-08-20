@@ -622,7 +622,8 @@ def auth_required(router):
         source:str,
         progress:int
     ):
-        return db.op.update_playing_queue(ticket=auth_user.ticket,source=source,progress=progress)
+        db.op.update_playing_queue(ticket=auth_user.ticket,source=source,progress=progress)
+        return db.op.get_playing_queue(ticket=auth_user.ticket,source=source)
 
     @router.post('/log/playback', tags=['User'])
     def save_playback_logs(

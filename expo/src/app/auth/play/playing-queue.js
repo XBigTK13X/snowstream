@@ -5,14 +5,14 @@ import PlayMediaPage from './media'
 export default function PlayPlayingQueuePage() {
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
     const loadVideo = (apiClient, localParams) => {
-        return apiClient.getPlayingQueue({ source: localParams.playingQueueSource }).then(response => {
-            setPlayingQueue(response)
+        return apiClient.getPlayingQueue({ source: localParams.playingQueueSource }).then(queueResponse => {
+            setPlayingQueue(queueResponse)
             // This needs to make sure the video file selected is main_feature
-            let entry = response.content[response.progress]
+            let entry = queueResponse.content[queueResponse.progress]
             if (entry.kind === 'm') {
-                return apiClient.getMovie(entry.id).then((response) => {
-                    const videoFile = response.video_files[localParams.videoFileIndex ?? 0]
-                    const name = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${response.name}`
+                return apiClient.getMovie(entry.id).then((movieResponse) => {
+                    const videoFile = movieResponse.video_files[localParams.videoFileIndex ?? 0]
+                    const name = `Queue [${queueResponse.progress + 1}/${queueResponse.length}] - ${movieResponse.name}`
                     return {
                         url: videoFile.network_path,
                         name: name,
@@ -22,10 +22,10 @@ export default function PlayPlayingQueuePage() {
                 })
             }
             else if (entry.kind === 'e') {
-                return apiClient.getEpisode(entry.id).then((response) => {
-                    let name = `${response.season.show.name} - ${C.util.formatEpisodeTitle(response)}`
-                    name = `Queue [${playingQueue.progress + 1}/${playingQueue.length}] - ${name}`
-                    const videoFile = response.video_files[localParams.videoFileIndex ?? 0]
+                return apiClient.getEpisode(entry.id).then((episodeResponse) => {
+                    let name = `${episodeResponse.season.show.name} - ${C.util.formatEpisodeTitle(episodeResponse)}`
+                    name = `Queue [${queueResponse.progress + 1}/${queueResponse.length}] - ${name}`
+                    const videoFile = episodeResponse.video_files[localParams.videoFileIndex ?? 0]
                     return {
                         url: videoFile.network_path,
                         name: name,
@@ -47,7 +47,7 @@ export default function PlayPlayingQueuePage() {
             progress = playingQueue.progress + 1
         )
             .then(() => {
-                routes.replace(routes.playPlayingQueue, { playingQueueSource })
+                routes.replace(routes.playingQueuePlay, { playingQueueSource: playingQueue.source })
             })
     }
     return (
