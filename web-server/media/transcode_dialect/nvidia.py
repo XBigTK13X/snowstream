@@ -1,10 +1,10 @@
-def encode(codec:str):
-    if codec == 'h264':
-        return f' -c:v h264_nvenc -cq 25'
-    return None
+from media.transcode_dialect.default import DefaultTranscodeDialect
 
-def before_encode_filter(kind:str):
-    return None
+class NvidiaTranscodeDialect(DefaultTranscodeDialect):
+    def __init__(self,video_filter_kind:str):
+        super().__init__(video_filter_kind=video_filter_kind,name='nvidia')
 
-def after_encode_filter(kind:str):
-    return None
+    def encode(self,codec:str):
+        if codec == 'h264':
+            return f'-c:v h264_nvenc -cq 25'
+        return None

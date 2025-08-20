@@ -1,10 +1,10 @@
 from settings import config
 from log import log
 import media.device
-import media.transcode_dialect.default
-import media.transcode_dialect.nvidia
-import media.transcode_dialect.quicksync
-import media.transcode_dialect.vaapi
+from media.transcode_dialect.default import DefaultTranscodeDialect
+from media.transcode_dialect.nvidia import NvidiaTranscodeDialect
+from media.transcode_dialect.quicksync import QuicksyncTranscodeDialect
+from media.transcode_dialect.vaapi import VaapiTranscodeDialect
 import media.filter_kind
 
 # Working qsv
@@ -20,6 +20,16 @@ transcode_dialects = {
     'vaapi': media.transcode_dialect.vaapi,
 }
 
+class FfmpegCommand:
+    def __init__(self):
+        self.command = 'ffmpeg'
+
+    def append(self, instruction):
+        self.command += f' {instruction}'
+
+    def get_command(self):
+        return self.command
+
 def build_command(
     device_profile:str,
     input_url:str,
@@ -29,25 +39,11 @@ def build_command(
     subtitle_track_index:int=None,
     seek_to_seconds:int=None
 ):
-    dialects = []
-    if config.transcode_dialect:
-        dialects.append(transcode_dialects[config.transcode_dialect])
-    dialects.append(transcode_dialects['default'])
-
     if device_profile == 'undefined':
         device_profile = media.device.default_device
     client_device = media.device.device_lookup[device_profile]
 
-    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{client_device.transcode.container}'
-    ffmpeg_url = f'http://{config.transcode_ffmpeg_host}:{stream_port}/stream.{client_device.transcode.container}'
-    command =  f'ffmpeg'
-    command += f' -i "{input_url}"'
-
-    # -ss after the input is slower, but more compatible
-    if seek_to_seconds:
-        command += f' -ss {seek_to_seconds}'
-
-    # Determine filters that could be before or after `-c:v X`
+    # Help dialect determine what extra actions need to be taken to transcode
     video_filter_kind = None
     if snowstream_info and 'tracks' in snowstream_info and 'video' in snowstream_info['tracks']:
         video_track = snowstream_info['tracks']['video'][0]
@@ -60,33 +56,49 @@ def build_command(
             if 'dolby vision' in hdr_kind and not client_device.video.hdr.dolby_vision:
                 video_filter_kind = media.filter_kind.dolby_vision_to_hdr_ten
 
-    before_filter = None
+    dialect = DefaultTranscodeDialect(video_filter_kind=video_filter_kind)
+    if config.transcode_dialect:
+        if config.transcode_dialect == 'quicksync':
+            dialect = QuicksyncTranscodeDialect(video_filter_kind=video_filter_kind)
+        elif config.transcode_dialect == 'vaapi':
+            dialect = VaapiTranscodeDialect(video_filter_kind=video_filter_kind)
+        elif config.transcode_dialect == 'nvidia':
+            dialect = NvidiaTranscodeDialect(video_filter_kind=video_filter_kind)
+
+    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{client_device.transcode.container}'
+    ffmpeg_url = f'http://{config.transcode_ffmpeg_host}:{stream_port}/stream.{client_device.transcode.container}'
+    command =  FfmpegCommand()
+
+    # Apply any dialect input settings
+    before_input = dialect.before_input()
+    if before_input:
+        command.append(before_input)
+
+    command.append(f'-i "{input_url}"')
+
+    # -ss after the input is slower, but more compatible
+    if seek_to_seconds:
+        command.append(f'-ss {seek_to_seconds}')
+
     if video_filter_kind:
-        for dd in dialects:
-            before_filter = dd.before_encode_filter(video_filter_kind)
-            if before_filter:
-                command += ' -filter_complex "{before_filter};"'
-                break
+        before_filter = dialect.before_encode_filter()
+        if before_filter:
+            command.append(f'-filter_complex "{before_filter};"')
 
     encode_video_codec = client_device.transcode.video_codec
     found_match = False
-    for dd in dialects:
-        video_encode = dd.encode(encode_video_codec)
-        if video_encode:
-            command += video_encode
-            found_match = True
-            break
+    video_encode = dialect.encode(encode_video_codec)
+    if video_encode:
+        command.append(video_encode)
+        found_match = True
     if not found_match:
         raise Exception(f"Unable to handle transcode video codec {encode_video_codec} for dialect {config.transcode_dialect} for {client_device.name}")
 
     complex_filters = []
-    after_filter = None
     if video_filter_kind:
-        for dd in dialects:
-            after_filter = dd.after_encode_filter(video_filter_kind)
-            if after_filter:
-                complex_filters.append(after_filter)
-                break
+        after_filter = dialect.after_encode_filter()
+        if after_filter:
+            complex_filters.append(after_filter)
 
     # The subtitle filters are part of the 'after' video filter_complex above
     subtitle_filter = None
@@ -100,34 +112,40 @@ def build_command(
             sub_is_text = sub_track['is_text']
         if valid_sub_index:
             if sub_is_text:
-                subtitle_filter = media.transcode_dialect.default.text_subtitle_filter(input_url,subtitle_track_index)
+                subtitle_filter = dialect.text_subtitle_filter(input_url,subtitle_track_index)
                 complex_filters.append(subtitle_filter)
             else:
-                subtitle_filter  = media.transcode_dialect.default.image_subtitle_filter()
+                subtitle_filter  = dialect.image_subtitle_filter()
                 complex_filters.append(subtitle_filter)
 
     if complex_filters:
         filters = ';'.join(complex_filters)
-        command += f' -filter_complex "{filters};"'
+        command.append(f' -filter_complex "{filters};"')
+
+    # Sometimes specific non-filter instructions are needed
+    if video_filter_kind:
+        after_params = dialect.after_encode_parameters()
+        if after_params:
+            command.append(after_params)
+
+    # Cap the video output bitrate
+    # EX: transcode_max_rate = 15M
     if config.transcode_max_rate:
-        # Cap the video output bitrate
-        # EX: tmr - 5M
-        command += f' -b:v {config.transcode_max_rate} -maxrate {config.transcode_max_rate}'
+        command.append(f'-b:v {config.transcode_max_rate} -maxrate {config.transcode_max_rate}')
 
     found_match = False
     encode_audio_codec = client_device.transcode.audio_codec
-    for dd in dialects:
-        audio_options = dd.encode(encode_audio_codec)
-        if audio_options:
-            command += audio_options
-            found_match = True
-            break
+    audio_options = dialect.encode(encode_audio_codec)
+    if audio_options:
+        command.append(audio_options)
+        found_match = True
     if not found_match:
         raise Exception(f"Unable to handle transcode audio codec {encode_audio_codec} for dialect {config.transcode_dialect} for {client_device.name}")
-    if audio_track_index != None:
-        command += f' -map 0:a:{audio_track_index}'
 
-    command += f' -f {client_device.transcode.container} -listen 1'
-    command += f' "{ffmpeg_url}"'
-    log.info(command)
-    return command,streaming_url
+    if audio_track_index != None:
+        command.append(f'-map 0:a:{audio_track_index}')
+
+    command.append(f'-f {client_device.transcode.container} -listen 1')
+    command.append(f'"{ffmpeg_url}"')
+    log.info(command.get_command())
+    return command.get_command(),streaming_url
