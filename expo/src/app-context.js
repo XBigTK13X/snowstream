@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, useTVEventHandler } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import uuid from 'react-native-uuid';
 import util from './util'
@@ -77,6 +77,8 @@ export function AppContextProvider(props) {
     const [displayName, setDisplayName] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [clientOptions, setClientOptions] = React.useState(null)
+    const [remoteCallbacks, setRemoteCallbacks] = React.useState({})
+    const remoteCallbacksRef = React.useRef(remoteCallbacks)
 
     React.useEffect(() => {
         if (!apiClient) {
@@ -121,6 +123,26 @@ export function AppContextProvider(props) {
             setClientOptions(storedOptions)
         }
     })
+
+    if (Platform.isTV) {
+        const remoteHandler = (remoteEvent) => {
+            callbacks = remoteCallbacksRef.current
+            for (const [key, callback] of Object.entries(callbacks)) {
+                if (callback == null) {
+                    continue
+                }
+                // action 0  = start, action 1 = end for longpresses
+                const kind = remoteEvent.eventType
+                const action = remoteEvent.eventKeyAction
+                callback(kind, action)
+            }
+        }
+        useTVEventHandler(remoteHandler);
+    }
+
+    React.useEffect(() => {
+        remoteCallbacksRef.current = remoteCallbacks
+    }, [remoteCallbacks])
 
     const onApiError = (err) => {
         if (!apiError) {
@@ -242,6 +264,7 @@ export function AppContextProvider(props) {
         setMessageDisplay: setMessage,
         signIn: login,
         signOut: logout,
+        setRemoteCallbacks,
         setWebApiUrl,
         clientOptions,
         changeClientOptions

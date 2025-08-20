@@ -1,10 +1,7 @@
 import React from "react";
 import {
     PanResponder,
-    Platform,
     Pressable,
-    TouchableOpacity,
-    useTVEventHandler,
     View,
     findNodeHandle
 } from "react-native";
@@ -13,7 +10,7 @@ import { useDebouncedCallback } from 'use-debounce'
 import { useAppContext } from '../app-context'
 import { useFocusContext } from '../focus-context'
 
-// This is a tricky component because props.value can be debounced by the parent
+// This is a tricky component because props.value can be debounced
 // The numerical value the component provides is `percent`
 // This is a float between 0.0 and 1.0, to ease multiplication
 
@@ -77,7 +74,7 @@ const step = 0.01
 
 export function SnowRangeSlider(props) {
     const { allowFocusing, setLockedElement, lockedElement } = useFocusContext()
-    const { config } = useAppContext()
+    const { config, setRemoteCallbacks } = useAppContext()
     const isDraggingRef = React.useRef(false)
     const [percent, setPercent] = React.useState(0)
     const percentRef = React.useRef(percent)
@@ -141,6 +138,64 @@ export function SnowRangeSlider(props) {
         percentRef.current = percent
     }, [percent])
 
+    React.useEffect(() => {
+        setRemoteCallbacks((callbacks) => {
+            callbacks['slider'] = sliderHandleRemote
+            return callbacks
+        })
+        return () => {
+            setRemoteCallbacks((callbacks) => {
+                callbacks['slider'] = null
+                return callbacks
+            })
+        }
+    })
+
+    const applyStep = (amount) => {
+        let result = percentRef.current + amount
+        if (result < min) {
+            result = min
+        }
+        if (result > max) {
+            result = max
+        }
+        percentRef.current = result
+        setPercent(result)
+        onValueChange(result)
+    }
+
+    const longPress = (amount, action) => {
+        if (action === 0) {
+            applyStep(amount)
+            setApplyStepInterval(setInterval(() => { applyStep(amount) }, 100))
+        }
+        if (action === 1) {
+            clearInterval(applyStepInterval)
+        }
+    }
+
+    const sliderHandleRemote = (kind, action) => {
+        if (lockedElement) {
+            if (kind === 'right') {
+                applyStep(step)
+                clearInterval(applyStepInterval)
+            }
+            else if (kind === 'longRight') {
+                longPress(step * 2, action)
+            }
+            else if (kind === 'left') {
+                applyStep(-step)
+                clearInterval(applyStepInterval)
+            }
+            else if (kind === 'longLeft') {
+                longPress(-step * 2, action)
+            }
+            else if (kind === 'down') {
+                focusThumb(false)
+            }
+        }
+    }
+
     const focusThumb = (focus) => {
         if (allowFocusing) {
             if (focus !== thumbFocus) {
@@ -152,56 +207,6 @@ export function SnowRangeSlider(props) {
                 setThumbFocus(focus)
             }
         }
-    }
-
-    const applyStep = (amount) => {
-        let result = percentRef.current + step
-        if (result < min) {
-            result = min
-        }
-        if (result > max) {
-            result = max
-        }
-        percentRef.current = result
-        setPercent(result)
-        props.onValueChange(result)
-    }
-
-    const longPress = (amount, action) => {
-        if (action === 0) {
-            applyStep(amount)
-            setApplyStepInterval(setInterval(() => { applyStep(step) }, 100))
-        }
-        if (action === 1) {
-            clearInterval(applyStepInterval)
-        }
-    }
-
-    if (Platform.isTV) {
-        const tvRemoteHandler = (remoteEvent) => {
-            if (lockedElement) {
-                const kind = remoteEvent.eventType
-                const action = remoteEvent.eventKeyAction
-                // action 0  = start, action 1 = end for longpresses
-                // Do a set interval
-                if (kind === 'right') {
-                    applyStep(step)
-                }
-                else if (kind === 'longRight') {
-                    longPress(step, action)
-                }
-                else if (kind === 'left') {
-                    applyStep(-step)
-                }
-                else if (kind === 'longLeft') {
-                    longPress(-step, action)
-                }
-                else if (kind === 'down') {
-                    focusThumb(false)
-                }
-            }
-        }
-        useTVEventHandler(tvRemoteHandler);
     }
 
     const trackWrapperStyle = [

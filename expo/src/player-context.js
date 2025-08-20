@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, useTVEventHandler } from 'react-native';
+import { Platform } from 'react-native';
 import { useLocalSearchParams, usePathname } from 'expo-router'
 import { useAppContext } from './app-context'
 import { useFocusContext } from './focus-context'
@@ -17,8 +17,14 @@ export function usePlayerContext() {
 
 export function PlayerContextProvider(props) {
     const localParams = useLocalSearchParams()
-    const { focusIsLocked } = useFocusContext()
-    const { apiClient, clientOptions, config, routes } = useAppContext()
+    const { focusIsLocked, setLockedElement } = useFocusContext()
+    const {
+        apiClient,
+        clientOptions,
+        config,
+        routes,
+        setRemoteCallbacks
+    } = useAppContext()
     const pathname = usePathname()
 
     const [videoUrl, setVideoUrl] = React.useState(null)
@@ -49,7 +55,7 @@ export function PlayerContextProvider(props) {
     }
 
     // The initial seek only happens when resuming an in progress video instead of playing from the beginning
-    const [initialSeekComplete, setInitialSeekComplete] = React.useState(!isTranscode)
+    const [initialSeekComplete, setInitialSeekComplete] = React.useState(isTranscode)
     const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(parseFloat(localParams.seekToSeconds, 10)) : 0
 
     // progress is the amount of seconds played in the video player
@@ -137,6 +143,7 @@ export function PlayerContextProvider(props) {
 
     const onResumeVideo = () => {
         setControlsVisible(false)
+        setLockedElement(null)
         setIsPlaying(true)
         if (completeOnResume) {
             onPlaybackComplete()
@@ -396,33 +403,32 @@ export function PlayerContextProvider(props) {
         }
     }
 
-    if (Platform.isTV) {
-        const tvRemoteHandler = (remoteEvent) => {
-            if (!controlsVisible && isReady && !focusIsLocked) {
-                if (initialSeekComplete || !initialSeekSeconds) {
-                    if (remoteEvent.eventType === 'right') {
-                        onProgress(progressSeconds + 90, 'manual-seek')
-                    }
-                    else if (remoteEvent.eventType === 'left') {
-                        onProgress(progressSeconds - 5, 'manual-seek')
-                    }
-                    else if (remoteEvent.eventType === 'down') {
-                        setSubtitleFontSize((fontSize) => { return fontSize -= 4 })
-                    }
-                    else if (remoteEvent.eventType === 'up') {
-                        setSubtitleColor((fontColor) => {
-                            newColor = { ...fontColor }
-                            newColor.shade -= 0.15;
-                            if (newColor.shade < 0) {
-                                newColor.shade = 0.0
-                            }
-                            return newColor
-                        })
-                    }
+    const playerHandleRemote = (kind, action) => {
+        if (!controlsVisible && isReady && !focusIsLocked) {
+            if (initialSeekComplete || !initialSeekSeconds) {
+                if (kind === 'right') {
+                    onProgress(progressSeconds + 90, 'manual-seek')
                 }
-            };
-        }
-        useTVEventHandler(tvRemoteHandler);
+                else if (kind === 'left') {
+                    onProgress(progressSeconds - 5, 'manual-seek')
+                }
+                else if (kind === 'down') {
+                    setSubtitleFontSize((fontSize) => {
+                        return fontSize -= 4
+                    })
+                }
+                else if (kind === 'up') {
+                    setSubtitleColor((fontColor) => {
+                        newColor = { ...fontColor }
+                        newColor.shade -= 0.15;
+                        if (newColor.shade < 0) {
+                            newColor.shade = 0.0
+                        }
+                        return newColor
+                    })
+                }
+            }
+        };
     }
 
     React.useEffect(() => {
@@ -446,6 +452,19 @@ export function PlayerContextProvider(props) {
                         .then(loadVideo)
                 }
             }
+        }
+    })
+
+    React.useEffect(() => {
+        setRemoteCallbacks((callbacks) => {
+            callbacks['player'] = playerHandleRemote
+            return callbacks
+        })
+        return () => {
+            setRemoteCallbacks((callbacks) => {
+                callbacks['player'] = null
+                return callbacks
+            })
         }
     })
 
