@@ -220,7 +220,7 @@ export class ApiClient {
     }
 
     getLog(logIndex, logPath) {
-        if (logIndex) {
+        if (logIndex !== undefined && logIndex !== null) {
             return this.get(`/log?log_index=${logIndex}`)
         }
         return this.get(`/log?transcode_log_path=${logPath}`)

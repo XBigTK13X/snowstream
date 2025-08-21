@@ -77,13 +77,14 @@ class TranscodeSessions:
             seek_to_seconds=seek_to_seconds
         )
         client_device = ticket.client.client_device.reported_name
-        log_name = f'{transcode_session.id} - {client_device} - '
+        log_name = f'{transcode_session.id}-{client_device}-'
         if video_file_id:
-            log_name += f' v - {video_file_id}'
+            log_name += f'v-{video_file_id}'
         elif streamable_id:
-            log_name += f' s - {streamable_id}'
+            log_name += f's-{streamable_id}'
         log_name += '.log'
         log_path = os.path.join(config.transcode_log_dir,log_name)
+        log.info("Logging to "+log_path)
         transcode_process = util.run_cli(command, background=True, log_path=log_path)
         db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
 
@@ -160,11 +161,15 @@ class TranscodeSessions:
             log.error(f"Unable to close transcode session {transcode_session.id}")
 
     def cleanup(self):
+
         self.refresh_known_processes()
         transcode_sessions = db.op.get_transcode_session_list()
         if transcode_sessions and len(transcode_sessions) > 0:
             log.info(f"Cleaning up {len(transcode_sessions)} transcode child processes")
             for transcode_session in transcode_sessions:
                 self.close(transcode_session=transcode_session)
+        db.op.delete_all_transcode_sessions()
+        shutil.rmtree(config.transcode_log_dir,ignore_errors=True)
+        os.makedirs(config.transcode_log_dir)
 
 transcode_sessions = TranscodeSessions()

@@ -35,7 +35,7 @@ def get_client_device_user_by_ids(client_device_id:int,user_id:int):
 
 def get_client_device_user_by_cduid(cduid:int):
     with dbi.session() as db:
-        query = db.query(dbi.dm.ClientDeviceUser)
+        query = db.query(dbi.dm.ClientDeviceUser).options(dbi.orm.joinedload(dbi.dm.ClientDeviceUser.client_device))
         return query.filter(
             dbi.dm.ClientDeviceUser.id == cduid,
         ).first()

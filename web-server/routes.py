@@ -116,6 +116,17 @@ def auth_required(router):
     ):
         return db.op.get_job_list(show_complete=show_complete, limit=limit)
 
+    @router.post('/log/playback', tags=['User'])
+    def save_playback_logs(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        saveLogsRequest:am.SaveLogsRequest
+    ):
+        playback_id = str(uuid.uuid4())
+        cache_key = f'playback-log-{playback_id}'
+        seven_days_seconds = 604800
+        db.op.upsert_cached_text(key=cache_key, data='\n'.join(saveLogsRequest.logs), ttl_seconds=seven_days_seconds)
+        return {'cache_key':cache_key}
+
     @router.get('/log/list', tags=['Job'])
     def get_log_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
@@ -139,13 +150,13 @@ def auth_required(router):
         transcode_log_path: str=None
     ):
         log_path = None
-        if log_index:
+        if log_index != None:
             log_path = config.tail_log_paths[log_index]
         if transcode_log_path:
             if config.transcode_log_dir in transcode_log_path:
                 log_path = transcode_log_path
             else:
-                return f'Log path [{transcode_log_path}] not found int [{config.transcode_log_dir}]'
+                return f'Log path [{transcode_log_path}] not found in [{config.transcode_log_dir}]'
         if not log_path:
             return 'Log path not found'
         with open(log_path,'r') as read_handle:
@@ -642,17 +653,6 @@ def auth_required(router):
     ):
         db.op.update_playing_queue(ticket=auth_user.ticket,source=source,progress=progress)
         return db.op.get_playing_queue(ticket=auth_user.ticket,source=source)
-
-    @router.post('/log/playback', tags=['User'])
-    def save_playback_logs(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        saveLogsRequest:am.SaveLogsRequest
-    ):
-        playback_id = str(uuid.uuid4())
-        cache_key = f'playback-log-{playback_id}'
-        seven_days_seconds = 604800
-        db.op.upsert_cached_text(key=cache_key, data='\n'.join(saveLogsRequest.logs), ttl_seconds=seven_days_seconds)
-        return {'cache_key':cache_key}
 
     @router.delete('/cached/text', tags=['Admin'])
     def delete_all_cached_text(

@@ -58,3 +58,9 @@ def delete_transcode_session(
         ).delete()
         db.commit()
         return result
+
+def delete_all_transcode_sessions():
+    with dbi.session() as db:
+        db.execute(dbi.sql_text('truncate cached_text;'))
+        db.commit()
+        return True
