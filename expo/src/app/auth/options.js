@@ -1,9 +1,22 @@
 import C from '../../common'
 
+const players = [
+    'all',
+    'mpv',
+    'exo',
+    'null'
+]
+
+const resolutions = [
+    '4K Ultra HD',
+    '1080 Full HD'
+]
+
 export default function OptionsPage() {
     const { apiClient, clientOptions, changeClientOptions } = C.useAppContext()
 
-    const resolutions = ['4K Ultra HD', '1080 Full HD']
+    console.log({ clientOptions })
+
     let storedResolution = 0
     if (clientOptions) {
         if (clientOptions.resolutionHeight !== 2160) {
@@ -24,7 +37,7 @@ export default function OptionsPage() {
     const [audioCompression, setAudioCompression] = C.React.useState(clientOptions ? clientOptions.audioCompression : '')
     const [hardwareDecoder, setHardwareDecoder] = C.React.useState(clientOptions ? clientOptions.hardwareDecoder : '')
     const [alwaysTranscode, setAlwaysTranscode] = C.React.useState(clientOptions ? clientOptions.alwaysTranscode : '')
-    const [alwaysUseExoPlayer, setAlwaysUseExoPlayer] = C.React.useState(clientOptions ? clientOptions.alwaysUseExoPlayer : '')
+    const [alwaysUsePlayer, setAlwaysUsePlayer] = C.React.useState(clientOptions ? clientOptions.alwaysUsePlayer : '')
 
     C.React.useEffect(() => {
         if (!deviceProfiles) {
@@ -71,8 +84,8 @@ export default function OptionsPage() {
         setAlwaysTranscode(selection === 0 ? false : true)
     }
 
-    const chooseAlwaysUseExoPlayer = (selection) => {
-        setAlwaysUseExoPlayer(selection === 0 ? false : true)
+    const chooseAlwaysUsePlayer = (selection) => {
+        setAlwaysUsePlayer(players[selection])
     }
 
     if (!deviceProfiles) {
@@ -90,7 +103,7 @@ export default function OptionsPage() {
                         audioCompression,
                         hardwareDecoder,
                         alwaysTranscode,
-                        alwaysUseExoPlayer,
+                        alwaysUsePlayer,
                         deviceProfile
                     })
                 }} />
@@ -119,17 +132,17 @@ export default function OptionsPage() {
                 options={resolutions}
                 onValueChange={chooseResolution}
                 valueIndex={resolutionIndex} />
+            <C.SnowDropdown
+                title="Always Use Player"
+                options={players}
+                onValueChange={chooseAlwaysUsePlayer}
+                valueIndex={players.indexOf(alwaysUsePlayer)} />
             <C.SnowGrid itemsPerRow={2}>
                 <C.SnowDropdown
                     title="Always Transcode"
                     options={['No', 'Yes']}
                     onValueChange={chooseAlwaysTranscode}
                     valueIndex={alwaysTranscode === true ? 1 : 0} />
-                <C.SnowDropdown
-                    title="Always Use ExoPlayer"
-                    options={['No', 'Yes']}
-                    onValueChange={chooseAlwaysUseExoPlayer}
-                    valueIndex={alwaysUseExoPlayer === true ? 1 : 0} />
                 <C.SnowDropdown
                     title="Audio Compression (mpv)"
                     options={['No', 'Yes']}

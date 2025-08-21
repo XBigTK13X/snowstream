@@ -88,7 +88,7 @@ export function PlayerContextProvider(props) {
     else if (localParams.videoIsHdr && forcePlayer !== 'mpv') {
         forceExo = true
     }
-    else if (clientOptions.alwaysUseExoPlayer) {
+    else if (clientOptions.alwaysUsePlayer === 'exo') {
         forceExo = true
     }
 
@@ -103,7 +103,7 @@ export function PlayerContextProvider(props) {
     }
 
     let playerKind = null
-    if (config.useNullVideoView) {
+    if (clientOptions.alwaysUsePlayer === 'null') {
         VideoView = require('./comp/null-video-view').default
         playerKind = 'null'
     }

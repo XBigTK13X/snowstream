@@ -110,15 +110,31 @@ export function AppContextProvider(props) {
             }
             if (!storedOptions) {
                 storedOptions = {
-                    resolutionWidth: Style.surface.uhd.width,
-                    resolutionHeight: Style.surface.uhd.height,
-                    audioCompression: false,
-                    hardwareDecoder: false,
-                    deviceId: uuid.v4(),
-                    alwaysTranscode: false,
-                    alwaysUseExoPlayer: false,
-                    deviceProfile: 'CCwGTV4K'
                 }
+            }
+            if (!storedOptions.hasOwnProperty('resolutionWidth')) {
+                storedOptions.resolutionWidth = Style.surface.uhd.width
+            }
+            if (!storedOptions.hasOwnProperty('resolutionHeight')) {
+                storedOptions.resolutionHeight = Style.surface.uhd.height
+            }
+            if (!storedOptions.hasOwnProperty('deviceId')) {
+                storedOptions.deviceId = uuid.v4()
+            }
+            if (!storedOptions.hasOwnProperty('alwaysTranscode')) {
+                storedOptions.alwaysTranscode = false
+            }
+            if (!storedOptions.hasOwnProperty('audioCompression')) {
+                storedOptions.audioCompression = false
+            }
+            if (!storedOptions.hasOwnProperty('hardwareDecoder')) {
+                storedOptions.hardwareDecoder = false
+            }
+            if (!storedOptions.hasOwnProperty('deviceProfile')) {
+                storedOptions.deviceProfile = 'CCwGTV4K'
+            }
+            if (!storedOptions.hasOwnProperty('alwaysUsePlayer')) {
+                storedOptions.alwaysUsePlayer = 'all'
             }
             setClientOptions(storedOptions)
         }

@@ -11,7 +11,6 @@ class Config {
         this.debounceMilliseconds = 700
         this.progressMinDeltaSeconds = 5
 
-        this.useNullVideoView = true
         this.debugVideoPlayer = false
         this.debugVideoUrl = null
 
