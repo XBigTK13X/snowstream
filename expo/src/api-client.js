@@ -219,8 +219,11 @@ export class ApiClient {
         return this.get('/log/list')
     }
 
-    getLog(logIndex) {
-        return this.get(`/log?log_index=${logIndex}`)
+    getLog(logIndex, logPath) {
+        if (logIndex) {
+            return this.get(`/log?log_index=${logIndex}`)
+        }
+        return this.get(`/log?transcode_log_path=${logPath}`)
     }
 
     createStreamSource(payload) {

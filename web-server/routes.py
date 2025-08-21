@@ -2,7 +2,7 @@ import cache
 import json
 import util
 import uuid
-
+import os
 
 from fastapi import Response, Request
 from fastapi import Security
@@ -121,19 +121,38 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         playback_logs = db.op.get_cached_text_list(search_query="playback-log-")
+        transcode_logs = []
+        for root, dirs, files in os.walk(config.transcode_log_dir):
+            for ff in files:
+                transcode_logs.append(os.path.join(root,ff))
+        transcode_logs.sort(reverse=True)
         return {
             'server': config.tail_log_paths,
-            'playback': playback_logs
+            'playback': playback_logs,
+            'transcode': transcode_logs
         }
 
     @router.get('/log', tags=['Job'])
     def get_log(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        log_index: int
+        log_index: int=None,
+        transcode_log_path: str=None
     ):
-        log_path = config.tail_log_paths[log_index]
+        log_path = None
+        if log_index:
+            log_path = config.tail_log_paths[log_index]
+        if transcode_log_path:
+            if config.transcode_log_dir in transcode_log_path:
+                log_path = transcode_log_path
+            else:
+                return f'Log path [{transcode_log_path}] not found int [{config.transcode_log_dir}]'
+        if not log_path:
+            return 'Log path not found'
         with open(log_path,'r') as read_handle:
-            return read_handle.read()
+            lines = read_handle.readlines()
+            lines.reverse()
+            lines = lines[:150]
+            return '\n'.join(lines)
 
     @router.get("/shelf/list",tags=['Shelf'])
     def get_shelf_list(
@@ -571,7 +590,7 @@ def auth_required(router):
         seek_to_seconds:int=None
     ):
         return transcode_sessions.create_session(
-            cduid=auth_user.cduid,
+            ticket=auth_user.ticket,
             device_profile=device_profile,
             video_file_id=video_file_id,
             streamable_id=streamable_id,

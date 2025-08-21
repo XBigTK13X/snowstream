@@ -35,7 +35,7 @@ class TranscodeSessions:
 
     def create_session(
         self,
-        cduid:int,
+        ticket:db.Ticket,
         device_profile:str=None,
         video_file_id:int=None,
         streamable_id:int=None,
@@ -60,7 +60,7 @@ class TranscodeSessions:
         stream_port = self.get_unused_port()
 
         transcode_session = db.op.create_transcode_session(
-            cduid=cduid,
+            cduid=ticket.cduid,
             transcode_directory=None,
             transcode_file=None,
             video_file_id=video_file_id,
@@ -76,7 +76,14 @@ class TranscodeSessions:
             subtitle_track_index=subtitle_track_index,
             seek_to_seconds=seek_to_seconds
         )
-        log_path = os.path.join(config.transcode_log_dir,f'{transcode_session.id}.log')
+        client_device = ticket.client.client_device.reported_name
+        log_name = f'{transcode_session.id} - {client_device} - '
+        if video_file_id:
+            log_name += f' v - {video_file_id}'
+        elif streamable_id:
+            log_name += f' s - {streamable_id}'
+        log_name += '.log'
+        log_path = os.path.join(config.transcode_log_dir,log_name)
         transcode_process = util.run_cli(command, background=True, log_path=log_path)
         db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
 

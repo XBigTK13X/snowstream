@@ -16,26 +16,6 @@ from media.transcode_sessions import transcode_sessions
 
 transcode_sessions.register_cleanup()
 
-# This should only happen inside a deployed docker container
-if os.environ.get("SNOWSTREAM_WEB_API_URL"):
-    frontend_content = ""
-    log.info(
-        f"Token swapping web api url [{config.web_api_url}] into the frontend static resources"
-    )
-    for root, dirs, files in os.walk("/app/prod-frontend"):
-        for f in files:
-            if f.endswith(".js"):
-                file_path = os.path.join(root, f)
-                log.info(f"Found frontend file to token swap [{file_path}]")
-                js_content = ""
-                with open(file_path, "r") as read_handle:
-                    js_content = read_handle.read()
-                js_content = js_content.replace(
-                    "SNOWSTREAM_WEB_API_URL", f'"{config.web_api_url}"'
-                )
-                with open(file_path, "w") as write_handle:
-                    write_handle.write(js_content)
-
 app = FastAPI(
     title="snowstream",
     version=f"{config.server_version}",

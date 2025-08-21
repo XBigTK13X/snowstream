@@ -87,6 +87,7 @@ export default function SignInPage() {
                 <C.SnowGrid itemsPerRow={4} >
                     <C.SnowTextButton title="Beast" onPress={() => { chooseServer('beast', config.beastWebApiUrl) }} />
                     <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer('vondoom', config.vondoomWebApiUrl) }} />
+                    <C.SnowTextButton title="Storm" onPress={() => { chooseServer('storm', config.stormWebApiUrl) }} />
                 </C.SnowGrid>
             </C.FillView>
         )

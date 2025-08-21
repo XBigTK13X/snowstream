@@ -4,10 +4,11 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "0.15.3"
+        self.server_version = "0.15.4"
         self.server_build_date = "August 20, 2025"
         self.server_build_dev_number = 1
         self.app_data_dir = '.snowstream/'
+        self.display_config = None
 
         self.cached_text_ttl_seconds = 60 * 60 * 24 # One day
         self.ffmpeg_screencap_percent_location = 0.15
@@ -42,7 +43,7 @@ class Config:
         self.thetvdb_api_key = None
         self.thumbnail_dimensions = "340x500"
         self.transcode_create_max_wait_seconds = 10
-        self.transcode_dialect = 'nvidia'
+        self.transcode_dialect = 'default'
         self.transcode_disconnect_seconds = 60
         self.transcode_port_range = "11910-11950"
         self.transcode_stream_host = '0.0.0.0'
@@ -63,7 +64,6 @@ class Config:
         self.thumbnail_dir = f"{self.app_data_dir}thumbnail"
         self.ffprobe_dir = f"{self.app_data_dir}ffprobe"
         self.log_file_path = f"{self.app_data_dir}log/snowstream.log"
-        self.transcode_dir = f"{self.app_data_dir}cache-transcode"
         self.transcode_log_dir = f"{self.app_data_dir}log/transcode/"
 
     def validate(self, log):
@@ -72,6 +72,14 @@ class Config:
             log.error("example: http://<host-ip>:9064/mnt")
             log.error("Exiting")
             sys.exit(1)
+        if self.display_config:
+            self.display(log)
+
+    def display(self, log):
+        log.info("Current server config")
+        for key, val in vars(self).items():
+            log.info(f"\t{key} = {val}")
+            
 
 config = Config()
 
@@ -80,6 +88,7 @@ for key, val in vars(config).items():
     env_var_value = os.environ.get(env_var_key)
     if env_var_value:
         setattr(config, key, env_var_value)
+    
 
 config.refresh_postgres_url()
 config.refresh_app_data_dirs()
@@ -96,5 +105,3 @@ if not os.path.exists(config.thumbnail_dir):
     os.makedirs(config.thumbnail_dir, exist_ok=True)
 if not os.path.exists(config.transcode_log_dir):
     os.makedirs(config.transcode_log_dir, exist_ok=True)
-if not os.path.exists(config.transcode_dir):
-    os.makedirs(config.transcode_dir, exist_ok=True)

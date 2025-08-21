@@ -99,7 +99,7 @@ export default function LandingPage(props) {
 
     return (
         <C.SnowText>
-            Loading content from [{config.webApiUrl}] v{config.clientVersion}
+            Loading content from [{apiClient.webApiUrl}] v{config.clientVersion}
         </C.SnowText>
     )
 }

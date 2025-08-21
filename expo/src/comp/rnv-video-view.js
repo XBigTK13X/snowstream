@@ -133,8 +133,6 @@ export default function RnvVideoView(props) {
         }
     }
 
-    console.log({ url: player.info.videoUrl })
-
     return (
         <SnowModal
             wrapper={false}

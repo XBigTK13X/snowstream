@@ -146,6 +146,7 @@ class ClientDeviceUser(BaseModel):
     __tablename__ = "client_device_user"
     user_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("snowstream_user.id"),nullable=False)
     client_device_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("client_device.id"),nullable=False)
+    client_device: orm.Mapped['ClientDevice'] = orm.relationship()
     isolation_mode = sa.Column(sa.Text)
     last_connection = sa.Column(sa.DateTime)
 

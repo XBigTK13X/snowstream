@@ -166,6 +166,7 @@ export function PlayerContextProvider(props) {
     }
 
     const onVideoReady = () => {
+        onAddLog({ kind: "snowstream", message: "low level video player reports that it is ready to play" })
         setIsReady(true)
         setIsPlaying(true)
     }
@@ -242,6 +243,7 @@ export function PlayerContextProvider(props) {
 
     const performInitialSeek = () => {
         if (!initialSeekComplete && initialSeekSeconds) {
+            onAddLog({ kind: "snowstream", message: "perform initial seek" })
             setSeekToSeconds(initialSeekSeconds)
             setProgressSeconds(initialSeekSeconds)
             setInitialSeekComplete(true)
@@ -367,6 +369,7 @@ export function PlayerContextProvider(props) {
 
     // The page received a response from the server for the specific kind of video to play
     const loadVideo = (response) => {
+        onAddLog({ kind: 'snowstream', message: 'video loaded', loadVideo: response })
         if (response.error) {
             return onCriticalError(response.error)
         }
