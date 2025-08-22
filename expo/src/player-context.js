@@ -449,20 +449,20 @@ export function PlayerContextProvider(props) {
             }
             if (isTranscode) {
                 if (props.loadTranscode) {
-                    onAddLog({ kind: 'snowstream', message: 'firing off a loadTranscode' })
+                    onAddLog({ kind: 'snowstream', message: 'firing off a loadTranscode', localParams })
                     props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, initialSeekSeconds)
                         .then(loadVideo)
                 }
             }
             else {
                 if (props.loadVideo) {
-                    onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo' })
+                    onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo', localParams })
                     props.loadVideo(apiClient, localParams)
                         .then(loadVideo)
                 }
             }
         }
-    })
+    }, [videoLoaded, manualSeekSeconds])
 
     React.useEffect(() => {
         setRemoteCallbacks((callbacks) => {
