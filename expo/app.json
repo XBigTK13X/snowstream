@@ -42,7 +42,8 @@
     "orientation": "landscape",
     "android": {
       "package": "com.simplepathstudios.snowstream",
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "backgroundColor": "#000000"
     },
     "ios": {
       "bundleIdentifier": "com.simplepathstudios.snowstream"
