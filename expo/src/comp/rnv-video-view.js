@@ -65,6 +65,7 @@ export default function RnvVideoView(props) {
             left: 0,
             bottom: 0,
             right: 0,
+            flex: 1,
             zIndex: Style.depth.video.content,
             elevation: Style.depth.video.content
         },
