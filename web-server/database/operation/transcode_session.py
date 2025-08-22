@@ -54,7 +54,7 @@ def get_transcode_session(
         return (
             db.query(dbi.dm.TranscodeSession)
             .filter(
-                dbi.dm.TranscodeSession.cduid == cduid,
+                dbi.dm.TranscodeSession.client_device_user_id == cduid,
                 dbi.dm.TranscodeSession.streamable_id == streamable_id,
                 dbi.dm.TranscodeSession.video_file_id == video_file_id
             ).first()
