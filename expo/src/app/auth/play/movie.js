@@ -2,7 +2,6 @@ import PlayMediaPage from './media'
 
 export default function PlayMoviePage() {
     const loadVideo = (apiClient, localParams) => {
-
         return apiClient.getMovie(localParams.movieId).then((movie) => {
             let videoFileIndex = 0
             if (localParams.videoFileIndex) {

@@ -29,6 +29,7 @@ export function PlayerContextProvider(props) {
 
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [videoTitle, setVideoTitle] = React.useState(null)
+    const [videoLoading, setVideoLoading] = React.useState(false)
     // The media info from snowstream's server has been provided to this client
     const [videoLoaded, setVideoLoaded] = React.useState(false)
 
@@ -136,6 +137,7 @@ export function PlayerContextProvider(props) {
     const onTranscodeSeek = () => {
         onAddLog({ kind: 'snowstream', message: `transcode triggered seek to ${manualSeekSeconds} seconds` })
         setVideoLoaded(false)
+        setVideoLoading(false)
         setVideoUrl(null)
         setTranscodeOnResume(false)
         props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, manualSeekSeconds)
@@ -440,7 +442,8 @@ export function PlayerContextProvider(props) {
 
     React.useEffect(() => {
         // If manualSeekSeconds is set, then a user triggered a video load by seeking during a transcode
-        if (!videoLoaded && !manualSeekSeconds) {
+        if (!videoLoading && !manualSeekSeconds) {
+            setVideoLoading(true)
             if (localParams.audioTrack) {
                 setAudioTrackIndex(parseInt(localParams.audioTrack), 10)
             }
@@ -462,7 +465,7 @@ export function PlayerContextProvider(props) {
                 }
             }
         }
-    }, [videoLoaded, manualSeekSeconds])
+    })
 
     React.useEffect(() => {
         setRemoteCallbacks((callbacks) => {
