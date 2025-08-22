@@ -2,8 +2,8 @@ from database.operation.db_internal import dbi
 
 def create_transcode_session(
     cduid:int,
-    transcode_directory:str,
-    transcode_file:str,
+    transcode_directory:str=None,
+    transcode_file:str=None,
     video_file_id:int=None,
     streamable_id:int=None,
     stream_port:int=None
@@ -43,6 +43,21 @@ def get_transcode_session_by_id(
                 dbi.dm.TranscodeSession.id == transcode_session_id
             )
             .first()
+        )
+
+def get_transcode_session(
+    cduid:int,
+    video_file_id:int=None,
+    streamable_id:int=None
+):
+    with dbi.session() as db:
+        return (
+            db.query(dbi.dm.TranscodeSession)
+            .filter(
+                dbi.dm.TranscodeSession.cduid == cduid,
+                dbi.dm.TranscodeSession.streamable_id == streamable_id,
+                dbi.dm.TranscodeSession.video_file_id == video_file_id
+            ).first()
         )
 
 def get_transcode_session_list():

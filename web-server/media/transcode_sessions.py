@@ -43,6 +43,9 @@ class TranscodeSessions:
         subtitle_track_index:int=None,
         seek_to_seconds:int=None
     ):
+        existing = db.op.get_transcode_session(cduid=ticket.cduid,video_file_id=video_file_id,streamable_id=streamable_id)
+        if existing:
+            return existing
         input_path = None
         snowstream_info = None
         if video_file_id != None:
@@ -61,8 +64,6 @@ class TranscodeSessions:
 
         transcode_session = db.op.create_transcode_session(
             cduid=ticket.cduid,
-            transcode_directory=None,
-            transcode_file=None,
             video_file_id=video_file_id,
             streamable_id=streamable_id,
             stream_port=stream_port
