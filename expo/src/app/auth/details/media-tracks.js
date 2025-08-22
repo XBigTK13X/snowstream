@@ -321,6 +321,7 @@ export default function MediaTracksPage(props) {
                         </C.FillView>
                         <C.FillView>
                             <C.SnowText center>Path: {videoFile.network_path}</C.SnowText>
+                            <C.SnowText center>Params: {JSON.stringify(localParams)}</C.SnowText>
                             <C.SnowGrid shrink itemsPerRow={3}>
                                 <C.SnowTextButton
                                     tall
