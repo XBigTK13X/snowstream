@@ -142,7 +142,7 @@ class TranscodeSessions:
         self.close(transcode_session=transcode_session)
 
     def process_is_running(self, transcode_session):
-        return  transcode_session.process_id in self.pid_is_ffmpeg and f'{transcode_session.stream_port}' in self.pid_is_ffmpeg[transcode_session.process_id]:
+        return transcode_session.process_id in self.pid_is_ffmpeg and f'{transcode_session.stream_port}' in self.pid_is_ffmpeg[transcode_session.process_id]
 
     def close(self, transcode_session:dm.TranscodeSession=None,transcode_session_id:int=None):
         try:
