@@ -60,7 +60,7 @@ export default function RnvVideoView(props) {
             height: Style.window.height(),
             position: 'absolute',
             alignSelf: 'center',
-            backgroundColor: 'transparent',
+            backgroundColor: 'black',
             top: 0,
             left: 0,
             bottom: 0,
@@ -157,7 +157,7 @@ export default function RnvVideoView(props) {
                     fullscreen={false}
                     hideShutterView={true}
                     focusable={true}
-                    shutterColor="transparent"
+                    shutterColor="black"
                     resizeMode="contain"
                     paused={!player.info.isPlaying}
                     playWhenInactive={false}
