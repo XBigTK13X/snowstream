@@ -103,23 +103,33 @@ def build_command(
         if after_filter:
             complex_filters.append(after_filter)
 
+    # Subtitles take so long to process for a transcode that rnv player fails to connect
+    # Might need a better solution to side-load the subs without ffmpeg needing to process them
     # The subtitle filters are part of the 'after' video filter_complex above
-    subtitle_filter = None
-    valid_sub_index = True
-    if subtitle_track_index != None:
-        sub_is_text = True
-        if snowstream_info:
-            if subtitle_track_index >= len(snowstream_info['tracks']['subtitle']):
-                valid_sub_index = False
-            sub_track = snowstream_info['tracks']['subtitle'][subtitle_track_index]
-            sub_is_text = sub_track['is_text']
-        if valid_sub_index:
-            if sub_is_text:
-                subtitle_filter = dialect.text_subtitle_filter(input_url,subtitle_track_index)
-                complex_filters.append(subtitle_filter)
-            else:
-                subtitle_filter  = dialect.image_subtitle_filter()
-                complex_filters.append(subtitle_filter)
+    # Note that only one filter_complex is allowed, so this logic needs to be tweaked so the resulting command is actually
+    # ffmpeg -init_hw_device qsv=hw -filter_hw_device hw \
+    # -i "movie.mkv" \
+    # -filter_complex "[0:v]hwupload=extra_hw_frames=64,format=qsv,scale_qsv=format=p010,setparams=color_primaries=bt2020:color_trc=smpte2084:colorspace=bt2020nc,subtitles='movie.mkv':si=0:force_style='FontName=Arial,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BackColour=&HA0000000,BorderStyle=4,Fontsize=24'[v]" \
+    # -map "[v]" -c:v hevc_qsv \
+    # -map 0:a:0 -c:a aac \
+    # -f matroska -listen 1 "http://0.0.0.0:11910/stream.matroska"
+    #subtitle_filter = None
+    #valid_sub_index = True
+    #if subtitle_track_index != None:
+    #    sub_is_text = True
+    #    if snowstream_info:
+    #        if subtitle_track_index >= len(snowstream_info['tracks']['subtitle']):
+    #            valid_sub_index = False
+    #        sub_track = snowstream_info['tracks']['subtitle'][subtitle_track_index]
+    #        sub_is_text = sub_track['is_text']
+    #    if valid_sub_index:
+    #        if sub_is_text:
+    #            subtitle_filter = dialect.text_subtitle_filter(input_url,subtitle_track_index)
+    #            complex_filters.append(subtitle_filter)
+    #        else:
+    #            subtitle_filter  = dialect.image_subtitle_filter()
+    #            complex_filters.append(subtitle_filter)
+    
 
     if complex_filters:
         filters = ';'.join(complex_filters)

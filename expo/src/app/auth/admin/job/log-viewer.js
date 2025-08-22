@@ -31,7 +31,7 @@ export default function LogViewerPage() {
     const tabs = [
         'Server',
         'Transcode',
-        'Job'
+        'Playback'
     ]
 
     return (
