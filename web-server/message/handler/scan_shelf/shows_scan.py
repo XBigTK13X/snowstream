@@ -1,6 +1,6 @@
 import re
 import os
-from media import nfo
+import media.nfo
 from enum import Flag, auto
 from log import log
 from pathlib import Path
@@ -260,7 +260,7 @@ class ShowsScanHandler(ShelfScanner):
                         db.op.create_show_metadata_file(
                             show_id=show_id, metadata_file_id=info["id"]
                         )
-                        show_nfo = nfo.nfo_path_to_dict(info['file_path'])
+                        show_nfo = media.nfo.nfo_path_to_dict(info['file_path'])
                         if 'year' in show_nfo:
                             db.op.update_show_release_year(
                                 show_id=show_id,
@@ -295,7 +295,7 @@ class ShowsScanHandler(ShelfScanner):
                         db.op.create_show_episode_metadata_file(
                             show_episode_id=episode.id, metadata_file_id=info["id"]
                         )
-                        metadata = nfo.nfo_path_to_dict(nfo_path=info['file_path'])
+                        metadata = media.nfo.nfo_path_to_dict(nfo_path=info['file_path'])
                         if 'title' in metadata:
                             db.op.update_show_episode_name(
                                 show_episode_id=episode.id,

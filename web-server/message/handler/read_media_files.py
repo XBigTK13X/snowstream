@@ -138,10 +138,10 @@ def handle(scope):
             if not metadata_file.local_path:
                 continue
             if not os.path.exists(metadata_file.local_path):
-                db.op.update_job(job_id=scope.job_id, message=f"WARNING A metadata_file db entry exists for a path that does not exist\n\t[{metadata_file.local_path}]")
+                db.op.update_job(job_id=scope.job_id, message=f"WARNING A metadata_file db entry exists for a path that does not exist\n\t({metadata_file.id})[{metadata_file.local_path}]")
                 continue
             try:
-                nfo_content = nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
+                nfo_content = media.nfo.nfo_path_to_dict(nfo_path=metadata_file.local_path)
                 if not 'tag' in nfo_content:
                     continue
                 for tag_name in nfo_content['tag']:
@@ -188,7 +188,7 @@ def handle(scope):
             if not image_file.local_path:
                 continue
             if not os.path.exists(image_file.local_path):
-                db.op.update_job(job_id=scope.job_id, message=f"WARNING An image_file db entry exists for a path that does not exist\n\t[{image_file.local_path}]")
+                db.op.update_job(job_id=scope.job_id, message=f"WARNING An image_file db entry exists for a path that does not exist\n\t({image_file.id})[{image_file.local_path}]")
                 continue
             try:
                 media.image.create_thumbnail(local_path=image_file.local_path,force_overwrite=(not scope.skip_existing))
@@ -207,7 +207,7 @@ def handle(scope):
             if not video_file.local_path:
                 continue
             if not os.path.exists(video_file.local_path):
-                db.op.update_job(job_id=scope.job_id, message=f"WARNING A video_file db entry exists for a path that does not exist\n\t[{video_file.local_path}]")
+                db.op.update_job(job_id=scope.job_id, message=f"WARNING A video_file db entry exists for a path that does not exist\n\t({video_file.id})[{video_file.local_path}]")
                 continue
             try:
                 if scope.skip_existing and video_file.ffprobe_raw_json and video_file.mediainfo_raw_json:

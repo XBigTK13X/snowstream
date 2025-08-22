@@ -1,7 +1,7 @@
 from settings import config
-from log import log
 import os
 import util
+import datetime
 
 def create_thumbnail(local_path:str,force_overwrite:bool=False):
     hash_name = util.string_to_md5(local_path)
