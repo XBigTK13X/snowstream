@@ -45,9 +45,17 @@ class TranscodeSessions:
         existing = db.op.get_transcode_session(cduid=ticket.cduid,video_file_id=video_file_id,streamable_id=streamable_id)
         if existing:
             self.refresh_known_processes()
-            if self.process_is_running(existing):
-                return existing
+            if seek_to_seconds == None:
+                if self.process_is_running(existing):
+                    return existing
+                else:
+                    db.op.delete_transcode_session(transcode_session_id=existing.id)
             else:
+                if self.process_is_running(existing):
+                    try:
+                        os.kill(existing.process_id)
+                    except Exception as e:
+                        log.info("Unable to kill supposedly running transcode process")
                 db.op.delete_transcode_session(transcode_session_id=existing.id)
         input_path = None
         snowstream_info = None
