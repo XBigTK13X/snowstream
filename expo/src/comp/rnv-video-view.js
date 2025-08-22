@@ -133,6 +133,8 @@ export default function RnvVideoView(props) {
         }
     }
 
+    const shade = player.info.subtitleColor.shade * 255
+
     return (
         <SnowModal
             wrapper={false}
@@ -150,9 +152,9 @@ export default function RnvVideoView(props) {
                         bufferConfig: bufferConfig
                     }}
                     ref={videoRef}
-                    // SURFACE allows HDR video playback without tonemapping on Android/TV
                     controls={false}
                     useNativeControls={false}
+                    // SURFACE allows HDR video playback without tonemapping on Android/TV
                     viewType={ViewType.SURFACE}
                     fullscreen={false}
                     hideShutterView={true}
@@ -167,7 +169,11 @@ export default function RnvVideoView(props) {
                     selectedTextTrack={{ type: 'index', value: player.info.audioTrackIndex }}
                     subtitleStyle={{
                         fontSize: player.info.subtitleFontSize * .6,
-                        opacity: player.info.subtitleColor.shade
+                        color: `rgba(${shade}, ${shade}, ${shade}})`,
+                        textShadowColor: 'rgba(0, 0, 0)',
+                        textShadowOffset: { width: 1, height: 1 },
+                        textShadowRadius: 5,
+                        opacity: 0.9
                     }}
 
                     // The main events needed by snowstream
