@@ -30,7 +30,6 @@ class TranscodeSessions:
         return open_port
 
     def register_cleanup(self):
-        self.cleanup()
         atexit.register(self.cleanup)
 
     def create_session(
@@ -162,7 +161,6 @@ class TranscodeSessions:
             log.error(f"Unable to close transcode session {transcode_session.id}")
 
     def cleanup(self):
-
         self.refresh_known_processes()
         transcode_sessions = db.op.get_transcode_session_list()
         if transcode_sessions and len(transcode_sessions) > 0:

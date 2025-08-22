@@ -14,6 +14,8 @@ config.validate(log)
 
 from media.transcode_sessions import transcode_sessions
 
+transcode_sessions.cleanup()
+
 transcode_sessions.register_cleanup()
 
 app = FastAPI(

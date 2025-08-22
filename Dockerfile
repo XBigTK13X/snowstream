@@ -51,6 +51,8 @@ COPY ./web-server/requirements.txt /app/requirements.txt
 WORKDIR /app
 RUN pip install -r /app/requirements.txt
 COPY ./web-server /app
+RUN rm -rf /app/.snowstream
+
 COPY ./docker /app/docker
 COPY ./script /app/script
 COPY ./expo/dist /app/prod-frontend
