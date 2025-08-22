@@ -27,20 +27,6 @@ const bufferConfig = {
 export default function RnvVideoView(props) {
     const player = usePlayerContext()
     const styles = {
-        touchable: {
-            width: Style.window.width(),
-            height: Style.window.height(),
-            zIndex: Style.depth.video.toggle,
-            elevation: Style.depth.video.toggle,
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'black'
-        },
         wrapper: {
             width: Style.window.width(),
             height: Style.window.height(),
@@ -55,17 +41,30 @@ export default function RnvVideoView(props) {
             justifyContent: 'center',
             backgroundColor: 'black'
         },
+        touchable: {
+            width: Style.window.width(),
+            height: Style.window.height(),
+            zIndex: Style.depth.video.toggle,
+            elevation: Style.depth.video.toggle,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'black'
+        },
         video: {
             width: Style.window.width(),
             height: Style.window.height(),
             position: 'absolute',
             alignSelf: 'center',
-            backgroundColor: 'black',
+            backgroundColor: 'transparent',
             top: 0,
             left: 0,
             bottom: 0,
             right: 0,
-            flex: 1,
             zIndex: Style.depth.video.content,
             elevation: Style.depth.video.content
         },
@@ -152,6 +151,8 @@ export default function RnvVideoView(props) {
                     }}
                     ref={videoRef}
                     // SURFACE allows HDR video playback without tonemapping on Android/TV
+                    controls={false}
+                    useNativeControls={false}
                     viewType={ViewType.SURFACE}
                     fullscreen={false}
                     hideShutterView={true}
