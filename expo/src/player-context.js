@@ -134,6 +134,7 @@ export function PlayerContextProvider(props) {
     }
 
     const onTranscodeSeek = () => {
+        onAddLog({ kind: 'snowstream', message: `transcode triggered seek to ${manualSeekSeconds} seconds` })
         setVideoLoaded(false)
         setVideoUrl(null)
         setTranscodeOnResume(false)
@@ -448,12 +449,14 @@ export function PlayerContextProvider(props) {
             }
             if (isTranscode) {
                 if (props.loadTranscode) {
+                    onAddLog({ kind: 'snowstream', message: 'firing off a loadTranscode' })
                     props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, initialSeekSeconds)
                         .then(loadVideo)
                 }
             }
             else {
                 if (props.loadVideo) {
+                    onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo' })
                     props.loadVideo(apiClient, localParams)
                         .then(loadVideo)
                 }
