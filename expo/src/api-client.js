@@ -71,6 +71,7 @@ export class ApiClient {
         this.createJobDeleteMediaRecords = this.createJobDeleteMediaRecords.bind(this)
         this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
         this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
+        this.createJobSanitizeFileProperties = this.createJobSanitizeFileProperties.bind(this)
         this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
         this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
         this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
@@ -201,6 +202,10 @@ export class ApiClient {
 
     createJobDeleteMediaRecords(details) {
         return this.createScopedJob('delete_media_records', details)
+    }
+
+    createJobSanitizeFileProperties(details) {
+        return this.createScopedJob('sanitize_file_properties', details)
     }
 
     getJobList(showComplete, limit) {

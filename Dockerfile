@@ -20,7 +20,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y supervisor
 # web server
 RUN DEBIAN_FRONTEND=noninteractive apt install -y nginx
 # transcoding and video inspection
-RUN DEBIAN_FRONTEND=noninteractive apt install -y ffmpeg mediainfo
+RUN DEBIAN_FRONTEND=noninteractive apt install -y ffmpeg mediainfo mkvtoolnix
 # thumbnails
 RUN DEBIAN_FRONTEND=noninteractive apt install -y imagemagick
 # quicksync and vaapi

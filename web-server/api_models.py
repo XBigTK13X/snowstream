@@ -37,6 +37,7 @@ class JobRequest(BaseModel):
         Literal['delete_media_records'],
         Literal["identify_unknown_media"],
         Literal["read_media_files"],
+        Literal["sanitize_file_properties"],
         Literal["scan_shelves_content"],
         Literal["stream_sources_refresh"],
         Literal["update_media_files"],

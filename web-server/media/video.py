@@ -275,3 +275,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         'mediainfo_raw': raw_mediainfo
     }
     return result
+
+def scrub_container_info(local_path:str):
+    command = f'mkvpropedit "{local_path}" --edit info --set title=""'
+    util.run_cli(command,raw_output=True)
+    return True
