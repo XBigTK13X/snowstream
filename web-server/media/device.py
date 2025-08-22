@@ -47,10 +47,10 @@ device_list = [
     DeviceProfile({
         'name': 'CCwGTV4K',
         'hdr': 'hard',
-        'hdr10': 'hard',
-        'hdr10Plus': 'hard',
-        'hdrHlg': 'hard',
-        'dolbyVision': 'hard',
+        'hdr_ten': 'hard',
+        'hdr_ten_plus': 'hard',
+        'hdr_hlg': 'hard',
+        'dolby_vision': 'hard',
         'h265_eight': 'hard',
         'h265_ten': 'hard',
         'h264_eight': 'hard',
@@ -73,12 +73,12 @@ device_list = [
     DeviceProfile({
         'name': 'Google Streamer',
         'hdr': 'hard',
-        'hdr10': 'hard',
-        'hdr10Plus': 'hard',
-        'dolbyVision': 'hard',
-        'h264Eight': 'hard',
-        'h265Eight': 'hard',
-        'h265Ten': 'hard',
+        'hdr_ten': 'hard',
+        'hdr_ten_plus': 'hard',
+        'dolby_vision': 'hard',
+        'h264_eight': 'hard',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
         'vp9': 'hard',
         'av1': 'hard'
     }),
@@ -98,8 +98,8 @@ device_list = [
         'name': 'Fire Max 11',
         'h264_eight': 'hard',
         'h264_ten': 'hard',
-        'h265Eight': 'hard',
-        'h265Ten': 'hard',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
     })
 ]
 
