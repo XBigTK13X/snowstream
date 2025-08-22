@@ -44,7 +44,11 @@ class TranscodeSessions:
     ):
         existing = db.op.get_transcode_session(cduid=ticket.cduid,video_file_id=video_file_id,streamable_id=streamable_id)
         if existing:
-            return existing
+            self.refresh_known_processes()
+            if self.process_is_running(existing):
+                return existing
+            else:
+                db.op.delete_transcode_session(transcode_session_id=existing.id)
         input_path = None
         snowstream_info = None
         if video_file_id != None:
@@ -137,6 +141,9 @@ class TranscodeSessions:
         self.refresh_known_processes()
         self.close(transcode_session=transcode_session)
 
+    def process_is_running(self, transcode_session):
+        return  transcode_session.process_id in self.pid_is_ffmpeg and f'{transcode_session.stream_port}' in self.pid_is_ffmpeg[transcode_session.process_id]:
+
     def close(self, transcode_session:dm.TranscodeSession=None,transcode_session_id:int=None):
         try:
             if transcode_session_id:
@@ -144,7 +151,7 @@ class TranscodeSessions:
                 if not transcode_session:
                     return True
             try:
-                if transcode_session.process_id in self.pid_is_ffmpeg and f'{transcode_session.stream_port}' in self.pid_is_ffmpeg[transcode_session.process_id]:
+                if self.process_is_running():
                     os.kill(transcode_session.process_id, signal.SIGTERM)
             except Exception as e:
                 log.error(f"{traceback.format_exc()}")
