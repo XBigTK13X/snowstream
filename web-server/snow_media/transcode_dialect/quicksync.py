@@ -1,5 +1,5 @@
-import media.filter_kind
-from media.transcode_dialect.default import DefaultTranscodeDialect
+import snow_media.filter_kind
+from snow_media.transcode_dialect.default import DefaultTranscodeDialect
 
 class QuicksyncTranscodeDialect(DefaultTranscodeDialect):
     def __init__(self,video_filter_kind:str):

@@ -12,7 +12,7 @@ import routes
 from settings import config
 config.validate(log)
 
-from media.transcode_sessions import transcode_sessions
+from snow_media.transcode_sessions import transcode_sessions
 
 transcode_sessions.cleanup()
 

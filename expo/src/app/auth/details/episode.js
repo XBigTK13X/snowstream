@@ -13,8 +13,8 @@ export default function EpisodeDetailsPage() {
             getMediaName={(localParams, media) => {
                 return `${localParams.showName} - ${media.name}`
             }}
-            loadMedia={(apiClient, localParams) => {
-                return apiClient.getEpisode(localParams.episodeId)
+            loadMedia={(apiClient, localParams, deviceProfile) => {
+                return apiClient.getEpisode(localParams.episodeId, deviceProfile)
             }}
             toggleWatchStatus={(apiClient, localParams) => {
                 return apiClient.toggleEpisodeWatchStatus(localParams.episodeId)

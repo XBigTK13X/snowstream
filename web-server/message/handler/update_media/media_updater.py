@@ -1,10 +1,10 @@
 import os
 from db import db
 from log import log
-from media import nfo
+from snow_media import nfo
 from message.job_media_scope import JobMediaScope
 import requests
-import media.image
+import snow_media.image
 from settings import config
 
 class FileStub:
@@ -33,7 +33,7 @@ class MediaUpdater:
         if download.status_code == 200:
             with open(local_path, 'wb') as write_handle:
                 write_handle.write(download.content)
-            media.image.create_thumbnail(local_path=local_path,force_overwrite=True)
+            snow_media.image.create_thumbnail(local_path=local_path,force_overwrite=True)
             db.op.update_job(job_id=self.job_id, message=f"Downloaded {image_url} to {local_path}")
             return True
         return False

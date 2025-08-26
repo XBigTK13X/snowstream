@@ -460,7 +460,7 @@ export function PlayerContextProvider(props) {
             else {
                 if (props.loadVideo) {
                     onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo', localParams })
-                    props.loadVideo(apiClient, localParams)
+                    props.loadVideo(apiClient, localParams, clientOptions.deviceProfile)
                         .then(loadVideo)
                 }
             }

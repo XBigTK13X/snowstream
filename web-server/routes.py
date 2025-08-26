@@ -12,11 +12,11 @@ from auth import get_current_user
 from db import db
 from log import log
 from settings import config
-from media.transcode_sessions import transcode_sessions
+from snow_media.transcode_sessions import transcode_sessions
 from typing import Annotated
 import api_models as am
 import message.write
-import media
+import snow_media
 
 def register(router):
     router = no_auth_required(router)
@@ -86,7 +86,7 @@ def auth_required(router):
     ):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
         if streamable.stream_source.kind == 'TubeArchivist':
-            info = media.video.get_snowstream_info(streamable.url)
+            info = snow_media.video.get_snowstream_info(streamable.url)
             streamable.duration_seconds = info['snowstream_info']['duration_seconds']
         return streamable
 
@@ -351,6 +351,7 @@ def auth_required(router):
     def get_movie_details(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_id: int,
+        device_profile:str=None,
     ):
         movie = db.op.get_movie_by_id(ticket=auth_user.ticket,movie_id=movie_id)
         if movie == None:
@@ -362,6 +363,9 @@ def auth_required(router):
         for ii in range(0,len(movie.video_files)):
             movie.video_files[ii].info = json.loads(movie.video_files[ii].snowstream_info_json)
             del movie.video_files[ii].snowstream_info_json
+            if device_profile:
+                plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=movie.video_files[ii].info)
+                movie.video_files[ii].plan = plan
             movie.video_files[ii].file_index = ii
             if 'main_feature' in movie.video_files[ii].kind:
                 movie.main_feature_index = ii
@@ -370,6 +374,8 @@ def auth_required(router):
                 movie.video_files[ii].is_extra = True
             if movie.video_files[ii].version:
                 movie.has_versions = True
+            if device_profile != None:
+                movie.video_files[ii].play_steps = []
         search_query = f'reddit movies discussion {movie.name} ({movie.release_year})'
         movie.discussion_image_url = util.search_to_base64_qrcode(search_query)
         return movie
@@ -539,6 +545,7 @@ def auth_required(router):
     def get_show_episode_details(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         episode_id: int,
+        device_profile: str
     ):
         episode = db.op.get_show_episode_by_id(ticket=auth_user.ticket,episode_id=episode_id)
         if not episode:
@@ -548,6 +555,9 @@ def auth_required(router):
         for ii in range(0,len(episode.video_files)):
             episode.video_files[ii].info = json.loads(episode.video_files[ii].snowstream_info_json)
             del episode.video_files[ii].snowstream_info_json
+            if device_profile:
+                plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=episode.video_files[ii].info)
+                episode.video_files[ii].plan = plan
             episode.video_files[ii].file_index = ii
             if episode.video_files[ii].version:
                 episode.has_versions = True

@@ -13,13 +13,13 @@ const styles = {
 
 export function SnowDropdown(props) {
     if (!props.options) {
-        return <View>No options defined!</View>
+        return null
+    }
+    if (props.valueIndex === undefined || props.valueIndex === null) {
+        return null
     }
 
-    const [selectedIndex, setSelectedIndex] = React.useState(props.valueIndex)
-
     const choose = (chosenIndex) => {
-        setSelectedIndex(chosenIndex)
         if (props.onValueChange) {
             props.onValueChange(chosenIndex)
         }
@@ -28,7 +28,7 @@ export function SnowDropdown(props) {
     const renderItem = (item, itemIndex) => {
         let selected = false
         if (!props.skipDefaultFocus) {
-            if ((itemIndex === selectedIndex) || (!selectedIndex && itemIndex === 0)) {
+            if (itemIndex === props.valueIndex) {
                 selected = true
             }
         }

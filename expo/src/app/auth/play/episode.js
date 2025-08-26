@@ -3,8 +3,8 @@ import C from '../../../common'
 import PlayMediaPage from './media'
 
 export default function PlayEpisodePage() {
-    const loadVideo = (apiClient, localParams) => {
-        return apiClient.getEpisode(localParams.episodeId).then((episode) => {
+    const loadVideo = (apiClient, localParams, deviceProfile) => {
+        return apiClient.getEpisode(localParams.episodeId, deviceProfile).then((episode) => {
             let videoFileIndex = 0
             if (localParams.videoFileIndex) {
                 videoFileIndex = parseInt(localParams.videoFileIndex, 10)
@@ -21,7 +21,7 @@ export default function PlayEpisodePage() {
 
     const loadTranscode = (apiClient, localParams, deviceProfile, progressSeconds) => {
         return new Promise((resolve) => {
-            apiClient.getEpisode(localParams.episodeId)
+            apiClient.getEpisode(localParams.episodeId, deviceProfile)
                 .then((episode) => {
                     let videoFileIndex = 0
                     if (localParams.videoFileIndex) {

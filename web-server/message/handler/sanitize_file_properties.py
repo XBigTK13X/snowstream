@@ -1,6 +1,6 @@
 from log import log
 from db import db
-import media.video
+import snow_media.video
 
 from message.job_media_scope import JobMediaScope
 
@@ -34,6 +34,6 @@ def handle(scope:JobMediaScope):
 
     db.op.update_job(job_id=scope.job_id, message=f"Sanitizing {len(video_files)} videos")
     for video_file in video_files:
-        media.video.scrub_container_info(local_path=video_file.local_path)
+        snow_media.video.scrub_container_info(local_path=video_file.local_path)
 
     return True

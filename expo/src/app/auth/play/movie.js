@@ -1,8 +1,8 @@
 import PlayMediaPage from './media'
 
 export default function PlayMoviePage() {
-    const loadVideo = (apiClient, localParams) => {
-        return apiClient.getMovie(localParams.movieId).then((movie) => {
+    const loadVideo = (apiClient, localParams, deviceProfile) => {
+        return apiClient.getMovie(localParams.movieId, deviceProfile).then((movie) => {
             let videoFileIndex = 0
             if (localParams.videoFileIndex) {
                 videoFileIndex = parseInt(localParams.videoFileIndex, 10)
@@ -19,7 +19,7 @@ export default function PlayMoviePage() {
 
     const loadTranscode = (apiClient, localParams, deviceProfile, progressSeconds) => {
         return new Promise((resolve) => {
-            apiClient.getMovie(localParams.movieId)
+            apiClient.getMovie(localParams.movieId, deviceProfile)
                 .then((movie) => {
                     let videoFileIndex = 0
                     if (localParams.videoFileIndex) {

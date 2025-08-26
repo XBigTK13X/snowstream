@@ -1,11 +1,11 @@
 from settings import config
 from log import log
-import media.device
-from media.transcode_dialect.default import DefaultTranscodeDialect
-from media.transcode_dialect.nvidia import NvidiaTranscodeDialect
-from media.transcode_dialect.quicksync import QuicksyncTranscodeDialect
-from media.transcode_dialect.vaapi import VaapiTranscodeDialect
-import media.filter_kind
+import snow_media.device
+from snow_media.transcode_dialect.default import DefaultTranscodeDialect
+from snow_media.transcode_dialect.nvidia import NvidiaTranscodeDialect
+from snow_media.transcode_dialect.quicksync import QuicksyncTranscodeDialect
+from snow_media.transcode_dialect.vaapi import VaapiTranscodeDialect
+import snow_media.planner
 
 # Working qsv
 # ffmpeg -i "$VIDEO_PATH" -c:v hevc_qsv -f flv -listen 1 "http://0.0.0.0:11910/stream.flv"
@@ -14,10 +14,10 @@ import media.filter_kind
 
 
 transcode_dialects = {
-    'default': media.transcode_dialect.default,
-    'nvidia': media.transcode_dialect.nvidia,
-    'quicksync': media.transcode_dialect.quicksync,
-    'vaapi': media.transcode_dialect.vaapi,
+    'default': snow_media.transcode_dialect.default,
+    'nvidia': snow_media.transcode_dialect.nvidia,
+    'quicksync': snow_media.transcode_dialect.quicksync,
+    'vaapi': snow_media.transcode_dialect.vaapi,
 }
 
 class FfmpegCommand:
@@ -40,36 +40,21 @@ def build_command(
     seek_to_seconds:int=None
 ):
     if device_profile == 'undefined':
-        device_profile = media.device.default_device
-    client_device = media.device.device_lookup[device_profile]
+        device_profile = snow_media.device.default_device
 
-    container = client_device.transcode.container
-    # Help dialect determine what extra actions need to be taken to transcode
-    video_filter_kind = None
-    if snowstream_info and 'tracks' in snowstream_info and 'video' in snowstream_info['tracks']:
-        video_track = snowstream_info['tracks']['video'][0]
-        if 'hdr_format' in video_track:
-            container = client_device.transcode.hdr_container
-        if 'hdr_compatibility' in video_track:
-            hdr_kind = video_track['hdr_compatibility'].lower()
-            if '10+' in hdr_kind and not client_device.video.hdr.ten_plus:
-                video_filter_kind = media.filter_kind.hdr_ten_plus_to_hdr_ten
-        elif 'hdr_format' in video_track:
-            hdr_kind = video_track['hdr_format'].lower()
-            if 'dolby vision' in hdr_kind and not client_device.video.hdr.dolby_vision:
-                video_filter_kind = media.filter_kind.dolby_vision_to_hdr_ten
+    plan = snow_media.planner.create_plan(device_profile=device_profile)
 
-    dialect = DefaultTranscodeDialect(video_filter_kind=video_filter_kind)
+    dialect = DefaultTranscodeDialect(video_filter_kind=plan.video_filter_kind)
     if config.transcode_dialect:
         if config.transcode_dialect == 'quicksync':
-            dialect = QuicksyncTranscodeDialect(video_filter_kind=video_filter_kind)
+            dialect = QuicksyncTranscodeDialect(video_filter_kind=plan.video_filter_kind)
         elif config.transcode_dialect == 'vaapi':
-            dialect = VaapiTranscodeDialect(video_filter_kind=video_filter_kind)
+            dialect = VaapiTranscodeDialect(video_filter_kind=plan.video_filter_kind)
         elif config.transcode_dialect == 'nvidia':
-            dialect = NvidiaTranscodeDialect(video_filter_kind=video_filter_kind)
+            dialect = NvidiaTranscodeDialect(video_filter_kind=plan.video_filter_kind)
 
-    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{container}'
-    ffmpeg_url = f'http://{config.transcode_ffmpeg_host}:{stream_port}/stream.{container}'
+    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{plan.transcode_container}'
+    ffmpeg_url = f'http://{config.transcode_ffmpeg_host}:{stream_port}/stream.{plan.transcode_container}'
     command =  FfmpegCommand()
 
     # Apply any dialect input settings
@@ -83,22 +68,22 @@ def build_command(
     if seek_to_seconds:
         command.append(f'-ss {seek_to_seconds}')
 
-    if video_filter_kind:
+    if plan.video_filter_kind:
         before_filter = dialect.before_encode_filter()
         if before_filter:
             command.append(f'-filter_complex "{before_filter};"')
 
-    encode_video_codec = client_device.transcode.video_codec
+    encode_video_codec = plan.transcode_video_codec
     found_match = False
     video_encode = dialect.encode(encode_video_codec)
     if video_encode:
         command.append(video_encode)
         found_match = True
     if not found_match:
-        raise Exception(f"Unable to handle transcode video codec {encode_video_codec} for dialect {config.transcode_dialect} for {client_device.name}")
+        raise Exception(f"Unable to handle transcode video codec {encode_video_codec} for dialect {config.transcode_dialect} for {device_profile}")
 
     complex_filters = []
-    if video_filter_kind:
+    if plan.video_filter_kind:
         after_filter = dialect.after_encode_filter()
         if after_filter:
             complex_filters.append(after_filter)
@@ -129,14 +114,14 @@ def build_command(
     #        else:
     #            subtitle_filter  = dialect.image_subtitle_filter()
     #            complex_filters.append(subtitle_filter)
-    
+
 
     if complex_filters:
         filters = ';'.join(complex_filters)
         command.append(f' -filter_complex "{filters};"')
 
     # Sometimes specific non-filter instructions are needed
-    if video_filter_kind:
+    if plan.video_filter_kind:
         after_params = dialect.after_encode_parameters()
         if after_params:
             command.append(after_params)
@@ -147,18 +132,18 @@ def build_command(
         command.append(f'-b:v {config.transcode_max_rate} -maxrate {config.transcode_max_rate}')
 
     found_match = False
-    encode_audio_codec = client_device.transcode.audio_codec
+    encode_audio_codec = plan.transcode_audio_codec
     audio_options = dialect.encode(encode_audio_codec)
     if audio_options:
         command.append(audio_options)
         found_match = True
     if not found_match:
-        raise Exception(f"Unable to handle transcode audio codec {encode_audio_codec} for dialect {config.transcode_dialect} for {client_device.name}")
+        raise Exception(f"Unable to handle transcode audio codec {encode_audio_codec} for dialect {config.transcode_dialect} for {device_profile}")
 
     if audio_track_index != None:
         command.append(f'-map 0:a:{audio_track_index}')
 
-    command.append(f'-f {container} -listen 1')
+    command.append(f'-f {plan.transcode_container} -listen 1')
     command.append(f'"{ffmpeg_url}"')
     log.info(command.get_command())
     return command.get_command(),streaming_url

@@ -1,4 +1,4 @@
-import media.filter_kind
+import snow_media.filter_kind
 
 after_strip_hdr10_plus = ''.join([
     '-x265-params "',
@@ -32,11 +32,11 @@ class DefaultTranscodeDialect:
         return None
 
     def after_encode_filter(self):
-        if self.video_filter_kind == media.filter_kind.ten_bit_to_eight_bit:
+        if self.video_filter_kind == snow_media.filter_kind.ten_bit_to_eight_bit:
             return f'format=yuv420p'
 
     def after_encode_parameters(self):
-        if self.video_filter_kind == media.filter_kind.hdr_ten_plus_to_hdr_ten:
+        if self.video_filter_kind == snow_media.filter_kind.hdr_ten_plus_to_hdr_ten:
             return after_strip_hdr10_plus
 
 

@@ -1,7 +1,7 @@
 from log import log
 from settings import config
 config.transcode_dialect = 'quicksync'
-import media.transcode_cli
+import snow_media.transcode_cli
 from db import db
 import json
 

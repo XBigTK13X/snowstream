@@ -1,5 +1,5 @@
 from database.operation.db_internal import dbi
-import media.image
+import snow_media.image
 import database.operation.shelf as db_shelf
 
 def create_image_file(shelf_id: int, kind: str, local_path: str):

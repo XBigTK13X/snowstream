@@ -1,6 +1,6 @@
 from log import log
 import atexit
-import media.transcode_cli
+import snow_media.transcode_cli
 import json
 import os
 import shutil
@@ -79,7 +79,7 @@ class TranscodeSessions:
             streamable_id=streamable_id,
             stream_port=stream_port
         )
-        command,streaming_url = media.transcode_cli.build_command(
+        command,streaming_url = snow_media.transcode_cli.build_command(
             device_profile=device_profile,
             input_url=input_path,
             snowstream_info=snowstream_info,

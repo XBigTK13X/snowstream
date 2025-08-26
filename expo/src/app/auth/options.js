@@ -15,8 +15,6 @@ const resolutions = [
 export default function OptionsPage() {
     const { apiClient, clientOptions, changeClientOptions } = C.useAppContext()
 
-    console.log({ clientOptions })
-
     let storedResolution = 0
     if (clientOptions) {
         if (clientOptions.resolutionHeight !== 2160) {
@@ -30,7 +28,6 @@ export default function OptionsPage() {
     const [deviceProfiles, setDeviceProfiles] = C.React.useState(null)
     const [deviceProfileIndex, setDeviceProfileIndex] = C.React.useState(null)
     const [deviceProfile, setDeviceProfile] = C.React.useState('')
-
     const [deviceId, setDeviceId] = C.React.useState(clientOptions ? clientOptions.deviceId : '')
 
 

@@ -1,4 +1,4 @@
-from media.transcode_dialect.default import DefaultTranscodeDialect
+from snow_media.transcode_dialect.default import DefaultTranscodeDialect
 
 
 # Kind of working HDR10+ tone mapping

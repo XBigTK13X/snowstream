@@ -133,14 +133,6 @@ android {
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
     }
-    repositories{
-      // TODO There must be a way to include this dep in the react native module, but anything I tried threw a bunch of different errors
-      // Workaround for now
-      maven {
-        name "reposlite"
-        url "https://reposlite.9914.us/repository/main"
-      }
-    }
 }
 
 // Apply static values from `gradle.properties` to the `android.packagingOptions`

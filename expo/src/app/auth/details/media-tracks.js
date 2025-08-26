@@ -10,7 +10,7 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
-    const { apiClient, isAdmin } = C.useAppContext();
+    const { apiClient, clientOptions, isAdmin } = C.useAppContext();
     const { routes } = C.useAppContext();
     const localParams = C.useLocalSearchParams();
 
@@ -31,7 +31,7 @@ export default function MediaTracksPage(props) {
             apiClient.getShelf(shelfId).then((response) => {
                 setShelf(response)
             })
-            props.loadMedia(apiClient, localParams).then((response) => {
+            props.loadMedia(apiClient, localParams, clientOptions).then((response) => {
                 setMedia(response)
                 if (response.video_files[videoFileIndex].is_hdr) {
                     setPlayer('exo')
@@ -43,7 +43,7 @@ export default function MediaTracksPage(props) {
     const setWatchStatus = (status) => {
         return props.toggleWatchStatus(apiClient, localParams)
             .then(() => {
-                return props.loadMedia(apiClient, localParams)
+                return props.loadMedia(apiClient, localParams, clientOptions)
             })
             .then((response) => {
                 setMedia(response)

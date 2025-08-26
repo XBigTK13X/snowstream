@@ -1,4 +1,4 @@
-from media.transcode_dialect.default import DefaultTranscodeDialect
+from snow_media.transcode_dialect.default import DefaultTranscodeDialect
 
 class NvidiaTranscodeDialect(DefaultTranscodeDialect):
     def __init__(self,video_filter_kind:str):

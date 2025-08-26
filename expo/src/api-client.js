@@ -294,8 +294,8 @@ export class ApiClient {
         return this.get('/movie/list', { shelf_id: shelfId, show_playlisted: showPlaylisted })
     }
 
-    getMovie(movieId) {
-        return this.get('/movie', { movie_id: movieId })
+    getMovie(movieId, deviceProfile) {
+        return this.get('/movie', { movie_id: movieId, device_profile: deviceProfile })
     }
 
     getShowList(shelfId, showPlaylisted) {
@@ -310,8 +310,8 @@ export class ApiClient {
         return this.get('/show/season/episode/list', { shelf_id: shelfId, show_season_id: seasonId })
     }
 
-    getEpisode(episodeId) {
-        return this.get('/show/season/episode', { episode_id: episodeId })
+    getEpisode(episodeId, deviceProfile) {
+        return this.get('/show/season/episode', { episode_id: episodeId, device_profile: deviceProfile })
     }
 
     getUserList() {

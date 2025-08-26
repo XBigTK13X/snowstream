@@ -4,7 +4,7 @@ from log import log
 from pathlib import Path
 from db import db
 from message.handler.scan_shelf.shelf_scanner import ShelfScanner
-import media.nfo
+import snow_media.nfo
 
 MOVIE_ASSETS_REGEX = re.compile(
     r"(?P<directory>.*?)(?P<movie_folder_name>[^\/]*?)"
@@ -183,7 +183,7 @@ class MoviesScanHandler(ShelfScanner):
                     db.op.create_movie_metadata_file(
                         movie_id=movie.id, metadata_file_id=info["id"]
                     )
-                    movie_nfo = media.nfo.nfo_path_to_dict(info['file_path'])
+                    movie_nfo = snow_media.nfo.nfo_path_to_dict(info['file_path'])
                     remote_id = None
                     remote_source = None
                     if 'tvdbid' in movie_nfo:

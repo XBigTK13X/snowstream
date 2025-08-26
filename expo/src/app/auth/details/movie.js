@@ -6,8 +6,8 @@ export default function MovieDetailsPage() {
 
     return <MediaTracksPage
         mediaKind="Movie"
-        loadMedia={(apiClient, localParams) => {
-            return apiClient.getMovie(localParams.movieId)
+        loadMedia={(apiClient, localParams, deviceProfile) => {
+            return apiClient.getMovie(localParams.movieId, deviceProfile)
         }}
         toggleWatchStatus={(apiClient, localParams) => {
             return apiClient.toggleMovieWatchStatus(localParams.movieId)
