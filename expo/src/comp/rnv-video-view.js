@@ -1,7 +1,7 @@
 import React from 'react'
 import Video from 'react-native-video';
 import { ViewType } from 'react-native-video'
-import { Platform, View, TouchableOpacity, Modal } from 'react-native'
+import { Platform, View, TouchableOpacity } from 'react-native'
 import Style from '../snow-style'
 import SnowText from './snow-text'
 import SnowTextButton from './snow-text-button'
@@ -30,43 +30,34 @@ export default function RnvVideoView(props) {
         wrapper: {
             width: Style.window.width(),
             height: Style.window.height(),
-            zIndex: Style.depth.video.wrapper,
-            elevation: Style.depth.video.wrapper,
             position: 'absolute',
             top: 0,
             left: 0,
             bottom: 0,
             right: 0,
             alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'black'
+            justifyContent: 'center'
         },
         touchable: {
             width: Style.window.width(),
             height: Style.window.height(),
-            zIndex: Style.depth.video.toggle,
-            elevation: Style.depth.video.toggle,
             position: 'absolute',
             top: 0,
             left: 0,
             bottom: 0,
             right: 0,
             alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'black'
+            justifyContent: 'center'
         },
         video: {
             width: Style.window.width(),
             height: Style.window.height(),
             position: 'absolute',
             alignSelf: 'center',
-            backgroundColor: 'black',
             top: 0,
             left: 0,
             bottom: 0,
-            right: 0,
-            zIndex: Style.depth.video.content,
-            elevation: Style.depth.video.content
+            right: 0
         },
     }
     const videoRef = React.useRef(null);
@@ -140,74 +131,75 @@ export default function RnvVideoView(props) {
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
+            <Video
+                style={styles.video}
+                source={{
+                    uri: player.info.videoUrl,
+                    bufferConfig: bufferConfig
+                }}
+                ref={videoRef}
+                controls={false}
+                useNativeControls={false}
+                // SURFACE allows HDR video playback without tonemapping on Android/TV
+                viewType={ViewType.SURFACE}
+                fullscreen={false}
+                focusable={true}
+                resizeMode="contain"
+                paused={!player.info.isPlaying}
+                playWhenInactive={false}
+                playInBackground={false}
+                muted={!player.info.isPlaying}
+                selectedAudioTrack={{ type: 'index', value: player.info.audioTrackIndex }}
+                selectedTextTrack={{ type: 'index', value: player.info.audioTrackIndex }}
+                subtitleStyle={{
+                    fontSize: player.info.subtitleFontSize * .6,
+                    color: `rgba(${shade}, ${shade}, ${shade}})`,
+                    textShadowColor: 'rgba(0, 0, 0)',
+                    textShadowOffset: { width: 1, height: 1 },
+                    textShadowRadius: 5,
+                    opacity: 0.9
+                }}
+
+                // The main events needed by snowstream
+                onError={onError}
+                onEnd={onRnvEvent('onEnd')}
+                onProgress={onRnvEvent('onProgress')}
+                onReadyForDisplay={onRnvEvent('onReadyForDisplay')}
+
+                // Events used primarily for debugging
+                onAudioBecomingNoisy={onRnvEvent('onAudioBecomingNoisy')}
+                onAudioFocusChanged={onRnvEvent('onAudioFocusChanged')}
+                onAudioTracks={onRnvEvent('onAudioTracks')}
+                onBandwidthUpdate={onRnvEvent('onBandwidthUpdate')}
+                onBuffer={onRnvEvent('onBuffer')}
+                onControlsVisibilityChange={onRnvEvent('onControlsVisibilityChange')}
+                onExternalPlaybackChange={onRnvEvent('onExternalPlaybackChange')}
+                onFullscreenPlayerWillPresent={onRnvEvent('onFullscreenPlayerWillPresent')}
+                onFullscreenPlayerDidPresent={onRnvEvent('onFullscreenPlayerDidPresent')}
+                onFullscreenPlayerWillDismiss={onRnvEvent('onFullscreenPlayerWillDismiss')}
+                onFullscreenPlayerDidDismiss={onRnvEvent('onFullscreenPlayerDidDismiss')}
+                onLoad={onRnvEvent('onLoad')}
+                onLoadStart={onRnvEvent('onLoadStart')}
+                onPlaybackStateChanged={onRnvEvent('onPlaybackStateChanged')}
+                onPictureInPictureStatusChanged={onRnvEvent('onPictureInPictureStatusChanged')}
+                onPlaybackRateChange={onRnvEvent('onPlaybackRateChange')}
+                onReceiveAdEvent={onRnvEvent('onReceiveAdEvent')}
+                onRestoreUserInterfaceForPictureInPictureStop={onRnvEvent('onRestoreUserInterfaceForPictureInPictureStop')}
+                onSeek={onRnvEvent('onSeek')}
+                onTimedMetadata={onRnvEvent('onTimedMetadata')}
+                onTextTrackDataChanged={onRnvEvent('onTextTrackDataChanged')}
+                onTextTracks={onRnvEvent('onTextTracks')}
+                onVideoTracks={onRnvEvent('onVideoTracks')}
+                onVolumeChange={onRnvEvent('onVolumeChange')}
+
+            />
             <TouchableOpacity
-                transparent
+                // Without this, the video has a white film over it
+                activeOpacity={1}
                 hasTVPreferredFocus={!player.info.controlsVisible}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
-                <Video
-                    style={styles.video}
-                    source={{
-                        uri: player.info.videoUrl,
-                        bufferConfig: bufferConfig
-                    }}
-                    ref={videoRef}
-                    controls={false}
-                    useNativeControls={false}
-                    // SURFACE allows HDR video playback without tonemapping on Android/TV
-                    viewType={ViewType.SURFACE}
-                    fullscreen={false}
-                    hideShutterView={true}
-                    focusable={true}
-                    shutterColor="black"
-                    resizeMode="contain"
-                    paused={!player.info.isPlaying}
-                    playWhenInactive={false}
-                    playInBackground={false}
-                    muted={!player.info.isPlaying}
-                    selectedAudioTrack={{ type: 'index', value: player.info.audioTrackIndex }}
-                    selectedTextTrack={{ type: 'index', value: player.info.audioTrackIndex }}
-                    subtitleStyle={{
-                        fontSize: player.info.subtitleFontSize * .6,
-                        color: `rgba(${shade}, ${shade}, ${shade}})`,
-                        textShadowColor: 'rgba(0, 0, 0)',
-                        textShadowOffset: { width: 1, height: 1 },
-                        textShadowRadius: 5
-                    }}
 
-                    // The main events needed by snowstream
-                    onError={onError}
-                    onEnd={onRnvEvent('onEnd')}
-                    onProgress={onRnvEvent('onProgress')}
-                    onReadyForDisplay={onRnvEvent('onReadyForDisplay')}
-
-                    // Events used primarily for debugging
-                    onAudioBecomingNoisy={onRnvEvent('onAudioBecomingNoisy')}
-                    onAudioFocusChanged={onRnvEvent('onAudioFocusChanged')}
-                    onAudioTracks={onRnvEvent('onAudioTracks')}
-                    onBandwidthUpdate={onRnvEvent('onBandwidthUpdate')}
-                    onBuffer={onRnvEvent('onBuffer')}
-                    onControlsVisibilityChange={onRnvEvent('onControlsVisibilityChange')}
-                    onExternalPlaybackChange={onRnvEvent('onExternalPlaybackChange')}
-                    onFullscreenPlayerWillPresent={onRnvEvent('onFullscreenPlayerWillPresent')}
-                    onFullscreenPlayerDidPresent={onRnvEvent('onFullscreenPlayerDidPresent')}
-                    onFullscreenPlayerWillDismiss={onRnvEvent('onFullscreenPlayerWillDismiss')}
-                    onFullscreenPlayerDidDismiss={onRnvEvent('onFullscreenPlayerDidDismiss')}
-                    onLoad={onRnvEvent('onLoad')}
-                    onLoadStart={onRnvEvent('onLoadStart')}
-                    onPlaybackStateChanged={onRnvEvent('onPlaybackStateChanged')}
-                    onPictureInPictureStatusChanged={onRnvEvent('onPictureInPictureStatusChanged')}
-                    onPlaybackRateChange={onRnvEvent('onPlaybackRateChange')}
-                    onReceiveAdEvent={onRnvEvent('onReceiveAdEvent')}
-                    onRestoreUserInterfaceForPictureInPictureStop={onRnvEvent('onRestoreUserInterfaceForPictureInPictureStop')}
-                    onSeek={onRnvEvent('onSeek')}
-                    onTimedMetadata={onRnvEvent('onTimedMetadata')}
-                    onTextTrackDataChanged={onRnvEvent('onTextTrackDataChanged')}
-                    onTextTracks={onRnvEvent('onTextTracks')}
-                    onVideoTracks={onRnvEvent('onVideoTracks')}
-                    onVolumeChange={onRnvEvent('onVolumeChange')}
-
-                />
             </TouchableOpacity>
         </SnowModal>
     )

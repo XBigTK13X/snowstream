@@ -252,6 +252,14 @@ export default function MediaTracksPage(props) {
             'Track',
             'Info'
         ]
+        let playerDisplay = `[mpv] / exo`
+        if (player === 'exo') {
+            playerDisplay = `mpv / [exo]`
+        }
+        let transcodeDisplay = `[Direct Play] / Transcode`
+        if (shouldTranscode) {
+            transcodeDisplay = `Direct Play / [Transcode]`
+        }
         const controlTab = (
             <C.FillView>
                 <C.SnowGrid shrink itemsPerRow={4}>
@@ -262,12 +270,12 @@ export default function MediaTracksPage(props) {
                 <C.SnowGrid itemsPerRow={4}>
                     <C.SnowTextButton tall title={watchTitle} onLongPress={setWatchStatus} />
                     <C.SnowTextButton
-                        title={`Toggle Player [${player}]`}
+                        title={playerDisplay}
                         tall
                         onPress={togglePlayer}
                     />
                     <C.SnowTextButton
-                        title={`Should Transcode [${shouldTranscode}]`}
+                        title={transcodeDisplay}
                         tall
                         onPress={toggleTranscode}
                     />

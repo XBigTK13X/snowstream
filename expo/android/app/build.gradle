@@ -95,7 +95,7 @@ android {
         minSdkVersion 26
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "0.15.7"
+        versionName "0.15.9"
     }
     signingConfigs {
         debug {
@@ -132,6 +132,13 @@ android {
     }
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
+    }
+    repositories{
+      // TODO See the build.gradle in react-native-libmpv for why this exists
+      maven {
+        name "reposlite"
+        url "https://reposlite.9914.us/repository/main"
+      }
     }
 }
 

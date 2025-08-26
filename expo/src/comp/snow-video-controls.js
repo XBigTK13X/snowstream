@@ -29,14 +29,10 @@ const styles = {
     },
 
     logs: {
-        backgroundColor: Style.color.background,
-        zIndex: Style.depth.video.controls + 10,
-        elevation: Style.depth.video.controls + 10
+        backgroundColor: Style.color.background
     },
     prompt: {
-        backgroundColor: Style.color.transparentDark,
-        zIndex: Style.depth.video.controls,
-        elevation: Style.depth.video.controls
+        backgroundColor: Style.color.transparentDark
     }
 }
 
