@@ -351,11 +351,12 @@ def auth_required(router):
     def get_movie_details(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         movie_id: int,
-        device_profile:str=None,
+        device_profile:str,
     ):
         movie = db.op.get_movie_by_id(ticket=auth_user.ticket,movie_id=movie_id)
         if movie == None:
             return None
+        movie.shelf_name = movie.shelf.name
         movie.watched = db.op.get_movie_watched(ticket=auth_user.ticket,movie_id=movie_id)
         movie.has_extras = False
         movie.has_versions = False
@@ -374,8 +375,6 @@ def auth_required(router):
                 movie.video_files[ii].is_extra = True
             if movie.video_files[ii].version:
                 movie.has_versions = True
-            if device_profile != None:
-                movie.video_files[ii].play_steps = []
         search_query = f'reddit movies discussion {movie.name} ({movie.release_year})'
         movie.discussion_image_url = util.search_to_base64_qrcode(search_query)
         return movie
@@ -550,6 +549,7 @@ def auth_required(router):
         episode = db.op.get_show_episode_by_id(ticket=auth_user.ticket,episode_id=episode_id)
         if not episode:
             return None
+        episode.shelf_name = episode.season.show.shelf.name
         episode.has_extras = False
         episode.has_versions = False
         for ii in range(0,len(episode.video_files)):
@@ -598,7 +598,7 @@ def auth_required(router):
     def get_device_profile_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
     ):
-        return {'devices':[xx.name for xx in media.device.device_list]}
+        return {'devices':[xx.name for xx in snow_media.device.device_list]}
 
     @router.post("/transcode/session",tags=['User'])
     def create_transcode_session(

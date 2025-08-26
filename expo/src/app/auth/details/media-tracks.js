@@ -14,12 +14,11 @@ export default function MediaTracksPage(props) {
     const { routes } = C.useAppContext();
     const localParams = C.useLocalSearchParams();
 
-    const [shelf, setShelf] = C.React.useState(null);
     const [media, setMedia] = C.React.useState(null);
     const [audioTrack, setAudioTrack] = C.React.useState(0)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
     const [videoFileIndex, setVideoFileIndex] = C.React.useState(0)
-    const [player, setPlayer] = C.React.useState(C.isWeb ? 'exo' : 'mpv')
+    const [player, setPlayer] = C.React.useState(null)
     const [forcePlayer, setForcePlayer] = C.React.useState(null)
     const [showModal, setShowModal] = C.React.useState(false)
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
@@ -27,15 +26,25 @@ export default function MediaTracksPage(props) {
     const shelfId = localParams.shelfId;
 
     C.React.useEffect(() => {
-        if (!shelf) {
-            apiClient.getShelf(shelfId).then((response) => {
-                setShelf(response)
-            })
-            props.loadMedia(apiClient, localParams, clientOptions).then((response) => {
+        if (!media) {
+            props.loadMedia(apiClient, localParams, clientOptions.deviceProfile).then((response) => {
                 setMedia(response)
-                if (response.video_files[videoFileIndex].is_hdr) {
-                    setPlayer('exo')
-                    setForcePlayer('exo')
+                let plan = response.video_files[videoFileIndex].plan
+                if (plan) {
+                    if (plan.player) {
+                        setPlayer(plan.player)
+                        setForcePlayer(plan.player)
+                    }
+                    else {
+                        setPlayer('mpv')
+                    }
+                    if (plan.video_requires_transcode) {
+                        setShouldTranscode(true)
+                    } else {
+                        if (plan.audio_requires_transcode[audioTrack]) {
+                            setShouldTranscode(true)
+                        }
+                    }
                 }
             })
         }
@@ -43,7 +52,7 @@ export default function MediaTracksPage(props) {
     const setWatchStatus = (status) => {
         return props.toggleWatchStatus(apiClient, localParams)
             .then(() => {
-                return props.loadMedia(apiClient, localParams, clientOptions)
+                return props.loadMedia(apiClient, localParams, clientOptions.deviceProfile)
             })
             .then((response) => {
                 setMedia(response)
@@ -95,7 +104,7 @@ export default function MediaTracksPage(props) {
         setShouldTranscode(!shouldTranscode)
     }
 
-    if (shelf && media) {
+    if (media) {
         const videoFile = media.video_files[videoFileIndex]
         if (!videoFile) {
             return <SnowText>No video file found for this selection.</SnowText>
@@ -243,6 +252,73 @@ export default function MediaTracksPage(props) {
             'Track',
             'Info'
         ]
+        const controlTab = (
+            <C.FillView>
+                <C.SnowGrid shrink itemsPerRow={4}>
+                    {mainFeatureButton}
+                    <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, localParams)} />
+                    {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
+                </C.SnowGrid>
+                <C.SnowGrid itemsPerRow={4}>
+                    <C.SnowTextButton tall title={watchTitle} onLongPress={setWatchStatus} />
+                    <C.SnowTextButton
+                        title={`Toggle Player [${player}]`}
+                        tall
+                        onPress={togglePlayer}
+                    />
+                    <C.SnowTextButton
+                        title={`Should Transcode [${shouldTranscode}]`}
+                        tall
+                        onPress={toggleTranscode}
+                    />
+                </C.SnowGrid>
+            </C.FillView>
+        )
+        const trackTab = (
+            <C.FillView>
+                {versionPicker}
+                {extraPicker}
+                <C.SnowTrackSelector
+                    tracks={videoFile.info.tracks}
+                    selectTrack={selectTrack}
+                    audioTrack={audioTrack}
+                    subtitleTrack={subtitleTrack}
+                />
+            </C.FillView>
+        )
+        const infoTab = (
+            <C.FillView>
+                <C.SnowGrid shrink itemsPerRow={3}>
+                    <C.SnowTextButton
+                        tall
+                        title="Inspection"
+                        onPress={showInfo}
+                    />
+                </C.SnowGrid>
+                <C.SnowGrid shrink itemsPerRow={2}>
+                    <C.View>
+                        <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
+                        <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
+                        <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
+                        <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
+                    </C.View>
+                    <C.View
+                        style={styles.image}>
+                        <C.SnowLabel>Discussion</C.SnowLabel>
+                        <C.Image
+                            source={{ uri: media.discussion_image_url }}
+                            style={{ width: 200, height: 200 }}
+                        />
+                    </C.View>
+                </C.SnowGrid>
+                <C.SnowText >Path: {videoFile.network_path}</C.SnowText>
+                <C.SnowGrid shrink itemsPerRow={3}>
+                    <C.SnowText >Params: {JSON.stringify(localParams, null, 4)}</C.SnowText>
+                    <C.SnowText >Plan: {JSON.stringify(videoFile.plan, null, 4)}</C.SnowText>
+                    <C.SnowText >Options: {JSON.stringify(clientOptions, null, 4)}</C.SnowText>
+                </C.SnowGrid>
+            </C.FillView>
+        )
         let adminTab = null
         if (isAdmin) {
             tabs.push('Admin')
@@ -273,7 +349,7 @@ export default function MediaTracksPage(props) {
         }
         return (
             <C.FillView>
-                <C.FillView>
+                <C.View>
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(localParams, media) : media.name}
                     </C.SnowLabel>
@@ -286,67 +362,12 @@ export default function MediaTracksPage(props) {
                             onPress={routes.func(props.getPlayRoute(routes), combinedPlayDestination)}
                         />
                     </C.SnowGrid>
-                </C.FillView>
+                </C.View>
                 <C.FillView>
                     <C.SnowTabs headers={tabs}>
-                        <C.FillView>
-                            <C.SnowGrid shrink itemsPerRow={4}>
-                                {mainFeatureButton}
-                                <C.SnowTextButton tall title={shelf.name} onPress={props.gotoShelf(routes, localParams)} />
-                                {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
-                            </C.SnowGrid>
-                            <C.SnowGrid itemsPerRow={4}>
-                                <C.SnowTextButton tall title={watchTitle} onLongPress={setWatchStatus} />
-                                <C.SnowTextButton
-                                    title={`Toggle Player [${player}]`}
-                                    tall
-                                    onPress={togglePlayer}
-                                />
-                                <C.SnowTextButton
-                                    title={`Should Transcode [${shouldTranscode}]`}
-                                    tall
-                                    onPress={toggleTranscode}
-                                />
-                            </C.SnowGrid>
-                        </C.FillView>
-                        <C.FillView>
-                            {versionPicker}
-                            {extraPicker}
-                            <C.SnowTrackSelector
-                                tracks={videoFile.info.tracks}
-                                selectTrack={selectTrack}
-                                audioTrack={audioTrack}
-                                subtitleTrack={subtitleTrack}
-                            />
-                        </C.FillView>
-                        <C.FillView>
-                            <C.SnowText center>Path: {videoFile.network_path}</C.SnowText>
-                            <C.SnowText center>Params: {JSON.stringify(localParams)}</C.SnowText>
-                            <C.SnowGrid shrink itemsPerRow={3}>
-                                <C.SnowTextButton
-                                    tall
-                                    title="Inspection"
-                                    onPress={showInfo}
-                                />
-                            </C.SnowGrid>
-                            <C.SnowGrid shrink itemsPerRow={2}>
-                                <C.View>
-
-                                    <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
-                                    <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
-                                    <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
-                                    <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
-                                </C.View>
-                                <C.View
-                                    style={styles.image}>
-                                    <C.SnowLabel>Discussion</C.SnowLabel>
-                                    <C.Image
-                                        source={{ uri: media.discussion_image_url }}
-                                        style={{ width: 200, height: 200 }}
-                                    />
-                                </C.View>
-                            </C.SnowGrid>
-                        </C.FillView>
+                        {controlTab}
+                        {trackTab}
+                        {infoTab}
                         {adminTab}
                     </C.SnowTabs >
                 </C.FillView >

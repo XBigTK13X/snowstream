@@ -10,7 +10,7 @@ class QuicksyncTranscodeDialect(DefaultTranscodeDialect):
         return '-init_hw_device qsv=hw -filter_hw_device hw'
 
     def before_encode_filter(self):
-        if self.video_filter_kind == media.filter_kind.hdr_ten_plus_to_hdr_ten:
+        if self.video_filter_kind == snow_media.filter_kind.hdr_ten_plus_to_hdr_ten:
             return "hwupload=extra_hw_frames=64,format=qsv,scale_qsv=format=p010,setparams=color_primaries=bt2020:color_trc=smpte2084:colorspace=bt2020nc"
         return None
 

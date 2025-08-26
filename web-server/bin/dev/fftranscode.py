@@ -19,7 +19,7 @@ def show_command(name:str, source, device:str=None,subtitle_index:int=None,audio
     log.info('')
     log.info(name)
     log.info('')
-    command,stream_url = media.transcode_cli.build_command(
+    command,stream_url = snow_media.transcode_cli.build_command(
         device_profile="NVIDIA Shield" if not device else device,
         input_url=video_file.local_path,
         stream_port=DEFAULT_PORT,

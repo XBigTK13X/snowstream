@@ -3,7 +3,7 @@ import snow_media.image
 import database.operation.shelf as db_shelf
 
 def create_image_file(shelf_id: int, kind: str, local_path: str):
-    local_thumbnail_path = media.image.create_thumbnail(local_path)
+    local_thumbnail_path = snow_media.image.create_thumbnail(local_path)
     thumbnail_web_path = dbi.config.web_media_url + local_thumbnail_path
     if local_thumbnail_path[0] != '/':
         thumbnail_web_path = dbi.config.web_media_url + '/' + local_thumbnail_path

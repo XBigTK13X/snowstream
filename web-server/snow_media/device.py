@@ -5,6 +5,7 @@ class Stub:
 class DeviceProfile:
     def __init__(self,config):
         self.name = config['name']
+        self.force_player = config.get('force_player')
 
         self.video = Stub()
         self.video.resolution = Stub()
@@ -83,6 +84,7 @@ device_list = [
         'av1': 'hard'
     }),
     DeviceProfile({
+        'force_player': 'exo',
         'name': 'Web Browser',
         'h264_eight': 'hard',
         'h264_ten': 'hard',

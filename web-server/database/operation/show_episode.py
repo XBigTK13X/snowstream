@@ -58,6 +58,7 @@ def sql_row_to_api_result(
     episode.season.show.shelf = dbi.dm.Stub()
     episode.season.show.shelf.model_kind = 'shelf'
     episode.season.show.shelf.id = row.shelf_id
+    episode.season.show.shelf.name = row.shelf_name
 
     episode.image_files = []
     episode.video_files = []

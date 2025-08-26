@@ -295,7 +295,7 @@ export class ApiClient {
     }
 
     getMovie(movieId, deviceProfile) {
-        return this.get('/movie', { movie_id: movieId, device_profile: deviceProfile })
+        return this.get(`/movie?movie_id=${movieId}&device_profile=${deviceProfile}`)
     }
 
     getShowList(shelfId, showPlaylisted) {
@@ -311,7 +311,7 @@ export class ApiClient {
     }
 
     getEpisode(episodeId, deviceProfile) {
-        return this.get('/show/season/episode', { episode_id: episodeId, device_profile: deviceProfile })
+        return this.get(`/show/season/episode?episode_id=${episodeId}&device_profile=${deviceProfile}`)
     }
 
     getUserList() {

@@ -172,8 +172,7 @@ export default function RnvVideoView(props) {
                         color: `rgba(${shade}, ${shade}, ${shade}})`,
                         textShadowColor: 'rgba(0, 0, 0)',
                         textShadowOffset: { width: 1, height: 1 },
-                        textShadowRadius: 5,
-                        opacity: 0.9
+                        textShadowRadius: 5
                     }}
 
                     // The main events needed by snowstream

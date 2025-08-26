@@ -9,7 +9,7 @@ def get_movie_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
             distinct on (tag.id)
             tag.id as tag_id,
             array_remove(array_agg(tag.name),NULL) as tag_name_list,
-            array_remove(array_agg(image_file.thumbnail_web_path),NULL) as image_list
+            array_remove(array_agg(image_file.thumbnail_web_path order by random()),NULL) as image_list
         from tag
             join movie_tag on movie_tag.tag_id = tag.id
             join movie_image_file on movie_image_file.movie_id = movie_tag.movie_id
@@ -83,7 +83,7 @@ def get_show_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
             distinct on (tag.id)
             tag.id as tag_id,
             array_remove(array_agg(tag.name),NULL) as tag_name_list,
-            array_remove(array_agg(image_file.thumbnail_web_path),NULL) as image_list
+            array_remove(array_agg(image_file.thumbnail_web_path order by random()),NULL) as image_list
         from tag
             join show_tag on show_tag.tag_id = tag.id
             join show_image_file on show_image_file.show_id = show_tag.show_id
