@@ -37,7 +37,9 @@ export default function RnvVideoView(props) {
             right: 0,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'black' // Without this color, letterbox will be white by default
+            backgroundColor: 'black', // Without this color, letterbox will be white by default
+            zIndex: 100,
+            elevation: 100
         },
         touchable: {
             width: Style.window.width(),
@@ -48,7 +50,9 @@ export default function RnvVideoView(props) {
             bottom: 0,
             right: 0,
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            zIndex: 300,
+            elevation: 300,
         },
         video: {
             width: Style.window.width(),
@@ -59,7 +63,9 @@ export default function RnvVideoView(props) {
             left: 0,
             bottom: 0,
             right: 0,
-            backgroundColor: 'transparent' // Without this color, letterbox will be white by default
+            backgroundColor: 'transparent',
+            zIndex: 200,
+            elevation: 200 // Without this color, letterbox will be white by default
         },
     }
     const videoRef = React.useRef(null);
@@ -201,7 +207,6 @@ export default function RnvVideoView(props) {
                 hasTVPreferredFocus={!player.info.controlsVisible}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
-
             </TouchableOpacity>
         </SnowModal>
     )
