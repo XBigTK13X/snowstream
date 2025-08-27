@@ -36,7 +36,8 @@ export default function RnvVideoView(props) {
             bottom: 0,
             right: 0,
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            backgroundColor: 'black' // Without this color, letterbox will be white by default
         },
         touchable: {
             width: Style.window.width(),
