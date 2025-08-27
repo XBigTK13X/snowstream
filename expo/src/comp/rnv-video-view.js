@@ -58,7 +58,8 @@ export default function RnvVideoView(props) {
             top: 0,
             left: 0,
             bottom: 0,
-            right: 0
+            right: 0,
+            backgroundColor: 'transparent' // Without this color, letterbox will be white by default
         },
     }
     const videoRef = React.useRef(null);
