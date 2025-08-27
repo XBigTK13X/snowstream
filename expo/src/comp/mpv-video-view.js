@@ -1,6 +1,5 @@
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
-import { useNavigation } from 'expo-router'
 import { useAppContext } from '../app-context'
 import { usePlayerContext } from '../player-context'
 import Style from '../snow-style'
@@ -10,6 +9,7 @@ import SnowModal from './snow-modal'
 export default function MpvVideoView(props) {
     const player = usePlayerContext()
     const { clientOptions } = useAppContext()
+    const [accel, setAccel] = React.useState(false)
     const styles = {
         touchable: {
             width: Style.window.width(),
@@ -47,6 +47,16 @@ export default function MpvVideoView(props) {
             if (nativeRef.current && clientOptions.audioCompression) {
                 // Loudness normalization from Snowby
                 nativeRef.current.runMpvCommand(`set|af|acompressor=ratio=4,loudnorm`)
+            }
+            player.action.onVideoReady()
+        }
+    })
+
+    React.useEffect(() => {
+        if (nativeRef.current && !accel) {
+            if (nativeRef.current && clientOptions.audioCompression) {
+                // Loudness normalization from Snowby
+                nativeRef.current.runMpvCommand(`set|hwdec|acompressor=ratio=4,loudnorm`)
             }
             player.action.onVideoReady()
         }

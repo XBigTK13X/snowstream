@@ -26,6 +26,10 @@ const bufferConfig = {
 
 export default function RnvVideoView(props) {
     const player = usePlayerContext()
+    const videoRef = React.useRef(null);
+    const [userPlayed, setUserPlayed] = React.useState(false)
+    const [requestTranscode, setRequestTranscode] = React.useState(false)
+
     const styles = {
         wrapper: {
             width: Style.window.width(),
@@ -48,23 +52,20 @@ export default function RnvVideoView(props) {
             bottom: 0,
             right: 0,
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            backgroundColor: 'black' // Without this color, letterbox will be white by default
         },
         video: {
-            width: Style.window.width(),
-            height: Style.window.height(),
-            position: 'absolute',
             alignSelf: 'center',
+            position: 'absolute',
             top: 0,
             left: 0,
             bottom: 0,
             right: 0,
             backgroundColor: 'transparent' // Without this color, letterbox will be white by default
-        },
+        }
     }
-    const videoRef = React.useRef(null);
-    const [userPlayed, setUserPlayed] = React.useState(false)
-    const [requestTranscode, setRequestTranscode] = React.useState(false)
+
 
     // Workaround for web not allowing videos to autoplay
     let userClickedPlay = null
@@ -128,39 +129,11 @@ export default function RnvVideoView(props) {
 
     const shade = player.info.subtitleColor.shade * 255
 
-    const { width: screenW, height: screenH } = Style.window;
-    const videoAR = player.info.width / player.info.height;
-    const screenAR = screenW / screenH;
-
-    let videoStyle = {};
-    let bars = [];
-
-    if (videoAR > screenAR) {
-        // Letterboxing top/bottom
-        const videoH = screenW / videoAR;
-        const barH = (screenH - videoH) / 2;
-        videoStyle = { width: screenW, height: videoH };
-        bars = [
-            <View key="top" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: barH, backgroundColor: 'black' }} />,
-            <View key="bottom" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: barH, backgroundColor: 'black' }} />,
-        ];
-    } else {
-        // Pillarboxing left/right
-        const videoW = screenH * videoAR;
-        const barW = (screenW - videoW) / 2;
-        videoStyle = { width: videoW, height: screenH };
-        bars = [
-            <View key="left" style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: barW, backgroundColor: 'black' }} />,
-            <View key="right" style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: barW, backgroundColor: 'black' }} />,
-        ];
-    }
-
     return (
         <SnowModal
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
-            {bars}
             <TouchableOpacity
                 // Without this, the video has a white film over it
                 activeOpacity={1}
