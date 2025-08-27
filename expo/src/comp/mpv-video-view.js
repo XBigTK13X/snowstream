@@ -53,16 +53,6 @@ export default function MpvVideoView(props) {
     })
 
     React.useEffect(() => {
-        if (nativeRef.current && !accel) {
-            if (nativeRef.current && clientOptions.audioCompression) {
-                // Loudness normalization from Snowby
-                nativeRef.current.runMpvCommand(`set|hwdec|mediacodec-copy,no`)
-            }
-            player.action.onVideoReady()
-        }
-    })
-
-    React.useEffect(() => {
         if (nativeRef.current) {
             nativeRef.current.runMpvCommand(`set|sub-ass-override|force`)
             nativeRef.current.runMpvCommand(`set|sub-font-size|${player.info.subtitleFontSize}`)
