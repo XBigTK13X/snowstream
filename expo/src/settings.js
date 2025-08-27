@@ -12,13 +12,14 @@ class Config {
         this.progressMinDeltaSeconds = 5
 
         this.debugVideoPlayer = false
-        this.debugVideoUrl = null
 
         const animeUrl = "/auth/details/episode?shelfId=2&showId=54&seasonId=112&episodeId=2377&showName=Gintama&seasonOrder=2&episodeOrder=3"
         const movieUrl = "/auth/details/movie?shelfId=1&movieId=651"
         const showUrl = '/auth/details/episode?shelfId=2&showId=243&seasonId=563&episodeId=10312&showName=Blue%27s%20Clues&seasonOrder=1&episodeOrder=2'
+        const whiteLetterBoxUrl = '/auth/details/movie?shelfId=1&movieId=971'
 
-        //this.debugVideoUrl = showUrl
+        this.debugVideoUrl = null
+        this.debugVideoUrl = whiteLetterBoxUrl
     }
 }
 
