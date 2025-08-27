@@ -17,9 +17,10 @@ class Config {
         const movieUrl = "/auth/details/movie?shelfId=1&movieId=651"
         const showUrl = '/auth/details/episode?shelfId=2&showId=243&seasonId=563&episodeId=10312&showName=Blue%27s%20Clues&seasonOrder=1&episodeOrder=2'
         const whiteLetterBoxUrl = '/auth/details/movie?shelfId=1&movieId=971'
+        const h264TenBit = '/auth/details/episode?shelfId=2&showId=528&seasonId=1896&episodeId=33534&showName=Star ☆ Twinkle Precure&seasonOrder=1&episodeOrder=7'
 
         this.debugVideoUrl = null
-        this.debugVideoUrl = whiteLetterBoxUrl
+        this.debugVideoUrl = h264TenBit
     }
 }
 

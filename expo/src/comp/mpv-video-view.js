@@ -56,7 +56,7 @@ export default function MpvVideoView(props) {
         if (nativeRef.current && !accel) {
             if (nativeRef.current && clientOptions.audioCompression) {
                 // Loudness normalization from Snowby
-                nativeRef.current.runMpvCommand(`set|hwdec|acompressor=ratio=4,loudnorm`)
+                nativeRef.current.runMpvCommand(`set|hwdec|mediacodec-copy,no`)
             }
             player.action.onVideoReady()
         }
