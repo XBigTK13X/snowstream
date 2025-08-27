@@ -20,7 +20,7 @@ class Config {
         const h264TenBit = '/auth/details/episode?shelfId=2&showId=528&seasonId=1896&episodeId=33534&showName=Star ☆ Twinkle Precure&seasonOrder=1&episodeOrder=7'
 
         this.debugVideoUrl = null
-        this.debugVideoUrl = h264TenBit
+        //this.debugVideoUrl = h264TenBit
     }
 }
 
