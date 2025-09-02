@@ -32,7 +32,7 @@ function TvFocusView(props) {
     return (
         <TVFocusGuideView
             autoFocus={true}
-            hasTVPreferredFocus={true}
+            focusable={true}
             style={styles.safeArea}>
             {props.children}
         </TVFocusGuideView>

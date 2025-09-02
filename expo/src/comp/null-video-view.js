@@ -64,7 +64,7 @@ export default function NullVideoView(props) {
     return (
         <TouchableOpacity
             transparent
-            hasTVPreferredFocus={!player.info.controlsVisible}
+            focusable={!player.info.controlsVisible}
             style={styles.touchable}
             onPress={player.action.onPauseVideo}>
             <View>

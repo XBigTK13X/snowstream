@@ -129,7 +129,7 @@ export function SnowTextButton(props) {
             activeOpacity={1.0}
             onPress={onPressUnlessTyping}
             onLongPress={onLongPressUnlessTyping}
-            hasTVPreferredFocus={allowFocus || focused}
+            focusable={allowFocus || focused}
             onFocus={() => { changeFocus(true) }}
             onBlur={() => { changeFocus(false) }}
             disabled={props.disabled}>

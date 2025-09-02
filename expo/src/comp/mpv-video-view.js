@@ -104,7 +104,7 @@ export default function MpvVideoView(props) {
             <TouchableOpacity
                 // Without this, the video has a white film over it
                 activeOpacity={1}
-                hasTVPreferredFocus={!player.info.controlsVisible}
+                focusable={!player.info.controlsVisible}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
             </TouchableOpacity>

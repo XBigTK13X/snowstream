@@ -1,5 +1,4 @@
 import C from '../common'
-import { SystemBars } from "react-native-edge-to-edge";
 
 const styles = {
     header: {
@@ -49,9 +48,6 @@ function MessageDisplay() {
 }
 
 export default function RootLayout() {
-    if (C.isAndroid) {
-        SystemBars.setHidden(true)
-    }
     return (
         <C.AppContextProvider>
             <C.FocusContextProvider>
