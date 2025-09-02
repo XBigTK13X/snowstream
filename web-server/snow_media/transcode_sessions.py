@@ -159,7 +159,7 @@ class TranscodeSessions:
                 if not transcode_session:
                     return True
             try:
-                if self.process_is_running():
+                if self.process_is_running(transcode_session):
                     os.kill(transcode_session.process_id, signal.SIGTERM)
             except Exception as e:
                 log.error(f"{traceback.format_exc()}")

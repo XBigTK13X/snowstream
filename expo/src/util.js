@@ -8,15 +8,27 @@ export function formatEpisodeTitle(episode) {
     return `${slug} - ${episode.name}`
 }
 
-const ONE_HOUR = 3600
-export function secondsToTimestamp(seconds) {
-    if (!seconds) {
-        return "00:00"
+function pad(input) {
+    return String(input).padStart(2, "0")
+}
+
+const ONE_HOUR = 3600;
+const ONE_MINUTE = 60
+export function secondsToTimestamp(secondsInput) {
+    if (!secondsInput || secondsInput < 0) {
+        return "00:00";
     }
-    if (seconds < ONE_HOUR) {
-        return new Date(seconds * 1000).toISOString().substring(14, 19)
+
+    const hours = Math.floor(secondsInput / ONE_HOUR);
+    const minutes = Math.floor((secondsInput % ONE_HOUR) / ONE_MINUTE);
+    const seconds = Math.floor(secondsInput % ONE_MINUTE);
+
+
+    if (secondsInput < ONE_HOUR) {
+        return `${pad(minutes)}:${pad(seconds)}`
     }
-    return new Date(seconds * 1000).toISOString().slice(11, 19);
+
+    return `${hours}:${pad(minutes)}:${pad(seconds)}`
 }
 
 export function log(message) {

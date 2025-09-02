@@ -60,11 +60,15 @@ def build_command(
     if before_input:
         command.append(before_input)
 
+    # -ss before the input is faster, but more sometimes fails on older files esp.
+    if seek_to_seconds:
+        command.append(f'-ss {seek_to_seconds}')
+
     command.append(f'-i "{input_url}"')
 
     # -ss after the input is slower, but more compatible
-    if seek_to_seconds:
-        command.append(f'-ss {seek_to_seconds}')
+    #if seek_to_seconds:
+    #   command.append(f'-ss {seek_to_seconds}')
 
     if plan.video_filter_kind:
         before_filter = dialect.before_encode_filter()

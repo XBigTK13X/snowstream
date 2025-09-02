@@ -104,6 +104,7 @@ export function PlayerContextProvider(props) {
     }
 
     let playerKind = null
+    let VideoView = null
     if (clientOptions.alwaysUsePlayer === 'null') {
         VideoView = require('./comp/null-video-view').default
         playerKind = 'null'
@@ -235,6 +236,7 @@ export function PlayerContextProvider(props) {
         // Destroy and create a new one instead at the requested timestamp
         if (source === 'manual-seek' && isTranscode) {
             if (props.loadTranscode) {
+                console.log("Prep a transcode seek")
                 setManualSeekSeconds(nextProgressSeconds)
                 setTranscodeOnResume(true)
             }
