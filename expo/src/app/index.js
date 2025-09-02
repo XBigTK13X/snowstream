@@ -4,7 +4,7 @@ export default function SignInPage() {
     if (session) {
         return <C.Redirect href={routes.landing} />
     }
-    const { apiClient, signIn, config } = C.useAppContext()
+    const { apiClient, signIn, config, clientOptions } = C.useAppContext()
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
@@ -12,7 +12,7 @@ export default function SignInPage() {
 
     C.React.useEffect(() => {
         if (!users && apiClient) {
-            apiClient.getUserList().then((response) => {
+            apiClient.getUserList(clientOptions.deviceProfile).then((response) => {
                 setUsers(response)
             })
         }

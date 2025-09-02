@@ -39,11 +39,9 @@ def build_command(
     subtitle_track_index:int=None,
     seek_to_seconds:int=None
 ):
-    if device_profile == 'undefined':
-        device_profile = snow_media.device.default_device
 
     plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=snowstream_info)
-
+    
     dialect = DefaultTranscodeDialect(video_filter_kind=plan.video_filter_kind)
     if config.transcode_dialect:
         if config.transcode_dialect == 'quicksync':

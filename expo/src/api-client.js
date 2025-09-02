@@ -137,7 +137,8 @@ export class ApiClient {
                 .postForm('/login', {
                     username: payload.username,
                     password: payload.password,
-                    device_info: payload.deviceId
+                    device_name: payload.deviceId,
+                    device_profile: payload.deviceProfile
                 })
                 .then((data) => {
                     if (data && data.data && data.data.access_token) {
@@ -314,8 +315,8 @@ export class ApiClient {
         return this.get(`/show/season/episode?episode_id=${episodeId}&device_profile=${deviceProfile}`)
     }
 
-    getUserList() {
-        return this.get('/user/list')
+    getUserList(deviceProfile) {
+        return this.get(`/user/list?device_profile=${deviceProfile}`)
     }
 
     getUser(userId) {

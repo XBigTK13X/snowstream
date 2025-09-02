@@ -183,7 +183,8 @@ export function AppContextProvider(props) {
             apiClient.login({
                 username: username,
                 password: password,
-                deviceId: clientOptions.deviceId
+                deviceId: clientOptions.deviceId,
+                deviceProfile: clientOptions.deviceProfile
             })
                 .then(loginResponse => {
                     if (loginResponse && loginResponse.failed) {

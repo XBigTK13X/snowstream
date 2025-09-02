@@ -18,7 +18,7 @@ class PlaybackPlan:
         
 
 def create_plan(device_profile:str, snowstream_info:dict):
-    device = snow_media.device.device_lookup[device_profile]
+    device = snow_media.device.get_device(device_profile)
     plan = PlaybackPlan()
     plan.transcode_container = device.transcode.container
     plan.transcode_audio_codec = device.transcode.audio_codec

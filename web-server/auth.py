@@ -13,6 +13,7 @@ from settings import config
 
 import api_models as am
 from db import db
+import snow_media
 
 # https://fastapi.tiangolo.com/tutorial/security
 # https://casbin.org/docs/how-it-works/
@@ -23,12 +24,14 @@ auth_scheme = OAuth2PasswordBearer(
 )
 
 
-def authenticate_user(username: str, password: str):
+def authenticate_user(username: str, password: str, device_profile:str):
     user = db.op.get_user_by_name(username=username)
     if not user:
         return False
-    if not util.verify_password(password, user.hashed_password):
-        return False
+    device = snow_media.device.get_device(device_profile)
+    if device.require_password or username == 'admin':
+        if not util.verify_password(password, user.hashed_password):
+            return False
     return user
 
 
@@ -95,21 +98,26 @@ def register(router):
     @router.post("/login",tags=['Unauthed'])
     async def login(
         login_form: Annotated[OAuth2PasswordRequestForm, Depends()],
-        device_info: Annotated[str, Form()] = "swagger-ui"
+        device_name: Annotated[str, Form()] = "swagger-ui",
+        device_profile: Annotated[str, Form()] = None
     ):
         # FIXME Workaround Pydantic validation failures on empty passwords
         if login_form.password == 'SNOWSTREAM_EMPTY':
             login_form.password = ''
-        user = authenticate_user(login_form.username, login_form.password)
+        user = authenticate_user(
+            username=login_form.username,
+            password=login_form.password,
+            device_profile=device_profile
+        )
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        client_device = db.op.get_client_device_by_reported_name(device_name=device_info)
+        client_device = db.op.get_client_device_by_reported_name(device_name=device_name)
         if not client_device:
-            client_device = db.op.create_client_device(device_name=device_info)
+            client_device = db.op.create_client_device(device_name=device_name)
         client_device_user = db.op.get_client_device_user_by_ids(
             client_device_id=client_device.id,
             user_id=user.id

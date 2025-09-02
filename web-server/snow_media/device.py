@@ -6,6 +6,7 @@ class DeviceProfile:
     def __init__(self,config):
         self.name = config['name']
         self.force_player = config.get('force_player')
+        self.require_password = config.get('require_password', True)
 
         self.video = Stub()
         self.video.resolution = Stub()
@@ -72,6 +73,7 @@ device_list = [
         'dts_hd': 'hard',
         'dolby_atmos': 'hard',
         'dolby_hd': 'hard',
+        'require_password': False
     }),
     DeviceProfile({
         'name': 'Google Streamer',
@@ -112,3 +114,8 @@ default_device = 'CCwGTV4K'
 device_lookup = {}
 for device in device_list:
     device_lookup[device.name] = device
+
+def get_device(profile_name:str):
+    if not profile_name or not profile_name in device_lookup:
+        return device_lookup[default_device]
+    return device_lookup[profile_name]
