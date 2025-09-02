@@ -128,8 +128,8 @@ def build_command(
 
     # Cap the video output bitrate
     # EX: transcode_max_rate = 15M
-    if config.transcode_max_rate:
-        command.append(f'-b:v {config.transcode_max_rate} -maxrate {config.transcode_max_rate}')
+    if plan.transcode_bit_rate:
+        command.append(f'-b:v {plan.transcode_bit_rate}')
 
     found_match = False
     encode_audio_codec = plan.transcode_audio_codec

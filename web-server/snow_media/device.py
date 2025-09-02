@@ -17,6 +17,7 @@ class DeviceProfile:
         self.transcode.video_codec = config.get('transcode_video_codec', 'h265')
         self.transcode.audio_codec = config.get('transcode_audio_codec', 'aac')
         self.transcode.hdr_container = config.get('transcode_hdr_container', 'matroska')
+        self.transcode.bit_rate = config.get('transcode_bit_rate')
 
         self.video.h264 = Stub()
         self.video.h264.eight = config.get('h264_eight')
@@ -55,6 +56,7 @@ device_list = [
         'h265_eight': 'hard',
         'h265_ten': 'hard',
         'h264_eight': 'hard',
+        'transcode_bit_rate': '15M'
     }),
     DeviceProfile({
         'name': 'NVIDIA Shield',
@@ -81,7 +83,8 @@ device_list = [
         'h264_eight': 'hard',
         'h264_ten': 'hard',
         'vp9': 'hard',
-        'av1': 'hard'
+        'av1': 'hard',
+        'transcode_bit_rate': '15M'
     }),
     DeviceProfile({
         'force_player': 'exo',

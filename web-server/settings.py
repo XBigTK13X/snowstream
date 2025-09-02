@@ -48,7 +48,6 @@ class Config:
         self.transcode_port_range = "11910-11950"
         self.transcode_stream_host = '0.0.0.0'
         self.transcode_ffmpeg_host = '0.0.0.0'
-        self.transcode_max_rate = None
         self.watch_progress_unwatched_threshold = 0.05
         self.watch_progress_watched_threshold = 0.90
         self.web_api_url = "http://localhost:8000"

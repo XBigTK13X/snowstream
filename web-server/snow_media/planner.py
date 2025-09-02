@@ -10,10 +10,12 @@ class PlaybackPlan:
         self.transcode_container = None
         self.transcode_video_codec = None
         self.transcode_audio_codec = None
+        self.transcode_bit_rate = None
         self.video_filter_kind = None
         self.video_requires_transcode = False
         self.audio_requires_transcode = {}
         self.hardware_acceleration = None
+        
 
 def create_plan(device_profile:str, snowstream_info:dict):
     device = snow_media.device.device_lookup[device_profile]
@@ -23,6 +25,8 @@ def create_plan(device_profile:str, snowstream_info:dict):
     plan.transcode_video_codec = device.transcode.video_codec
     if device.force_player:
         plan.player = device.force_player
+    if device.transcode_bit_rate:
+        plan.transcode_bit_rate = device.transcode_bit_rate
     if snowstream_info and 'tracks' in snowstream_info:
         if 'video' in snowstream_info['tracks']:
             video_track = snowstream_info['tracks']['video'][0]
