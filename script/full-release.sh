@@ -25,7 +25,9 @@ fi
 if [ "$MODE" == "client" ] || [ "$MODE" == "all" ]; then
 
 echo "=-=- Build the apks -=-="
+set -e
 script/prod-generate-apks.sh
+set +e
 
 echo "=-=- Push the apks up to the file server -=-="
 ~/script/push-apks.sh snowstream

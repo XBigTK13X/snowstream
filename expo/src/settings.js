@@ -23,7 +23,7 @@ class Config {
         const h265TenBitHDR = '/auth/details/movie?shelfId=1&movieId=390'
 
 
-        this.debugVideoUrl = whiteLetterBoxUrl
+        //this.debugVideoUrl = whiteLetterBoxUrl
     }
 }
 
