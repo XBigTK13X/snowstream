@@ -25,8 +25,8 @@ def create_plan(device_profile:str, snowstream_info:dict):
     plan.transcode_video_codec = device.transcode.video_codec
     if device.force_player:
         plan.player = device.force_player
-    if device.transcode_bit_rate:
-        plan.transcode_bit_rate = device.transcode_bit_rate
+    if device.transcode.bit_rate:
+        plan.transcode_bit_rate = device.transcode.bit_rate
     if snowstream_info and 'tracks' in snowstream_info:
         if 'video' in snowstream_info['tracks']:
             video_track = snowstream_info['tracks']['video'][0]
