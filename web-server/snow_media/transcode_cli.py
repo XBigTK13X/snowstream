@@ -41,7 +41,7 @@ def build_command(
 ):
 
     plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=snowstream_info)
-    
+
     dialect = DefaultTranscodeDialect(video_filter_kind=plan.video_filter_kind)
     if config.transcode_dialect:
         if config.transcode_dialect == 'quicksync':
@@ -60,19 +60,23 @@ def build_command(
     if before_input:
         command.append(before_input)
 
-    # -ss before the input is faster, but more sometimes fails on older files esp.
+    # -ss before the input is faster, but more sometimes fails on older files
     if seek_to_seconds:
         command.append(f'-ss {seek_to_seconds}')
 
     command.append(f'-i "{input_url}"')
 
     # -ss after the input is slower, but more compatible
+    # It is slower to the point that on large 4k remuxes it isn't usable
     #if seek_to_seconds:
     #   command.append(f'-ss {seek_to_seconds}')
+
+    has_complex_filters = False
 
     if plan.video_filter_kind:
         before_filter = dialect.before_encode_filter()
         if before_filter:
+            has_complex_filters = True
             command.append(f'-filter_complex "{before_filter};"')
 
     encode_video_codec = plan.transcode_video_codec
@@ -89,6 +93,7 @@ def build_command(
         after_filter = dialect.after_encode_filter()
         if after_filter:
             complex_filters.append(after_filter)
+            has_complex_filters = True
 
     # Subtitles take so long to process for a transcode that rnv player fails to connect
     # Might need a better solution to side-load the subs without ffmpeg needing to process them
@@ -141,6 +146,11 @@ def build_command(
         found_match = True
     if not found_match:
         raise Exception(f"Unable to handle transcode audio codec {encode_audio_codec} for dialect {config.transcode_dialect} for {device_profile}")
+
+    # A complex filter automatically maps its output as the default video
+    # Without one, the mapping needs to be explicit
+    if not has_complex_filters:
+        command.append(f'-map 0:v:0')
 
     if audio_track_index != None:
         command.append(f'-map 0:a:{audio_track_index}')
