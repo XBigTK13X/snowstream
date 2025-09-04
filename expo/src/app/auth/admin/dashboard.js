@@ -14,6 +14,7 @@ export default function AdminDashboardPage() {
         { title: 'Stream Sources', route: routes.admin.streamSourceList },
         { title: 'Users', route: routes.admin.userList },
         { title: 'Tags', route: routes.admin.tagList },
+        { title: 'Cleanup Rules', route: routes.admin.cleanupRuleList },
     ]
     return <C.SnowGrid items={buttons} renderItem={renderItem} itemsPerRow={3}></C.SnowGrid>
 }

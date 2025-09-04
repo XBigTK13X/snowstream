@@ -564,7 +564,9 @@ class Streamable(BaseModel):
     __tablename__ = "streamable"
     url = sa.Column(sa.Text)
     name = sa.Column(sa.Text)
+    name_display = sa.Column(sa.Text)
     group = sa.Column(sa.Text)
+    group_display = sa.Column(sa.Text)
     stream_source_id: orm.Mapped[int] = orm.mapped_column(
         sa.ForeignKey("stream_source.id")
     )
@@ -626,6 +628,14 @@ class KeepsakeImageFile(BaseModel):
     keepsake_id = sa.Column(sa.Integer, sa.ForeignKey("keepsake.id"))
     image_file_id = sa.Column(sa.Integer, sa.ForeignKey("image_file.id"))
     image_file: orm.Mapped['ImageFile'] = orm.relationship(back_populates='keepsake_image_file',overlaps="keepsake,image_files")
+
+class DisplayCleanupRule(BaseModel):
+    __tablename__ = 'display_cleanup_rule'
+    target_kind = sa.Column(sa.Text)
+    rule_kind = sa.Column(sa.Text)
+    priority = sa.Column(sa.Integer)
+    needle = sa.Column(sa.Text)
+    replacement = sa.Column(sa.Text)
 
 # For whatever reason, aliased cannot be called until after ALL models are defined
 # Otherwise you get a bunch of "model cannot map X to Y" errors

@@ -6,6 +6,7 @@ import { router } from 'expo-router'
 export var routes = {
     admin: {
         dashboard: '/auth/admin/dashboard',
+        cleanupRuleList: '/auth/admin/cleanup-rule/cleanup-rule-list',
         jobDetails: '/auth/admin/job/job-details',
         jobList: '/auth/admin/job/job-list',
         jobRunner: '/auth/admin/job/job-runner',
