@@ -1,8 +1,9 @@
 from database.operation.db_internal import dbi
 import database.operation.movie as db_movie
 import database.operation.show as db_show
+import random
 
-def get_movie_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
+def get_movie_playlist_list(ticket:dbi.dm.Ticket,found_tags:dict):
     with dbi.session() as db:
         movie_query = '''
         select
@@ -71,12 +72,11 @@ def get_movie_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
                 'thumbnail_url': row.image_list[0],
                 'model_kind': 'playlist'
             }
-            tags.append(tag)
-            found_tags[tag['id']] = True
+            found_tags[tag['id']] = tag
 
-    return tags,found_tags
+    return found_tags
 
-def get_show_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
+def get_show_playlist_list(ticket:dbi.dm.Ticket,found_tags:dict):
     with dbi.session() as db:
         show_query = '''
         select
@@ -133,7 +133,10 @@ def get_show_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
         cursor = db.execute(dbi.sql_text(show_query))
         for row in cursor:
             if row.tag_id in found_tags:
-                continue
+                # This makes it so that is a tag has movies and shows
+                # Sometimes the show will be chosen for displaying a poster
+                if random.choice([True,False]):
+                    continue
             if not ticket.is_allowed(tag_id=row.tag_id) and not row.tag_id in show_tag_allowed:
                 continue
             tag = {
@@ -142,19 +145,16 @@ def get_show_playlist_list(ticket:dbi.dm.Ticket,tags:list,found_tags:dict):
                 'thumbnail_url': row.image_list[0],
                 'model_kind': 'playlist'
             }
-            tags.append(tag)
-            found_tags[tag['id']] = True
-    return tags,found_tags
+            found_tags[tag['id']] = tag
+    return found_tags
 
 
 def get_playlist_list(ticket:dbi.dm.Ticket):
-    tags = []
-    found_tags = {}
-    tags,found_tags = get_movie_playlist_list(ticket=ticket,tags=[],found_tags={})
-    tags,found_tags = get_show_playlist_list(ticket=ticket,tags=tags,found_tags=found_tags)
-    if not tags:
+    found_tags = get_movie_playlist_list(ticket=ticket,found_tags={})
+    found_tags = get_show_playlist_list(ticket=ticket,found_tags=found_tags)
+    if not found_tags:
         return None
-    tags = sorted(tags,key=lambda xx:xx['name'])
+    tags = sorted(found_tags.values(),key=lambda xx:xx['name'])
     return tags
 
 def get_playlist_by_tag_id(ticket:dbi.dm.Ticket, tag_id:int):
