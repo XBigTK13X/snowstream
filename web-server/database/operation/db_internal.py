@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, or_
 from datetime import datetime, timezone
 from log import log
 from settings import config
@@ -30,5 +30,6 @@ class DbInternal:
         self.Ticket = dm.Ticket
         self.timezone = timezone
         self.util = util
+        self.or_ = or_
 
 dbi = DbInternal()

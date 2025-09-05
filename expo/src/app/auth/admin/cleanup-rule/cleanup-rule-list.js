@@ -6,16 +6,17 @@ export default function DisplayCleanupRuleListPage() {
     const [rules, setRules] = C.React.useState(null)
 
     C.React.useEffect(() => {
-        if (!jobs) {
+        if (!rules) {
             apiClient.getDisplayCleanupRuleList().then((response) => {
                 setRules(response)
             })
         }
     })
 
-    if (!!jobs) {
-        return (
-            <C.FillView>
+    if (!!rules) {
+        let rulesList = <C.SnowText>No display cleanup rules found</C.SnowText>
+        if (rules.length) {
+            rulesList = (
                 <C.SnowGrid itemsPerRow={1} items={rules} renderItem={(rule) => {
                     let title = `${rule.needle} -> ${rule.replacement}`
                     return (
@@ -25,6 +26,12 @@ export default function DisplayCleanupRuleListPage() {
                         />
                     )
                 }} />
+            )
+        }
+        return (
+            <C.FillView>
+                <C.SnowTextButton title="Create New Rule" onPress={routes.func(routes.admin.cleanupRuleEdit)} />
+                {rulesList}
             </C.FillView>
         )
     }

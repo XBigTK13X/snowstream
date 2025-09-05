@@ -673,6 +673,56 @@ def auth_required(router):
         db.op.delete_all_cached_text()
         return True
 
+    @router.post('/display-cleanup-rule', tags=['Admin'])
+    def save_dipslay_cleanup_rule(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        rule: am.DisplayCleanupRule
+    ):
+        if not auth_user.is_admin():
+            return False
+        if rule.id != None:
+            return db.op.update_display_cleanup_rule(
+                rule_id=rule.id,
+                priority=rule.priority,
+                rule_kind=rule.rule_kind,
+                target_kind=rule.target_kind,
+                needle=rule.needle,
+                replacement=rule.replacement
+            )
+        return db.op.create_display_cleanup_rule(
+            priority=rule.priority,
+            rule_kind=rule.rule_kind,
+            target_kind=rule.target_kind,
+            needle=rule.needle,
+            replacement=rule.replacement
+        )
+
+    @router.get('/display-cleanup-rule', tags=['Admin'])
+    def get_display_cleanup_rule(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        rule_id:int
+    ):
+        if not auth_user.is_admin():
+            return False
+        return db.op.get_display_cleanup_rule(rule_id=rule_id)
+
+    @router.delete('/display-cleanup-rule', tags=['Admin'])
+    def delete_display_cleanup_rule(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        rule_id:int
+    ):
+        if not auth_user.is_admin():
+            return False
+        return db.op.delete_display_cleanup_rule(rule_id=rule_id)
+
+    @router.get('/display-cleanup-rule/list', tags=['Admin'])
+    def get_display_cleanup_rule_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        if not auth_user.is_admin():
+            return None
+        return db.op.get_display_cleanup_rule_list()
+
     @router.post('/hotfix', tags=['Admin'])
     def deployment_hotfix(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],

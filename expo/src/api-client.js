@@ -553,6 +553,29 @@ export class ApiClient {
         return this.delete('/cached/text')
     }
 
+    getDisplayCleanupRuleList() {
+        return this.get('/display-cleanup-rule/list')
+    }
+
+    getDisplayCleanupRule(ruleId) {
+        return this.get(`/display-cleanup-rule?rule_id=${ruleId}`)
+    }
+
+    saveDisplayCleanupRule(rule) {
+        return this.post('/display-cleanup-rule', {
+            id: rule.id,
+            rule_kind: rule.ruleKind,
+            target_kind: rule.targetKind,
+            priority: rule.priority !== '' ? parseInt(rule.priority, 10) : null,
+            needle: rule.needle,
+            replacement: rule.replacement
+        })
+    }
+
+    deleteDisplayCleanupRule(ruleId) {
+        return this.delete(`/display-cleanup-rule?rule_id=${ruleId}`)
+    }
+
     debug() {
         util.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

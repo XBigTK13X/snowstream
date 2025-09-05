@@ -136,3 +136,11 @@ class QueueRequest(BaseModel):
 
 class SaveLogsRequest(BaseModel):
     logs: list[str] | None = None
+
+class DisplayCleanupRule(BaseModel):
+    id: int | None = None
+    needle: str
+    replacement: str
+    target_kind: str | None = None
+    rule_kind: str | None = None
+    priority: int | None = None

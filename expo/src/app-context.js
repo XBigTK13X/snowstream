@@ -175,7 +175,6 @@ export function AppContextProvider(props) {
     }
 
     const login = (username, password) => {
-        AppContextProvider
         return new Promise(resolve => {
             if (!apiClient) {
                 return resolve({ loading: true })
@@ -195,7 +194,6 @@ export function AppContextProvider(props) {
                         setIsAdmin(loginResponse.isAdmin)
                         setStoredValue('displayName', loginResponse.displayName)
                             .then(() => {
-                                AppContextProvider
                                 return setStoredValue('session', loginResponse.authToken);
                             }).then(() => {
                                 return setStoredValue('isAdmin', loginResponse.isAdmin)

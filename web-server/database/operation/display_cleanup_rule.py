@@ -39,15 +39,28 @@ def update_display_cleanup_rule(
         db.refresh(rule)
         return rule
 
+def get_display_cleanup_rule(rule_id:int):
+    if rule_id == None:
+        return None
+    with dbi.session() as db:
+        return db.query(dbi.dm.DisplayCleanupRule).filter(dbi.dm.DisplayCleanupRule.id == rule_id).first()
+
+def delete_display_cleanup_rule(rule_id:int):
+    if rule_id == None:
+        return False
+    with dbi.session() as db:
+        db.query(dbi.dm.DisplayCleanupRule).filter(dbi.dm.DisplayCleanupRule.id == rule_id).delete()
+        return True
+
 def get_display_cleanup_rule_list(target_kind:str=None):
     with dbi.session() as db:
-        query = (
-            db.query(dbi.dm.DisplayCleanupRule)
-            .filter(
-                dbi.dm.DisplayCleanupRule.target_kind == None
+        query = db.query(dbi.dm.DisplayCleanupRule)
+
+        if target_kind:
+            query = query.filter(dbi.or_(
+                dbi.dm.DisplayCleanupRule.target_kind == None,
+                dbi.dm.DisplayCleanupRule.target_kind == target_kind
             )
         )
-        if target_kind != None:
-            query = query.filter(dbi.dm.DisplayCleanupRule.target_kind == target_kind)
         query = query.order_by(dbi.dm.DisplayCleanupRule.priority)
         return query.all()

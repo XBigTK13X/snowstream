@@ -1,36 +1,51 @@
 import C from '../../../../common'
 
+const targetKinds = [
+    'All',
+    'TubeArchivist',
+    'Frigate NVR',
+    'HDHomeRun',
+    'IPTV M3U'
+]
+
+
 export default function DisplayCleanupRuleEditPage() {
     const { apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
 
-    const [ruleId, setRuleId] = C.React.useState(null)
+    const [ruleLoaded, setRuleLoaded] = C.React.useState(false)
     const [ruleDeleteCount, setRuleDeleteCount] = C.React.useState(3)
     const [ruleDeleted, setRuleDeleted] = C.React.useState(false)
     const localParams = C.useLocalSearchParams()
 
+    const [ruleForm, setRuleForm] = C.React.useState({
+        needle: '',
+        replacement: '',
+        ruleKind: '',
+        targetKind: targetKinds[0],
+        priority: '',
+        id: null
+    })
+
     C.React.useEffect(() => {
-        if (!ruleId && localParams.ruleId) {
-            apiClient.getShelf(localParams.ruleId).then((shelf) => {
-                setRuleId(shelf.id)
-                setShelfKind(shelf.kind)
-                setShelfKindIndex(shelf.kind == 'Movies' ? 0 : 1)
-                setLocalPath(shelf.local_path)
-                setShelfName(shelf.name)
-                setNetworkPath(shelf.network_path || '')
-            })
+        if (!ruleLoaded && localParams.ruleId) {
+            apiClient.getDisplayCleanupRule(localParams.ruleId)
+                .then((rule) => {
+                    setRuleForm({
+                        id: rule.id,
+                        targetKind: rule.target_kind,
+                        ruleKind: rule.rule_kind,
+                        priority: rule.priority ?? '',
+                        needle: rule.needle,
+                        replacement: rule.replacement
+                    })
+                    setRuleLoaded(true)
+                })
         }
     })
 
     const saveRule = () => {
-        let shelf = {
-            id: ruleId,
-            kind: shelfKind,
-            localPath: localPath,
-            networkPath: networkPath,
-            name: shelfName
-        }
-        apiClient.saveRule(shelf)
+        apiClient.saveDisplayCleanupRule(ruleForm)
     }
 
     const deleteRule = () => {
@@ -38,14 +53,14 @@ export default function DisplayCleanupRuleEditPage() {
             setRuleDeleteCount(ruleDeleteCount - 1)
         }
         else {
-            apiClient.deleteDisplayCleanupRule(ruleId).then((() => {
+            apiClient.deleteDisplayCleanupRule(ruleForm.id).then((() => {
                 setRuleDeleted(true)
             }))
         }
     }
 
     let deleteButton = null
-    if (ruleId) {
+    if (ruleForm.id) {
         deleteButton = <C.SnowTextButton title={`Delete Shelf (${ruleDeleteCount})`} onPress={deleteRule} />
     }
     if (ruleDeleted) {
@@ -53,23 +68,45 @@ export default function DisplayCleanupRuleEditPage() {
     }
     return (
         <C.FillView >
-            <C.SnowLabel>Name</C.SnowLabel>
-            <C.SnowInput onValueChange={setShelfName} value={shelfName} />
+            <C.SnowLabel>Needle</C.SnowLabel>
+            <C.SnowInput onValueChange={(val) => {
+                setRuleForm((prev) => {
+                    return { ...prev, needle: val }
+                })
+            }} value={ruleForm.needle} />
 
-            <C.SnowLabel>Kind</C.SnowLabel>
+            <C.SnowLabel>Replacement</C.SnowLabel>
+            <C.SnowInput onValueChange={(val) => {
+                setRuleForm((prev) => {
+                    return { ...prev, replacement: val }
+                })
+            }} value={ruleForm.replacement} />
+            <C.SnowLabel>Rule Kind</C.SnowLabel>
+            <C.SnowInput onValueChange={(val) => {
+                setRuleForm((prev) => {
+                    return { ...prev, ruleKind: val }
+                })
+            }} value={ruleForm.ruleKind} />
+
+            <C.SnowLabel>Target Kind</C.SnowLabel>
             <C.SnowDropdown
-                options={['Movies', 'Shows', 'Keepsakes']}
-                onValueChange={chooseShelfKind}
-                valueIndex={shelfKindIndex}
+                options={targetKinds}
+                onValueChange={(index) => {
+                    setRuleForm((prev) => {
+                        return { ...prev, targetKind: targetKinds[index] }
+                    })
+                }}
+                valueIndex={targetKinds.indexOf(ruleForm.targetKind)}
             />
 
-            <C.SnowLabel>Shelf Local Path</C.SnowLabel>
-            <C.SnowInput onValueChange={setLocalPath} value={localPath} />
+            <C.SnowLabel>Priority</C.SnowLabel>
+            <C.SnowInput onValueChange={(val) => {
+                setRuleForm((prev) => {
+                    return { ...prev, priority: val }
+                })
+            }} value={ruleForm.priority} />
 
-            <C.SnowLabel>Shelf Network Path</C.SnowLabel>
-            <C.SnowInput onValueChange={setNetworkPath} value={networkPath} />
-
-            <C.SnowTextButton title="Save Shelf" onPress={saveRule} />
+            <C.SnowTextButton title="Save Rule" onPress={saveRule} />
             {deleteButton}
         </C.FillView >
     )
