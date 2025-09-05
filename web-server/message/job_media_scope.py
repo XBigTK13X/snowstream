@@ -38,6 +38,9 @@ class JobMediaScope:
     def is_directory(self):
         return self.target_kind == 'directory' or ((self.target_kind == None or self.target_id == None) and self.target_directory != None)
 
+    def is_stream_source(self):
+        return self.target_kind == 'stream_source'
+
     def is_shelf(self):
         return self.target_kind == 'shelf'
 

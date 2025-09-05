@@ -77,9 +77,13 @@ def generate_streamable_epg(job_id:int):
 
 def handle(scope):
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a stream_sources_refresh job")
-    db.op.update_job(job_id=scope.job_id, message="Removing existing streamable schedule info")
-    db.op.delete_all_schedules()
-    stream_sources = db.op.get_stream_source_list(ticket=db.Ticket(ignore_watch_group=True),streamables=True)
+    stream_sources = None
+    if scope.is_stream_source():
+        stream_sources = [db.op.get_stream_source_by_id(ticket=db.Ticket(),stream_source_id=scope.target_id)]
+    else:
+        db.op.update_job(job_id=scope.job_id, message="Removing existing streamable schedule info")
+        db.op.delete_all_schedules()
+        stream_sources = db.op.get_stream_source_list(ticket=db.Ticket(ignore_watch_group=True),streamables=True)
     refresh_results = {}
     for stream_source in stream_sources:
         db.op.update_job(job_id=scope.job_id, message="Refreshing stream source " + stream_source.kind)
@@ -97,7 +101,11 @@ def handle(scope):
         refresh_results[stream_source.url] = True
 
     cleanup_rules = db.op.get_display_cleanup_rule_list()
-    streamables = db.op.get_streamable_list()
+    streamables = []
+    if scope.is_stream_source():
+        streamables = db.op.get_stream_source_by_id(ticket=db.Ticket(),stream_source_id=scope.target_id).streamables
+    else:
+        streamables = db.op.get_streamable_list()
 
     db.op.update_job(job_id=scope.job_id, message=f"Applying {len(cleanup_rules)} cleanup rules to {len(streamables)} streamables")
     for streamable in streamables:
