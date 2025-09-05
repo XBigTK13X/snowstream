@@ -69,12 +69,13 @@ def auth_required(router):
         stream_source.grouped_streamables = {}
         stream_source.groups = []
         for streamable in stream_source.streamables:
-            if streamable.group == None:
+            group = streamable.group_display if streamable.group_display else streamable.group
+            if group == None:
                 continue
-            if streamable.group and not streamable.group in stream_source.grouped_streamables:
-                stream_source.groups.append(streamable.group)
-                stream_source.grouped_streamables[streamable.group] = []
-            stream_source.grouped_streamables[streamable.group].append(streamable)
+            if group and not group in stream_source.grouped_streamables:
+                stream_source.groups.append(group)
+                stream_source.grouped_streamables[group] = []
+            stream_source.grouped_streamables[group].append(streamable)
         if stream_source.groups:
             del stream_source.streamables
         return stream_source

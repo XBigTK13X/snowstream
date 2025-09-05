@@ -1,8 +1,8 @@
 from log import log
-
 from db import db
 import cache
 from settings import config
+import copy
 
 import message.handler.stream_source.hd_home_run as hhr
 import message.handler.stream_source.iptv_epg as ie
@@ -95,6 +95,28 @@ def handle(scope):
             refresh_results[stream_source.url] = False
             continue
         refresh_results[stream_source.url] = True
+
+    cleanup_rules = db.op.get_display_cleanup_rule_list()
+    streamables = db.op.get_streamable_list()
+
+    db.op.update_job(job_id=scope.job_id, message=f"Applying {len(cleanup_rules)} cleanup rules to {len(streamables)} streamables")
+    for streamable in streamables:
+        name_display = copy.copy(streamable.name)
+        group_display = copy.copy(streamable.group)
+        for rule in cleanup_rules:
+            if rule.target_kind != None and rule.target_kind != streamable.stream_source.kind:
+                continue
+            if name_display:
+                name_display = name_display.replace(rule.needle, rule.replacement)
+            if group_display:
+                group_display = group_display.replace(rule.needle, rule.replacement)
+        if name_display != streamable.name or group_display != streamable.group:
+            if streamable.name_display != name_display or streamable.group_display != group_display:
+                db.op.update_streamable_display(
+                    streamable_id=streamable.id,
+                    group_display=group_display,
+                    name_display=name_display
+                )
 
     db.op.update_job(job_id=scope.job_id, message="Finished refreshing stream sources")
     generate_streamable_m3u(job_id=scope.job_id)
