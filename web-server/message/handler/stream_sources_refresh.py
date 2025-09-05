@@ -104,12 +104,13 @@ def handle(scope):
         name_display = copy.copy(streamable.name)
         group_display = copy.copy(streamable.group)
         for rule in cleanup_rules:
-            if rule.target_kind != None and rule.target_kind != streamable.stream_source.kind:
+            if rule.target_kind != 'All' and rule.target_kind != streamable.stream_source.kind:
                 continue
+            replacement = rule.replacement if rule.replacement else ''
             if name_display:
-                name_display = name_display.replace(rule.needle, rule.replacement)
+                name_display = name_display.replace(rule.needle, replacement)
             if group_display:
-                group_display = group_display.replace(rule.needle, rule.replacement)
+                group_display = group_display.replace(rule.needle, replacement)
         if name_display != streamable.name or group_display != streamable.group:
             if streamable.name_display != name_display or streamable.group_display != group_display:
                 db.op.update_streamable_display(
