@@ -2726,14 +2726,6 @@ expo-asset@~12.0.7:
     "@expo/image-utils" "^0.8.6"
     expo-constants "~18.0.7"
 
-expo-build-properties@^0.14.8:
-  version "0.14.8"
-  resolved "https://registry.yarnpkg.com/expo-build-properties/-/expo-build-properties-0.14.8.tgz#03aac5eb297c1f4ad3c5b95d8bf897340104d041"
-  integrity sha512-GTFNZc5HaCS9RmCi6HspCe2+isleuOWt2jh7UEKHTDQ9tdvzkIoWc7U6bQO9lH3Mefk4/BcCUZD/utl7b1wdqw==
-  dependencies:
-    ajv "^8.11.0"
-    semver "^7.6.0"
-
 expo-build-properties@~1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/expo-build-properties/-/expo-build-properties-1.0.7.tgz#27384a7614b31db1097e0572dfd2f46d913f248f"
@@ -2772,12 +2764,12 @@ expo-keep-awake@~15.0.6:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-15.0.6.tgz#60b4beb79895b9b84fd55a43a98d96f51ffc2908"
   integrity sha512-xO/KbQQjSdhHR87x2uZsMnIDXsDO9apa64jqxG5t0WKSBujdS3uDmvuYF7EwiJc8fKEWZ500Co51nOtO0wU1dg==
 
-expo-libmpv@0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/expo-libmpv/-/expo-libmpv-0.1.2.tgz#b1a6778f09c9180939fc1efd5c61950fd25d3b8e"
-  integrity sha512-kTxWDp0IpX/b0Qz5K2J/0aSkK5zOCLG9Y60XfffUkmdUmdIUBrXwVBfu7egibqak/08jAiFHfCNU4Xvy07C/Ow==
+expo-libmpv@0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/expo-libmpv/-/expo-libmpv-0.1.3.tgz#5a4357e77ce66aa3bb811836674934c7e805b36c"
+  integrity sha512-5gCnKhB/L17WolCcvE+RlbjWIz+upbTzJ74MKwFTYbrvW7yjYkihnMekAViJk/cOct+bd3/H9T0ixyZ2hcbPFw==
   dependencies:
-    expo-build-properties "^0.14.8"
+    expo-build-properties "~1.0.7"
 
 expo-linking@~8.0.6:
   version "8.0.7"
