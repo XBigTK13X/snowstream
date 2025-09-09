@@ -17,10 +17,6 @@ allprojects {
     google()
     mavenCentral()
     maven { url 'https://www.jitpack.io' }
-    maven {
-      name "reposlite"
-      url "https://reposlite.9914.us/repository/main"
-    }
   }
 }
 

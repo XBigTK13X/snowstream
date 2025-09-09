@@ -38,7 +38,7 @@ export default function MpvVideoView(props) {
 
     // Don't want it being included outside of Android
     // Don't trying importing it until first render
-    const Libmpv = require('react-native-libmpv')
+    const Libmpv = require('expo-libmpv')
 
     const nativeRef = React.useRef(null);
 

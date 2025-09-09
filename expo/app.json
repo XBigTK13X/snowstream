@@ -2,7 +2,7 @@
   "expo": {
     "version": "0.15.12",
     "scheme": "com.simplepathstudios.snowstream",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "plugins": [
       [
         "@react-native-tvos/config-tv",
