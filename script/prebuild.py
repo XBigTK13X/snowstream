@@ -7,7 +7,7 @@ with open('expo/android/build.gradle','r',encoding="utf-8") as read_handle:
         if 'allprojects' in line:
             all_found = True
         if all_found and 'mavenCentral' in line:
-            line += '\n    maven { url "/home/kretst/maven-repo" }\n'
+            line += '    maven { url "/home/kretst/maven-repo" }\n'
             all_found = False
         gradle_body += line
 
@@ -31,11 +31,11 @@ def keystorePropertiesFile = System.getenv('SNOWSTREAM_KEYSTORE_PROPS')
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 '''
-        if 'hermesCommand' in line:
+        if 'hermesCommand' in line and not '//' in line:
             line = '    hermesCommand = "/home/kretst/bin/hermes/hermesc"\n'
 
         if 'minSdkVersion' in line:
-            line = '         minSdkVersion 26\n'
+            line = '        minSdkVersion 26\n'
 
         if signing_found and '}' in line:
             line = f'        debug {keystore}\n        release {keystore}'

@@ -40,42 +40,42 @@ export default function MpvVideoView(props) {
     // Don't trying importing it until first render
     const Libmpv = require('expo-libmpv')
 
-    const nativeRef = React.useRef(null);
+    const forwardRef = React.useRef(null);
 
     React.useEffect(() => {
         if (!player.info.isReady) {
-            if (nativeRef.current && clientOptions.audioCompression) {
+            if (forwardRef.current && clientOptions.audioCompression) {
                 // Loudness normalization from Snowby
-                nativeRef.current.runMpvCommand(`set|af|acompressor=ratio=4,loudnorm`)
+                forwardRef.current.runCommand(`set|af|acompressor=ratio=4,loudnorm`)
             }
             player.action.onVideoReady()
         }
     })
 
     React.useEffect(() => {
-        if (nativeRef.current) {
-            nativeRef.current.runMpvCommand(`set|sub-ass-override|force`)
-            nativeRef.current.runMpvCommand(`set|sub-font-size|${player.info.subtitleFontSize}`)
+        if (forwardRef.current && player.info.isReady) {
+            forwardRef.current.runCommand(`set|sub-ass-override|force`)
+            forwardRef.current.runCommand(`set|sub-font-size|${player.info.subtitleFontSize}`)
         }
 
     }, [player.info.subtitleFontSize])
 
     React.useEffect(() => {
-        if (nativeRef.current) {
-            nativeRef.current.runMpvCommand(`set|sub-ass-override|force`)
-            nativeRef.current.runMpvCommand(`set|sub-color|${player.info.subtitleColor.shade}/${player.info.subtitleColor.alpha}`)
+        if (forwardRef.current && player.info.isReady) {
+            forwardRef.current.runCommand(`set|sub-ass-override|force`)
+            forwardRef.current.runCommand(`set|sub-color|${player.info.subtitleColor.shade}/${player.info.subtitleColor.alpha}`)
         }
     }, [player.info.subtitleColor])
 
     React.useEffect(() => {
-        if (nativeRef.current) {
-            nativeRef.current.runMpvCommand(`set|audio-delay|${player.info.audioDelay}`)
+        if (player.info.audioDelay !== undefined && forwardRef.current && player.info.isReady) {
+            forwardRef.current.runCommand(`set|audio-delay|${player.info.audioDelay}`)
         }
     }, [player.info.audioDelay])
 
     React.useEffect(() => {
-        if (nativeRef.current) {
-            nativeRef.current.runMpvCommand(`set|sub-delay|${player.info.subtitleDelay}`)
+        if (player.info.subtitleDelay !== undefined && forwardRef.current && player.info.isReady) {
+            forwardRef.current.runCommand(`set|sub-delay|${player.info.subtitleDelay}`)
         }
     }, [player.info.subtitleDelay])
 
@@ -85,7 +85,7 @@ export default function MpvVideoView(props) {
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
             <Libmpv.LibmpvVideo
-                ref={nativeRef}
+                ref={forwardRef}
                 playUrl={player.info.videoUrl}
                 isPlaying={player.info.isPlaying}
                 useHardwareDecoder={clientOptions.hardwareDecoder}

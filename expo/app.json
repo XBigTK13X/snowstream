@@ -1,22 +1,13 @@
 {
   "expo": {
-    "version": "0.15.12",
+    "version": "0.16.1",
     "scheme": "com.simplepathstudios.snowstream",
     "newArchEnabled": true,
     "plugins": [
       [
         "@react-native-tvos/config-tv",
         {
-          "androidTVBanner": "./assets/icon/android/tvbanner.png",
-          "appleTVImages": {
-            "icon": "./assets/icon/ios/icon-1280x768.png",
-            "iconSmall": "./assets/icon/ios/icon-400x240.png",
-            "iconSmall2x": "./assets/icon/ios/icon-800x480.png",
-            "topShelf": "./assets/icon/ios/icon-1920x720.png",
-            "topShelf2x": "./assets/icon/ios/icon-3840x1440.png",
-            "topShelfWide": "./assets/icon/ios/icon-2320x720.png",
-            "topShelfWide2x": "./assets/icon/ios/icon-4640x1440.png"
-          }
+          "androidTVBanner": "./assets/icon/android/tvbanner.png"
         }
       ],
       "expo-router",

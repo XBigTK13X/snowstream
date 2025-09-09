@@ -29,7 +29,7 @@ export function SnowTabs(props) {
     tabs = tabs.filter(child => child !== null)
     const [tabIndex, setTabIndex] = React.useState(0)
     return (
-        <FillView scroll>
+        <View>
             <View>
                 <SnowDropdown
                     short
@@ -42,7 +42,7 @@ export function SnowTabs(props) {
             <FillView style={styles.panel}>
                 {tabs[tabIndex]}
             </FillView>
-        </FillView>
+        </View>
     )
 
 }
