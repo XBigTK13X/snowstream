@@ -11,7 +11,7 @@ export default function SignInPage() {
     const [password, setPassword] = C.React.useState("")
 
     C.React.useEffect(() => {
-        if (!users && apiClient) {
+        if (!users && apiClient && clientOptions) {
             apiClient.getUserList(clientOptions.deviceProfile).then((response) => {
                 setUsers(response)
             })
