@@ -23,7 +23,8 @@ keystore = '''{
 '''
 gradle_body = ''
 with open('expo/android/app/build.gradle','r',encoding="utf-8") as read_handle:
-    signing_found = False
+    writing_keys = False
+    keys_written = False
     for line in read_handle.readlines():
         if 'def projectRoot' in line:
             line += '''
@@ -37,10 +38,16 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
         if 'minSdkVersion' in line:
             line = '        minSdkVersion 26\n'
 
-        if signing_found and '}' in line:
+        if 'signingConfigs' in line and not keys_written:
+            writing_keys = True
+            gradle_body += line
+
+        if writing_keys and '}' in line:
             line = f'        debug {keystore}\n        release {keystore}'
-            signing_found = False
-        gradle_body += line
+            signing_found = writing_keys = False
+            keys_written = True
+        if not writing_keys:
+            gradle_body += line
 
 with open('expo/android/app/build.gradle', 'w', encoding="utf-8") as write_handle:
     write_handle.write(gradle_body)
