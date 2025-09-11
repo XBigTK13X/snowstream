@@ -140,6 +140,8 @@ export function AppContextProvider(props) {
         }
     })
 
+    console.log({ platform: Platform })
+
     if (Platform.isTV) {
         const remoteHandler = (remoteEvent) => {
             const callbacks = remoteCallbacksRef.current

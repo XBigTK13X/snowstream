@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity, Keyboard } from 'react-native';
+import { Pressable, Keyboard } from 'react-native';
 import { useFocusContext } from '../focus-context'
 import SnowText from './snow-text'
 import Style from '../snow-style'
@@ -57,9 +57,10 @@ export function SnowTextButton(props) {
 
     React.useEffect(() => {
         if (props.shouldFocus && !Keyboard.isVisible()) {
+            console.log({ title: props.title })
             touchRef.current.focus()
         }
-    }, [])
+    })
 
     const wrapperStyle = [styles.wrapper]
     if (props.disabled) {
@@ -108,12 +109,18 @@ export function SnowTextButton(props) {
         }
     }
 
-    let allowFocus = props.shouldFocus && !Keyboard.isVisible()
-    if (focusIsLocked) {
-        allowFocus = false
-    }
+    let allowFocus = !focusIsLocked && !Keyboard.isVisible()
+
+    console.log({
+        shouldFocus: props.shouldFocus,
+        keyboard: Keyboard.isVisible(),
+        title: props.title,
+        allowFocus,
+        focused
+    })
 
     const changeFocus = (focus) => {
+        console.log({ focusIsLocked, focus, title: props.title })
         if (!focusIsLocked) {
             setFocused(focus)
         }
@@ -123,7 +130,7 @@ export function SnowTextButton(props) {
     }
 
     return (
-        <TouchableOpacity
+        <Pressable
             ref={touchRef}
             style={wrapperStyle}
             activeOpacity={1.0}
@@ -134,7 +141,7 @@ export function SnowTextButton(props) {
             onBlur={() => { changeFocus(false) }}
             disabled={props.disabled}>
             <SnowText style={textStyle}>{props.title}</SnowText>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 

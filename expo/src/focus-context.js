@@ -29,6 +29,10 @@ function AppView(props) {
 }
 
 function TvFocusView(props) {
+    console.log({
+        isTv: true,
+        props
+    })
     return (
         <TVFocusGuideView
             autoFocus={true}
@@ -53,6 +57,7 @@ export function FocusContextProvider(props) {
         setLockedElement,
         focusIsLocked
     }
+    console.log({ focusContext })
     return (
         <FocusContext.Provider
             value={focusContext}>
