@@ -27,26 +27,9 @@ export function KeepsakeListPage(props) {
             routes.goto(routes.keepsakeDetails, { keepsakeId: item.id })
         }
 
-        const shuffleAll = () => {
-            props.shuffleAll(apiClient).then(response => {
-                routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
-            })
-        }
-
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
-                <C.SnowGrid shrink itemsPerRow={isAdmin ? 3 : 1}>
-                    <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} />
-                    {isAdmin ? <C.SnowTextButton
-                        title={`Scan ${shelf.name}`}
-                        onPress={() => {
-                            return apiClient.createJobShelvesScan({
-                                targetKind: 'shelf',
-                                targetId: shelfId
-                            })
-                        }} /> : null}
-                </C.SnowGrid>
                 <C.SnowGrid itemsPerRow={2}>
                     {items.map((item, itemIndex) => {
                         return (
