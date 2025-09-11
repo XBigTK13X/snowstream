@@ -415,7 +415,7 @@ export function PlayerContextProvider(props) {
     }
 
     const playerHandleRemote = (kind, action) => {
-        if (!controlsVisible && isReady && !focusIsLocked) {
+        if (!controlsVisible && isReady && !focusIsLocked && !isTranscode) {
             if (initialSeekComplete || !initialSeekSeconds) {
                 if (kind === 'right') {
                     onProgress(progressSeconds + 90, 'manual-seek')
