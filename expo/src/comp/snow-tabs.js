@@ -13,7 +13,8 @@ const styles = {
         borderRadius: 10,
         borderWidth: 1,
         borderColor: 'transparent',
-        paddingTop: 30
+        paddingTop: 30,
+        paddingBottom: 30
     }
 }
 

@@ -12,23 +12,15 @@ const styles = {
 
 export function ContinueWatchingListPage(props) {
     const { apiClient } = C.useAppContext()
-    const localParams = C.useLocalSearchParams()
 
     const [continueWatchingList, setContinueWatchingList] = C.React.useState(null)
-    const [tabIndex, setTabIndex] = C.React.useState(0)
-    const [tabKind, setTabKind] = C.React.useState(null)
-    const [tabItems, setTabItems] = C.React.useState([])
     const [resultsEmpty, setResultsEmpty] = C.React.useState(false)
 
     C.React.useEffect(() => {
         if (!continueWatchingList) {
             apiClient.getContinueWatchingList().then((response) => {
                 setContinueWatchingList(response)
-                if (response.length) {
-                    setTabItems(response[0].items)
-                    setTabKind(response[0].kind)
-                    setTabIndex(0)
-                } else {
+                if (!response.length) {
                     setResultsEmpty(true)
                 }
             })
@@ -43,56 +35,21 @@ export function ContinueWatchingListPage(props) {
         )
     }
 
-    const loadTab = (tabEntry, tabIndex) => {
-        setTabIndex(tabIndex)
-        setTabKind(tabEntry.kind)
-        setTabItems(tabEntry.items)
-    }
-    if (continueWatchingList && tabItems) {
-        let tabButtons = continueWatchingList.map((entry, entryIndex) => {
-            const selected = entryIndex === tabIndex
-            const tabTitle = `${entry.name} [${entry.items.length}]`
-            return (
-                <C.SnowTextButton
-                    key={entryIndex}
-                    selected={selected}
-                    style={styles.column}
-                    onPress={() => { loadTab(entry, entryIndex) }}
-                    title={tabTitle} />
-            )
+    if (continueWatchingList) {
+        let tabs = continueWatchingList.map((kind) => {
+            return `${kind.name} [${kind.items.length}]`
         })
-        const markWatched = (item) => {
-            if (tabKind === 'in_progress') {
-                if (item.model_kind === 'movie') {
-                    return apiClient.setItemWatched(item)
-                }
-                else if (item.model_kind === 'show_episode') {
-                    return apiClient.setItemWatched(item)
-                }
-            }
-            else if (tabKind === 'new_shows') {
-                return apiClient.setItemWatched({ id: item.season.show.id, model_kind: 'show' })
-            }
-            else if (tabKind === 'new_seasons') {
-                return apiClient.setItemWatched({ id: item.season.id, model_kind: 'show_season' })
-            }
-            else if (tabKind === 'next_episodes') {
-                return apiClient.setItemWatched(item)
-            }
-            else if (tabKind === 'new_movies') {
-                return apiClient.setItemWatched(item)
-            }
-        }
+
         return (
             <C.FillView>
-                <C.View style={styles.columns}>
-                    {tabButtons}
-                </C.View>
-                <C.SnowPosterGrid
-                    disableWatched
-                    items={tabItems}
-                    onLongPress={markWatched}
-                />
+                <C.SnowTabs headers={tabs}>
+                    {continueWatchingList.map((kind) => {
+                        return <C.SnowPosterGrid
+                            disableWatched
+                            items={kind.items}
+                        />
+                    })}
+                </C.SnowTabs>
             </C.FillView>
         )
     }
