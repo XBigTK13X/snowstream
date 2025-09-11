@@ -144,7 +144,7 @@ export default function MediaTracksPage(props) {
                     <C.SnowGrid shrink itemsPerRow={1}>
                         <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
                     </C.SnowGrid>
-                    <C.FillView scroll>
+                    <C.FillView>
                         <C.SnowLabel>Video File Info</C.SnowLabel>
                         <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
                         <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>

@@ -8,9 +8,6 @@ const styles = {
     hr: {
         borderBottomColor: C.Style.color.coreDark,
         borderBottomWidth: 2,
-    },
-    page: {
-        flex: 1
     }
 }
 
@@ -51,10 +48,10 @@ export default function RootLayout() {
     return (
         <C.AppContextProvider>
             <C.FocusContextProvider>
-                <C.FillView scroll style={styles.page}>
+                <C.ScrollView style={C.Style.page}>
                     <Header />
                     <C.Slot />
-                </C.FillView>
+                </C.ScrollView>
             </C.FocusContextProvider>
         </C.AppContextProvider>
     )

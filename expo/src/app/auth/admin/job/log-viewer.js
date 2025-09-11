@@ -35,7 +35,7 @@ export default function LogViewerPage() {
     ]
 
     return (
-        <C.FillView scroll>
+        <C.FillView>
             <C.SnowTabs headers={tabs}>
                 <C.SnowGrid shrink itemsPerRow={1} items={logPaths} renderItem={(item, itemIndex) => {
                     return <C.SnowTextButton title={item} onPress={() => {

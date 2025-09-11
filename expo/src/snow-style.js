@@ -15,7 +15,7 @@ const scaled = (input) => {
     return Math.round(input * scaleMultiplier)
 }
 
-export const Style = {
+let AppStyle = {
     color: {
         background: 'black',
         text: 'rgb(235, 235, 235)',
@@ -103,5 +103,14 @@ export const Style = {
     }
 }
 
+AppStyle.page = {
+    height: AppStyle.window.height() - 25
+}
 
-export default Style
+if (isWeb) {
+    AppStyle.page.height = AppStyle.window.height() - 50
+}
+
+export const Style = AppStyle
+
+export default AppStyle
