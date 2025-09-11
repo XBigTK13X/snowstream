@@ -36,18 +36,21 @@ export function KeepsakeListPage(props) {
         return (
             <C.View>
                 <C.SnowText>{pageTitle}</C.SnowText>
-                <C.SnowGrid itemsPerRow={isAdmin ? 3 : 1}>
+                <C.SnowGrid shrink itemsPerRow={isAdmin ? 3 : 1}>
                     <C.SnowTextButton title="Shuffle All" onPress={shuffleAll} />
                     {isAdmin ? <C.SnowTextButton
-                        title={`Scan Keepsakes`}
+                        title={`Scan ${shelf.name}`}
                         onPress={() => {
-                            props.scanContentsJob(apiClient, shelfId)
+                            return apiClient.createJobShelvesScan({
+                                targetKind: 'shelf',
+                                targetId: shelfId
+                            })
                         }} /> : null}
                 </C.SnowGrid>
                 <C.SnowGrid itemsPerRow={2}>
                     {items.map((item, itemIndex) => {
                         return (
-                            <C.SnowTextButton key={itemIndex} title={item.directory} onPress={() => { gotoItem(item) }} />
+                            <C.SnowTextButton key={itemIndex} title={item.name} onPress={() => { gotoItem(item) }} />
                         )
                     })}
                 </C.SnowGrid>

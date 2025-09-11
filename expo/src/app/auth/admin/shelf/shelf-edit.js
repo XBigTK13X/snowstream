@@ -1,5 +1,7 @@
 import C from '../../../../common'
 
+const kinds = ['Movies', 'Shows', 'Keepsakes']
+
 export default function ShelfEditPage() {
     const { apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
@@ -25,13 +27,8 @@ export default function ShelfEditPage() {
         }
     })
     const chooseShelfKind = (chosenKindIndex) => {
-        if (!chosenKindIndex) {
-            setShelfKind('Movies')
-            setShelfKindIndex(0)
-        } else {
-            setShelfKind('Shows')
-            setShelfKindIndex(1)
-        }
+        setShelfKindIndex(chosenKindIndex)
+        setShelfKind(kinds[chosenKindIndex])
     }
     const saveShelf = () => {
         let shelf = {
@@ -69,7 +66,7 @@ export default function ShelfEditPage() {
 
             <C.SnowLabel>Kind</C.SnowLabel>
             <C.SnowDropdown
-                options={['Movies', 'Shows', 'Keepsakes']}
+                options={kinds}
                 onValueChange={chooseShelfKind}
                 valueIndex={shelfKindIndex}
             />

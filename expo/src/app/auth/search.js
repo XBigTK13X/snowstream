@@ -33,20 +33,22 @@ export default function SearchPage() {
     }
 
     let resultsTabs = null
-    if (searchResults && !searchResults.length) {
-        resultsTabs = <C.SnowText>No results found for [{queryText}].</C.SnowText>
-    }
     if (searchResults) {
-        let headers = searchResults.map(searchResult => {
-            return `${searchResult.name} [${searchResult.items.length}]`
-        })
-        resultsTabs = (
-            <C.SnowTabs headers={headers}>
-                {searchResults.map(searchResult => {
-                    return <C.SnowPosterGrid disableWatched items={searchResult.items} />
-                })}
-            </C.SnowTabs>
-        )
+        if (!searchResults.length) {
+            resultsTabs = <C.SnowText>No results found for [{queryText}].</C.SnowText>
+        }
+        else {
+            let headers = searchResults.map(searchResult => {
+                return `${searchResult.name} [${searchResult.items.length}]`
+            })
+            resultsTabs = (
+                <C.SnowTabs headers={headers}>
+                    {searchResults.map(searchResult => {
+                        return <C.SnowPosterGrid disableWatched items={searchResult.items} />
+                    })}
+                </C.SnowTabs>
+            )
+        }
     }
 
     return (

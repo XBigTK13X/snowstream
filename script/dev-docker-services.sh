@@ -44,6 +44,7 @@ docker run -d \
     -v $(pwd)/.docker-volume/rabbitmq:/var/lib/rabbitmq \
     -v $(pwd)/web-server/.snowstream:/mnt/.snowstream \
     -v /mnt/j-media/tv:/mnt/j-media/tv \
+    -v /mnt/j-media/keepsake:/mnt/j-media/keepsake \
     -v /mnt/j-media/photo:/mnt/j-media/photo \
     -v /mnt/m-media/movie:/mnt/m-media/movie \
     $SNOWSTREAM_DOCKER_IMAGE

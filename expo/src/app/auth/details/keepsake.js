@@ -16,6 +16,73 @@ const styles = {
     }
 }
 
+function VideoPlayer() {
+    const player = C.usePlayerContext()
+    if (player.info.playbackFailed) {
+        return (
+            <C.FillView>
+                <C.SnowText>Unable to play the video.</C.SnowText>
+                <C.SnowText>Error: {player.info.playbackFailed.message}</C.SnowText>
+            </C.FillView>
+        )
+    }
+
+    if (!player.info.videoUrl) {
+        if (player.info.isTranscode) {
+            return <C.SnowText>Preparing a transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
+        }
+        return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
+    }
+    return (
+        <C.SnowVideoPlayer />
+    )
+}
+
+function KeepsakeVideo(props) {
+    return (<C.PlayerContextProvider
+        forceTranscode={C.isWeb}
+        loadVideo={() => {
+            return new Promise(resolve => {
+                return resolve({
+                    url: props.videoFile.network_path,
+                    name: props.videoFile.name,
+                    durationSeconds: props.videoFile.info.duration_seconds,
+                    tracks: props.videoFile.info.tracks
+                })
+            })
+        }}
+        loadTranscode={(apiClient, localParams, deviceProfile, initialSeekSeconds) => {
+            return new Promise((resolve) => {
+                return apiClient.createVideoFileTranscodeSession(
+                    props.videoFile.id,
+                    0,
+                    -1,
+                    deviceProfile,
+                    initialSeekSeconds ?? 0
+                )
+                    .then((transcodeSession) => {
+                        return resolve({
+                            name: props.videoFile.name,
+                            url: transcodeSession.transcode_url,
+                            durationSeconds: props.videoFile.info.duration_seconds,
+                            transcodeId: transcodeSession.transcode_session_id
+                        })
+                    })
+                    .catch((err) => {
+                        return resolve({
+                            error: err
+                        })
+                    })
+            })
+        }}
+        onComplete={() => {
+            return props.closeModal()
+        }}>
+        <VideoPlayer />
+    </C.PlayerContextProvider>
+    )
+}
+
 export default function KeepsakeDetailsPage() {
     const localParams = C.useLocalSearchParams()
 
@@ -58,8 +125,9 @@ export default function KeepsakeDetailsPage() {
                         <C.TouchableOpacity
                             onPress={closeModal}
                             style={styles.modal}>
-                            <C.SnowVideoPlayer
-                                videoUrl={zoomedItem.web_path}
+                            <KeepsakeVideo
+                                videoFile={zoomedItem}
+                                closeModal={closeModal}
                             />
                         </C.TouchableOpacity>
                     </C.View>)
@@ -73,9 +141,12 @@ export default function KeepsakeDetailsPage() {
                     source={{ uri: imageUrl }} />
             }
             else if (zoomedItem.model_kind === 'video_file') {
-                modalContent = <C.SnowVideoPlayer
-                    videoUrl={zoomedItem.web_path}
-                />
+                modalContent = (
+                    <KeepsakeVideo
+                        videoFile={zoomedItem}
+                        closeModal={closeModal}
+                    />
+                )
             }
         }
         return (
@@ -96,7 +167,7 @@ export default function KeepsakeDetailsPage() {
     }
 
     let videos = null
-    if (keepsake.video_files) {
+    if (keepsake.video_files && keepsake.video_files.length) {
         videos = (
             <C.View>
                 <C.SnowLabel>Videos</C.SnowLabel>
@@ -115,7 +186,7 @@ export default function KeepsakeDetailsPage() {
         )
     }
     let images = null
-    if (keepsake.image_files) {
+    if (keepsake.image_files && keepsake.image_files.length) {
         images = (
             <C.View>
                 <C.SnowLabel>Images</C.SnowLabel>

@@ -20,9 +20,9 @@ def identify_keepsake_file_kind(extension_kind: str, info: dict, file_path: str)
 
 
 class KeepsakesScanHandler(ShelfScanner):
-    def __init__(self, job_id, shelf, target_directory=None):
+    def __init__(self, scope, shelf, target_directory=None):
         super().__init__(
-            job_id=job_id,
+            scope=scope,
             shelf=shelf,
             identifier=identify_keepsake_file_kind,
             parser=parse_keepsake_info,
@@ -43,7 +43,7 @@ class KeepsakesScanHandler(ShelfScanner):
         for info in self.file_info_lookup["image"]:
             progress_count += 1
             if progress_count % 500 == 0:
-                db.op.update_job(job_id=self.job_id, message=f'Organize keepsake image {progress_count} out of {len(self.file_info_lookup["image"])}')
+                db.op.update_job(job_id=self.scope.job_id, message=f'Organize keepsake image {progress_count} out of {len(self.file_info_lookup["image"])}')
             keepsake = self.get_or_create_keepsake(info=info)
             if not db.op.get_keepsake_image_file(
                 keepsake_id=keepsake.id, image_file_id=info["id"]
@@ -57,7 +57,7 @@ class KeepsakesScanHandler(ShelfScanner):
         for info in self.file_info_lookup["video"]:
             progress_count += 1
             if progress_count % 500 == 0:
-                db.op.update_job(job_id=self.job_id, message=f'Organize keepsake video {progress_count} out of {len(self.file_info_lookup["video"])}')
+                db.op.update_job(job_id=self.scope.job_id, message=f'Organize keepsake video {progress_count} out of {len(self.file_info_lookup["video"])}')
             keepsake = self.get_or_create_keepsake(info=info)
             if not db.op.get_keepsake_video_file(
                 keepsake_id=keepsake.id, video_file_id=info["id"]

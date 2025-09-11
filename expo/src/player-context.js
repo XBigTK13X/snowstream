@@ -54,6 +54,9 @@ export function PlayerContextProvider(props) {
     if (clientOptions.alwaysTranscode) {
         isTranscode = true
     }
+    if (props.forceTranscode) {
+        isTranscode = true
+    }
 
     // The initial seek only happens when resuming an in progress video instead of playing from the beginning
     const [initialSeekComplete, setInitialSeekComplete] = React.useState(isTranscode)
@@ -236,7 +239,6 @@ export function PlayerContextProvider(props) {
         // Destroy and create a new one instead at the requested timestamp
         if (source === 'manual-seek' && isTranscode) {
             if (props.loadTranscode) {
-                console.log("Prep a transcode seek")
                 setManualSeekSeconds(nextProgressSeconds)
                 setTranscodeOnResume(true)
             }
