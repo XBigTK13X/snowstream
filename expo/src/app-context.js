@@ -143,7 +143,7 @@ export function AppContextProvider(props) {
     if (Platform.isTV) {
         const remoteHandler = (remoteEvent) => {
             if (config.debugTvFocus) {
-                console.log({ remoteEvent })
+                util.log({ remoteEvent })
             }
             const callbacks = remoteCallbacksRef.current
             for (const [key, callback] of Object.entries(callbacks)) {
@@ -169,7 +169,7 @@ export function AppContextProvider(props) {
         }
     }
 
-    const setWebApiUrl = (server, webApiUrl) => {
+    const setWebApiUrl = (webApiUrl) => {
         return setStoredValue('webApiUrl', webApiUrl)
             .then(() => {
                 setApiClient(null)

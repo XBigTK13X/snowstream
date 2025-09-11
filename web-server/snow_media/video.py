@@ -16,28 +16,30 @@ class MediaTrack:
     # mpv uses ffprobe index scheme
     def __init__(self, media_path: str, ffprobe:dict, mediainfo:dict, is_anime:bool=False):
         try:
+            self.kind = None
             self.track_index = int(mediainfo['StreamOrder'])
-            self.codec = mediainfo['CodecID']
-            self.format = mediainfo['Format']
-            if 'StreamSize' in mediainfo:
-                self.bit_size = int(mediainfo['StreamSize'])
-            if 'BitRate' in mediainfo:
-                if '/' in mediainfo['BitRate']:
-                    self.bit_rate = int(mediainfo['BitRate'].split('/')[0])
-                else:
-                    self.bit_rate = int(mediainfo['BitRate'])
-            if 'BitRate_Mode' in mediainfo:
-                self.bit_rate_kind = mediainfo['BitRate_Mode']
-            self.language = mediainfo['Language'] if 'Language' in mediainfo else None
-            self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
-            self.title = f"{mediainfo['Title']}" if 'Title' in mediainfo else ''
+            if 'CodecId' in mediainfo:
+                self.codec = mediainfo['CodecID']
+                self.format = mediainfo['Format']
+                if 'StreamSize' in mediainfo:
+                    self.bit_size = int(mediainfo['StreamSize'])
+                if 'BitRate' in mediainfo:
+                    if '/' in mediainfo['BitRate']:
+                        self.bit_rate = int(mediainfo['BitRate'].split('/')[0])
+                    else:
+                        self.bit_rate = int(mediainfo['BitRate'])
+                if 'BitRate_Mode' in mediainfo:
+                    self.bit_rate_kind = mediainfo['BitRate_Mode']
+                self.language = mediainfo['Language'] if 'Language' in mediainfo else None
+                self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
+                self.title = f"{mediainfo['Title']}" if 'Title' in mediainfo else ''
 
-            if ffprobe['codec_type'] == 'video':
-                self.read_video(ffprobe, mediainfo)
-            elif ffprobe['codec_type'] == 'audio':
-                self.read_audio(ffprobe, mediainfo, is_anime)
-            elif ffprobe['codec_type'] == 'subtitle':
-                self.read_subtitle(ffprobe, mediainfo, is_anime)
+                if ffprobe['codec_type'] == 'video':
+                    self.read_video(ffprobe, mediainfo)
+                elif ffprobe['codec_type'] == 'audio':
+                    self.read_audio(ffprobe, mediainfo, is_anime)
+                elif ffprobe['codec_type'] == 'subtitle':
+                    self.read_subtitle(ffprobe, mediainfo, is_anime)
         except Exception as e:
             fail_track_parse(e,media_path,ffprobe,mediainfo)
 
@@ -246,6 +248,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
                 mediainfo=stream['mediainfo'],
                 is_anime=snowstream_info['is_anime']
             )
+            if track.kind == None:
+                continue
             if track.kind == 'video':
                 if track.is_hdr:
                     snowstream_info['is_hdr'] = True

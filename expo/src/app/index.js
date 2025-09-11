@@ -8,6 +8,7 @@ export default function SignInPage() {
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
+    const [customServer, setCustomServer] = C.React.useState(null)
     const [password, setPassword] = C.React.useState("")
 
     C.React.useEffect(() => {
@@ -54,11 +55,16 @@ export default function SignInPage() {
         setUser(null)
     }
 
-    const chooseServer = (server, serverUrl) => {
+    const chooseServer = (serverUrl) => {
         setUsers(null)
-        setWebApiUrl(server, serverUrl)
+        setWebApiUrl(serverUrl)
     }
 
+
+    const applyCustomServer = () => {
+        setUsers(null)
+        setWebApiUrl(customServer)
+    }
 
     let passwordForm = null
     let userList = null
@@ -83,12 +89,19 @@ export default function SignInPage() {
     } else {
         selectServer = (
             <C.FillView>
-                <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
-                <C.SnowGrid itemsPerRow={4} >
-                    <C.SnowTextButton title="Beast" onPress={() => { chooseServer('beast', config.beastWebApiUrl) }} />
-                    <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer('vondoom', config.vondoomWebApiUrl) }} />
-                    <C.SnowTextButton title="Storm" onPress={() => { chooseServer('storm', config.stormWebApiUrl) }} />
-                </C.SnowGrid>
+                <C.View>
+                    <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
+                    <C.SnowGrid itemsPerRow={4} >
+                        <C.SnowTextButton title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
+                        <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
+                        <C.SnowTextButton title="Storm" onPress={() => { chooseServer(config.stormWebApiUrl) }} />
+                    </C.SnowGrid>
+                </C.View>
+                <C.View>
+                    <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
+                    <C.SnowInput onSubmit={applyCustomServer} onValueChange={setCustomServer} value={customServer} />
+                    <C.SnowTextButton title="Connect to Server" onPress={applyCustomServer} />
+                </C.View>
             </C.FillView>
         )
     }
