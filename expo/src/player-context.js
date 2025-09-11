@@ -417,7 +417,6 @@ export function PlayerContextProvider(props) {
     }
 
     const playerHandleRemote = (kind, action) => {
-        console.log({ controlsVisible, isReady, focusIsLocked, isTranscode })
         if (!controlsVisible && isReady && !focusIsLocked && !isTranscode) {
             if (initialSeekComplete || !initialSeekSeconds) {
                 if (kind === 'right') {

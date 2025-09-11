@@ -57,7 +57,6 @@ export function SnowTextButton(props) {
 
     React.useEffect(() => {
         if (props.shouldFocus && !Keyboard.isVisible()) {
-            console.log({ title: props.title })
             touchRef.current.focus()
         }
     })
@@ -111,16 +110,7 @@ export function SnowTextButton(props) {
 
     let allowFocus = !focusIsLocked && !Keyboard.isVisible()
 
-    console.log({
-        shouldFocus: props.shouldFocus,
-        keyboard: Keyboard.isVisible(),
-        title: props.title,
-        allowFocus,
-        focused
-    })
-
     const changeFocus = (focus) => {
-        console.log({ focusIsLocked, focus, title: props.title })
         if (!focusIsLocked) {
             setFocused(focus)
         }
@@ -133,7 +123,6 @@ export function SnowTextButton(props) {
         <Pressable
             ref={touchRef}
             style={wrapperStyle}
-            activeOpacity={1.0}
             onPress={onPressUnlessTyping}
             onLongPress={onLongPressUnlessTyping}
             focusable={allowFocus || focused}

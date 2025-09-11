@@ -1,5 +1,5 @@
 import React from 'react'
-import { Platform, TouchableOpacity, Keyboard } from 'react-native';
+import { Platform, Pressable, Keyboard } from 'react-native';
 import { Image } from 'expo-image'
 import SnowText from './snow-text'
 import Style from '../snow-style'
@@ -134,9 +134,8 @@ export function SnowImageButton(props) {
     const allowFocus = props.shouldFocus && !Keyboard.isVisible()
 
     return (
-        <TouchableOpacity
+        <Pressable
             ref={touchRef}
-            activeOpacity={1.0}
             style={wrapperStyle}
 
             onPress={onPressUnlessTyping}
@@ -151,7 +150,7 @@ export function SnowImageButton(props) {
                 contentFit="contain"
                 source={{ uri: props.imageUrl }} />
             <SnowText style={fontStyle}>{title}</SnowText>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 

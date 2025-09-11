@@ -4,15 +4,15 @@ class Config {
         this.stormWebApiUrl = 'http://192.168.101.30:8000' // Laptop
         this.beastWebApiUrl = 'http://beast.9914.us:9063' // Prod
 
-        this.clientVersion = "0.16.3"
+        this.clientVersion = "0.16.4"
         this.clientBuildDate = "September 11, 2025"
         this.clientDevBuildNumber = 1
 
         this.debounceMilliseconds = 700
         this.progressMinDeltaSeconds = 5
 
+        this.debugTvFocus = false
         this.debugVideoPlayer = false
-
         this.debugVideoUrl = null
 
         const animeUrl = "/auth/details/episode?shelfId=2&showId=54&seasonId=112&episodeId=2377&showName=Gintama&seasonOrder=2&episodeOrder=3"

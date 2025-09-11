@@ -103,12 +103,14 @@ let AppStyle = {
     }
 }
 
-AppStyle.page = {
-    height: AppStyle.window.height() - 25
-}
-
 if (isWeb) {
-    AppStyle.page.height = AppStyle.window.height() - 50
+    AppStyle.page = {
+        height: AppStyle.window.height() - 50
+    }
+} else {
+    AppStyle.page = {
+        height: AppStyle.window.height() - 25
+    }
 }
 
 export const Style = AppStyle

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Switch, TouchableOpacity } from 'react-native'
+import { View, Switch, Pressable } from 'react-native'
 import { SnowLabel } from './snow-label'
 
 const styles = {
@@ -17,8 +17,7 @@ export function SnowToggle(props) {
         props.onValueChange(!props.value)
     }
     return (
-        <TouchableOpacity
-            activeOpacity={1}
+        <Pressable
             onPress={toggleValue}
             style={styles.center}>
             <SnowLabel>{props.title}</SnowLabel>
@@ -26,7 +25,7 @@ export function SnowToggle(props) {
                 style={{ marginLeft: 'auto', marginRight: 'auto' }}
                 value={props.value}
                 onValueChange={toggleValue} />
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 
