@@ -15,9 +15,6 @@ export default function SeasonListPage() {
         return apiClient.getSeasonList(showId)
     }
 
-    const toggleItemWatched = (apiClient, itemId) => {
-        return apiClient.toggleSeasonWatchStatus(itemId)
-    }
     const scanContentsJob = (apiClient, shelfId) => {
         return apiClient.createJobShelvesScan({
             targetKind: 'show',
@@ -49,7 +46,6 @@ export default function SeasonListPage() {
             kind="Show"
             getPageTitle={getPageTitle}
             loadItems={loadItems}
-            toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
             updateMediaJob={updateMediaJob}
             watchAll={watchAll}

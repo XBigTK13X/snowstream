@@ -1,3 +1,4 @@
+import React from 'react'
 import { Platform } from 'react-native'
 import FillView from './fill-view'
 import SnowGrid from './snow-grid'
@@ -8,7 +9,8 @@ import { useAppContext } from '../app-context'
 const itemsPerRow = Platform.isTV ? 7 : 5
 
 export function SnowPosterGrid(props) {
-    const { routes } = useAppContext()
+    const { routes, apiClient } = useAppContext()
+    const [toggledItems, setToggledItems] = React.useState({})
     if (!props.items || !props.items.length) {
         return null
     }
@@ -20,22 +22,31 @@ export function SnowPosterGrid(props) {
         if (item.thumbnail_url) {
             thumbnailUrl = item.thumbnail_url
         }
-        let longPress = null
-        if (props.onLongPress) {
-            longPress = () => {
-                props.onLongPress(item)
-            }
-        }
+
+        let toggled = toggledItems.hasOwnProperty(item.id)
 
         return <SnowImageButton
             wide={false}
-            dull={!props.disableWatched && item.watched}
+            dull={!props.disableWatched && (toggled ? !item.watched : item.watched)}
             shouldFocus={props.shouldFocus && itemIndex === 0}
             imageUrl={thumbnailUrl}
-            onPress={() => {
-                props.onPress ? props.onPress(item) : routes.gotoItem(item)
+            onPress={() => { routes.gotoItem(item) }}
+            onLongPress={() => {
+                apiClient.toggleItemWatched(item)
+                    .then(() => {
+                        setToggledItems((prev) => {
+                            let result = { ...prev }
+                            if (toggled) {
+                                delete result[item.id]
+                            }
+                            else {
+                                result[item.id] = true
+                            }
+
+                            return result
+                        })
+                    })
             }}
-            onLongPress={longPress}
             title={item.name}
         />
     }

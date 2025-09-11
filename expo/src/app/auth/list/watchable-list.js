@@ -54,7 +54,7 @@ export function WatchableListPage(props) {
         }
 
         const toggleWatchedItem = (item) => {
-            return props.toggleItemWatched(apiClient, item.id)
+            return apiClient.toggleItemWatched(item)
                 .then((watched) => {
                     return props.loadItems(apiClient, shelfId, showPlaylisted)
                 })
@@ -117,8 +117,6 @@ export function WatchableListPage(props) {
                 <C.FillView>
                     <Grid
                         shouldFocus
-                        onPress={gotoItem}
-                        onLongPress={toggleWatchedItem}
                         items={items} />
                 </C.FillView>
             </C.FillView>

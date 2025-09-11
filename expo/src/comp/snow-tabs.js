@@ -1,6 +1,5 @@
 import React from 'react'
-import { Platform, View } from 'react-native';
-import SnowText from './snow-text'
+import { View } from 'react-native';
 import Style from '../snow-style'
 import SnowDropdown from './snow-dropdown'
 import FillView from './fill-view'

@@ -11,9 +11,6 @@ export default function MovieListPage() {
         return routes.replace(routes.movieList, { shelfId: shelfId, showPlaylisted })
     }
 
-    const toggleItemWatched = (apiClient, itemId) => {
-        return apiClient.toggleMovieWatchStatus(itemId)
-    }
     const scanContentsJob = (apiClient, shelfId) => {
         return apiClient.createJobShelvesScan({
             targetKind: 'shelf',
@@ -25,7 +22,6 @@ export default function MovieListPage() {
             kind="Shelf"
             loadItems={loadItems}
             toggleShowPlaylisted={toggleShowPlaylisted}
-            toggleItemWatched={toggleItemWatched}
             scanContentsJob={scanContentsJob}
         />
     )

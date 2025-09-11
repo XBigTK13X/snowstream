@@ -47,10 +47,7 @@ export default function PlaylistDetailsPage() {
                 </C.SnowGrid>
             </C.View>
             <C.FillView>
-                <C.SnowPosterGrid
-                    items={playlistItems}
-                    onLongPress={apiClient.toggleItemWatched}
-                />
+                <C.SnowPosterGrid items={playlistItems} />
             </C.FillView>
         </C.FillView>
     )
