@@ -1,11 +1,12 @@
 cd expo
 rm -rf node_modules
-rm yarn.lock
-rm package-lock.json
+rm yarn.lock || true
+rm package-lock.json || true
+
+npx yarn install
 
 cd android
-rm -rf build
+rm -rf build/
 ./gradlew clean
 
-cd ..
-npx yarn install
+cd ../..
