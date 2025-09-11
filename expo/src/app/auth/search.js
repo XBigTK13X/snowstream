@@ -17,18 +17,9 @@ export default function SearchPage() {
     const [queryText, setQueryText] = C.React.useState('')
     const [searchResults, setSearchResults] = C.React.useState(null)
 
-    const [tabIndex, setTabIndex] = C.React.useState(0)
-    const [tabItems, setTabItems] = C.React.useState([])
-
     const executeQuery = () => {
-        setTabItems([])
-        setTabIndex(0)
         apiClient.search(queryText).then(response => {
             setSearchResults(response)
-            if (response.length > 0) {
-                setTabItems(response[tabIndex].items)
-                setTabIndex(0)
-            }
         })
     }
 
@@ -41,38 +32,20 @@ export default function SearchPage() {
         }
     }
 
-    const loadTab = (tabEntry, tabIndex) => {
-        setTabIndex(tabIndex)
-        setTabItems(tabEntry.items)
-    }
-
-    let resultsTab = null
+    let resultsTabs = null
     if (searchResults && !searchResults.length) {
-        resultsTab = `No results found for [${queryText}].`
+        resultsTabs = <C.SnowText>No results found for [{queryText}].</C.SnowText>
     }
-    if (searchResults && tabItems) {
-        let tabButtons = searchResults.map((entry, entryIndex) => {
-            const selected = entryIndex === tabIndex
-            const tabTitle = `${entry.name} [${entry.items.length}]`
-            return (
-                <C.SnowTextButton
-                    key={entryIndex}
-                    selected={selected}
-                    style={styles.column}
-                    onPress={() => { loadTab(entry, entryIndex) }}
-                    title={tabTitle} />
-            )
+    if (searchResults) {
+        let headers = searchResults.map(searchResult => {
+            return `${searchResult.name} [${searchResult.items.length}]`
         })
-        resultsTab = (
-            <C.FillView>
-                <C.View style={styles.columns}>
-                    {tabButtons}
-                </C.View>
-                <C.SnowPosterGrid
-                    disableWatched
-                    items={tabItems}
-                />
-            </C.FillView>
+        resultsTabs = (
+            <C.SnowTabs headers={headers}>
+                {searchResults.map(searchResult => {
+                    return <C.SnowPosterGrid disableWatched items={searchResult.items} />
+                })}
+            </C.SnowTabs>
         )
     }
 
@@ -83,7 +56,7 @@ export default function SearchPage() {
                 shouldFocus={true}
                 value={queryText}
                 onValueChange={updateQuery} />
-            {resultsTab}
+            {resultsTabs}
         </C.FillView>
     )
 }
