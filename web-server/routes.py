@@ -581,20 +581,24 @@ def auth_required(router):
         shelf_id: int
     ):
         keepsakes = db.op.get_keepsake_list_by_shelf(shelf_id=shelf_id)
+        top_level = []
         for keepsake in keepsakes:
             keepsake.name = keepsake.directory.replace(keepsake.shelf.local_path+"/",'')
-        return keepsakes
+            if not '/' in keepsake.name:
+                top_level.append(keepsake)
+        return top_level
 
     @router.get('/keepsake')
     def get_keepsake(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        keepsake_id: int
+        keepsake_id:str = None
     ):
-        keepsake = db.op.get_keepsake_by_id(keepsake_id=keepsake_id)
-        for ii in range(0,len(keepsake.video_files)):
-            keepsake.video_files[ii].info = json.loads(keepsake.video_files[ii].snowstream_info_json)
-            del keepsake.video_files[ii].snowstream_info_json
-        return keepsake
+        root_keepsake = db.op.get_keepsake_by_id(keepsake_id=keepsake_id)
+        result = db.op.get_keepsake_details_by_directory(directory=root_keepsake.directory)
+        for ii in range(0,len(result['root'].video_files)):
+            result['root'].video_files[ii].info = json.loads(result['root'].video_files[ii].snowstream_info_json)
+            del result['root'].video_files[ii].snowstream_info_json
+        return result
 
     @router.get('/continue/watching',tags=['User'])
     def get_continue_watching_list(

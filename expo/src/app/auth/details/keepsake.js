@@ -86,7 +86,7 @@ function KeepsakeVideo(props) {
 export default function KeepsakeDetailsPage() {
     const localParams = C.useLocalSearchParams()
 
-    const { apiClient } = C.useAppContext()
+    const { apiClient, routes } = C.useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
@@ -103,63 +103,30 @@ export default function KeepsakeDetailsPage() {
     }
 
     if (zoomedItem) {
-        let modalContent = null
-        // Full size images cause the app to crash on web if they are in a modal
-        if (C.isWeb) {
-            if (zoomedItem.model_kind === 'image_file') {
-                return (
-                    <C.View style={styles.zoomedImage}>
-                        <C.TouchableOpacity
-                            onPress={closeModal}
-                            style={styles.modal}>
-                            <C.Image
-                                style={styles.webImage}
-                                resicontentFitzeMode="contain"
-                                source={{ uri: zoomedItem.web_path }} />
-                        </C.TouchableOpacity>
-                    </C.View>)
-            }
-            else if (zoomedItem.model_kind === 'video_file') {
-                return (
-                    <C.View style={styles.zoomedImage}>
-                        <C.TouchableOpacity
-                            onPress={closeModal}
-                            style={styles.modal}>
-                            <KeepsakeVideo
-                                videoFile={zoomedItem}
-                                closeModal={closeModal}
-                            />
-                        </C.TouchableOpacity>
-                    </C.View>)
-            }
+        if (zoomedItem.model_kind === 'image_file') {
+            return (
+                <C.View style={styles.zoomedImage}>
+                    <C.TouchableOpacity
+                        onPress={closeModal}
+                        style={styles.modal}>
+                        <C.Image
+                            style={styles.webImage}
+                            resicontentFitzeMode="contain"
+                            source={{ uri: zoomedItem.web_path }} />
+                    </C.TouchableOpacity>
+                </C.View>)
         }
-        else {
-            if (zoomedItem.model_kind === 'image_file') {
-                modalContent = <C.Image
-                    style={styles.zoomedImage}
-                    contentFit="contain"
-                    source={{ uri: imageUrl }} />
-            }
-            else if (zoomedItem.model_kind === 'video_file') {
-                modalContent = (
+        return (
+            <C.View style={styles.zoomedImage}>
+                <C.TouchableOpacity
+                    onPress={closeModal}
+                    style={styles.modal}>
                     <KeepsakeVideo
                         videoFile={zoomedItem}
                         closeModal={closeModal}
                     />
-                )
-            }
-        }
-        return (
-            <C.SnowModal
-                onRequestClose={closeModal}
-            >
-                <C.TouchableOpacity
-                    onPress={closeModal}
-                    style={styles.modal}>
-                    {modalContent}
                 </C.TouchableOpacity>
-            </C.SnowModal>
-        )
+            </C.View>)
     }
 
     if (!keepsake) {
@@ -167,12 +134,12 @@ export default function KeepsakeDetailsPage() {
     }
 
     let videos = null
-    if (keepsake.video_files && keepsake.video_files.length) {
+    if (keepsake.root.video_files && keepsake.root.video_files.length) {
         videos = (
             <C.View>
                 <C.SnowLabel>Videos</C.SnowLabel>
                 <C.SnowGrid>
-                    {keepsake.video_files.map((video, videoIndex) => {
+                    {keepsake.root.video_files.map((video, videoIndex) => {
                         return (
                             <C.SnowTextButton
                                 title={video.name}
@@ -186,12 +153,12 @@ export default function KeepsakeDetailsPage() {
         )
     }
     let images = null
-    if (keepsake.image_files && keepsake.image_files.length) {
+    if (keepsake.root.image_files && keepsake.root.image_files.length) {
         images = (
             <C.View>
                 <C.SnowLabel>Images</C.SnowLabel>
                 <C.SnowGrid>
-                    {keepsake.image_files.map((image, imageIndex) => {
+                    {keepsake.root.image_files.map((image, imageIndex) => {
                         return (
                             <C.SnowImageButton
                                 square
@@ -205,13 +172,36 @@ export default function KeepsakeDetailsPage() {
             </C.View>
         )
     }
-    if (keepsake) {
+
+    let dirs = null
+    if (keepsake.dirs && keepsake.dirs.length) {
+        dirs = (
+            <C.View>
+                <C.SnowLabel>Directories</C.SnowLabel>
+                <C.SnowGrid>
+                    {keepsake.dirs.map((dir, dirIndex) => {
+                        return (
+                            <C.SnowTextButton
+                                title={dir.name}
+                                key={dirIndex}
+                                onPress={() => {
+                                    routes.goto(routes.keepsakeDetails, { keepsakeId: dir.id })
+                                }}
+                            />
+                        )
+                    })}
+                </C.SnowGrid>
+            </C.View>
+        )
+    }
+    if (keepsake && keepsake.root) {
         return (
             <C.View>
                 {videos}
                 {images}
+                {dirs}
             </C.View>
         )
     }
-    return <C.Text>Loading stream source {localParams.streamSourceId}.</C.Text>
+    return <C.Text>Loading keepsake {localParams.keepsakeId}.</C.Text>
 }

@@ -41,6 +41,33 @@ def get_keepsake_by_id(keepsake_id:int):
             .first()
         )
 
+def get_keepsake_details_by_directory(directory:str):
+    with dbi.session() as db:
+        keepsakes = (
+            db.query(dbi.dm.Keepsake)
+            .filter(dbi.dm.Keepsake.directory.contains(directory))
+            .options(dbi.orm.joinedload(dbi.dm.Keepsake.video_files))
+            .options(dbi.orm.joinedload(dbi.dm.Keepsake.image_files))
+            .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
+            .all()
+        )
+        keepsake_dirs = []
+        root_keepsake = None
+        for keepsake in keepsakes:
+            if keepsake.directory == directory:
+                root_keepsake = keepsake
+            else:
+                dir = keepsake.directory.replace(directory,'')
+                if dir.count('/') == 1:
+                    keepsake.name = dir
+                    keepsake_dirs.append(keepsake)
+        return {
+            'root': root_keepsake,
+            'dirs': keepsake_dirs
+        }
+
+
+
 def get_keepsake_list_by_shelf(shelf_id: int, search_query:str=None):
     with dbi.session() as db:
         query = (
