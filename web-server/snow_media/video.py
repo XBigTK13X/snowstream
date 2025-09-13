@@ -17,7 +17,11 @@ class MediaTrack:
     def __init__(self, media_path: str, ffprobe:dict, mediainfo:dict, is_anime:bool=False):
         try:
             self.kind = None
-            self.track_index = int(mediainfo['StreamOrder'])
+            self.track_index = 0
+            if 'StreamOrder' in mediainfo:
+                self.track_index = int(mediainfo['StreamOrder'])
+            elif 'index' in ffprobe:
+                self.track_index = int(ffprobe['index'])
             self.codec = mediainfo['CodecID']
             self.format = mediainfo['Format']
             if 'StreamSize' in mediainfo:
@@ -219,6 +223,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         except Exception as e:
             fail_track_parse(e,media_path,ff)
 
+    key_guess = 0
     for mi in raw_mediainfo['media']['track']:
         try:
             if mi['@type'] == 'General':
@@ -229,7 +234,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
             elif 'ID' in mi:
                 stream_key = 1000 + int(mi['ID'])
             else:
-                continue
+                stream_key = key_guess
+                key_guess += 1
             if not stream_key in stream_keys:
                 stream_keys.append(stream_key)
             if not stream_key in stream_lookup:
@@ -239,6 +245,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
             fail_track_parse(e,media_path,None,mi)
 
     for sk in stream_keys:
+        stream = None
         try:
             stream = stream_lookup[sk]
             track = MediaTrack(
@@ -261,6 +268,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
 
             snowstream_info['tracks'][track.kind].append(track.__dict__)
         except Exception as e:
+            log.error(f'stream key error {sk}')
+            log.error(json.dumps(stream, indent=4))
             fail_track_parse(
                 exception=e,
                 media_path=media_path,
