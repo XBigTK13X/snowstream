@@ -78,7 +78,7 @@ def get_video_file_by_id(video_file_id: int):
 
 def get_video_files_by_shelf(shelf_id: int):
     with dbi.session() as db:
-        return db.query(dbi.dm.VideoFile).filter(dbi.dm.VideoFile.shelf_id == shelf_id)
+        return db.query(dbi.dm.VideoFile).filter(dbi.dm.VideoFile.shelf_id == shelf_id).all()
 
 def get_video_file_list(directory:str=None):
     with dbi.session() as db:

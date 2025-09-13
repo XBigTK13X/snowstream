@@ -7,6 +7,7 @@ export function KeepsakeListPage(props) {
     const { isAdmin, apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
     const [shelf, setShelf] = C.React.useState(null)
+    const [rootKeepsake, setRootKeepsake] = C.React.useState(null)
     const [items, setItems] = C.React.useState(null)
 
 
@@ -14,17 +15,24 @@ export function KeepsakeListPage(props) {
         if (!shelf) {
             apiClient.getShelf(localParams.shelfId).then((response) => {
                 setShelf(response)
+            }).then(() => {
+                apiClient.getKeepsakeList(shelfId).then((response) => {
+                    setItems(response.top_levels)
+                    setRootKeepsake(response.root_keepsake)
+                })
             })
-            apiClient.getKeepsakeList(shelfId).then((response) => {
-                setItems(response)
-            })
+
         }
     })
-    if (shelf && items) {
+    if (shelf && items && rootKeepsake) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}`
 
         const gotoItem = (item) => {
-            routes.goto(routes.keepsakeDetails, { keepsakeId: item.id })
+            let payload = { rootKeepsakeId: rootKeepsake.id }
+            if (item.name !== '=-=root=-=') {
+                payload.subdirectory = item.path
+            }
+            routes.goto(routes.keepsakeDetails, payload)
         }
 
         return (
@@ -33,7 +41,7 @@ export function KeepsakeListPage(props) {
                 <C.SnowGrid itemsPerRow={2}>
                     {items.map((item, itemIndex) => {
                         return (
-                            <C.SnowTextButton key={itemIndex} title={item.name} onPress={() => { gotoItem(item) }} />
+                            <C.SnowTextButton key={itemIndex} title={item.display} onPress={() => { gotoItem(item) }} />
                         )
                     })}
                 </C.SnowGrid>

@@ -92,7 +92,7 @@ export default function KeepsakeDetailsPage() {
 
     C.React.useEffect(() => {
         if (!keepsake) {
-            apiClient.getKeepsake(localParams.keepsakeId).then((response) => {
+            apiClient.getKeepsake(localParams.rootKeepsakeId, localParams.subdirectory).then((response) => {
                 setKeepsake(response)
             })
         }
@@ -130,16 +130,20 @@ export default function KeepsakeDetailsPage() {
     }
 
     if (!keepsake) {
-        return "Loading keepsake"
+        let subdir = ''
+        if (localParams.subdirectory) {
+            subdir = ` subdirectory [${localParams.subdirectory}]`
+        }
+        return <C.Text>Loading keepsake {localParams.rootKeepsakeId}.</C.Text>
     }
 
     let videos = null
-    if (keepsake.root.video_files && keepsake.root.video_files.length) {
+    if (keepsake.videos && keepsake.videos.length) {
         videos = (
             <C.View>
                 <C.SnowLabel>Videos</C.SnowLabel>
                 <C.SnowGrid>
-                    {keepsake.root.video_files.map((video, videoIndex) => {
+                    {keepsake.videos.map((video, videoIndex) => {
                         return (
                             <C.SnowTextButton
                                 title={video.name}
@@ -153,12 +157,12 @@ export default function KeepsakeDetailsPage() {
         )
     }
     let images = null
-    if (keepsake.root.image_files && keepsake.root.image_files.length) {
+    if (keepsake.images && keepsake.images.length) {
         images = (
             <C.View>
                 <C.SnowLabel>Images</C.SnowLabel>
                 <C.SnowGrid>
-                    {keepsake.root.image_files.map((image, imageIndex) => {
+                    {keepsake.images.map((image, imageIndex) => {
                         return (
                             <C.SnowImageButton
                                 square
@@ -174,18 +178,18 @@ export default function KeepsakeDetailsPage() {
     }
 
     let dirs = null
-    if (keepsake.dirs && keepsake.dirs.length) {
+    if (keepsake.directories && keepsake.directories.length) {
         dirs = (
             <C.View>
                 <C.SnowLabel>Directories</C.SnowLabel>
                 <C.SnowGrid>
-                    {keepsake.dirs.map((dir, dirIndex) => {
+                    {keepsake.directories.map((dir, dirIndex) => {
                         return (
                             <C.SnowTextButton
-                                title={dir.name}
+                                title={dir.display}
                                 key={dirIndex}
                                 onPress={() => {
-                                    routes.goto(routes.keepsakeDetails, { keepsakeId: dir.id })
+                                    routes.goto(routes.keepsakeDetails, { rootKeepsakeId: localParams.rootKeepsakeId, subdirectory: dir.path })
                                 }}
                             />
                         )
@@ -194,7 +198,7 @@ export default function KeepsakeDetailsPage() {
             </C.View>
         )
     }
-    if (keepsake && keepsake.root) {
+    if (keepsake) {
         return (
             <C.View>
                 {videos}
@@ -203,5 +207,4 @@ export default function KeepsakeDetailsPage() {
             </C.View>
         )
     }
-    return <C.Text>Loading keepsake {localParams.keepsakeId}.</C.Text>
 }

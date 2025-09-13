@@ -581,24 +581,71 @@ def auth_required(router):
         shelf_id: int
     ):
         keepsakes = db.op.get_keepsake_list_by_shelf(shelf_id=shelf_id)
-        top_level = []
+        top_levels = [{
+            'display': f'=-=root=-=',
+            'path': None
+        }]
+        root_keepsake = None
+        top_dedupe = {}
         for keepsake in keepsakes:
-            keepsake.name = keepsake.directory.replace(keepsake.shelf.local_path+"/",'')
-            if not '/' in keepsake.name:
-                top_level.append(keepsake)
-        return top_level
+            if keepsake.directory == keepsake.shelf.local_path:
+                root_keepsake = keepsake
+                continue
+            dir_name = keepsake.directory.replace(keepsake.shelf.local_path+"/",'')
+            parts = dir_name.split('/')
+            name = parts[0]
+            if not name in top_dedupe:
+                top_levels.append({
+                    'display': name,
+                    'path': os.path.join(root_keepsake.directory,name)
+                })
+                top_dedupe[parts[0]] = True
+        return {
+            'top_levels': top_levels,
+            'root_keepsake': root_keepsake
+        }
 
     @router.get('/keepsake')
     def get_keepsake(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        keepsake_id:str = None
+        keepsake_id:str = None,
+        subdirectory:str = None
     ):
         root_keepsake = db.op.get_keepsake_by_id(keepsake_id=keepsake_id)
-        result = db.op.get_keepsake_details_by_directory(directory=root_keepsake.directory)
-        for ii in range(0,len(result['root'].video_files)):
-            result['root'].video_files[ii].info = json.loads(result['root'].video_files[ii].snowstream_info_json)
-            del result['root'].video_files[ii].snowstream_info_json
-        return result
+        absolute_subdirectory = root_keepsake.directory
+        if not subdirectory:
+            images = root_keepsake.image_files
+            videos = root_keepsake.video_files
+        else:
+            absolute_subdirectory = subdirectory
+        keepsakes = db.op.get_keepsake_list_by_directory(directory=absolute_subdirectory)
+        images = []
+        videos = []
+        directories = []
+        directory_dedupe = {}
+        for keepsake in keepsakes:
+            if keepsake.directory == absolute_subdirectory:
+                images = keepsake.image_files
+                videos = keepsake.video_files
+            dir_name = keepsake.directory.replace(absolute_subdirectory,'')
+            parts = dir_name.split('/')
+            if len(parts) == 1:
+                continue
+            subdir = parts[1]
+            if not subdir in directory_dedupe:
+                directory_dedupe[subdir] = True
+                directories.append({
+                    'display': subdir,
+                    'path': os.path.join(absolute_subdirectory,subdir)
+                })
+        for video in videos:
+            video.info = json.loads(video.snowstream_info_json)
+            del video.snowstream_info_json
+        return {
+            'videos': videos,
+            'images': images,
+            'directories': directories
+        }
 
     @router.get('/continue/watching',tags=['User'])
     def get_continue_watching_list(

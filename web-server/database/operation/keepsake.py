@@ -41,30 +41,20 @@ def get_keepsake_by_id(keepsake_id:int):
             .first()
         )
 
-def get_keepsake_details_by_directory(directory:str):
+def get_keepsake_list_by_directory(directory:str):
     with dbi.session() as db:
-        keepsakes = (
+        return (
             db.query(dbi.dm.Keepsake)
             .filter(dbi.dm.Keepsake.directory.contains(directory))
             .options(dbi.orm.joinedload(dbi.dm.Keepsake.video_files))
             .options(dbi.orm.joinedload(dbi.dm.Keepsake.image_files))
             .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
+            .order_by(
+                dbi.func.length(dbi.dm.Keepsake.directory),
+                dbi.dm.Keepsake.directory
+            )
             .all()
         )
-        keepsake_dirs = []
-        root_keepsake = None
-        for keepsake in keepsakes:
-            if keepsake.directory == directory:
-                root_keepsake = keepsake
-            else:
-                dir = keepsake.directory.replace(directory,'')
-                if dir.count('/') == 1:
-                    keepsake.name = dir
-                    keepsake_dirs.append(keepsake)
-        return {
-            'root': root_keepsake,
-            'dirs': keepsake_dirs
-        }
 
 
 
@@ -79,7 +69,10 @@ def get_keepsake_list_by_shelf(shelf_id: int, search_query:str=None):
             query = query.filter(dbi.dm.Keepsake.directory.ilike(f'%{search_query}%'))
         query = (
             query.filter(dbi.dm.KeepsakeShelf.shelf_id == shelf_id)
-            .order_by(dbi.dm.Keepsake.directory)
+            .order_by(
+                dbi.func.length(dbi.dm.Keepsake.directory),
+                dbi.dm.Keepsake.directory
+            )
         )
         if search_query:
             query = query.limit(dbi.config.search_results_per_shelf_limit)

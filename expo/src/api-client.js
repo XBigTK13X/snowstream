@@ -499,8 +499,12 @@ export class ApiClient {
         return this.get(`/keepsake/list?shelf_id=${shelfId}`)
     }
 
-    getKeepsake(keepsakeId) {
-        return this.get(`/keepsake?keepsake_id=${keepsakeId}`)
+    getKeepsake(keepsakeId, subdirectory) {
+        let url = `/keepsake?keepsake_id=${keepsakeId}`
+        if (subdirectory) {
+            url += `&subdirectory=${subdirectory}`
+        }
+        return this.get(url)
     }
 
     getSessionList() {

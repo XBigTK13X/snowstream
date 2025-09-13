@@ -43,6 +43,7 @@ docker run -d \
     -v $(pwd)/.docker-volume/postgresql:/var/lib/postgresql/data \
     -v $(pwd)/.docker-volume/rabbitmq:/var/lib/rabbitmq \
     -v $(pwd)/web-server/.snowstream:/mnt/.snowstream \
+    -v /mnt/test-data:/mnt/test-data \
     -v /mnt/j-media/tv:/mnt/j-media/tv \
     -v /mnt/j-media/keepsake:/mnt/j-media/keepsake \
     -v /mnt/j-media/photo:/mnt/j-media/photo \

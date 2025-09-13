@@ -42,7 +42,7 @@ def get_or_create_image_file(shelf_id: int, kind: str, local_path: str):
 
 def get_image_files_by_shelf(shelf_id: int):
     with dbi.session() as db:
-        return db.query(dbi.dm.ImageFile).filter(dbi.dm.ImageFile.shelf_id == shelf_id)
+        return db.query(dbi.dm.ImageFile).filter(dbi.dm.ImageFile.shelf_id == shelf_id).all()
 
 def get_image_file_list(directory:str=None):
     with dbi.session() as db:
