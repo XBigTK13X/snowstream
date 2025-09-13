@@ -581,42 +581,38 @@ def auth_required(router):
         shelf_id: int
     ):
         keepsakes = db.op.get_keepsake_list_by_shelf(shelf_id=shelf_id)
+        shelf = db.op.get_shelf_by_id(shelf_id=shelf_id)
         top_levels = [{
             'display': f'=-=root=-=',
             'path': None
         }]
-        root_keepsake = None
         top_dedupe = {}
         for keepsake in keepsakes:
-            if keepsake.directory == keepsake.shelf.local_path:
-                root_keepsake = keepsake
-                continue
-            dir_name = keepsake.directory.replace(keepsake.shelf.local_path+"/",'')
+            dir_name = keepsake.directory.replace(shelf.local_path+"/",'')
             parts = dir_name.split('/')
             name = parts[0]
+            if name == '':
+                continue
             if not name in top_dedupe:
                 top_levels.append({
                     'display': name,
-                    'path': os.path.join(root_keepsake.directory,name)
+                    'path': os.path.join(shelf.local_path,name)
                 })
                 top_dedupe[parts[0]] = True
         return {
             'top_levels': top_levels,
-            'root_keepsake': root_keepsake
+            'shelf': shelf
         }
 
     @router.get('/keepsake')
     def get_keepsake(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        keepsake_id:str = None,
+        shelf_id:str = None,
         subdirectory:str = None
     ):
-        root_keepsake = db.op.get_keepsake_by_id(keepsake_id=keepsake_id)
-        absolute_subdirectory = root_keepsake.directory
-        if not subdirectory:
-            images = root_keepsake.image_files
-            videos = root_keepsake.video_files
-        else:
+        shelf = db.op.get_shelf_by_id(shelf_id=shelf_id)
+        absolute_subdirectory = shelf.local_path
+        if subdirectory:
             absolute_subdirectory = subdirectory
         keepsakes = db.op.get_keepsake_list_by_directory(directory=absolute_subdirectory)
         images = []
@@ -644,7 +640,8 @@ def auth_required(router):
         return {
             'videos': videos,
             'images': images,
-            'directories': directories
+            'directories': directories,
+            'shelf': shelf
         }
 
     @router.get('/continue/watching',tags=['User'])

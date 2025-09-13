@@ -213,6 +213,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
                 continue
             if ff['codec_type'] == 'attachment':
                 continue
+            if ff['codec_type'] == 'data':
+                continue
             stream_key = int(ff['index'])
             if not stream_key in stream_lookup:
                 stream_keys.append(stream_key)
@@ -227,6 +229,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     for mi in raw_mediainfo['media']['track']:
         try:
             if mi['@type'] == 'General':
+                continue
+            if mi['@type'] == 'Other':
                 continue
             stream_key = None
             if 'StreamOrder' in mi:

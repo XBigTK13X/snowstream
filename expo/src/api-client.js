@@ -499,8 +499,8 @@ export class ApiClient {
         return this.get(`/keepsake/list?shelf_id=${shelfId}`)
     }
 
-    getKeepsake(keepsakeId, subdirectory) {
-        let url = `/keepsake?keepsake_id=${keepsakeId}`
+    getKeepsake(shelfId, subdirectory) {
+        let url = `/keepsake?shelf_id=${shelfId}`
         if (subdirectory) {
             url += `&subdirectory=${subdirectory}`
         }

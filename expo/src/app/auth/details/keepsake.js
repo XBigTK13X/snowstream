@@ -92,7 +92,7 @@ export default function KeepsakeDetailsPage() {
 
     C.React.useEffect(() => {
         if (!keepsake) {
-            apiClient.getKeepsake(localParams.rootKeepsakeId, localParams.subdirectory).then((response) => {
+            apiClient.getKeepsake(localParams.shelfId, localParams.subdirectory).then((response) => {
                 setKeepsake(response)
             })
         }
@@ -134,7 +134,7 @@ export default function KeepsakeDetailsPage() {
         if (localParams.subdirectory) {
             subdir = ` subdirectory [${localParams.subdirectory}]`
         }
-        return <C.Text>Loading keepsake {localParams.rootKeepsakeId}.</C.Text>
+        return <C.Text>Loading keepsakes from shelf {localParams.shelfId}.</C.Text>
     }
 
     let videos = null
@@ -189,7 +189,7 @@ export default function KeepsakeDetailsPage() {
                                 title={dir.display}
                                 key={dirIndex}
                                 onPress={() => {
-                                    routes.goto(routes.keepsakeDetails, { rootKeepsakeId: localParams.rootKeepsakeId, subdirectory: dir.path })
+                                    routes.goto(routes.keepsakeDetails, { shelfId: localParams.shelfId, subdirectory: dir.path })
                                 }}
                             />
                         )

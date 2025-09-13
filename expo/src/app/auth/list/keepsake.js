@@ -7,28 +7,22 @@ export function KeepsakeListPage(props) {
     const { isAdmin, apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
     const [shelf, setShelf] = C.React.useState(null)
-    const [rootKeepsake, setRootKeepsake] = C.React.useState(null)
     const [items, setItems] = C.React.useState(null)
 
 
     C.React.useEffect(() => {
         if (!shelf) {
-            apiClient.getShelf(localParams.shelfId).then((response) => {
-                setShelf(response)
-            }).then(() => {
-                apiClient.getKeepsakeList(shelfId).then((response) => {
-                    setItems(response.top_levels)
-                    setRootKeepsake(response.root_keepsake)
-                })
+            apiClient.getKeepsakeList(shelfId).then((response) => {
+                setItems(response.top_levels)
+                setShelf(response.shelf)
             })
-
         }
     })
-    if (shelf && items && rootKeepsake) {
+    if (shelf && items) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}`
 
         const gotoItem = (item) => {
-            let payload = { rootKeepsakeId: rootKeepsake.id }
+            let payload = { shelfId: shelfId }
             if (item.name !== '=-=root=-=') {
                 payload.subdirectory = item.path
             }
