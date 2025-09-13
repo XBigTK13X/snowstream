@@ -1,6 +1,7 @@
 import util
 from log import log
 import json
+from settings import config
 
 def fail_track_parse(exception, media_path, ffprobe=None, mediainfo=None):
     log.error(f"An error occurred while reading track info for [{media_path}]")
@@ -175,7 +176,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     if mediainfo_existing:
         raw_mediainfo = json.loads(mediainfo_existing)
     else:
-        command = f'mediainfo --ParseSpeed=0 --Output=JSON "{media_path}"'
+        command = f'mediainfo --ParseSpeed={config.mediainfo_parse_speed} --Output=JSON "{media_path}"'
         command_output = util.run_cli(command,raw_output=True)
         mediainfo_output = command_output['stdout']
         raw_mediainfo = json.loads(mediainfo_output)
@@ -232,14 +233,12 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
                 continue
             if mi['@type'] == 'Other':
                 continue
-            stream_key = None
+            stream_key = key_guess
+            key_guess += 1
             if 'StreamOrder' in mi:
                 stream_key = int(mi['StreamOrder'])
             elif 'ID' in mi:
                 stream_key = 1000 + int(mi['ID'])
-            else:
-                stream_key = key_guess
-                key_guess += 1
             if not stream_key in stream_keys:
                 stream_keys.append(stream_key)
             if not stream_key in stream_lookup:

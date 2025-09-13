@@ -574,36 +574,6 @@ def auth_required(router):
     ):
         return db.op.set_show_episode_watch_progress(ticket=auth_user.ticket,watch_progress=watch_progress)
 
-
-    @router.get('/keepsake/list')
-    def get_keepsake_list(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        shelf_id: int
-    ):
-        keepsakes = db.op.get_keepsake_list_by_shelf(shelf_id=shelf_id)
-        shelf = db.op.get_shelf_by_id(shelf_id=shelf_id)
-        top_levels = [{
-            'display': f'=-=root=-=',
-            'path': None
-        }]
-        top_dedupe = {}
-        for keepsake in keepsakes:
-            dir_name = keepsake.directory.replace(shelf.local_path+"/",'')
-            parts = dir_name.split('/')
-            name = parts[0]
-            if name == '':
-                continue
-            if not name in top_dedupe:
-                top_levels.append({
-                    'display': name,
-                    'path': os.path.join(shelf.local_path,name)
-                })
-                top_dedupe[parts[0]] = True
-        return {
-            'top_levels': top_levels,
-            'shelf': shelf
-        }
-
     @router.get('/keepsake')
     def get_keepsake(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],

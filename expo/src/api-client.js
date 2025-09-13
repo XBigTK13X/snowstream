@@ -495,10 +495,6 @@ export class ApiClient {
         return this.post(`/movie/watch_count?movie_id=${movieId}`)
     }
 
-    getKeepsakeList(shelfId) {
-        return this.get(`/keepsake/list?shelf_id=${shelfId}`)
-    }
-
     getKeepsake(shelfId, subdirectory) {
         let url = `/keepsake?shelf_id=${shelfId}`
         if (subdirectory) {

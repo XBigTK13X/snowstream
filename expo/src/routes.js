@@ -29,7 +29,6 @@ export var routes = {
     episodePlay: '/auth/play/episode',
     info: '/info',
     keepsakeDetails: '/auth/details/keepsake',
-    keepsakeList: '/auth/list/keepsake',
     landing: '/auth/landing',
     movieDetails: '/auth/details/movie',
     movieList: '/auth/list/movie',

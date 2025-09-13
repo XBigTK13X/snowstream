@@ -67,7 +67,7 @@ export default function LandingPage(props) {
                 return (
                     <C.SnowTextButton
                         title={shelf.name}
-                        onPress={routes.func(routes.keepsakeList, { shelfId: shelf.id })}
+                        onPress={routes.func(routes.keepsakeDetails, { shelfId: shelf.id })}
                     />
                 )
             }

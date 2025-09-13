@@ -23,6 +23,8 @@ class Config:
             '.snowstream/log/server.log'
         ]
         self.log_level = "INFO"
+        self.mediainfo_parse_speed = 0 # Most modern videos work with 0, which is MUCH faster
+                                       # 1 is used to support very old videos, like DLed flvs
         self.postgres_database = "snowstream"
         self.postgres_host = "localhost"
         self.postgres_password = "snowstream"
@@ -78,7 +80,7 @@ class Config:
         log.info("Current server config")
         for key, val in vars(self).items():
             log.info(f"\t{key} = {val}")
-            
+
 
 config = Config()
 
@@ -87,7 +89,7 @@ for key, val in vars(config).items():
     env_var_value = os.environ.get(env_var_key)
     if env_var_value:
         setattr(config, key, env_var_value)
-    
+
 
 config.refresh_postgres_url()
 config.refresh_app_data_dirs()

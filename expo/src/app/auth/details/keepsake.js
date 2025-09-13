@@ -146,6 +146,7 @@ export default function KeepsakeDetailsPage() {
                     {keepsake.videos.map((video, videoIndex) => {
                         return (
                             <C.SnowTextButton
+                                tall
                                 title={video.name}
                                 key={videoIndex}
                                 onPress={() => { setZoomedItem(video) }}
@@ -186,6 +187,7 @@ export default function KeepsakeDetailsPage() {
                     {keepsake.directories.map((dir, dirIndex) => {
                         return (
                             <C.SnowTextButton
+                                tall
                                 title={dir.display}
                                 key={dirIndex}
                                 onPress={() => {
