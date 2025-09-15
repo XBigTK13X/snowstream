@@ -607,6 +607,8 @@ def auth_required(router):
         for video in videos:
             video.info = json.loads(video.snowstream_info_json)
             del video.snowstream_info_json
+        for image in images:
+            image.name = image.local_path.split('/')[-1]
         return {
             'videos': videos,
             'images': images,

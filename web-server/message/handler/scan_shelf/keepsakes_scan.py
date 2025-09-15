@@ -1,8 +1,11 @@
+import uuid
 import os
 from log import log
 from db import db
+import json
 from message.handler.scan_shelf.shelf_scanner import ShelfScanner
-from snow_media import nfo
+from snow_media import nfo,image
+from settings import config
 
 
 def parse_keepsake_info(file_path):
@@ -59,9 +62,22 @@ class KeepsakesScanHandler(ShelfScanner):
             if progress_count % 500 == 0:
                 db.op.update_job(job_id=self.scope.job_id, message=f'Organize keepsake video {progress_count} out of {len(self.file_info_lookup["video"])}')
             keepsake = self.get_or_create_keepsake(info=info)
-            if not db.op.get_keepsake_video_file(
-                keepsake_id=keepsake.id, video_file_id=info["id"]
-            ):
-                db.op.create_keepsake_video_file(
+            keepsake_video_file = db.op.get_keepsake_video_file(keepsake_id=keepsake.id, video_file_id=info["id"])
+            if not keepsake_video_file:
+                keepsake_video_file = db.op.create_keepsake_video_file(
                     keepsake_id=keepsake.id, video_file_id=info["id"]
                 )
+            video_file = db.op.get_video_file_by_id(video_file_id=info['id'])
+            if not video_file.thumbnail_web_path:
+                info = json.loads(video_file.snowstream_info_json)
+                tmp_path = os.path.join('/tmp',str(uuid.uuid4())+'.jpg')
+                image.extract_screencap(
+                    video_path=video_file.local_path,
+                    duration_seconds=info['duration_seconds'],
+                    output_path=tmp_path
+                )
+                thumbnail_path = image.create_thumbnail(local_path=tmp_path)
+                thumbnail_web_path = config.web_media_url + thumbnail_path
+                if thumbnail_path[0] != '/':
+                    thumbnail_web_path = config.web_media_url + '/' + thumbnail_path
+                db.op.update_video_file_thumbnail(video_file_id=video_file.id,thumbnail_web_path=thumbnail_web_path)

@@ -314,6 +314,7 @@ class VideoFile(BaseModel):
     show_episode_video_file: orm.Mapped["ShowEpisodeVideoFile"] = orm.relationship(back_populates="video_file",overlaps="show_episode")
     keepsake: orm.Mapped["Keepsake"] = orm.relationship(secondary="keepsake_video_file", back_populates="video_files")
     keepsake_video_file: orm.Mapped["KeepsakeVideoFile"] = orm.relationship(back_populates="video_file",overlaps="keepsake")
+    thumbnail_web_path = sa.Column(sa.Text)
 
 class Shelf(BaseModel):
     @orm.reconstructor

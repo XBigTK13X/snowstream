@@ -177,6 +177,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         raw_mediainfo = json.loads(mediainfo_existing)
     else:
         command = f'mediainfo --ParseSpeed={config.mediainfo_parse_speed} --Output=JSON "{media_path}"'
+        #log.info(command)
         command_output = util.run_cli(command,raw_output=True)
         mediainfo_output = command_output['stdout']
         raw_mediainfo = json.loads(mediainfo_output)
@@ -206,17 +207,20 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     stream_lookup = {}
     stream_keys = []
 
+    ff_index = {
+        'audio_index': 0,
+        'video_index': 0,
+        'subtitle_index': 0
+    }
+    valid_ffs = ['audio','video','subtitle']
     for ff in raw_ffprobe['streams']:
         try:
-            if 'disposition' in ff and \
-                (ff['disposition']['attached_pic'] == 1 \
-                    or ff['disposition']['still_image'] == 1):
+            if not ff['codec_type'] in valid_ffs:
                 continue
-            if ff['codec_type'] == 'attachment':
-                continue
-            if ff['codec_type'] == 'data':
-                continue
-            stream_key = int(ff['index'])
+            kind = ff['codec_type']
+            key_pool = f'{kind}_index'
+            stream_key = f'{kind}-{ff_index[key_pool]}'
+            ff_index[key_pool] += 1
             if not stream_key in stream_lookup:
                 stream_keys.append(stream_key)
                 stream_lookup[stream_key] = {
@@ -226,19 +230,22 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         except Exception as e:
             fail_track_parse(e,media_path,ff)
 
-    key_guess = 0
+    mi_index = {
+        'audio_index': 0,
+        'video_index': 0,
+        'subtitle_index': 0
+    }
+    valid_mis = ['Audio','Video','Text']
     for mi in raw_mediainfo['media']['track']:
         try:
-            if mi['@type'] == 'General':
+            if not mi['@type'] in valid_mis:
                 continue
-            if mi['@type'] == 'Other':
-                continue
-            stream_key = key_guess
-            key_guess += 1
-            if 'StreamOrder' in mi:
-                stream_key = int(mi['StreamOrder'])
-            elif 'ID' in mi:
-                stream_key = 1000 + int(mi['ID'])
+            kind = mi['@type'].lower()
+            if kind == 'text':
+                kind = 'subtitle'
+            key_pool = kind + '_index'
+            stream_key = f'{kind}-{mi_index[key_pool]}'
+            mi_index[key_pool] += 1
             if not stream_key in stream_keys:
                 stream_keys.append(stream_key)
             if not stream_key in stream_lookup:

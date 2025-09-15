@@ -56,8 +56,6 @@ def get_keepsake_list_by_directory(directory:str):
             .all()
         )
 
-
-
 def get_keepsake_list_by_shelf(shelf_id: int, search_query:str=None):
     with dbi.session() as db:
         query = (

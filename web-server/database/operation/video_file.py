@@ -72,6 +72,18 @@ def update_video_file_info(
         db.commit()
         return video_file
 
+def update_video_file_thumbnail(video_file_id:int,thumbnail_web_path:str):
+    with dbi.session() as db:
+        (
+            db.query(dbi.dm.VideoFile)
+            .filter(dbi.dm.VideoFile.id == video_file_id)
+            .update({
+                'thumbnail_web_path': thumbnail_web_path
+            })
+        )
+        db.commit()
+        return True
+
 def get_video_file_by_id(video_file_id: int):
     with dbi.session() as db:
         return db.query(dbi.dm.VideoFile).filter(dbi.dm.VideoFile.id == video_file_id).first()

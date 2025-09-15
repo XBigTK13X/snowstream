@@ -145,10 +145,11 @@ export default function KeepsakeDetailsPage() {
                 <C.SnowGrid>
                     {keepsake.videos.map((video, videoIndex) => {
                         return (
-                            <C.SnowTextButton
-                                tall
-                                title={video.name}
+                            <C.SnowImageButton
+                                square
                                 key={videoIndex}
+                                title={video.name}
+                                imageUrl={video.thumbnail_web_path}
                                 onPress={() => { setZoomedItem(video) }}
                             />
                         )
@@ -168,6 +169,7 @@ export default function KeepsakeDetailsPage() {
                             <C.SnowImageButton
                                 square
                                 key={imageIndex}
+                                title={image.name}
                                 imageUrl={image.thumbnail_web_path}
                                 onPress={() => { setZoomedItem(image) }}
                             />

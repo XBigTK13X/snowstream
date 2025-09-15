@@ -50,15 +50,3 @@ def get_image_file_list(directory:str=None):
         if directory:
             query = query.filter(dbi.dm.ImageFile.local_path.contains(directory))
         return query.all()
-
-def fix_image_file_thumbnail_paths():
-    with dbi.session() as db:
-        images = db.query(dbi.dm.ImageFile).all()
-        for image in images:
-            local_thumbnail_path = magick.create_thumbnail(image.local_path)
-            thumbnail_web_path = dbi.config.web_media_url + local_thumbnail_path
-            if local_thumbnail_path[0] != '/':
-                thumbnail_web_path = dbi.config.web_media_url + '/' + local_thumbnail_path
-            image.thumbnail_web_path = thumbnail_web_path
-        db.commit()
-        return True
