@@ -32,11 +32,11 @@ def auth_required(router):
     @router.get("/stream/source/list",tags=['Stream Source'])
     def get_stream_source_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        include_streamables:bool=False
+        streamable_only:bool=False
     ):
         return db.op.get_stream_source_list(
             ticket=auth_user.ticket,
-            streamables=include_streamables
+            streamable_only=streamable_only
         )
 
     @router.post("/stream/source",tags=['Stream Source'])

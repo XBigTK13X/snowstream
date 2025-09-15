@@ -242,8 +242,8 @@ export class ApiClient {
         })
     }
 
-    getStreamSourceList() {
-        return this.get('/stream/source/list')
+    getStreamSourceList(streamableOnly) {
+        return this.get(`/stream/source/list?streamable_only=${!!streamableOnly}`)
     }
 
     getStreamSource(streamSourceId) {

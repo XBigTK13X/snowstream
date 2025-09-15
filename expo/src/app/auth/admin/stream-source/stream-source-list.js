@@ -7,7 +7,7 @@ export default function StreamSourceListPage() {
 
     C.React.useEffect(() => {
         if (!streamSources) {
-            apiClient.getStreamSourceList().then((response) => {
+            apiClient.getStreamSourceList(false).then((response) => {
                 setStreamSources(response)
             })
         }
