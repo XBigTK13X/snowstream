@@ -77,6 +77,9 @@ function KeepsakeVideo(props) {
         }}
         onComplete={() => {
             return props.closeModal()
+        }}
+        onStopVideo={() => {
+            return props.closeModal()
         }}>
         <VideoPlayer />
     </C.PlayerContextProvider>

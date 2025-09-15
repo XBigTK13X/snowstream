@@ -164,11 +164,16 @@ export function PlayerContextProvider(props) {
         onCloseTranscodeSession()
         setControlsVisible(false)
         setIsPlaying(false)
-        if (goHome) {
-            routes.goto(routes.landing)
+        if (props.onStopVideo) {
+            props.onStopVideo()
         }
         else {
-            routes.back()
+            if (goHome) {
+                routes.goto(routes.landing)
+            }
+            else {
+                routes.back()
+            }
         }
     }
 
