@@ -291,6 +291,7 @@ export class ApiClient {
 
     saveChannel(payload) {
         return this.post('/channel', {
+            id: payload.id,
             edited_name: payload.editedName,
             edited_number: payload.editedNumber,
             edited_id: payload.editedId,

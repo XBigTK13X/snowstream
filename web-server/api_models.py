@@ -78,9 +78,9 @@ class ChannelGuideSource(BaseModel):
 
 class Channel(BaseModel):
     id: int
-    edited_number: str
-    edited_name: str
-    edited_id: str
+    edited_number: int | None = None
+    edited_name: str | None = None
+    edited_id: str | None = None
     streamable_id: int | None = None
 
 class ShelfKind(BaseModel):

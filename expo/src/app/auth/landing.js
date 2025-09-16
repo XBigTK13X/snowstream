@@ -24,12 +24,7 @@ export default function LandingPage(props) {
         }
     })
 
-    let destinations = [
-        (<C.SnowTextButton
-            shouldFocus
-            title="Continue Watching"
-            onPress={routes.func(routes.continueWatching)}
-        />)]
+    let destinations = []
 
     if (shelves) {
         destinations = destinations.concat(shelves.map((shelf) => {
@@ -87,13 +82,30 @@ export default function LandingPage(props) {
         }))
     }
 
-    destinations.push((<C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />))
-
-    destinations.push((<C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />))
+    let destinationsGrid = null
+    if (destinations.length > 0) {
+        destinationsGrid = (
+            <C.View>
+                <C.SnowBreak />
+                <C.SnowGrid itemsPerRow={3} items={destinations} />
+            </C.View>
+        )
+    }
 
     if (shelves || streamSources) {
         return (
-            <C.SnowGrid items={destinations} itemsPerRow={3} />
+            <C.FillView>
+                <C.SnowGrid shrink itemsPerRow={3}>
+                    <C.SnowTextButton
+                        shouldFocus
+                        title="Continue Watching"
+                        onPress={routes.func(routes.continueWatching)}
+                    />
+                    <C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />
+                    <C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />
+                </C.SnowGrid>
+                {destinationsGrid}
+            </C.FillView>
         )
     }
 

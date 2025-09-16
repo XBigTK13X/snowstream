@@ -51,6 +51,31 @@ def create_channel(channel: dict):
         db.refresh(dbm)
         return dbm
 
+def update_channel(channel: am.Channel):
+    with dbi.session() as db:
+        model = channel.model_dump()
+        streamable_id = model['streamable_id']
+        del model['streamable_id']
+        dbm = dbi.dm.Channel(**model)
+        db.add(dbm)
+        db.commit()
+        db.refresh(dbm)
+        channel_model = dbm
+        if streamable_id:
+            (
+                db.query(dbi.dm.StreamableChannel)
+                .filter(dbi.dm.StreamableChannel.id == channel.id)
+                .delete()
+            )
+            db.commit()
+            dbm = dbi.dm.StreamableChannel()
+            dbm.streamable_id = streamable_id
+            dbm.channel_id = channel.id
+            db.add(dbm)
+            db.commit()
+            db.refresh(dbm)
+        return channel_model
+
 def get_channel_by_parsed_id(parsed_id: str):
     with dbi.session() as db:
         return (

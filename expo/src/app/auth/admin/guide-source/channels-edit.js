@@ -104,7 +104,7 @@ export default function ChannelEditPage() {
     })
 
     if (!guideSource || !streamables) {
-        return null
+        return <C.SnowText>Loading channels...</C.SnowText>
     }
 
     let channelRows = null
