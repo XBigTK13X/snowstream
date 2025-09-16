@@ -93,9 +93,7 @@ def auth_required(router):
     def get_channel_guide_source_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
-        return db.op.get_channel_guide_source_list(
-            ticket=auth_user.ticket
-        )
+        return db.op.get_channel_guide_source_list()
 
     @router.post("/channel/guide/source",tags=['Channel Guide'])
     def save_channel_guide_source(
@@ -104,7 +102,7 @@ def auth_required(router):
     ):
         if not auth_user.is_admin():
             return None
-        return db.op.upsert_channel_guide_source(ticket=auth_user.ticket,guide_source=guide_source)
+        return db.op.upsert_channel_guide_source(guide_source=guide_source)
 
     @router.delete("/channel/guide/{channel_guide_source_id}",tags=['Channel Guide'])
     def delete_channel_guide_source(
@@ -121,7 +119,7 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         channel_guide_source_id:int
     ):
-        return db.op.get_channel_guide_source_by_id(ticket=auth_user.ticket,channel_guide_source_id=channel_guide_source_id)
+        return db.op.get_channel_guide_source_by_id(channel_guide_source_id=channel_guide_source_id)
 
     @router.post("/job",tags=['Job'])
     def create_job(

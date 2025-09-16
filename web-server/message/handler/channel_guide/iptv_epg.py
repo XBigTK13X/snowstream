@@ -1,4 +1,4 @@
-from message.handler.guide_source.guide_source_importer import GuideSourceImporter
+from message.handler.channel_guide.guide_source_importer import GuideSourceImporter
 from db import db
 import cloudscraper
 from log import log
@@ -10,14 +10,14 @@ EPG_DATE_TIME_FORMAT = "%Y%m%d%H%M%S %z"
 
 
 class IptvEpg(GuideSourceImporter):
-    def __init__(self, job_id, stream_source):
-        super().__init__(job_id, "IPTV EPG", stream_source)
+    def __init__(self, job_id, guide_source):
+        super().__init__(job_id, "IPTV EPG", guide_source)
 
     def download(self):
         if super().download():
             return True
         scraper = cloudscraper.create_scraper()
-        xml_response = scraper.get(self.stream_source.url)
+        xml_response = scraper.get(self.guide_source.url)
         self.cached_data = db.op.upsert_cached_text(
             key=self.cache_key, data=xml_response.text
         )
@@ -64,13 +64,17 @@ class IptvEpg(GuideSourceImporter):
                 prune_count += 1
             else:
                 channel_count += 1
-                db.op.update_job(job_id=self.job_id, message=f"({channel_count}/{initial_count}) Processing channel {key}")
+                if channel_count % 500 == 0:
+                    db.op.update_job(job_id=self.job_id, message=f"Ingesting channel {channel_count} out of {initial_count}")
                 channel = db.op.get_channel_by_parsed_id(key)
                 if not channel:
-                    channel = db.op.create_channel({"parsed_id": key})
+                    channel = db.op.create_channel({
+                        "channel_guide_source_id":self.guide_source.id,
+                        "parsed_id": key
+                    })
                 for program in val["programs"]:
                     program["channel_id"] = channel.id
-                db.op.create_schedules(val['programs'])
+                db.op.create_channel_programs(val['programs'])
 
         db.op.update_job(job_id=self.job_id, message=f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
         return True

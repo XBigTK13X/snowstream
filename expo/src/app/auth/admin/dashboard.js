@@ -12,6 +12,7 @@ export default function AdminDashboardPage() {
         { title: 'Sessions', route: routes.admin.sessionList },
         { title: 'Shelves', route: routes.admin.shelfList },
         { title: 'Stream Sources', route: routes.admin.streamSourceList },
+        { title: 'Channel Guides', route: routes.admin.channelGuideSourceList },
         { title: 'Users', route: routes.admin.userList },
         { title: 'Tags', route: routes.admin.tagList },
         { title: 'Cleanup Rules', route: routes.admin.cleanupRuleList },

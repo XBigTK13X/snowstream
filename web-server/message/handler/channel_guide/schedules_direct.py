@@ -1,4 +1,4 @@
-from message.handler.guide_source.guide_source_importer import GuideSourceImporter
+from message.handler.channel_guide.guide_source_importer import GuideSourceImporter
 
 from db import db
 import requests
@@ -30,8 +30,8 @@ def batches(it, size):
 
 
 class SchedulesDirect(GuideSourceImporter):
-    def __init__(self, job_id, stream_source):
-        super().__init__(job_id, "Schedules Direct", stream_source)
+    def __init__(self, job_id, guide_source):
+        super().__init__(job_id, "Schedules Direct", guide_source)
         self.api_url = "https://json.schedulesdirect.org/20141201"
         self.headers = {"User-Agent": "Snowstream 1.0.0"}
 
@@ -40,8 +40,8 @@ class SchedulesDirect(GuideSourceImporter):
             return True
 
         token_payload = {
-            "username": self.stream_source.username,
-            "password": self.stream_source.password,
+            "username": self.guide_source.username,
+            "password": self.guide_source.password,
         }
         token_response = requests.post(
             self.api_url + "/token", headers=self.headers, json=token_payload
@@ -59,7 +59,7 @@ class SchedulesDirect(GuideSourceImporter):
         # For now, let's assume a simple account setup with a single lineup.
         # This may grow to support multiple lineups in the future.
         if len(lineups) == 0:
-            db.op.update_job(job_id=self.job_id, message=f"Schedules Direct found no lineups for account [{self.stream_source.username}]")
+            db.op.update_job(job_id=self.job_id, message=f"Schedules Direct found no lineups for account [{self.guide_source.username}]")
             return False
         lineup = lineups[0]
         lineup_response = requests.get(
@@ -165,10 +165,13 @@ class SchedulesDirect(GuideSourceImporter):
                 db.op.update_job(job_id=self.job_id, message=f"({channel_count}/{initial_count}) Processing channel {channel_name}")
                 channel = db.op.get_channel_by_parsed_id(channel_name)
                 if not channel:
-                    channel = db.op.create_channel({"parsed_id": channel_name})
+                    channel = db.op.create_channel({
+                        "channel_guide_source_id":self.guide_source.id,
+                        "parsed_id": channel_name
+                    })
                 for program in val["programs"]:
                     program["channel_id"] = channel.id
-                db.op.create_schedules(val['programs'])
+                db.op.create_channel_programs(val['programs'])
 
         db.op.update_job(job_id=self.job_id, message=f"Found programs for {initial_count-prune_count} out of {initial_count} channels.")
 

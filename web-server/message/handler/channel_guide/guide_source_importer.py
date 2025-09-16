@@ -3,12 +3,12 @@ from log import log
 
 
 class GuideSourceImporter:
-    def __init__(self, job_id, kind, stream_source):
+    def __init__(self, job_id, kind, guide_source):
         self.job_id = job_id
         self.kind = kind
-        self.stream_source = stream_source
+        self.guide_source = guide_source
         self.cache_key = (
-            f"guide-source-{self.stream_source.id}-{self.stream_source.kind}"
+            f"guide-source-{self.guide_source.id}-{self.guide_source.kind}"
         )
         self.cached_data = None
 

@@ -11,22 +11,22 @@ source_handlers = {
 def generate_streamable_epg(job_id:int):
     db.op.update_job(job_id=job_id, message="Generating streamable EPG XML")
     xml = '<?xml version="1.0" encoding="utf-8" ?>\n<!DOCTYPE tv SYSTEM "xmltv.dtd">\n<tv generator-info-name="snowstream">'
-    channels = db.op.get_channels_list(schedules=True)
+    channels = db.op.get_channel_list()
     channel_count = 0
-    schedule_count = 0
+    program_count = 0
     for channel in channels:
         channel_count += 1
         xml += f'\n  <channel id="{channel.parsed_name}">'
-        for schedule in channel.schedules:
-            schedule_count += 1
-            xml += f'\n    <program start="{schedule.start_datetime}" stop="{schedule.stop_datetime}" start_timestamp="{schedule.start_datetime.timestamp()}" stop_timestamp="{schedule.stop_datetime.timestamp()}" channel="{channel.parsed_name}" >'
-            xml += f"\n    <title>{schedule.name}</title>"
-            xml += f"\n    <desc>{schedule.description}</desc>"
+        for program in channel.programs:
+            program_count += 1
+            xml += f'\n    <program start="{program.start_datetime}" stop="{program.stop_datetime}" start_timestamp="{program.start_datetime.timestamp()}" stop_timestamp="{program.stop_datetime.timestamp()}" channel="{channel.parsed_name}" >'
+            xml += f"\n    <title>{program.name}</title>"
+            xml += f"\n    <desc>{program.description}</desc>"
             xml += f"\n    </program>"
         xml += "\n  <\\channel>"
     xml += "\n</tv>"
     db.op.update_job(job_id=job_id, message=
-        f"Generated EPG XML with {channel_count} channels and {schedule_count} programs"
+        f"Generated EPG XML with {channel_count} channels and {program_count} programs"
     )
     db.op.upsert_cached_text(
         key=cache.key.STREAMABLE_EPG,
@@ -39,11 +39,11 @@ def handle(scope):
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a channel_guide_refresh job")
     guide_sources = None
     if scope.is_guide_source():
-        guide_sources = [db.op.get_channel_guide_source_by_id(ticket=db.Ticket(),stream_source_id=scope.target_id)]
+        guide_sources = [db.op.get_channel_guide_source_by_id(stream_source_id=scope.target_id)]
     else:
-        db.op.update_job(job_id=scope.job_id, message="Removing existing streamable schedule info")
+        db.op.update_job(job_id=scope.job_id, message="Removing existing channel program info")
         db.op.delete_all_channel_programs()
-        guide_sourceds = db.op.get_channel_guide_source_list(ticket=db.Ticket(ignore_watch_group=True))
+        guide_sources = db.op.get_channel_guide_source_list()
     refresh_results = {}
     for guide_source in guide_sources:
         db.op.update_job(job_id=scope.job_id, message="Refreshing channel guide source " + guide_source.kind)

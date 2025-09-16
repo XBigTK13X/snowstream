@@ -4,77 +4,109 @@ function ChannelEditRow() {
     return null
 }
 
+const guideSourceKinds = [
+    'IptvEpg',
+    'SchedulesDirect'
+]
+
 export default function EpisodeGuideEditPage() {
     const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
-
-    const { channels, setChannels } = C.React.useState(null)
-    const { streamSource, setStreamSource } = C.React.useState(null)
-
     const localParams = C.useLocalSearchParams()
+    const [guideSource, setGuideSource] = C.React.useState(null)
+    const [kindIndex, setKindIndex] = C.React.useState(0)
+    const [form, setForm] = C.React.useState({
+        id: null,
+        name: '',
+        kind: guideSourceKinds[0],
+        url: '',
+        username: '',
+        password: ''
+    })
+    const [deleteCount, setDeleteCount] = C.React.useState(3)
+    const [deleted, setDeleted] = C.React.useState(false)
+
     C.React.useEffect(() => {
-        if (!channels) {
-            apiClient.getStreamSource(localParams.streamSourceId).then((streamSource) => {
-                setStreamSource(streamSource)
+        if (!guideSource && localParams.guideSourceId) {
+            apiClient.getChannelGuideSource(localParams.guideSourceId).then((guideSource) => {
+                console.log({ guideSource })
+                setGuideSource(guideSource)
+                setForm({
+                    id: guideSource.id,
+                    name: guideSource.name,
+                    kind: guideSource.kind,
+                    url: guideSource.url,
+                    username: guideSource.username,
+                    password: guideSource.password
+                })
+                setKindIndex(guideSourceKinds.indexOf(guideSource.kind))
             })
         }
     })
-    let streamSourceKinds = [
-        'HdHomeRun',
-        'IptvEpg',
-        'IptvM3u',
-        'FrigateNvr',
-        'SchedulesDirect',
-        'TubeArchivist'
-    ]
-    const chooseStreamSourceKind = (chosenKindIndex) => {
-        setStreamSourceKind(streamSourceKinds[chosenKindIndex])
-        setStreamSourceKindIndex(chosenKindIndex)
-    }
-    const saveStreamSource = () => {
-        let payload = {
-            id: streamSourceId,
-            name: streamSourceName,
-            kind: streamSourceKind,
-            url: streamSourceUrl,
-            username: streamSourceUsername,
-            password: streamSourcePassword
+
+    const changeForm = (key) => {
+        return (val) => {
+            if (key === 'kind') {
+                setKindIndex(val)
+                val = guideSourceKinds[val]
+            }
+            setForm((prev) => {
+                let result = { ...prev }
+                result[key] = val
+                return result
+            })
         }
-        apiClient.saveStreamSource(payload)
     }
 
-    const deleteStreamSource = () => {
-        if (streamSourceDeleteCount > 1) {
-            setStreamSourceDeleteCount(streamSourceDeleteCount - 1)
+    const saveGuideSource = () => {
+        apiClient.saveChannelGuideSource(form)
+    }
+
+    const deleteGuideSource = () => {
+        if (deleteCount > 1) {
+            setDeleteCount(deleteCount - 1)
         }
         else {
-            apiClient.deleteStreamSource(streamSourceId).then((() => {
-                setStreamSourceDeleted(true)
+            apiClient.deleteChannelGuideSource(guideSource.id).then((() => {
+                setDeleted(true)
             }))
         }
+    }
+
+    let deleteButton = null
+    if (localParams.guideSourceId) {
+        deleteButton = <C.SnowTextButton title={`Delete Guide Source (${deleteCount})`} onPress={deleteGuideSource} />
+    }
+    if (deleted) {
+        return <C.Redirect href={routes.admin.channelGuideSourceList} />
+    }
+
+    console.log({ form })
+
+    if (!form) {
+        return null
     }
 
     return (
         <C.FillView>
             { }
             <C.SnowLabel>Name</C.SnowLabel>
-            <C.SnowInput onValueChange={setStreamSourceName} value={streamSourceName} />
+            <C.SnowInput onValueChange={changeForm('name')} value={form.name} />
 
             <C.SnowLabel>Kind</C.SnowLabel>
             <C.SnowDropdown
-                options={streamSourceKinds}
-                onValueChange={chooseStreamSourceKind}
-                valueIndex={streamSourceKindIndex} />
+                options={guideSourceKinds}
+                onValueChange={changeForm('kind')}
+                valueIndex={kindIndex} />
             <C.SnowLabel>URL</C.SnowLabel>
-            <C.SnowInput onValueChange={setStreamSourceUrl} value={streamSourceUrl} />
+            <C.SnowInput onValueChange={changeForm('url')} value={form.url} />
 
             <C.SnowLabel>Username</C.SnowLabel>
-            <C.SnowInput onValueChange={setStreamSourceUsername} value={streamSourceUsername} />
+            <C.SnowInput onValueChange={changeForm('username')} value={form.username} />
 
             <C.SnowLabel>Password</C.SnowLabel>
-            <C.SnowInput onValueChange={setStreamSourcePassword} value={streamSourcePassword} />
+            <C.SnowInput onValueChange={changeForm('password')} value={form.password} />
 
-            <C.SnowTextButton title="Save Stream Source" onPress={saveStreamSource} />
+            <C.SnowTextButton title="Save Guide Source" onPress={saveGuideSource} />
             {deleteButton}
         </C.FillView >
     )

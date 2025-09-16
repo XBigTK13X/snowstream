@@ -572,6 +572,7 @@ class Streamable(BaseModel):
         sa.ForeignKey("stream_source.id")
     )
     stream_source: orm.Mapped["StreamSource"] = orm.relationship(back_populates="streamables")
+    channel: orm.Mapped["Channel"] = orm.relationship(secondary="streamable_channel",back_populates="streamable",overlaps="streamable_channel")
     tags: orm.Mapped[List["Tag"]] = orm.relationship(secondary="streamable_tag",back_populates="streamables")
 
     def _ids(self):
@@ -592,23 +593,31 @@ class ChannelGuideSource(BaseModel):
     url = sa.Column(sa.Text, unique=True)
     username = sa.Column(sa.Text)
     password = sa.Column(sa.Text)
-    channels: orm.Mapped[List["Channel"]] = orm.relationship()
+    channels: orm.Mapped[List["Channel"]] = orm.relationship(back_populates="channel_guide_source")
 
 class Channel(BaseModel):
+    def init_on_load(self):
+        self.model_kind = 'channel'
     __tablename__ = "channel"
-    channel_guide_source_id = sa.Column(sa.Integer, sa.ForeignKey("channel_guide_source.id"))
+    channel_guide_source_id: orm.Mapped[int] = orm.mapped_column(
+        sa.ForeignKey("channel_guide_source.id")
+    )
+    channel_guide_source: orm.Mapped["ChannelGuideSource"] = orm.relationship(back_populates="channels")
     parsed_id = sa.Column(sa.Text)
     parsed_name = sa.Column(sa.Text)
     parsed_number = sa.Column(sa.Float)
     edited_id = sa.Column(sa.Text)
     edited_name = sa.Column(sa.Text)
     edited_number = sa.Column(sa.Float)
-    programs: orm.Mapped[List["ChannelProgram"]] = orm.relationship()
+    programs: orm.Mapped[List["ChannelProgram"]] = orm.relationship(back_populates="channel")
+    streamable: orm.Mapped["Streamable"] = orm.relationship(secondary="streamable_channel",back_populates="channel",overlaps="streamable_channel")
 
 class ChannelProgram(BaseModel):
-    __tablename__ = "stream_source_schedule"
+    def init_on_load(self):
+        self.model_kind = 'channel_program'
+    __tablename__ = "channel_program"
     channel_id: orm.Mapped[int] = orm.mapped_column(
-        sa.ForeignKey("stream_source_channel.id")
+        sa.ForeignKey("channel.id")
     )
     channel: orm.Mapped["Channel"] = orm.relationship(back_populates="programs")
     name = sa.Column(sa.Text)
@@ -618,8 +627,8 @@ class ChannelProgram(BaseModel):
 
 class StreamableChannel(BaseModel):
     __tablename__ = 'streamable_channel'
-    streamable = sa.Column(sa.Integer, sa.ForeignKey("streamable.id"))
-    channel = sa.Column(sa.Integer, sa.ForeignKey("channel.id"))
+    streamable_id = sa.Column(sa.Integer, sa.ForeignKey("streamable.id"))
+    channel_id = sa.Column(sa.Integer, sa.ForeignKey("channel.id"))
 
 class Keepsake(BaseModel):
     @orm.reconstructor

@@ -33,6 +33,7 @@ class UserAccess(BaseModel):
 
 class JobRequest(BaseModel):
     name: Union[
+        Literal["channel_guide_refresh"],
         Literal["clean_file_records"],
         Literal['delete_media_records'],
         Literal["identify_unknown_media"],
@@ -66,6 +67,14 @@ class Streamable(BaseModel):
     name: str
     stream_source_id: int
 
+
+class ChannelGuideSource(BaseModel):
+    id: int | None = None
+    kind: str
+    url: str | None = None
+    name: str
+    username: str | None = None
+    password: str | None = None
 
 class ShelfKind(BaseModel):
     name: Union[

@@ -9,7 +9,6 @@ def create_stream_source(stream_source: am.StreamSource):
         db.refresh(db_source)
         return db_source
 
-
 def get_stream_source_list(
     ticket:dbi.dm.Ticket=None,
     streamables:bool=False):
