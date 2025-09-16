@@ -4,10 +4,6 @@ const styles = {
     header: {
         width: '100%',
         height: 'auto'
-    },
-    hr: {
-        borderBottomColor: C.Style.color.coreDark,
-        borderBottomWidth: 2,
     }
 }
 
@@ -31,7 +27,7 @@ function Header() {
                     onPress={routes.func(routes.info)}
                     onLongPress={routes.func(routes.options)} />
             </C.SnowGrid>
-            <C.View style={styles.hr} />
+            <C.SnowBreak />
         </C.View>
     )
 }

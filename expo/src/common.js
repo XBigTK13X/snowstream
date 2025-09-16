@@ -43,6 +43,7 @@ import { PlayerContextProvider, usePlayerContext } from './player-context'
 
 import FillView from './comp/fill-view'
 
+import SnowBreak from './comp/snow-break'
 import SnowDropdown from './comp/snow-dropdown'
 import SnowGrid from './comp/snow-grid'
 import SnowHeader from './comp/snow-header'
@@ -95,6 +96,7 @@ export default {
     Redirect,
     ScrollView,
     Slot,
+    SnowBreak,
     SnowDropdown,
     SnowGrid,
     SnowHeader,

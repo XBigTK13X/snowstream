@@ -10,7 +10,7 @@ const guideSourceKinds = [
 ]
 
 export default function EpisodeGuideEditPage() {
-    const { apiClient } = C.useAppContext()
+    const { apiClient, routes } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
     const [guideSource, setGuideSource] = C.React.useState(null)
     const [kindIndex, setKindIndex] = C.React.useState(0)
@@ -28,7 +28,6 @@ export default function EpisodeGuideEditPage() {
     C.React.useEffect(() => {
         if (!guideSource && localParams.guideSourceId) {
             apiClient.getChannelGuideSource(localParams.guideSourceId).then((guideSource) => {
-                console.log({ guideSource })
                 setGuideSource(guideSource)
                 setForm({
                     id: guideSource.id,
@@ -80,15 +79,13 @@ export default function EpisodeGuideEditPage() {
         return <C.Redirect href={routes.admin.channelGuideSourceList} />
     }
 
-    console.log({ form })
-
     if (!form) {
         return null
     }
 
     return (
         <C.FillView>
-            { }
+            <C.SnowTextButton title="Channels" onPress={routes.func(routes.admin.channelsEdit, { guideSourceId: localParams.guideSourceId })} />
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onValueChange={changeForm('name')} value={form.name} />
 

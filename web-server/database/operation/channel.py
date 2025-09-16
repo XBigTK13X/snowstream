@@ -10,19 +10,19 @@ def create_channel_guide_source(guide_source: am.ChannelGuideSource):
         return db_source
 
 
-def get_channel_guide_source_by_id(guide_source_id: int):
+def get_channel_guide_source_by_id(channel_guide_source_id: int):
     with dbi.session() as db:
         return (
             db.query(dbi.dm.ChannelGuideSource)
             .options(dbi.orm.joinedload(dbi.dm.ChannelGuideSource.channels))
-            .filter(dbi.dm.ChannelGuideSource.id == guide_source_id)
+            .filter(dbi.dm.ChannelGuideSource.id == channel_guide_source_id)
             .first()
         )
 
 def upsert_channel_guide_source(guide_source: am.ChannelGuideSource):
     existing_guide_source = None
     if guide_source.id:
-        existing_guide_source = get_channel_guide_source_by_id(guide_source_id=guide_source.id)
+        existing_guide_source = get_channel_guide_source_by_id(channel_guide_source_id=guide_source.id)
     if not existing_guide_source:
         return create_channel_guide_source(guide_source)
     with dbi.session() as db:

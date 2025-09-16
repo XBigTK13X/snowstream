@@ -274,6 +274,10 @@ export class ApiClient {
         return this.get('/channel/guide/source/list')
     }
 
+    getChannelGuideSource(guideSourceId) {
+        return this.get(`/channel/guide/source?channel_guide_source_id=${guideSourceId}`)
+    }
+
     saveChannelGuideSource(payload) {
         return this.post('/channel/guide/source', {
             id: payload.id,
@@ -285,12 +289,25 @@ export class ApiClient {
         })
     }
 
+    saveChannel(payload) {
+        return this.post('/channel', {
+            edited_name: payload.editedName,
+            edited_number: payload.editedNumber,
+            edited_id: payload.editedId,
+            streamable_id: payload.streamableId
+        })
+    }
+
     deleteChannelGuideSource(channel_guide_source_id) {
         return this.delete(`/channel/guide/source/${channel_guide_source_id}`)
     }
 
     getStreamable(streamableId) {
         return this.get('/streamable', { streamable_id: streamableId })
+    }
+
+    getStreamableList() {
+        return this.get('/streamable/list')
     }
 
     saveShelf(payload) {

@@ -39,7 +39,7 @@ def handle(scope):
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a channel_guide_refresh job")
     guide_sources = None
     if scope.is_guide_source():
-        guide_sources = [db.op.get_channel_guide_source_by_id(stream_source_id=scope.target_id)]
+        guide_sources = [db.op.get_channel_guide_source_by_id(channel_guide_source_id=scope.target_id)]
     else:
         db.op.update_job(job_id=scope.job_id, message="Removing existing channel program info")
         db.op.delete_all_channel_programs()

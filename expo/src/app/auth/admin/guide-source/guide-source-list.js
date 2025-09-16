@@ -20,7 +20,7 @@ export default function GuideSourceListPage() {
                 <C.SnowTextButton
                     shouldFocus={itemIndex === 0}
                     title={guideSource.name}
-                    onPress={routes.func(routes.admin.guideSourceEdit, {
+                    onPress={routes.func(routes.admin.channelGuideSourceEdit, {
                         guideSourceId: guideSource.id,
                     })}
                 />

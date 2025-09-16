@@ -76,6 +76,13 @@ class ChannelGuideSource(BaseModel):
     username: str | None = None
     password: str | None = None
 
+class Channel(BaseModel):
+    id: int
+    edited_number: str
+    edited_name: str
+    edited_id: str
+    streamable_id: int | None = None
+
 class ShelfKind(BaseModel):
     name: Union[
         Literal["Movies"],

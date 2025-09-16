@@ -89,6 +89,17 @@ def auth_required(router):
             streamable.duration_seconds = info['snowstream_info']['duration_seconds']
         return streamable
 
+    @router.get('/streamable/list',tags=['Channel Guide'])
+    def get_streamable_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+    ):
+        stream_sources = db.op.get_stream_source_list(ticket=auth_user.ticket,streamables=True)
+        streamables = []
+        for source in stream_sources:
+            if source.kind == 'HdHomeRun' or source.kind == 'IptvM3u':
+                streamables += source.streamables
+        return streamables
+
     @router.get("/channel/guide/source/list",tags=['Channel Guide'])
     def get_channel_guide_source_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
@@ -120,6 +131,15 @@ def auth_required(router):
         channel_guide_source_id:int
     ):
         return db.op.get_channel_guide_source_by_id(channel_guide_source_id=channel_guide_source_id)
+
+    @router.post("/channel",tags=['Channel Guide'])
+    def save_channel(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        channel: am.Channel,
+    ):
+        if not auth_user.is_admin():
+            return None
+        return db.op.update_channel(channel=channel)
 
     @router.post("/job",tags=['Job'])
     def create_job(
