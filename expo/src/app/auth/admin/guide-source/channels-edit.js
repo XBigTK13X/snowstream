@@ -4,9 +4,9 @@ function ChannelEditRow(props) {
     const { apiClient } = C.useAppContext()
     const [form, setForm] = C.React.useState({
         id: props.channel.id,
-        editedId: props.channel.editedId,
-        editedName: props.channel.editedName,
-        editedNumber: props.channel.editedNumber,
+        editedId: props.channel.edited_id,
+        editedName: props.channel.edited_name,
+        editedNumber: props.channel.edited_number,
         streamableId: null
     })
     const [showModal, setShowModal] = C.React.useState(false)
@@ -24,8 +24,8 @@ function ChannelEditRow(props) {
             })
         }
     }
-    const saveChannel = () => {
-        apiClient.saveChannel(form)
+    const saveChannel = (payload) => {
+        return apiClient.saveChannel(payload)
     }
     if (showModal) {
         return (
@@ -49,9 +49,10 @@ function ChannelEditRow(props) {
                             <C.SnowTextButton
                                 title={streamable.name_display ? streamable.name_display : streamable.name}
                                 onPress={() => {
-                                    changeForm('streamableId')(streamable.id)
-                                    saveChannel()
-                                    setShowModal(false)
+                                    saveChannel({ ...form, streamableId: streamable.id })
+                                        .then(() => {
+                                            setShowModal(false)
+                                        })
                                 }} />
                         )
                     })}
@@ -60,12 +61,18 @@ function ChannelEditRow(props) {
         )
     }
 
+    let streamableName = "Streamable"
+    if (props.channel.streamable) {
+        streamableName = props.channel.streamable.name_display ? props.channel.streamable.name_display : props.channel.streamable.name
+        streamableName = `[${streamableName}]`
+    }
+
     return (
         <C.View>
             <C.SnowGrid shrink itemsPerRow={3}>
                 <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
-                <C.SnowTextButton title="Save" onPress={saveChannel} />
-                <C.SnowTextButton title="Streamable" onPress={() => { setShowModal(true) }} />
+                <C.SnowTextButton title="Save" onPress={() => { saveChannel(form) }} />
+                <C.SnowTextButton title={streamableName} onPress={() => { setShowModal(true) }} />
             </C.SnowGrid>
             <C.SnowGrid shrink itemsPerRow={3}>
                 <C.SnowLabel>ID</C.SnowLabel>
@@ -111,6 +118,9 @@ export default function ChannelEditPage() {
     if (filteredChannels && filteredChannels.length) {
         channelRows = (<C.FillView>
             {filteredChannels.map((channel, channelIndex) => {
+                if (channel.parsed_id.indexOf('foodnetwork.us') !== -1) {
+                    console.log({ channel })
+                }
                 return <ChannelEditRow streamables={streamables} channel={channel} key={channelIndex} />
             })}
         </C.FillView>)

@@ -12,12 +12,19 @@ def create_channel_guide_source(guide_source: am.ChannelGuideSource):
 
 def get_channel_guide_source_by_id(channel_guide_source_id: int):
     with dbi.session() as db:
-        return (
+        source = (
             db.query(dbi.dm.ChannelGuideSource)
             .options(dbi.orm.joinedload(dbi.dm.ChannelGuideSource.channels))
+            .options(
+                dbi.orm.joinedload(dbi.dm.ChannelGuideSource.channels).options(
+                    dbi.orm.joinedload(dbi.dm.Channel.streamable)
+                )
+            )
             .filter(dbi.dm.ChannelGuideSource.id == channel_guide_source_id)
             .first()
         )
+        source.channels = sorted(source.channels,key=lambda xx: xx.parsed_id)
+        return source
 
 def upsert_channel_guide_source(guide_source: am.ChannelGuideSource):
     existing_guide_source = None
@@ -53,15 +60,17 @@ def create_channel(channel: dict):
 
 def update_channel(channel: am.Channel):
     with dbi.session() as db:
-        model = channel.model_dump()
-        streamable_id = model['streamable_id']
-        del model['streamable_id']
-        dbm = dbi.dm.Channel(**model)
-        db.add(dbm)
+        existing = db.query(dbi.dm.Channel).filter(dbi.dm.Channel.id == channel.id).first()
+        if not existing:
+            return None
+        if channel.edited_name:
+            existing.edited_name = channel.edited_name
+        if channel.edited_id:
+            existing.edited_name = channel.edited_id
+        if channel.edited_number:
+            existing.edited_number = channel.edited_number
         db.commit()
-        db.refresh(dbm)
-        channel_model = dbm
-        if streamable_id:
+        if channel.streamable_id:
             (
                 db.query(dbi.dm.StreamableChannel)
                 .filter(dbi.dm.StreamableChannel.id == channel.id)
@@ -69,12 +78,12 @@ def update_channel(channel: am.Channel):
             )
             db.commit()
             dbm = dbi.dm.StreamableChannel()
-            dbm.streamable_id = streamable_id
+            dbm.streamable_id = channel.streamable_id
             dbm.channel_id = channel.id
             db.add(dbm)
             db.commit()
             db.refresh(dbm)
-        return channel_model
+        return existing
 
 def get_channel_by_parsed_id(parsed_id: str):
     with dbi.session() as db:
