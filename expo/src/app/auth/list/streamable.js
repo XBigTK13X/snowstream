@@ -46,33 +46,69 @@ export default function StreamableListPage() {
     }
 
     if (streamSource && streamableItems) {
-        const renderItem = (streamable, itemIndex) => {
+        if (streamSource.has_guide) {
             return (
-                <C.SnowTextButton
-                    tall
-                    shouldFocus={itemIndex === 0}
-                    key={streamable.id}
-                    title={streamable.name}
-                    onPress={routes.func(routes.streamablePlay, {
-                        streamSourceId: streamSource.id,
-                        streamableId: streamable.id,
-                    })}
-                    onLongPress={routes.func(routes.streamablePlay, {
-                        streamSourceId: streamSource.id,
-                        streamableId: streamable.id,
-                        forcePlayer: 'exo'
-                    })}
-                />
+                <C.FillView>
+                    {
+                        streamableItems.map((streamable, itemIndex) => {
+                            let currentProgram = "No guide info"
+                            let nextProgram = "No guide info"
+                            if (streamable.current_program) {
+                                const pp = streamable.current_program
+                                currentProgram = `${pp.display_time} - ${pp.name}`
+                            }
+                            if (streamable.next_program) {
+                                const pp = streamable.next_program
+                                nextProgram = `${pp.display_time} - ${pp.name}`
+                            }
+                            return (
+                                <C.View>
+                                    <C.SnowGrid itemsPerRow={3}>
+                                        <C.SnowTextButton title={streamable.name} onPress={() => {
+                                            routes.func(routes.streamablePlay, {
+                                                streamSourceId: streamSource.id,
+                                                streamableId: streamable.id,
+                                            })
+                                        }} />
+                                        <C.SnowText>{currentProgram}</C.SnowText>
+                                        <C.SnowText>{nextProgram}</C.SnowText>
+                                    </C.SnowGrid>
+                                    <C.SnowBreak />
+                                </C.View>
+                            )
+                        })
+                    }
+                </C.FillView>
+            )
+        } else {
+            const renderItem = (streamable, itemIndex) => {
+                return (
+                    <C.SnowTextButton
+                        tall
+                        shouldFocus={itemIndex === 0}
+                        key={streamable.id}
+                        title={streamable.name}
+                        onPress={routes.func(routes.streamablePlay, {
+                            streamSourceId: streamSource.id,
+                            streamableId: streamable.id,
+                        })}
+                        onLongPress={routes.func(routes.streamablePlay, {
+                            streamSourceId: streamSource.id,
+                            streamableId: streamable.id,
+                            forcePlayer: 'exo'
+                        })}
+                    />
+                )
+            }
+            return (
+                <C.FillView>
+                    <C.SnowGrid shrink itemsPerRow={3}>
+                        <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
+                    </C.SnowGrid>
+                    <C.SnowGrid items={streamableItems} renderItem={renderItem} />
+                </C.FillView>
             )
         }
-        return (
-            <C.FillView>
-                <C.SnowGrid shrink itemsPerRow={3}>
-                    <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
-                </C.SnowGrid>
-                <C.SnowGrid items={streamableItems} renderItem={renderItem} />
-            </C.FillView>
-        )
     }
     return <C.Text>Loading stream source {localParams.streamSourceId}.</C.Text>
 }

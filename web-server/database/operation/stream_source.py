@@ -38,7 +38,11 @@ def get_stream_source_by_id(ticket:dbi.dm.Ticket,stream_source_id: int):
     with dbi.session() as db:
         stream_source = (
             db.query(dbi.dm.StreamSource)
-            .options(dbi.orm.joinedload(dbi.dm.StreamSource.streamables))
+            .options(
+                dbi.orm.joinedload(dbi.dm.StreamSource.streamables)
+                .joinedload(dbi.dm.Streamable.channel)
+                .joinedload(dbi.dm.Channel.programs)
+            )
             .options(dbi.orm.joinedload(dbi.dm.StreamSource.tags))
             .filter(dbi.dm.StreamSource.id == stream_source_id)
             .first()

@@ -3,6 +3,7 @@ import json
 import util
 import uuid
 import os
+from datetime import datetime, timezone
 
 from fastapi import Response, Request
 from fastapi import Security
@@ -66,7 +67,26 @@ def auth_required(router):
         stream_source = db.op.get_stream_source_by_id(ticket=auth_user.ticket,stream_source_id=stream_source_id)
         stream_source.grouped_streamables = {}
         stream_source.groups = []
+        stream_source.has_guide = False
+        now = datetime.now()
         for streamable in stream_source.streamables:
+            if streamable.channel:
+                stream_source.has_guide = True
+                streamable.current_program = None
+                soonest = None
+                # TODO This could be a complex sql query like the episode list query
+                for program in streamable.channel.programs:
+                    if program.start_datetime <= now and program.stop_datetime >= now:
+                        program.display_time = program.start_datetime.strftime('%I:%M %p')
+                        streamable.current_program = program
+                    else:
+                        if program.start_datetime > now:
+                            if soonest == None or program.start_datetime < soonest.start_datetime:
+                                soonest = program
+                if soonest:
+                    soonest.display_time = soonest.start_datetime.strftime('%I:%M %p')
+                    streamable.next_program = soonest
+                streamable.channel.programs = []
             group = streamable.group_display if streamable.group_display else streamable.group
             if group == None:
                 continue
