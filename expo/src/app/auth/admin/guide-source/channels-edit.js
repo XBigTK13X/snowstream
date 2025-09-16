@@ -118,9 +118,6 @@ export default function ChannelEditPage() {
     if (filteredChannels && filteredChannels.length) {
         channelRows = (<C.FillView>
             {filteredChannels.map((channel, channelIndex) => {
-                if (channel.parsed_id.indexOf('foodnetwork.us') !== -1) {
-                    console.log({ channel })
-                }
                 return <ChannelEditRow streamables={streamables} channel={channel} key={channelIndex} />
             })}
         </C.FillView>)

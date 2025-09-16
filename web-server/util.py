@@ -99,6 +99,10 @@ def string_to_md5(input_string:str):
     encoded_bytes = input_string.encode('utf-8')
     return hashlib.md5(encoded_bytes).hexdigest()
 
+def string_to_sha1(input_string:str):
+    encoded_bytes = input_string.encode('utf-8')
+    return hashlib.sha1(encoded_bytes).hexdigest()
+
 def search_to_base64_qrcode(query:str):
     qr = qrcode.QRCode(
         version=1,

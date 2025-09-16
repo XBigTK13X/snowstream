@@ -5,6 +5,7 @@ import requests
 from log import log
 from datetime import datetime, timedelta, timezone
 from itertools import islice
+import util
 
 # requests param conflict
 import json as JSON
@@ -39,9 +40,11 @@ class SchedulesDirect(GuideSourceImporter):
         if super().download():
             return True
 
+        hashword = util.string_to_sha1(self.guide_source.password)
+
         token_payload = {
             "username": self.guide_source.username,
-            "password": self.guide_source.password,
+            "password": hashword,
         }
         token_response = requests.post(
             self.api_url + "/token", headers=self.headers, json=token_payload
@@ -51,10 +54,12 @@ class SchedulesDirect(GuideSourceImporter):
             return False
         self.headers["token"] = token_response["token"]
 
-        status_response = requests.get(
-            self.api_url + "/status", headers=self.headers
+        lineups_response = requests.get(
+            self.api_url + "/lineups", headers=self.headers
         ).json()
-        lineups = status_response["lineups"]
+        import pprint
+        pprint.pprint(lineups_response)
+        lineups = lineups_response["lineups"]
 
         # For now, let's assume a simple account setup with a single lineup.
         # This may grow to support multiple lineups in the future.
@@ -65,6 +70,9 @@ class SchedulesDirect(GuideSourceImporter):
         lineup_response = requests.get(
             self.api_url + "/lineups/" + lineup["lineup"], headers=self.headers
         ).json()
+
+        import pprint
+        pprint.pprint(lineup_response)
 
         station_ids = [x["stationID"] for x in lineup_response["map"]]
         schedule_dates = [
