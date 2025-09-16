@@ -1,34 +1,30 @@
 import C from '../../../../common'
 
-export default function StreamSourceEditPage() {
+function ChannelEditRow() {
+    return null
+}
+
+export default function EpisodeGuideEditPage() {
     const { apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
-    const [streamSourceName, setStreamSourceName] = C.React.useState('')
-    const [streamSourceKind, setStreamSourceKind] = C.React.useState('HdHomeRun')
-    const [streamSourceKindIndex, setStreamSourceKindIndex] = C.React.useState(0)
-    const [streamSourceUrl, setStreamSourceUrl] = C.React.useState('')
-    const [streamSourceUsername, setStreamSourceUsername] = C.React.useState('')
-    const [streamSourcePassword, setStreamSourcePassword] = C.React.useState('')
-    const [streamSourceId, setStreamSourceId] = C.React.useState(null)
-    const [streamSourceDeleteCount, setStreamSourceDeleteCount] = C.React.useState(3)
-    const [streamSourceDeleted, setStreamSourceDeleted] = C.React.useState(false)
+
+    const { channels, setChannels } = C.React.useState(null)
+    const { streamSource, setStreamSource } = C.React.useState(null)
+
     const localParams = C.useLocalSearchParams()
     C.React.useEffect(() => {
-        if (!streamSourceId && localParams.streamSourceId) {
+        if (!channels) {
             apiClient.getStreamSource(localParams.streamSourceId).then((streamSource) => {
-                setStreamSourceName(streamSource.name || '')
-                setStreamSourceKind(streamSource.kind || '')
-                setStreamSourceUrl(streamSource.url || '')
-                setStreamSourceUsername(streamSource.username || '')
-                setStreamSourcePassword(streamSource.password || '')
-                setStreamSourceId(streamSource.id)
+                setStreamSource(streamSource)
             })
         }
     })
     let streamSourceKinds = [
         'HdHomeRun',
+        'IptvEpg',
         'IptvM3u',
         'FrigateNvr',
+        'SchedulesDirect',
         'TubeArchivist'
     ]
     const chooseStreamSourceKind = (chosenKindIndex) => {
@@ -58,16 +54,9 @@ export default function StreamSourceEditPage() {
         }
     }
 
-    let deleteButton = null
-    if (streamSourceId) {
-        deleteButton = <C.SnowTextButton title={`Delete Stream Source (${streamSourceDeleteCount})`} onPress={deleteStreamSource} />
-    }
-    if (streamSourceDeleted) {
-        return <C.Redirect href={routes.admin.streamSourceList} />
-    }
-
     return (
         <C.FillView>
+            { }
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onValueChange={setStreamSourceName} value={streamSourceName} />
 

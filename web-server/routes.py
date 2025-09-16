@@ -31,12 +31,10 @@ def auth_required(router):
 
     @router.get("/stream/source/list",tags=['Stream Source'])
     def get_stream_source_list(
-        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
-        streamable_only:bool=False
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         return db.op.get_stream_source_list(
-            ticket=auth_user.ticket,
-            streamable_only=streamable_only
+            ticket=auth_user.ticket
         )
 
     @router.post("/stream/source",tags=['Stream Source'])
@@ -90,6 +88,40 @@ def auth_required(router):
             info = snow_media.video.get_snowstream_info(streamable.url)
             streamable.duration_seconds = info['snowstream_info']['duration_seconds']
         return streamable
+
+    @router.get("/channel/guide/source/list",tags=['Channel Guide'])
+    def get_channel_guide_source_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        return db.op.get_channel_guide_source_list(
+            ticket=auth_user.ticket
+        )
+
+    @router.post("/channel/guide/source",tags=['Channel Guide'])
+    def save_channel_guide_source(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        guide_source: am.ChannelGuideSource,
+    ):
+        if not auth_user.is_admin():
+            return None
+        return db.op.upsert_channel_guide_source(ticket=auth_user.ticket,guide_source=guide_source)
+
+    @router.delete("/channel/guide/{channel_guide_source_id}",tags=['Channel Guide'])
+    def delete_channel_guide_source(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        channel_guide_source_id: int,
+    ):
+        if not auth_user.is_admin():
+            return None
+        return db.op.delete_channel_guide_source_by_id(channel_guide_source_id=channel_guide_source_id)
+
+
+    @router.get("/channel/guide/source",tags=['Channel Source'])
+    def get_channel_guide_source(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        channel_guide_source_id:int
+    ):
+        return db.op.get_channel_guide_source_by_id(ticket=auth_user.ticket,channel_guide_source_id=channel_guide_source_id)
 
     @router.post("/job",tags=['Job'])
     def create_job(

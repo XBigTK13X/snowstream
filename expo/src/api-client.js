@@ -73,6 +73,7 @@ export class ApiClient {
         this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
         this.createJobSanitizeFileProperties = this.createJobSanitizeFileProperties.bind(this)
         this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
+        this.createJobChannelGuideRefresh = this.createJobChannelGuideRefresh.bind(this)
         this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
         this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
         this.createScopedJob = this.createScopedJob.bind(this)
@@ -181,6 +182,10 @@ export class ApiClient {
         return this.createScopedJob('stream_sources_refresh', details)
     }
 
+    createJobChannelGuideRefresh(details) {
+        return this.createScopedJob('channel_guide_refresh', details)
+    }
+
     createJobShelvesScan(details) {
         return this.createScopedJob('scan_shelves_content', details)
     }
@@ -242,8 +247,8 @@ export class ApiClient {
         })
     }
 
-    getStreamSourceList(streamableOnly) {
-        return this.get(`/stream/source/list?streamable_only=${!!streamableOnly}`)
+    getStreamSourceList() {
+        return this.get(`/stream/source/list`)
     }
 
     getStreamSource(streamSourceId) {
@@ -263,6 +268,25 @@ export class ApiClient {
 
     deleteStreamSource(stream_source_id) {
         return this.delete(`/stream/source/${stream_source_id}`)
+    }
+
+    getChannelGuideSourceList() {
+        return this.get('/channel/guide/source/list')
+    }
+
+    saveChannelGuideSource(payload) {
+        return this.post('/channel/guide/source', {
+            id: payload.id,
+            name: payload.name,
+            kind: payload.kind,
+            url: payload.url,
+            username: payload.username,
+            password: payload.password
+        })
+    }
+
+    deleteChannelGuideSource(channel_guide_source_id) {
+        return this.delete(`/channel/guide/source/${channel_guide_source_id}`)
     }
 
     getStreamable(streamableId) {

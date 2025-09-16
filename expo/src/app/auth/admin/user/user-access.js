@@ -37,7 +37,7 @@ export default function UserEditPage() {
             })
         }
         if (!streamSources) {
-            apiClient.getStreamSourceList(true).then((streamSources) => {
+            apiClient.getStreamSourceList().then((streamSources) => {
                 setStreamSources(streamSources)
             })
         }

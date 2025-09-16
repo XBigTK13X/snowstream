@@ -12,6 +12,7 @@ import traceback
 
 import json
 import message.read
+import message.handler.channel_guide_refresh
 import message.handler.clean_file_records
 import message.handler.delete_media_records
 import message.handler.identify_unknown_media
@@ -24,15 +25,16 @@ import message.handler.update_media_files
 from message.job_media_scope import JobMediaScope
 
 handlers = {
-        'clean_file_records': message.handler.clean_file_records,
-        'delete_media_records': message.handler.delete_media_records,
-        'identify_unknown_media': message.handler.identify_unknown_media,
-        'read_media_files': message.handler.read_media_files,
-        'update_media_files': message.handler.update_media_files,
-        'sanitize_file_properties': message.handler.sanitize_file_properties,
-        "scan_shelves_content": message.handler.scan_shelves_content,
-        "stream_sources_refresh": message.handler.stream_sources_refresh,
-    }
+    'channel_guide_refresh': message.handler.channel_guide_refresh,
+    'clean_file_records': message.handler.clean_file_records,
+    'delete_media_records': message.handler.delete_media_records,
+    'identify_unknown_media': message.handler.identify_unknown_media,
+    'read_media_files': message.handler.read_media_files,
+    'update_media_files': message.handler.update_media_files,
+    'sanitize_file_properties': message.handler.sanitize_file_properties,
+    "scan_shelves_content": message.handler.scan_shelves_content,
+    "stream_sources_refresh": message.handler.stream_sources_refresh,
+}
 
 def start():
     global max_failures

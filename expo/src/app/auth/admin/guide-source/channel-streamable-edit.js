@@ -27,8 +27,10 @@ export default function StreamSourceEditPage() {
     })
     let streamSourceKinds = [
         'HdHomeRun',
+        'IptvEpg',
         'IptvM3u',
         'FrigateNvr',
+        'SchedulesDirect',
         'TubeArchivist'
     ]
     const chooseStreamSourceKind = (chosenKindIndex) => {

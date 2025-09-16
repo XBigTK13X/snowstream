@@ -1,4 +1,4 @@
-from message.handler.stream_source.stream_source_importer import StreamSourceImporter
+from message.handler.guide_source.guide_source_importer import GuideSourceImporter
 
 from db import db
 import requests
@@ -29,7 +29,7 @@ def batches(it, size):
     return chunks
 
 
-class SchedulesDirect(StreamSourceImporter):
+class SchedulesDirect(GuideSourceImporter):
     def __init__(self, job_id, stream_source):
         super().__init__(job_id, "Schedules Direct", stream_source)
         self.api_url = "https://json.schedulesdirect.org/20141201"

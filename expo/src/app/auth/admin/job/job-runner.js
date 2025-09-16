@@ -81,6 +81,7 @@ export default function ShelfEditPage() {
         { name: 'Delete Media Records', apiCall: apiClient.createJobDeleteMediaRecords },
         { name: 'Identify Unknown Media', apiCall: apiClient.createJobIdentifyUnknownMedia },
         { name: 'Read Media Files', apiCall: apiClient.createJobReadMediaFiles },
+        { name: 'Refresh Guide', apiCall: apiClient.createJobChannelGuideRefresh },
         { name: 'Refresh Streamables', apiCall: apiClient.createJobStreamSourcesRefresh },
         { name: 'Sanitize File Properties', apiCall: apiClient.createJobSanitizeFileProperties },
         { name: 'Scan Shelves', apiCall: apiClient.createJobShelvesScan },

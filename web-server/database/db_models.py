@@ -582,26 +582,44 @@ class StreamableTag(BaseModel):
     streamable_id = sa.Column(sa.Integer, sa.ForeignKey("streamable.id"))
     tag_id = sa.Column(sa.Integer, sa.ForeignKey("tag.id"))
 
-class StreamableChannel(BaseModel):
-    __tablename__ = "streamable_channel"
+class ChannelGuideSource(BaseModel):
+    @orm.reconstructor
+    def init_on_load(self):
+        self.model_kind = 'channel_guide_source'
+    __tablename__ = "channel_guide_source"
+    kind = sa.Column(sa.Text)
+    name = sa.Column(sa.Text, unique=True)
+    url = sa.Column(sa.Text, unique=True)
+    username = sa.Column(sa.Text)
+    password = sa.Column(sa.Text)
+    channels: orm.Mapped[List["Channel"]] = orm.relationship()
+
+class Channel(BaseModel):
+    __tablename__ = "channel"
+    channel_guide_source_id = sa.Column(sa.Integer, sa.ForeignKey("channel_guide_source.id"))
     parsed_id = sa.Column(sa.Text)
     parsed_name = sa.Column(sa.Text)
     parsed_number = sa.Column(sa.Float)
     edited_id = sa.Column(sa.Text)
     edited_name = sa.Column(sa.Text)
     edited_number = sa.Column(sa.Float)
-    schedules: orm.Mapped[List["StreamableSchedule"]] = orm.relationship()
+    programs: orm.Mapped[List["ChannelProgram"]] = orm.relationship()
 
-class StreamableSchedule(BaseModel):
-    __tablename__ = "streamable_schedule"
+class ChannelProgram(BaseModel):
+    __tablename__ = "stream_source_schedule"
+    channel_id: orm.Mapped[int] = orm.mapped_column(
+        sa.ForeignKey("stream_source_channel.id")
+    )
+    channel: orm.Mapped["Channel"] = orm.relationship(back_populates="programs")
     name = sa.Column(sa.Text)
     description = sa.Column(sa.Text)
     start_datetime = sa.Column(sa.DateTime)
     stop_datetime = sa.Column(sa.DateTime)
-    channel_id: orm.Mapped[int] = orm.mapped_column(
-        sa.ForeignKey("streamable_channel.id")
-    )
-    channel: orm.Mapped["StreamableChannel"] = orm.relationship(back_populates="schedules")
+
+class StreamableChannel(BaseModel):
+    __tablename__ = 'streamable_channel'
+    streamable = sa.Column(sa.Integer, sa.ForeignKey("streamable.id"))
+    channel = sa.Column(sa.Integer, sa.ForeignKey("channel.id"))
 
 class Keepsake(BaseModel):
     @orm.reconstructor

@@ -5,18 +5,14 @@ from settings import config
 import copy
 
 import message.handler.stream_source.hd_home_run as hhr
-import message.handler.stream_source.iptv_epg as ie
 import message.handler.stream_source.iptv_m3u as im
 import message.handler.stream_source.frigate_nvr as fn
-import message.handler.stream_source.schedules_direct as sd
 import message.handler.stream_source.tube_archivist as ta
 
 source_handlers = {
     "HdHomeRun": hhr.HdHomeRun,
-    "IptvEpg": ie.IptvEpg,
     "IptvM3u": im.IptvM3u,
     "FrigateNvr": fn.FrigateNvr,
-    "SchedulesDirect": sd.SchedulesDirect,
     'TubeArchivist': ta.TubeArchivist
 }
 
@@ -48,42 +44,13 @@ def generate_streamable_m3u(job_id:int):
     return True
 
 
-def generate_streamable_epg(job_id:int):
-    db.op.update_job(job_id=job_id, message="Generating streamable EPG XML")
-    xml = '<?xml version="1.0" encoding="utf-8" ?>\n<!DOCTYPE tv SYSTEM "xmltv.dtd">\n<tv generator-info-name="snowstream">'
-    channels = db.op.get_channels_list(schedules=True)
-    channel_count = 0
-    schedule_count = 0
-    for channel in channels:
-        channel_count += 1
-        xml += f'\n  <channel id="{channel.parsed_name}">'
-        for schedule in channel.schedules:
-            schedule_count += 1
-            xml += f'\n    <program start="{schedule.start_datetime}" stop="{schedule.stop_datetime}" start_timestamp="{schedule.start_datetime.timestamp()}" stop_timestamp="{schedule.stop_datetime.timestamp()}" channel="{channel.parsed_name}" >'
-            xml += f"\n    <title>{schedule.name}</title>"
-            xml += f"\n    <desc>{schedule.description}</desc>"
-            xml += f"\n    </program>"
-        xml += "\n  <\\channel>"
-    xml += "\n</tv>"
-    db.op.update_job(job_id=job_id, message=
-        f"Generated EPG XML with {channel_count} channels and {schedule_count} programs"
-    )
-    db.op.upsert_cached_text(
-        key=cache.key.STREAMABLE_EPG,
-        data=xml
-    )
-    return True
-
-
 def handle(scope):
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a stream_sources_refresh job")
     stream_sources = None
     if scope.is_stream_source():
         stream_sources = [db.op.get_stream_source_by_id(ticket=db.Ticket(),stream_source_id=scope.target_id)]
     else:
-        db.op.update_job(job_id=scope.job_id, message="Removing existing streamable schedule info")
-        db.op.delete_all_schedules()
-        stream_sources = db.op.get_stream_source_list(ticket=db.Ticket(ignore_watch_group=True),streamables=True)
+        stream_sources = db.op.get_stream_source_list(ticket=db.Ticket(),streamables=True)
     refresh_results = {}
     for stream_source in stream_sources:
         db.op.update_job(job_id=scope.job_id, message="Refreshing stream source " + stream_source.kind)
@@ -93,9 +60,6 @@ def handle(scope):
             refresh_results[stream_source.url] = False
             continue
         if not handler.parse_watchable_urls():
-            refresh_results[stream_source.url] = False
-            continue
-        if not handler.parse_guide_info():
             refresh_results[stream_source.url] = False
             continue
         refresh_results[stream_source.url] = True
@@ -128,8 +92,8 @@ def handle(scope):
                 )
 
     db.op.update_job(job_id=scope.job_id, message="Finished refreshing stream sources")
+
     generate_streamable_m3u(job_id=scope.job_id)
-    generate_streamable_epg(job_id=scope.job_id)
     db.op.update_job(job_id=scope.job_id, message="Finished stream_sources_refresh job")
     for key, val in refresh_results.items():
         if not val:

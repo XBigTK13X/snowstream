@@ -12,19 +12,13 @@ def create_stream_source(stream_source: am.StreamSource):
 
 def get_stream_source_list(
     ticket:dbi.dm.Ticket=None,
-    streamables:bool=False,
-    streamable_only:bool=True):
+    streamables:bool=False):
     with dbi.session() as db:
         query = (
             db.query(dbi.dm.StreamSource)
         )
         if ticket.has_stream_source_restrictions():
             query = query.filter(dbi.dm.StreamSource.id.in_(ticket.stream_source_ids))
-        if streamable_only:
-            query = query.filter(dbi.dm.StreamSource.kind.notin_([
-                'IptvEpg',
-                'SchedulesDirect'
-            ]))
         if ticket.has_tag_restrictions():
             query = query.options(dbi.orm.joinedload(dbi.dm.StreamSource.tags))
         if streamables:

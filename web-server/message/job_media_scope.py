@@ -41,6 +41,9 @@ class JobMediaScope:
     def is_stream_source(self):
         return self.target_kind == 'stream_source'
 
+    def is_guide_source(self):
+        return self.target_kind == 'guide_source'
+
     def is_shelf(self):
         return self.target_kind == 'shelf'
 
