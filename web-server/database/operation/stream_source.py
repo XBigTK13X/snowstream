@@ -23,6 +23,8 @@ def get_stream_source_list(
         if streamables:
             query = query.options(
                 dbi.orm.joinedload(dbi.dm.StreamSource.streamables)
+                .joinedload(dbi.dm.Streamable.channel)
+                .joinedload(dbi.dm.Channel.programs)
             )
         stream_sources = query.all()
         results = []

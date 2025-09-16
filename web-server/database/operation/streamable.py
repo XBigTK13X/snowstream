@@ -34,6 +34,10 @@ def get_streamable_list():
         return (
             db.query(dbi.dm.Streamable)
             .options(dbi.orm.joinedload(dbi.dm.Streamable.stream_source))
+            .options(
+                dbi.orm.joinedload(dbi.dm.Streamable.channel)
+                .joinedload(dbi.dm.Channel.programs)
+            )
             .all()
         )
 

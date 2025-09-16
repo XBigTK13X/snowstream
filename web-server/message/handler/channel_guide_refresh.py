@@ -11,10 +11,13 @@ source_handlers = {
 def generate_streamable_epg(job_id:int):
     db.op.update_job(job_id=job_id, message="Generating streamable EPG XML")
     xml = '<?xml version="1.0" encoding="utf-8" ?>\n<!DOCTYPE tv SYSTEM "xmltv.dtd">\n<tv generator-info-name="snowstream">'
-    channels = db.op.get_channel_list()
+    streamables = db.op.get_streamable_list()
     channel_count = 0
     program_count = 0
-    for channel in channels:
+    for streamable in streamables:
+        if not streamable.channel:
+            continue
+        channel = streamable.channel
         channel_count += 1
         xml += f'\n  <channel id="{channel.parsed_name}">'
         for program in channel.programs:

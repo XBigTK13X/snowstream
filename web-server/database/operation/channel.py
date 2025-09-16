@@ -112,6 +112,8 @@ def create_channel_program(program: dict):
 def create_channel_programs(programs:list):
     with dbi.session() as db:
         db.bulk_insert_mappings(dbi.dm.ChannelProgram, programs)
+        db.commit()
+        return True
 
 def get_channel_program_list():
     with dbi.session() as db:

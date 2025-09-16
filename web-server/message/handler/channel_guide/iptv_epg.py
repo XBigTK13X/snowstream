@@ -32,7 +32,7 @@ class IptvEpg(GuideSourceImporter):
                 channel_id = top_node.get("id")
                 if not channel_id in channels:
                     channels[channel_id] = {"id": channel_id}
-            if "program" in top_node.tag:
+            elif "program" in top_node.tag:
                 program_count += 1
                 channel_id = top_node.get("channel")
                 if not channel_id in channels:
@@ -55,6 +55,7 @@ class IptvEpg(GuideSourceImporter):
                     if "desc" in sub_node.tag:
                         program["description"] = sub_node.text
                 channels[channel_id]["programs"].append(program)
+
         initial_count = len(channels.keys())
         db.op.update_job(job_id=self.job_id, message=f"About to import {initial_count} channels with {program_count} programs")
         prune_count = 0
