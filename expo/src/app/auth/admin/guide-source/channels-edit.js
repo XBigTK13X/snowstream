@@ -46,9 +46,9 @@ function ChannelEditRow(props) {
                             if (streamable.name.toLowerCase().indexOf(filter) !== -1) {
                                 isFiltered = false
                             }
-                        }
-                        if (isFiltered) {
-                            return true
+                            if (isFiltered) {
+                                return true
+                            }
                         }
                         return (
                             <C.SnowTextButton
