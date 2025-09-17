@@ -94,8 +94,6 @@ def auth_required(router):
                 stream_source.groups.append(group)
                 stream_source.grouped_streamables[group] = []
             stream_source.grouped_streamables[group].append(streamable)
-        if stream_source.groups:
-            del stream_source.streamables
         for streamable in stream_source.streamables:
             if streamable.channel:
                 del streamable.channel.programs

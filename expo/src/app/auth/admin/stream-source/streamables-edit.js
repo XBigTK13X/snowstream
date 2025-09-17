@@ -70,7 +70,7 @@ export default function StreamblesEditPage() {
 
     return (
         <C.FillView>
-            <C.SnowText>There are {streamSource.streamables.length} channels.</C.SnowText>
+            <C.SnowText>There are {streamSource.streamables.length} streamables.</C.SnowText>
             <C.SnowGrid shrink itemsPerRow={3}>
                 <C.SnowLabel>Filter (required)</C.SnowLabel>
                 <C.SnowInput
