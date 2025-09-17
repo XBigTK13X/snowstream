@@ -98,8 +98,9 @@ def auth_required(router):
             if streamable.channel:
                 del streamable.channel.programs
         if stream_source.kind == 'HdHomeRun' or stream_source.kind == 'IptvM3u':
-            log.info('sorted')
             stream_source.streamables = sorted(stream_source.streamables,key=lambda xx:xx.name)
+            for group in stream_source.groups:
+                stream_source.grouped_streamables[group].sort(key=lambda xx:xx.name_display if xx.name_display else xx.name)
         stream_source.groups.sort()
         return stream_source
 
