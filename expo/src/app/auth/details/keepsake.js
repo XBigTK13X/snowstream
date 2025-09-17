@@ -145,11 +145,11 @@ export default function KeepsakeDetailsPage() {
         videos = (
             <C.View>
                 <C.SnowLabel>Videos</C.SnowLabel>
-                <C.SnowGrid>
+                <C.SnowGrid wide={true}>
                     {keepsake.videos.map((video, videoIndex) => {
                         return (
                             <C.SnowImageButton
-                                square
+                                wide={true}
                                 key={videoIndex}
                                 title={video.name}
                                 imageUrl={video.thumbnail_web_path}
@@ -166,11 +166,12 @@ export default function KeepsakeDetailsPage() {
         images = (
             <C.View>
                 <C.SnowLabel>Images</C.SnowLabel>
-                <C.SnowGrid>
+                <C.SnowGrid wide={true}>
                     {keepsake.images.map((image, imageIndex) => {
                         return (
                             <C.SnowImageButton
-                                square
+                                wide={true}
+                                shouldFocus={itemIndex === 0}
                                 key={imageIndex}
                                 title={image.name}
                                 imageUrl={image.thumbnail_web_path}
@@ -207,11 +208,11 @@ export default function KeepsakeDetailsPage() {
     }
     if (keepsake) {
         return (
-            <C.View>
+            <C.FillView>
                 {videos}
                 {images}
                 {dirs}
-            </C.View>
+            </C.FillView>
         )
     }
 }
