@@ -29,7 +29,7 @@ function ChannelEditRow(props) {
     }
     if (showModal) {
         return (
-            <C.SnowModal onRequestClose={() => { setShowModal(false) }}>
+            <C.SnowModal scroll onRequestClose={() => { setShowModal(false) }}>
                 <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
                 <C.SnowTextButton title="Cancel" onPress={() => { setShowModal(false) }} />
                 <C.SnowGrid shrink itemsPerRow={2}>
@@ -39,12 +39,16 @@ function ChannelEditRow(props) {
                 <C.SnowGrid>
                     {props.streamables.map((streamable) => {
                         if (filter) {
-                            if (streamable.name_display && streamable.name_display.toLowerCase() === -1) {
-                                return null
+                            let isFiltered = true
+                            if (streamable.name_display && streamable.name_display.toLowerCase() !== -1) {
+                                isFiltered = false
                             }
-                            if (streamable.name.toLowerCase().indexOf(filter) === -1) {
-                                return null
+                            if (streamable.name.toLowerCase().indexOf(filter) !== -1) {
+                                isFiltered = false
                             }
+                        }
+                        if (isFiltered) {
+                            return true
                         }
                         return (
                             <C.SnowTextButton
