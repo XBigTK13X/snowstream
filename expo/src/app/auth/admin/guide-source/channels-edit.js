@@ -119,7 +119,7 @@ export default function ChannelEditPage() {
     if (filteredChannels && filteredChannels.length) {
         channelRows = (<C.FillView>
             {filteredChannels.map((channel, channelIndex) => {
-                return <ChannelEditRow streamables={streamables} channel={channel} key={channelIndex} />
+                return <ChannelEditRow streamables={streamables} channel={channel} key={channelIndex + channel.parsed_id} />
             })}
         </C.FillView>)
     }

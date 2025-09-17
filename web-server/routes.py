@@ -124,6 +124,7 @@ def auth_required(router):
         for source in stream_sources:
             if source.kind == 'HdHomeRun' or source.kind == 'IptvM3u':
                 streamables += source.streamables
+        streamables = sorted(streamables,key=lambda xx:xx.name)
         return streamables
 
     @router.get("/channel/guide/source/list",tags=['Channel Guide'])
@@ -156,7 +157,10 @@ def auth_required(router):
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         channel_guide_source_id:int
     ):
-        return db.op.get_channel_guide_source_by_id(channel_guide_source_id=channel_guide_source_id)
+        source = db.op.get_channel_guide_source_by_id(channel_guide_source_id=channel_guide_source_id)
+        if source.channels:
+            source.channels = sorted(source.channels,key=lambda xx: xx.parsed_id)
+        return source
 
     @router.post("/channel",tags=['Channel Guide'])
     def save_channel(
