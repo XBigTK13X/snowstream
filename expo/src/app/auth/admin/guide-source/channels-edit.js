@@ -30,6 +30,7 @@ function ChannelEditRow(props) {
     if (showModal) {
         return (
             <C.SnowModal onRequestClose={() => { setShowModal(false) }}>
+                <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
                 <C.SnowTextButton title="Cancel" onPress={() => { setShowModal(false) }} />
                 <C.SnowGrid shrink itemsPerRow={2}>
                     <C.SnowLabel>Filter</C.SnowLabel>
@@ -136,10 +137,10 @@ export default function ChannelEditPage() {
                             if (channel.parsed_name && channel.parsed_name.toLowerCase().indexOf(val) !== -1) {
                                 return true
                             }
-                            if (channel.parsed_id && channel.parsed_id.toLowerCase().indexOf(val) !== -1) {
+                            if (channel.parsed_id && ('' + channel.parsed_id).toLowerCase().indexOf(val) !== -1) {
                                 return true
                             }
-                            if (channel.parsed_number && channel.parsed_number.toLowerCase().indexOf(val) !== -1) {
+                            if (channel.parsed_number && ('' + channel.parsed_number).toLowerCase().indexOf(val) !== -1) {
                                 return true
                             }
                             return false

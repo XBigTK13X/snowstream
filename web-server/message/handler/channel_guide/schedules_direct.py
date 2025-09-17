@@ -42,6 +42,10 @@ class SchedulesDirect(GuideSourceImporter):
 
         hashword = util.string_to_sha1(self.guide_source.password)
 
+        if not self.guide_source.url:
+            db.op.update_job(job_id=self.job_id, message="No url set for schdules direct. Set it to `country=<>&postalcod=<>`")
+            return False
+
         token_payload = {
             "username": self.guide_source.username,
             "password": hashword,
@@ -54,25 +58,23 @@ class SchedulesDirect(GuideSourceImporter):
             return False
         self.headers["token"] = token_response["token"]
 
-        lineups_response = requests.get(
-            self.api_url + "/lineups", headers=self.headers
-        ).json()
-        import pprint
-        pprint.pprint(lineups_response)
-        lineups = lineups_response["lineups"]
-
-        # For now, let's assume a simple account setup with a single lineup.
-        # This may grow to support multiple lineups in the future.
-        if len(lineups) == 0:
-            db.op.update_job(job_id=self.job_id, message=f"Schedules Direct found no lineups for account [{self.guide_source.username}]")
+        if 'country=' in self.guide_source.url and 'postalcode=' in self.guide_source.url:
+            headends_response = requests.get(
+                self.api_url + "/headends?" + self.guide_source.url,
+                headers=self.headers
+            ).json()
+            db.op.update_job(job_id=self.job_id, message=JSON.dumps(headends_response,indent=4))
             return False
-        lineup = lineups[0]
-        lineup_response = requests.get(
-            self.api_url + "/lineups/" + lineup["lineup"], headers=self.headers
-        ).json()
 
-        import pprint
-        pprint.pprint(lineup_response)
+        lineup_code = self.guide_source.url
+        requests.put(
+            self.api_url + '/lineups/' + lineup_code,
+            headers=self.headers
+        ).json()
+        lineup_response = requests.get(
+            self.api_url + "/lineups/" + lineup_code,
+            headers=self.headers
+        ).json()
 
         station_ids = [x["stationID"] for x in lineup_response["map"]]
         schedule_dates = [
@@ -95,8 +97,8 @@ class SchedulesDirect(GuideSourceImporter):
             schedules_response = schedules_response + api_response
 
         program_ids = []
-        for program in schedules_response:
-            program_ids = program_ids + [x["programID"] for x in program["programs"]]
+        for schedule in schedules_response:
+            program_ids = program_ids + [x["programID"] for x in schedule["programs"]]
         programs_response = []
         for program_id_batch in batches(program_ids, API_BATCH_SIZE):
             api_response = requests.post(
@@ -104,7 +106,6 @@ class SchedulesDirect(GuideSourceImporter):
             ).json()
             programs_response = programs_response + api_response
         results = {
-            "status": status_response,
             "lineup": lineup_response,
             "schedules": schedules_response,
             "programs": programs_response,
@@ -120,10 +121,15 @@ class SchedulesDirect(GuideSourceImporter):
         program_lookup = {}
         for station in remote_data["lineup"]["stations"]:
             channel_lookup[station["stationID"]] = {
-                "name": station["name"],
+                "affiliate": station['affiliate'],
+                "callsign": station["name"],
                 "programs": [],
                 "station_id": station["stationID"],
+
             }
+        for station in remote_data['lineup']['map']:
+            channel_lookup[station['stationID']]['number'] = station['channel']
+
         for program in remote_data["programs"]:
             entry = {
                 "program_id": program["programID"],
@@ -168,14 +174,18 @@ class SchedulesDirect(GuideSourceImporter):
             if not "programs" in val or len(val["programs"]) == 0:
                 prune_count += 1
             else:
+                entry = channel_lookup[key]
                 channel_count += 1
-                channel_name = channel_lookup[key]["name"]
-                db.op.update_job(job_id=self.job_id, message=f"({channel_count}/{initial_count}) Processing channel {channel_name}")
+                channel_name = f'{entry["callsign"]} - {entry['number']} - {entry['affiliate']}'
+                if channel_count % 25 == 0:
+                    db.op.update_job(job_id=self.job_id, message=f"Ingesting channel {channel_count} out of {initial_count}")
                 channel = db.op.get_channel_by_parsed_id(channel_name)
                 if not channel:
                     channel = db.op.create_channel({
                         "channel_guide_source_id":self.guide_source.id,
-                        "parsed_id": channel_name
+                        "parsed_id": channel_name,
+                        "parsed_name": entry['callsign'],
+                        "parsed_number": entry['number']
                     })
                 for program in val["programs"]:
                     program["channel_id"] = channel.id

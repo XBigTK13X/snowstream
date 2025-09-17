@@ -23,7 +23,25 @@ class IptvM3u(StreamSourceImporter):
         for line in self.cached_data.split("\n"):
             if line[0] == "#":
                 if "#EXTINF" in line:
-                    stream["name"] = line.split('tvg-name="')[1].split('"')[0]
+                    name = line.split('tvg-name="')[1].split('"')[0]
+                    name = name.replace('USA','')
+                    name = name.replace('US:','')
+                    name = name.replace('UKHD:','')
+                    name = name.replace('UK','')
+                    name = name.replace('&amp;','and')
+                    name = name.replace('HD','')
+                    name = name.replace('4K','')
+                    name = name.replace('JNR','Junior')
+                    name = name.replace('Channel','')
+                    name = name.split('(')[0]
+                    name = name.strip().title()
+                    name = name.replace('Gsn','GSN')
+                    name = name.replace('Xd','XD')
+                    name = name.replace('Tv','TV')
+                    name = name.replace('Pbs','PBS')
+                    name = name.replace('Tcm','TCM')
+                    name = name.replace('Hbo','HBO')
+                    stream["name"] = name
             else:
                 stream["url"] = line
                 streams.append(stream)

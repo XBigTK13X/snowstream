@@ -34,7 +34,7 @@ class HdHomeRun(StreamSourceImporter):
         hhr_lineup = json.loads(self.cached_data)
         streams = []
         for entry in hhr_lineup:
-            streams.append({"url": entry["URL"], "name": entry["GuideName"]})
+            streams.append({"url": entry["URL"], "name": f'{entry["GuideName"]} - {entry["GuideNumber"]}'})
         new_count = 0
         for stream in streams:
             if not any(x.url == stream["url"] for x in self.stream_source.streamables):

@@ -1,6 +1,6 @@
 {
     "name": "snowstream",
-    "version": "0.16.9",
+    "version": "1.0.0",
     "main": "expo-router/entry",
     "dependencies": {
         "axios": "1.12.2",

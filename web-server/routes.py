@@ -68,6 +68,7 @@ def auth_required(router):
         stream_source.grouped_streamables = {}
         stream_source.groups = []
         stream_source.has_guide = False
+        channel_lookup = {}
         now = datetime.now()
         for streamable in stream_source.streamables:
             if streamable.channel:
@@ -86,7 +87,6 @@ def auth_required(router):
                 if soonest:
                     soonest.display_time = soonest.start_datetime.strftime('%I:%M %p')
                     streamable.next_program = soonest
-                streamable.channel.programs = []
             group = streamable.group_display if streamable.group_display else streamable.group
             if group == None:
                 continue
@@ -96,6 +96,12 @@ def auth_required(router):
             stream_source.grouped_streamables[group].append(streamable)
         if stream_source.groups:
             del stream_source.streamables
+        for streamable in stream_source.streamables:
+            if streamable.channel:
+                del streamable.channel.programs
+        if stream_source.kind == 'HdHomeRun' or stream_source.kind == 'IptvM3u':
+            log.info('sorted')
+            stream_source.streamables = sorted(stream_source.streamables,key=lambda xx:xx.name)
         return stream_source
 
     @router.get("/streamable",tags=['Stream Source'])
@@ -135,7 +141,7 @@ def auth_required(router):
             return None
         return db.op.upsert_channel_guide_source(guide_source=guide_source)
 
-    @router.delete("/channel/guide/{channel_guide_source_id}",tags=['Channel Guide'])
+    @router.delete("/channel/guide/source/{channel_guide_source_id}",tags=['Channel Guide'])
     def delete_channel_guide_source(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         channel_guide_source_id: int,

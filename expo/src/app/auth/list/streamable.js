@@ -1,5 +1,12 @@
 import C from '../../../common'
 
+const styles = {
+    tableColumn: {
+        borderLeftWidth: 2,
+        borderLeftColor: C.Style.color.core
+    }
+}
+
 export default function StreamableListPage() {
     const { apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
@@ -51,8 +58,8 @@ export default function StreamableListPage() {
                 <C.FillView>
                     {
                         streamableItems.map((streamable, itemIndex) => {
-                            let currentProgram = "No guide info"
-                            let nextProgram = "No guide info"
+                            let currentProgram = "No guide information"
+                            let nextProgram = "No guide information"
                             if (streamable.current_program) {
                                 const pp = streamable.current_program
                                 currentProgram = `${pp.display_time} - ${pp.name}`
@@ -70,8 +77,8 @@ export default function StreamableListPage() {
                                                 streamableId: streamable.id,
                                             })
                                         }} />
-                                        <C.SnowText>{currentProgram}</C.SnowText>
-                                        <C.SnowText>{nextProgram}</C.SnowText>
+                                        <C.SnowText style={styles.tableColumn}>{currentProgram}</C.SnowText>
+                                        <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
                                     </C.SnowGrid>
                                     <C.SnowBreak />
                                 </C.View>
