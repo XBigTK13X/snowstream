@@ -298,7 +298,7 @@ export class ApiClient {
     }
 
     saveChannel(payload) {
-        if (payload.editedNumber = '') {
+        if (payload.editedNumber === '') {
             payload.editedNumber = null
         }
         return this.post('/channel', {
