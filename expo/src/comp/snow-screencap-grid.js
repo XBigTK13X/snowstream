@@ -6,7 +6,7 @@ import SnowImageButton from './snow-image-button'
 import SnowLabel from './snow-label'
 import { useAppContext } from '../app-context'
 
-const itemsPerRow = Platform.isTV ? 8 : 5
+const itemsPerRow = 5
 
 export function SnowScreencapGrid(props) {
     const { routes, apiClient } = useAppContext()

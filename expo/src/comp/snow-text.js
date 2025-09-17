@@ -22,6 +22,14 @@ const styles = {
     center: {
         width: '100%',
         alignItems: 'center'
+    },
+    noSelect: {
+        noSelect: {
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            MozUserSelect: 'none',
+            msUserSelect: 'none',
+        }
     }
 }
 
@@ -31,17 +39,20 @@ export function SnowText(props) {
     if (!props.shrink) {
         style.push(normalStyle)
     }
+    if (props.noSelect) {
+        style.push(styles.noSelect)
+    }
     if (props.style) {
         style.push(props.style)
     }
     if (props.center) {
         return (
             <View style={styles.center}>
-                <Text style={style} children={props.children} />
+                <Text style={style} selectable={!props.noSelect} children={props.children} />
             </View>
         )
     }
-    return <Text style={style} children={props.children} />
+    return <Text style={style} selectable={!props.noSelect} children={props.children} />
 }
 
 export default SnowText

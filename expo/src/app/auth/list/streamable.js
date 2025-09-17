@@ -56,6 +56,9 @@ export default function StreamableListPage() {
         if (streamSource.has_guide) {
             return (
                 <C.FillView>
+                    <C.SnowGrid shrink itemsPerRow={3}>
+                        <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
+                    </C.SnowGrid>
                     {
                         streamableItems.map((streamable, itemIndex) => {
                             let currentProgram = "No guide information"
@@ -71,7 +74,7 @@ export default function StreamableListPage() {
                             return (
                                 <C.View>
                                     <C.SnowGrid itemsPerRow={3}>
-                                        <C.SnowTextButton title={streamable.name} onPress={() => {
+                                        <C.SnowTextButton title={streamable.name_display ? streamable.name_display : streamable.name} onPress={() => {
                                             routes.func(routes.streamablePlay, {
                                                 streamSourceId: streamSource.id,
                                                 streamableId: streamable.id,
@@ -94,7 +97,7 @@ export default function StreamableListPage() {
                         tall
                         shouldFocus={itemIndex === 0}
                         key={streamable.id}
-                        title={streamable.name}
+                        title={streamable.name_display ? streamable.name_display : streamable.name}
                         onPress={routes.func(routes.streamablePlay, {
                             streamSourceId: streamSource.id,
                             streamableId: streamable.id,

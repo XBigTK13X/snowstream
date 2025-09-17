@@ -62,10 +62,12 @@ class StreamSource(BaseModel):
 
 
 class Streamable(BaseModel):
-    id: int | None = None
-    url: str
-    name: str
-    stream_source_id: int
+    id: int
+    name_display: str
+    group_display: str
+    url: str | None = None
+    name: str | None = None
+    stream_source_id: int | None = None
 
 
 class ChannelGuideSource(BaseModel):

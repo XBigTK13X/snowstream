@@ -270,6 +270,14 @@ export class ApiClient {
         return this.delete(`/stream/source/${stream_source_id}`)
     }
 
+    saveStreamable(payload) {
+        return this.post('/streamable', {
+            id: payload.id,
+            name_display: payload.nameDisplay,
+            group_display: payload.groupDisplay
+        })
+    }
+
     getChannelGuideSourceList() {
         return this.get('/channel/guide/source/list')
     }

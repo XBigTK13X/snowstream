@@ -18,6 +18,7 @@ export var routes = {
         sessionList: '/auth/admin/session/session-list',
         shelfEdit: '/auth/admin/shelf/shelf-edit',
         shelfList: '/auth/admin/shelf/shelf-list',
+        streamablesEdit: '/auth/admin/stream-source/streamables-edit',
         streamSourceEdit: '/auth/admin/stream-source/stream-source-edit',
         streamSourceList: '/auth/admin/stream-source/stream-source-list',
         tagEdit: '/auth/admin/tag/tag-edit',

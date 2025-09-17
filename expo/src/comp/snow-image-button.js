@@ -1,12 +1,8 @@
 import React from 'react'
-import { Platform, Pressable, Keyboard } from 'react-native';
-import { Image } from 'expo-image'
+import { TouchableOpacity, View, Platform } from 'react-native';
 import SnowText from './snow-text'
-import Style from '../snow-style'
-
-const missingPosterImage = require('../image/asset/missing-poster.jpeg')
-const missingScreencapImage = require('../image/asset/missing-screencap.jpeg')
-// TODO hiddenPoster / hiddenScreencap
+import { Style } from '../snow-style'
+import { Image } from 'expo-image'
 
 const styles = {
     wrapper: {
@@ -15,11 +11,9 @@ const styles = {
         margin: 10,
         marginLeft: 'auto',
         marginRight: 'auto',
-        marginBottom: 0,
-        backgroundColor: Style.color.core,
-        borderWidth: 5,
-        borderColor: Style.color.core,
-        borderRadius: 5,
+        borderColor: Style.color.background,
+        borderWidth: 2,
+        borderRadius: 2,
     },
     wrapperWide: {
         height: Style.imageButton.wrapper.wide.height,
@@ -42,14 +36,10 @@ const styles = {
     image: {
         height: Style.imageButton.image.normal.height,
         width: Style.imageButton.image.normal.width,
-        borderWidth: 2,
-        borderColor: Style.color.outlineDark,
-        backgroundColor: Style.color.outlineDark,
         marginTop: 5,
+        paddingBottom: 5,
         marginLeft: 'auto',
-        marginRight: 'auto',
-        marginBottom: 10,
-        borderRadius: 6
+        marginRight: 'auto'
     },
     imageWide: {
         height: Style.imageButton.image.wide.height,
@@ -60,28 +50,38 @@ const styles = {
         width: Style.imageButton.image.square.width,
     },
     text: {
-        height: 80,
+        height: 25,
         color: Style.color.textDark,
         fontSize: Style.imageButton.fontSize.normal,
         fontWeight: 'bold',
         padding: 0,
         margin: 0,
-        marginTop: Style.imageButton.textBox.marginTop,
         textAlign: 'center'
     },
     smallText: {
         fontSize: Style.imageButton.fontSize.small
+    },
+    textWrapper: {
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        marginTop: 5,
+        width: '100%',
+        height: 41,
+        backgroundColor: Style.color.core,
+        borderColor: Style.color.core,
+        borderRadius: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 2
     }
 }
-
-const isTV = Platform.isTV
 
 export function SnowImageButton(props) {
     const [focused, setFocused] = React.useState(false)
     const touchRef = React.useRef(null)
 
     React.useEffect(() => {
-        if (props.shouldFocus && !Keyboard.isVisible()) {
+        if (props.shouldFocus) {
             touchRef.current.focus()
         }
     }, [])
@@ -107,50 +107,46 @@ export function SnowImageButton(props) {
         imageStyle.push(styles.imageSquare)
     }
 
+    let textWrapperStyle = [styles.textWrapper]
+
     if (props.dull) {
-        wrapperStyle.push(styles.dull)
+        textWrapperStyle.push(styles.dull)
     }
     if (props.selected) {
         wrapperStyle.push(styles.selected)
+        textWrapperStyle.push(styles.selected)
     }
-    if (focused && isTV) {
+    if (focused && Platform.isTV) {
         wrapperStyle.push(styles.focused)
+        textWrapperStyle.push(styles.focused)
     }
 
-    let placeholder = props.wide ? missingScreencapImage : missingPosterImage
-
-    const onPressUnlessTyping = () => {
-        if (props.onPress && !Keyboard.isVisible()) {
-            return props.onPress()
-        }
-    }
-
-    const onLongPressUnlessTyping = () => {
-        if (props.onLongPress && !Keyboard.isVisible()) {
-            return props.onLongPress()
-        }
-    }
-
-    const allowFocus = props.shouldFocus && !Keyboard.isVisible()
 
     return (
-        <Pressable
-            ref={touchRef}
-            style={wrapperStyle}
+        <View>
 
-            onPress={onPressUnlessTyping}
-            onLongPress={onLongPressUnlessTyping}
+            <TouchableOpacity
+                ref={touchRef}
+                activeOpacity={1.0}
+                onPress={props.onPress}
+                onLongPress={props.onLongPress}
+                onFocus={() => { setFocused(true) }}
+                onBlur={() => { setFocused(false) }}
+                style={wrapperStyle}
+                hasTVPreferredFocus={props.shouldFocus || focused}
+                autoFocus={props.shouldFocus}>
+                <Image
+                    style={imageStyle}
+                    contentFit="contain"
+                    source={{ uri: props.imageUrl }}
+                    placeholder={props.placeholder}
+                />
+                <View style={textWrapperStyle}>
+                    <SnowText style={fontStyle}>{title}</SnowText>
+                </View>
 
-            onFocus={() => { setFocused(true) }}
-            onBlur={() => { setFocused(false) }}
-            focusable={allowFocus || focused}>
-            <Image
-                style={imageStyle}
-                placeholder={placeholder}
-                contentFit="contain"
-                source={{ uri: props.imageUrl }} />
-            <SnowText style={fontStyle}>{title}</SnowText>
-        </Pressable>
+            </TouchableOpacity>
+        </View>
     )
 }
 

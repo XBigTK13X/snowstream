@@ -89,8 +89,8 @@ def auth_required(router):
                     streamable.next_program = soonest
             group = streamable.group_display if streamable.group_display else streamable.group
             if group == None:
-                continue
-            if group and not group in stream_source.grouped_streamables:
+                group = 'No Group'
+            if not group in stream_source.grouped_streamables:
                 stream_source.groups.append(group)
                 stream_source.grouped_streamables[group] = []
             stream_source.grouped_streamables[group].append(streamable)
@@ -102,6 +102,7 @@ def auth_required(router):
         if stream_source.kind == 'HdHomeRun' or stream_source.kind == 'IptvM3u':
             log.info('sorted')
             stream_source.streamables = sorted(stream_source.streamables,key=lambda xx:xx.name)
+        stream_source.groups.sort()
         return stream_source
 
     @router.get("/streamable",tags=['Stream Source'])
@@ -114,6 +115,17 @@ def auth_required(router):
             info = snow_media.video.get_snowstream_info(streamable.url)
             streamable.duration_seconds = info['snowstream_info']['duration_seconds']
         return streamable
+
+    @router.post('/streamable',tags=['Stream Source'])
+    def update_streamable(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        streamable: am.Streamable
+    ):
+        return db.op.update_streamable_display(
+            streamable_id=streamable.id,
+            group_display=streamable.group_display,
+            name_display=streamable.name_display
+        )
 
     @router.get('/streamable/list',tags=['Channel Guide'])
     def get_streamable_list(

@@ -53,12 +53,12 @@ let AppStyle = {
     imageButton: {
         wrapper: {
             normal: {
-                height: scaled(300),
-                width: scaled(200)
+                height: scaled(425),
+                width: scaled(310)
             },
             wide: {
-                height: scaled(170),
-                width: scaled(200)
+                height: scaled(280),
+                width: scaled(310)
             },
             square: {
                 height: scaled(250),
@@ -67,12 +67,12 @@ let AppStyle = {
         },
         image: {
             normal: {
-                height: scaled(215),
-                width: scaled(150)
+                height: scaled(315),
+                width: scaled(260)
             },
             wide: {
-                height: scaled(90),
-                width: scaled(150)
+                height: scaled(165),
+                width: scaled(260)
             },
             square: {
                 height: scaled(200),
@@ -80,8 +80,8 @@ let AppStyle = {
             }
         },
         fontSize: {
-            normal: scaled(20),
-            small: scaled(15)
+            normal: scaled(25),
+            small: scaled(20)
         },
         textBox: {
             marginTop: isAndroid ? -10 : 0
@@ -90,7 +90,7 @@ let AppStyle = {
     textButton: {
         wrapper: {
             normal: {
-                height: isPortrait ? 80 : 40
+                height: 35
             }
         },
         fontSize: {

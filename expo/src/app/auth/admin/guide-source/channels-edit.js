@@ -4,9 +4,9 @@ function ChannelEditRow(props) {
     const { apiClient } = C.useAppContext()
     const [form, setForm] = C.React.useState({
         id: props.channel.id,
-        editedId: props.channel.edited_id,
-        editedName: props.channel.edited_name,
-        editedNumber: props.channel.edited_number,
+        editedId: props.channel.edited_id ?? '',
+        editedName: props.channel.edited_name ?? '',
+        editedNumber: props.channel.edited_number ?? '',
         streamableId: null
     })
     const [showModal, setShowModal] = C.React.useState(false)
@@ -81,9 +81,9 @@ function ChannelEditRow(props) {
                 <C.SnowLabel>Number</C.SnowLabel>
             </C.SnowGrid>
             <C.SnowGrid shrink itemsPerRow={3}>
-                <C.SnowInput onChangeValue={changeForm('editedId')} value={form.editedId} />
-                <C.SnowInput onChangeValue={changeForm('editedName')} value={form.editedName} />
-                <C.SnowInput onChangeValue={changeForm('editedNumber')} value={form.editedNumber} />
+                <C.SnowInput onValueChange={changeForm('editedId')} value={form.editedId} />
+                <C.SnowInput onValueChange={changeForm('editedName')} value={form.editedName} />
+                <C.SnowInput onValueChange={changeForm('editedNumber')} value={form.editedNumber} />
             </C.SnowGrid>
             <C.SnowBreak />
         </C.View>
@@ -119,7 +119,7 @@ export default function ChannelEditPage() {
     if (filteredChannels && filteredChannels.length) {
         channelRows = (<C.FillView>
             {filteredChannels.map((channel, channelIndex) => {
-                return <ChannelEditRow streamables={streamables} channel={channel} key={channelIndex + channel.parsed_id} />
+                return <ChannelEditRow streamables={streamables} channel={channel} key={channelIndex + "." + channel.parsed_id} />
             })}
         </C.FillView>)
     }
@@ -145,6 +145,9 @@ export default function ChannelEditPage() {
                             }
                             return false
                         })
+                        if (results.length > 200) {
+                            results = results.slice(0, 200)
+                        }
                         setFilteredChannels(results)
                     }} />
                 <C.SnowLabel>{filteredChannels.length} matching channels.</C.SnowLabel>

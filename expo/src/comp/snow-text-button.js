@@ -129,7 +129,7 @@ export function SnowTextButton(props) {
             onFocus={() => { changeFocus(true) }}
             onBlur={() => { changeFocus(false) }}
             disabled={props.disabled}>
-            <SnowText style={textStyle}>{props.title}</SnowText>
+            <SnowText noSelect style={textStyle}>{props.title}</SnowText>
         </Pressable>
     )
 }

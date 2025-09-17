@@ -6,7 +6,7 @@ import SnowImageButton from './snow-image-button'
 import SnowLabel from './snow-label'
 import { useAppContext } from '../app-context'
 
-const itemsPerRow = Platform.isTV ? 7 : 5
+const itemsPerRow = 5
 
 export function SnowPosterGrid(props) {
     const { routes, apiClient } = useAppContext()

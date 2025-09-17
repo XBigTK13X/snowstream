@@ -71,9 +71,14 @@ export default function EpisodeGuideEditPage() {
         }
     }
 
-    let deleteButton = null
+    let existingButtons = null
     if (localParams.guideSourceId) {
-        deleteButton = <C.SnowTextButton title={`Delete Guide Source (${deleteCount})`} onPress={deleteGuideSource} />
+        existingButtons = (
+            <C.SnowGrid strink itemsPerRow={2}>
+                <C.SnowTextButton title="Channels" onPress={routes.func(routes.admin.channelsEdit, { guideSourceId: localParams.guideSourceId })} />
+                <C.SnowTextButton title={`Delete (${deleteCount})`} onPress={deleteGuideSource} />
+            </C.SnowGrid>
+        )
     }
     if (deleted) {
         return <C.Redirect href={routes.admin.channelGuideSourceList} />
@@ -85,7 +90,7 @@ export default function EpisodeGuideEditPage() {
 
     return (
         <C.FillView>
-            <C.SnowTextButton title="Channels" onPress={routes.func(routes.admin.channelsEdit, { guideSourceId: localParams.guideSourceId })} />
+            {existingButtons}
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onValueChange={changeForm('name')} value={form.name} />
 
@@ -104,7 +109,6 @@ export default function EpisodeGuideEditPage() {
             <C.SnowInput onValueChange={changeForm('password')} value={form.password} />
 
             <C.SnowTextButton title="Save Guide Source" onPress={saveGuideSource} />
-            {deleteButton}
         </C.FillView >
     )
 }
