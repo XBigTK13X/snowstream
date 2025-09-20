@@ -3,12 +3,10 @@ import Snow from 'react-native-snowui'
 import { useAppContext } from '../app-context'
 
 export function SnowPosterGrid(props) {
-    if (!props.items || !props.items.length) {
-        return null
-    }
     const { routes, apiClient } = useAppContext()
 
     const getImageUrl = (item) => {
+        console.log({ item })
         let thumbnailUrl = null
         if (item.poster_image) {
             thumbnailUrl = item.poster_image.thumbnail_web_path
@@ -32,6 +30,7 @@ export function SnowPosterGrid(props) {
                 </Snow.Label>
                 : null}
             <Snow.ImageGrid
+                items={props.items}
                 shouldFocus={true}
                 wideImage={false}
                 isMainGrid={true}
@@ -39,7 +38,7 @@ export function SnowPosterGrid(props) {
                 getItemName={(item) => { item.name }}
                 getItemImageUrl={getImageUrl}
                 getItemToggleStatus={getItemToggleStatus}
-                onPress={() => { routes.gotoItem(item) }}
+                onPress={(item) => { routes.gotoItem(item) }}
                 onLongPress={onLongPress} />
         </Snow.FillView>
     )

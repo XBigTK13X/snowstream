@@ -26,6 +26,7 @@ export function SnowScreencapGrid(props) {
                 </Snow.Label>
                 : null}
             <Snow.ImageGrid
+                items={props.items}
                 shouldFocus={true}
                 wideImage={true}
                 isMainGrid={true}
@@ -33,7 +34,7 @@ export function SnowScreencapGrid(props) {
                 getItemName={(item) => { item.name }}
                 getItemImageUrl={getImageUrl}
                 getItemToggleStatus={getItemToggleStatus}
-                onPress={() => { routes.gotoItem(item) }}
+                onPress={(item) => { routes.gotoItem(item) }}
                 onLongPress={onLongPress} />
         </Snow.FillView>
     )

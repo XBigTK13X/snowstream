@@ -1,7 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 import { usePathname, useLocalSearchParams } from 'expo-router'
-import {
+import Snow, {
     FillView,
     SnowGrid,
     SnowLabel,
