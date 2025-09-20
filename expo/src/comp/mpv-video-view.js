@@ -1,19 +1,19 @@
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
+import { useStyleContext, SnowModal } from 'react-native-snowui'
 import { useAppContext } from '../app-context'
 import { usePlayerContext } from '../player-context'
-import Style from '../snow-style'
-import SnowModal from './snow-modal'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
-    const player = usePlayerContext()
+    const { getWindowHeight, getWindowWidth } = useStyleContext(props)
     const { clientOptions } = useAppContext()
-    const [accel, setAccel] = React.useState(false)
+    const player = usePlayerContext()
+
     const styles = {
         touchable: {
-            width: Style.window.width(),
-            height: Style.window.height(),
+            width: getWindowWidth(),
+            height: getWindowHeight(),
             position: 'absolute',
             top: 0,
             left: 0,
@@ -24,8 +24,8 @@ export default function MpvVideoView(props) {
             backgroundColor: 'transparent'
         },
         wrapper: {
-            width: Style.window.width(),
-            height: Style.window.height(),
+            width: getWindowWidth(),
+            height: getWindowHeight(),
             position: 'absolute',
             top: 0,
             left: 0,

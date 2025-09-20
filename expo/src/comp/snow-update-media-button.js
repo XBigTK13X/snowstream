@@ -3,15 +3,15 @@ import {
     View
 } from 'react-native'
 
-import { useAppContext } from '../app-context'
-import Style from '../snow-style'
-import SnowInput from './snow-input'
-import SnowLabel from './snow-label'
-import SnowModal from './snow-modal'
-import SnowGrid from './snow-grid'
-import SnowToggle from './snow-toggle'
-import SnowHeader from './snow-header'
-import SnowTextButton from './snow-text-button'
+import {
+    SnowInput,
+    SnowLabel,
+    SnowModal,
+    SnowGrid,
+    SnowToggle,
+    SnowHeader,
+    SnowTextButton
+} from 'react-native-snowui'
 
 export default function SnowUpdateMediaButton(props) {
     const [showRequest, setShowRequest] = React.useState(false)

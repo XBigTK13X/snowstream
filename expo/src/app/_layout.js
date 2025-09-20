@@ -1,3 +1,4 @@
+import Snow from 'react-native-snowui'
 import C from '../common'
 
 const styles = {
@@ -32,23 +33,28 @@ function Header() {
     )
 }
 
-function MessageDisplay() {
-    // This is mainly a debugging helper.
-    // Not sure if there's any reason to keep it in the deployed app
-    return null
-    const { message } = C.useAppContext()
-    return <C.SnowText style={{ width: C.getWindowWidth() }}>Message: {message}</C.SnowText>
+const appStyle = {
+    color: {
+        background: 'black',
+        text: 'rgb(235, 235, 235)',
+        textDark: 'rgb(22, 22, 22)',
+        active: 'rgb(150, 150, 150)',
+        hover: 'rgb(119, 139, 255)',
+        core: 'rgb(219, 158, 44)',
+        coreDark: 'rgb(136, 98, 27)',
+        outlineDark: 'rgb(63, 63, 63)',
+        fade: 'rgb(23, 23, 23)',
+        transparentDark: 'rgba(0,0,0,0.6)'
+    },
 }
 
 export default function RootLayout() {
     return (
-        <C.AppContextProvider>
-            <C.FocusContextProvider>
-                <C.ScrollView style={C.Style.page}>
-                    <Header />
-                    <C.Slot />
-                </C.ScrollView>
-            </C.FocusContextProvider>
-        </C.AppContextProvider>
+        <Snow.App snowStyle={appStyle}>
+            <C.AppContextProvider>
+                <Header />
+                <C.Slot />
+            </C.AppContextProvider >
+        </Snow.App>
     )
 }

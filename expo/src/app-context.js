@@ -1,17 +1,13 @@
 import React from 'react';
-import { Platform, useTVEventHandler } from 'react-native';
+import Snow from 'react-native-snowui'
+import { Platform, useTVEventHandler, View } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import uuid from 'react-native-uuid';
+
 import util from './util'
 import { config } from './settings'
 import { routes } from './routes'
-import { View } from 'react-native'
 import { ApiClient } from './api-client'
-import SnowGrid from './comp/snow-grid'
-import SnowModal from './comp/snow-modal'
-import SnowText from './comp/snow-text'
-import SnowTextButton from './comp/snow-text-button'
-import Style from './snow-style'
 
 const setStoredValue = (key, value) => {
     return new Promise(resolve => {
@@ -68,6 +64,7 @@ export function useAppContext() {
 }
 
 export function AppContextProvider(props) {
+    const { SnowStyle } = Snow.useStyleContext(props)
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
     const [apiClientKey, setApiClientKey] = React.useState(1)
@@ -113,10 +110,10 @@ export function AppContextProvider(props) {
                 }
             }
             if (!storedOptions.hasOwnProperty('resolutionWidth')) {
-                storedOptions.resolutionWidth = Style.surface.uhd.width
+                storedOptions.resolutionWidth = SnowStyle.surface.uhd.width
             }
             if (!storedOptions.hasOwnProperty('resolutionHeight')) {
-                storedOptions.resolutionHeight = Style.surface.uhd.height
+                storedOptions.resolutionHeight = SnowStyle.surface.uhd.height
             }
             if (!storedOptions.hasOwnProperty('deviceId')) {
                 storedOptions.deviceId = uuid.v4()
@@ -257,16 +254,16 @@ export function AppContextProvider(props) {
 
     if (apiError) {
         return (
-            <SnowModal center>
-                <SnowText>Unable to communicate with Snowstream.</SnowText>
-                <SnowText>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</SnowText>
+            <Snow.Modal center>
+                <Snow.Text>Unable to communicate with Snowstream.</Snow.Text>
+                <Snow.Text>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</Snow.Text>
                 <View>
-                    <SnowGrid itemsPerRow={2}>
-                        <SnowTextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
-                        <SnowTextButton title="Change Server" onPress={() => { logout(true) }} />
-                    </SnowGrid>
+                    <Snow.Grid itemsPerRow={2}>
+                        <Snow.TextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
+                        <Snow.TextButton title="Change Server" onPress={() => { logout(true) }} />
+                    </Snow.Grid>
                 </View>
-            </SnowModal>
+            </Snow.Modal>
         )
     }
 

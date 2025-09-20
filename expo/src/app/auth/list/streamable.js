@@ -1,19 +1,20 @@
 import C from '../../../common'
 
-const styles = {
-    tableColumn: {
-        borderLeftWidth: 2,
-        borderLeftColor: C.Style.color.core
-    }
-}
-
 export default function StreamableListPage() {
     const { apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
+    const { SnowStyle } = C.useStyleContext()
     const localParams = C.useLocalSearchParams()
     const [streamSource, setStreamSource] = C.React.useState(null)
     const [streamableGroups, setStreamableGroups] = C.React.useState(null)
     const [streamableItems, setStreamableItems] = C.React.useState(null)
+
+    const styles = {
+        tableColumn: {
+            borderLeftWidth: 2,
+            borderLeftColor: SnowStyle.color.core
+        }
+    }
 
     C.React.useEffect(() => {
         if (!streamSource) {

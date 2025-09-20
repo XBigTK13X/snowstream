@@ -1,43 +1,42 @@
 import React from 'react'
 import { View } from 'react-native'
 import { usePathname, useLocalSearchParams } from 'expo-router'
+import {
+    FillView,
+    SnowGrid,
+    SnowLabel,
+    SnowModal,
+    SnowRangeSlider,
+    SnowTabs,
+    SnowText,
+    SnowTextButton
+} from 'react-native-snowui'
 
-import Style from '../snow-style'
 import { useAppContext } from '../app-context'
 import { usePlayerContext } from '../player-context'
-
-import FillView from './fill-view'
-import SnowGrid from './snow-grid'
-import SnowLabel from './snow-label'
-import SnowModal from './snow-modal'
-import SnowRangeSlider from './snow-range-slider'
-import SnowTabs from './snow-tabs'
-import SnowText from './snow-text';
-import SnowTextButton from './snow-text-button'
 import SnowTrackSelector from './snow-track-selector'
 
-
-const styles = {
-    background: {
-        backgroundColor: Style.color.transparentDark,
-        padding: 60
-    },
-
-    progress: {
-        flexBasis: '100%',
-        textAlign: 'center'
-    },
-
-    logs: {
-        backgroundColor: Style.color.background
-    },
-    prompt: {
-        backgroundColor: Style.color.transparentDark
-    }
-}
-
 export default function SnowVideoControls(props) {
-    const { apiClient, routes } = useAppContext()
+    const { SnowStyle } = Snow.useStyleContext(props)
+    const styles = {
+        background: {
+            backgroundColor: SnowStyle.color.transparentDark,
+            padding: 60
+        },
+
+        progress: {
+            flexBasis: '100%',
+            textAlign: 'center'
+        },
+
+        logs: {
+            backgroundColor: SnowStyle.color.background
+        },
+        prompt: {
+            backgroundColor: SnowStyle.color.transparentDark
+        }
+    }
+    const { apiClient, routes, setRemoteCallbacks } = useAppContext()
     const localParams = useLocalSearchParams()
     const currentRoute = usePathname()
     const player = usePlayerContext()
@@ -162,9 +161,10 @@ export default function SnowVideoControls(props) {
             <View>
                 <SnowRangeSlider
                     width={750}
+                    debounce={true}
                     percent={player.info.progressPercent ?? 0}
-                    debounce
                     onValueChange={onPercentChange}
+                    setRemoteCallbacks={setRemoteCallbacks}
                 />
                 <SnowText style={styles.progress}>{player.info.progressDisplay ?? ''} / {player.info.durationDisplay}</SnowText>
             </View>

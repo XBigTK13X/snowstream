@@ -2,10 +2,7 @@ import React from 'react'
 import Video from 'react-native-video';
 import { ViewType } from 'react-native-video'
 import { Platform, View, TouchableOpacity } from 'react-native'
-import Style from '../snow-style'
-import SnowText from './snow-text'
-import SnowTextButton from './snow-text-button'
-import SnowModal from './snow-modal'
+import Snow, { useStyleContext } from 'react-native-snowui'
 import { usePlayerContext } from '../player-context'
 
 const isWeb = Platform.OS === 'web'
@@ -25,6 +22,7 @@ const bufferConfig = {
 // https://docs.thewidlarzgroup.com/react-native-video/component/props
 
 export default function RnvVideoView(props) {
+    const { getWindowWidth, getWindowHeight } = useStyleContext(props)
     const player = usePlayerContext()
     const videoRef = React.useRef(null);
     const [userPlayed, setUserPlayed] = React.useState(false)
@@ -32,8 +30,8 @@ export default function RnvVideoView(props) {
 
     const styles = {
         wrapper: {
-            width: Style.window.width(),
-            height: Style.window.height(),
+            width: getWindowWidth(),
+            height: getWindowHeight(),
             position: 'absolute',
             top: 0,
             left: 0,
@@ -44,8 +42,8 @@ export default function RnvVideoView(props) {
             backgroundColor: 'black' // Without this color, letterbox will be white by default
         },
         touchable: {
-            width: Style.window.width(),
-            height: Style.window.height(),
+            width: getWindowWidth(),
+            height: getWindowHeight(),
             position: 'absolute',
             top: 0,
             left: 0,
@@ -103,15 +101,15 @@ export default function RnvVideoView(props) {
         if (!userPlayed) {
             return (
                 <View>
-                    <SnowTextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
+                    <Snow.TextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
                 </View>
             )
         }
         if (!player.info.isTranscode && (player.info.audioTrackIndex > 0 || player.info.subtitleTrackIndex > 0)) {
-            return <View><SnowText>Waiting on transcode...</SnowText></View>
+            return <View><Snow.Text>Waiting on transcode...</Snow.Text></View>
         }
         if (requestTranscode && !player.info.isTranscode) {
-            return <View><SnowText>Waiting on transcode...</SnowText></View>
+            return <View><Snow.Text>Waiting on transcode...</Snow.Text></View>
         }
     }
 
@@ -130,7 +128,7 @@ export default function RnvVideoView(props) {
     const shade = player.info.subtitleColor.shade * 255
 
     return (
-        <SnowModal
+        <Snow.Modal
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
@@ -203,6 +201,6 @@ export default function RnvVideoView(props) {
 
                 />
             </TouchableOpacity>
-        </SnowModal>
+        </Snow.Modal>
     )
 }

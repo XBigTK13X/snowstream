@@ -1,17 +1,15 @@
 import React from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { usePlayerContext } from '../player-context'
-import FillView from './fill-view'
-import SnowText from './snow-text'
-import Style from '../snow-style'
-
+import Snow from 'react-native-snowui'
 
 export default function NullVideoView(props) {
+    const { getWindowWidth, getWindowHeight } = Snow.useStyleContext(props)
     const player = usePlayerContext()
     const styles = {
         touchable: {
-            width: Style.window.width(),
-            height: Style.window.height(),
+            width: getWindowWidth,
+            height: getWindowHeight,
             position: 'absolute',
             top: 0,
             left: 0,
@@ -68,13 +66,13 @@ export default function NullVideoView(props) {
             style={styles.touchable}
             onPress={player.action.onPauseVideo}>
             <View>
-                <SnowText>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</SnowText>
-                <SnowText>Here is a whole bunch of text.</SnowText>
-                <SnowText>It makes it easier to see how the transparency controls function.</SnowText>
+                <Snow.Text>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
+                <Snow.Text>Here is a whole bunch of text.</Snow.Text>
+                <Snow.Text>It makes it easier to see how the transparency controls function.</Snow.Text>
             </View>
-            <FillView>
-                <SnowText>{JSON.stringify(player.info, null, 4)}</SnowText>
-            </FillView>
+            <Snow.FillView>
+                <Snow.Text>{JSON.stringify(player.info, null, 4)}</Snow.Text>
+            </Snow.FillView>
         </TouchableOpacity>
     )
 }

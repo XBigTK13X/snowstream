@@ -1,17 +1,19 @@
 import React from 'react'
-import util from '../util'
+import Snow from 'react-native-snowui'
 import {
     AppState,
     Platform,
     View
 } from 'react-native'
 import { useKeepAwake } from 'expo-keep-awake';
-import Style from '../snow-style'
+
+import util from '../util'
 import SnowVideoControls from './snow-video-controls'
 import { usePlayerContext } from '../player-context'
 import { useAppContext } from '../app-context'
 
 export default function SnowVideoPlayer(props) {
+    const { SnowStyle, getWindowHeight, getWindowWidth } = Snow.useStyleContext(props)
     const player = usePlayerContext()
     if (!player) {
         return null
@@ -21,19 +23,19 @@ export default function SnowVideoPlayer(props) {
     const styles = {
         videoOverlay: {
             backgroundColor: 'transparent',
-            width: Style.window.width(),
-            height: Style.window.height(),
+            width: getWindowWidth(),
+            height: getWindowHeight(),
         },
         videoView: {
-            width: Style.window.width(),
-            height: Style.window.height(),
-            backgroundColor: Style.color.background,
+            width: getWindowWidth(),
+            height: getWindowHeight(),
+            backgroundColor: SnowStyle.color.background,
         },
         videoControls: {
             flex: 1
         },
         dark: {
-            backgroundColor: Style.color.background,
+            backgroundColor: SnowStyle.color.background,
         }
     }
 

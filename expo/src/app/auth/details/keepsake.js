@@ -1,21 +1,5 @@
 import C from '../../../common'
 
-const styles = {
-    modal: {
-        flex: 1,
-        padding: 10,
-        backgroundColor: C.Style.color.background
-    },
-    zoomedImage: {
-        width: "100%",
-        height: 800,
-        justifyContent: 'center',
-    },
-    webImage: {
-        flex: 1
-    }
-}
-
 function VideoPlayer() {
     const player = C.usePlayerContext()
     if (player.info.playbackFailed) {
@@ -86,7 +70,8 @@ function KeepsakeVideo(props) {
     )
 }
 
-export default function KeepsakeDetailsPage() {
+export default function KeepsakeDetailsPage(props) {
+    const { SnowStyle } = C.useStyleContext(props)
     const localParams = C.useLocalSearchParams()
 
     const { apiClient, routes } = C.useAppContext()
@@ -100,6 +85,22 @@ export default function KeepsakeDetailsPage() {
             })
         }
     })
+
+    const styles = {
+        modal: {
+            flex: 1,
+            padding: 10,
+            backgroundColor: SnowStyle.color.background
+        },
+        zoomedImage: {
+            width: "100%",
+            height: 800,
+            justifyContent: 'center',
+        },
+        webImage: {
+            flex: 1
+        }
+    }
 
     const closeModal = () => {
         setZoomedItem(null)

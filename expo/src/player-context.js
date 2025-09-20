@@ -1,8 +1,8 @@
 import React from 'react';
 import { Platform } from 'react-native';
+import { useFocusContext } from 'react-native-snowui'
 import { useLocalSearchParams, usePathname } from 'expo-router'
 import { useAppContext } from './app-context'
-import { useFocusContext } from './focus-context'
 import util from './util'
 
 const PlayerContext = React.createContext({});

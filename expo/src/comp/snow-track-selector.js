@@ -1,11 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
+import Snow from 'react-native-snowui'
 import util from '../util'
-import SnowGrid from './snow-grid'
-import SnowText from './snow-text'
-import SnowTextButton from './snow-text-button'
-import SnowInput from './snow-input'
-import FillView from './fill-view'
 
 function TrackList(props) {
     if (!props.tracks) {
@@ -19,26 +15,26 @@ function TrackList(props) {
         activeBitRate = `[${util.bitsToPretty(activeTrack.bit_rate)}/s]`
     }
     let header = (
-        <SnowText>
+        <Snow.Text>
             {props.title} ({props.tracks.length}) {activeBitRate}
-        </SnowText>
+        </Snow.Text>
     )
     if (props.showDelay) {
         header = (
-            <SnowGrid itemsPerRow={3} shrink>
-                <SnowText>
+            <Snow.Grid itemsPerRow={3} shrink>
+                <Snow.Text>
                     {props.title} ({props.tracks.length}) {activeBitRate}
-                </SnowText>
-                <SnowInput value={props.delay} onValueChange={props.setDelay} />
-                <SnowText>Seconds Delay</SnowText>
-            </SnowGrid>
+                </Snow.Text>
+                <Snow.Input value={props.delay} onValueChange={props.setDelay} />
+                <Snow.Text>Seconds Delay</Snow.Text>
+            </Snow.Grid>
         )
     }
     return (
         <View>
             {header}
 
-            <SnowGrid short shrink itemsPerRow={4}>
+            <Snow.Grid short shrink itemsPerRow={4}>
                 {props.tracks.map((track, trackKey) => {
                     let display = track.language ? track.language + ' - ' : ''
                     display += `${(track.title.indexOf('.') === -1 && track.title) ? track.title + ' - ' : ''}`
@@ -58,7 +54,7 @@ function TrackList(props) {
                     const relativeIndex = props.isAudio ? track.audio_index : track.subtitle_index
                     display += ` [${relativeIndex}]`
                     return (
-                        <SnowTextButton
+                        <Snow.TextButton
                             key={trackKey}
                             tall
                             selected={relativeIndex === props.activeTrack}
@@ -67,7 +63,7 @@ function TrackList(props) {
                         />
                     )
                 })}
-            </SnowGrid>
+            </Snow.Grid>
         </View>
     )
 }
@@ -77,7 +73,7 @@ export default function SnowTrackSelector(props) {
         return null
     }
     return (
-        <FillView>
+        <Snow.FillView>
             {props.tracks.audio.length ? <TrackList
                 kind="audio"
                 title="Audio"
@@ -99,6 +95,6 @@ export default function SnowTrackSelector(props) {
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}
             /> : null}
-        </FillView>
+        </Snow.FillView>
     )
 }

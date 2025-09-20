@@ -13,6 +13,7 @@ const resolutions = [
 ]
 
 export default function OptionsPage() {
+    const { SnowStyle } = C.useStyleContext()
     const { apiClient, clientOptions, changeClientOptions } = C.useAppContext()
 
     let storedResolution = 0
@@ -55,11 +56,11 @@ export default function OptionsPage() {
 
     const chooseResolution = (selection) => {
         if (selection === 0) {
-            setResolutionHeight(C.Style.surface.uhd.height)
-            setResolutionWidth(C.Style.surface.uhd.width)
+            setResolutionHeight(SnowStyle.surface.uhd.height)
+            setResolutionWidth(SnowStyle.surface.uhd.width)
         } else {
-            setResolutionHeight(C.Style.surface.fhd.height)
-            setResolutionWidth(C.Style.surface.fhd.width)
+            setResolutionHeight(SnowStyle.surface.fhd.height)
+            setResolutionWidth(SnowStyle.surface.fhd.width)
         }
         setResolutionIndex(selection)
     }
