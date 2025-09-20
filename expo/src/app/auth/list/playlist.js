@@ -11,7 +11,7 @@ export default function PlaylistListPage() {
                 setPlaylistList(response)
             })
         }
-    })
+    }, [playlistList])
     if (!playlistList) {
         return <C.SnowText>Loading playlist list.</C.SnowText>
     }
@@ -20,5 +20,7 @@ export default function PlaylistListPage() {
         return < C.SnowText > No playlists found.</C.SnowText >
     }
 
-    return <C.SnowPosterGrid items={playlistList} />
+    return (
+        <C.SnowPosterGrid items={playlistList} />
+    )
 }

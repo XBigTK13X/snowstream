@@ -53,7 +53,7 @@ export default function SnowVideoControls(props) {
             <SnowModal
                 style={styles.logs}
                 onRequestClose={() => { setShowLogs(false) }}>
-                <SnowGrid shrink itemsPerRow={1}>
+                <SnowGrid itemsPerRow={1}>
                     <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
                 </SnowGrid>
                 <FillView scroll>
@@ -62,7 +62,7 @@ export default function SnowVideoControls(props) {
                         items={player.info.logs}
                         renderItem={(log) => { return <SnowText shrink>{log}</SnowText> }} />
                 </FillView>
-                <SnowGrid shrink itemsPerRow={1}>
+                <SnowGrid itemsPerRow={1}>
                     <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
                 </SnowGrid>
             </SnowModal>
@@ -193,7 +193,7 @@ export default function SnowVideoControls(props) {
                         </View>
                         {subtitleControls}
                         {trackControls}
-                        <SnowGrid short shrink itemsPerRow={2}>
+                        <SnowGrid short itemsPerRow={2}>
                             <SnowTextButton title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
                             <SnowTextButton title={swapTitle} onPress={() => {
                                 let newParams = { ...localParams }

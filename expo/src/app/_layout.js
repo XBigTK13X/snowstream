@@ -3,8 +3,7 @@ import C from '../common'
 
 const styles = {
     header: {
-        width: '100%',
-        height: 'auto'
+        width: '100%'
     }
 }
 
@@ -12,11 +11,11 @@ function Header() {
     const { isAdmin, displayName, routes } = C.useAppContext()
 
     if (!displayName) {
-        return ''
+        return null
     }
     return (
         <C.View style={styles.header}>
-            <C.SnowGrid shrink>
+            <C.SnowGrid>
                 <C.SnowTextButton title="Home" onPress={routes.func(routes.landing)} />
                 <C.SnowTextButton title="Sign Out" onPress={routes.func(routes.signOut)} />
                 {isAdmin ? <C.SnowTextButton
@@ -44,7 +43,8 @@ const appStyle = {
         coreDark: 'rgb(136, 98, 27)',
         outlineDark: 'rgb(63, 63, 63)',
         fade: 'rgb(23, 23, 23)',
-        transparentDark: 'rgba(0,0,0,0.6)'
+        transparentDark: 'rgba(0,0,0,0.6)',
+        panel: 'rgb(50,50,50)'
     },
 }
 

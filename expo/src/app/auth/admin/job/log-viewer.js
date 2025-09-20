@@ -37,17 +37,17 @@ export default function LogViewerPage() {
     return (
         <C.FillView>
             <C.SnowTabs headers={tabs}>
-                <C.SnowGrid shrink itemsPerRow={1} items={logPaths} renderItem={(item, itemIndex) => {
+                <C.SnowGrid itemsPerRow={1} items={logPaths} renderItem={(item, itemIndex) => {
                     return <C.SnowTextButton title={item} onPress={() => {
                         loadLog(itemIndex)
                     }} />
                 }} />
-                <C.SnowGrid shrink itemsPerRow={1} items={transcodeLogs} renderItem={(item, itemIndex) => {
+                <C.SnowGrid itemsPerRow={1} items={transcodeLogs} renderItem={(item, itemIndex) => {
                     return <C.SnowTextButton title={item} onPress={() => {
                         loadLog(null, item)
                     }} />
                 }} />
-                <C.SnowGrid shrink itemsPerRow={1} items={playbackLogs} renderItem={(item, itemIndex) => {
+                <C.SnowGrid itemsPerRow={1} items={playbackLogs} renderItem={(item, itemIndex) => {
                     return <C.SnowTextButton title={item.key} onPress={() => {
                         setLogContent(item.data)
                     }} />

@@ -92,7 +92,7 @@ export default function OptionsPage() {
 
     return (
         <C.FillView>
-            <C.SnowGrid shrink itemsPerRow={3}>
+            <C.SnowGrid itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={() => {
                     changeClientOptions({
                         deviceId,

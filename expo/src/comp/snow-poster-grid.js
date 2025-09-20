@@ -1,4 +1,5 @@
 import React from 'react'
+import { View } from 'react-native'
 import Snow from 'react-native-snowui'
 import { useAppContext } from '../app-context'
 
@@ -6,7 +7,6 @@ export function SnowPosterGrid(props) {
     const { routes, apiClient } = useAppContext()
 
     const getImageUrl = (item) => {
-        console.log({ item })
         let thumbnailUrl = null
         if (item.poster_image) {
             thumbnailUrl = item.poster_image.thumbnail_web_path
@@ -20,27 +20,28 @@ export function SnowPosterGrid(props) {
         apiClient.toggleItemWatched(item)
     }
     const getItemToggleStatus = (item) => {
-        return !props.disableWatched && (toggledItems.hasOwnProperty(item.id) ? !item.watched : item.watched)
+        return !props.disableWatched && item.watched
     }
     return (
-        <Snow.FillView>
+        <View>
             {props.title ?
                 <Snow.Label>
                     {props.title} ({props.items.length})
                 </Snow.Label>
                 : null}
             <Snow.ImageGrid
+                snowStyle={props.snowStyle}
                 items={props.items}
                 shouldFocus={true}
                 wideImage={false}
-                isMainGrid={true}
                 longPressToggle={true}
-                getItemName={(item) => { item.name }}
+                disableToggle={props.disableWatched}
+                getItemName={(item) => { return item.name }}
                 getItemImageUrl={getImageUrl}
                 getItemToggleStatus={getItemToggleStatus}
                 onPress={(item) => { routes.gotoItem(item) }}
                 onLongPress={onLongPress} />
-        </Snow.FillView>
+        </View>
     )
 }
 

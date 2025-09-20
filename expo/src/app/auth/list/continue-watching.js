@@ -41,7 +41,7 @@ export function ContinueWatchingListPage(props) {
         })
 
         return (
-            <C.FillView>
+            <C.View>
                 <C.SnowTabs headers={tabs}>
                     {continueWatchingList.map((kind) => {
                         return <C.SnowPosterGrid
@@ -50,7 +50,7 @@ export function ContinueWatchingListPage(props) {
                         />
                     })}
                 </C.SnowTabs>
-            </C.FillView>
+            </C.View>
         )
     }
     return <C.SnowLabel>Loading the continue watching list. This will take a few seconds.</C.SnowLabel>

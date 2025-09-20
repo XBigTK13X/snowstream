@@ -141,7 +141,7 @@ export default function MediaTracksPage(props) {
                 <C.SnowModal
                     onRequestClose={() => { setShowModal(false) }}
                 >
-                    <C.SnowGrid shrink itemsPerRow={1}>
+                    <C.SnowGrid itemsPerRow={1}>
                         <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
                     </C.SnowGrid>
                     <C.FillView>
@@ -165,7 +165,7 @@ export default function MediaTracksPage(props) {
                             })
                         }
                     </C.FillView>
-                    <C.SnowGrid shrink itemsPerRow={1}>
+                    <C.SnowGrid itemsPerRow={1}>
                         <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
                     </C.SnowGrid>
                 </C.SnowModal>
@@ -262,7 +262,7 @@ export default function MediaTracksPage(props) {
         }
         const controlTab = (
             <C.FillView>
-                <C.SnowGrid shrink itemsPerRow={4}>
+                <C.SnowGrid itemsPerRow={4}>
                     {mainFeatureButton}
                     <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, localParams)} />
                     {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
@@ -296,14 +296,14 @@ export default function MediaTracksPage(props) {
         )
         const infoTab = (
             <C.FillView>
-                <C.SnowGrid shrink itemsPerRow={3}>
+                <C.SnowGrid itemsPerRow={3}>
                     <C.SnowTextButton
                         tall
                         title="Inspection"
                         onPress={showInfo}
                     />
                 </C.SnowGrid>
-                <C.SnowGrid shrink itemsPerRow={2}>
+                <C.SnowGrid itemsPerRow={2}>
                     <C.View>
                         <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
                         <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
@@ -320,7 +320,7 @@ export default function MediaTracksPage(props) {
                     </C.View>
                 </C.SnowGrid>
                 <C.SnowText >Path: {videoFile.network_path}</C.SnowText>
-                <C.SnowGrid shrink itemsPerRow={3}>
+                <C.SnowGrid itemsPerRow={3}>
                     <C.SnowText >Params: {JSON.stringify(localParams, null, 4)}</C.SnowText>
                     <C.SnowText >Plan: {JSON.stringify(videoFile.plan, null, 4)}</C.SnowText>
                     <C.SnowText >Options: {JSON.stringify(clientOptions, null, 4)}</C.SnowText>
@@ -332,7 +332,7 @@ export default function MediaTracksPage(props) {
             tabs.push('Admin')
             adminTab = (
                 <C.FillView>
-                    <C.SnowGrid shrink itemsPerRow={2}>
+                    <C.SnowGrid itemsPerRow={2}>
                         <C.SnowTextButton
                             title={`Rescan ${props.mediaKind}`}
                             tall

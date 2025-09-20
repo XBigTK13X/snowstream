@@ -57,7 +57,7 @@ export default function StreamableListPage() {
         if (streamSource.has_guide) {
             return (
                 <C.FillView>
-                    <C.SnowGrid shrink itemsPerRow={3}>
+                    <C.SnowGrid itemsPerRow={3}>
                         <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
                     </C.SnowGrid>
                     {
@@ -113,7 +113,7 @@ export default function StreamableListPage() {
             }
             return (
                 <C.FillView>
-                    <C.SnowGrid shrink itemsPerRow={3}>
+                    <C.SnowGrid itemsPerRow={3}>
                         <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
                     </C.SnowGrid>
                     <C.SnowGrid items={streamableItems} renderItem={renderItem} />

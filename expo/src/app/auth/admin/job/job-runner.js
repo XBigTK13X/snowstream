@@ -104,11 +104,11 @@ export default function ShelfEditPage() {
 
     return (
         <C.FillView>
-            <C.SnowGrid shrink
+            <C.SnowGrid
                 itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />
-            <C.SnowGrid shrink itemsPerRow={1}>
+            <C.SnowGrid itemsPerRow={1}>
                 <C.SnowLabel>Target Directory</C.SnowLabel>
                 <C.SnowInput onValueChange={setTargetDirectory} value={targetDirectory} />
             </C.SnowGrid>

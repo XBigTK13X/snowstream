@@ -94,8 +94,8 @@ export default function LandingPage(props) {
 
     if (shelves || streamSources) {
         return (
-            <C.FillView>
-                <C.SnowGrid shrink itemsPerRow={3}>
+            <C.View>
+                <C.SnowGrid itemsPerRow={3}>
                     <C.SnowTextButton
                         shouldFocus
                         title="Continue Watching"
@@ -105,7 +105,7 @@ export default function LandingPage(props) {
                     <C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />
                 </C.SnowGrid>
                 {destinationsGrid}
-            </C.FillView>
+            </C.View>
         )
     }
 

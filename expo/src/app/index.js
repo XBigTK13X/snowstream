@@ -71,7 +71,7 @@ export default function SignInPage() {
     let selectServer = null
     if (users && user && user.has_password) {
         passwordForm = (
-            <C.FillView>
+            <C.View>
                 <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
                 <C.SnowInput
                     secureTextEntry
@@ -84,11 +84,11 @@ export default function SignInPage() {
                     <C.SnowTextButton title="Login" onPress={login} />
                     <C.SnowTextButton title="Cancel" onPress={cancel} />
                 </C.SnowGrid>
-            </C.FillView>
+            </C.View>
         )
     } else {
         selectServer = (
-            <C.FillView>
+            <C.View>
                 <C.View>
                     <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
                     <C.SnowGrid itemsPerRow={4} >
@@ -102,7 +102,7 @@ export default function SignInPage() {
                     <C.SnowInput onSubmit={applyCustomServer} onValueChange={setCustomServer} value={customServer} />
                     <C.SnowTextButton title="Connect to Server" onPress={applyCustomServer} />
                 </C.View>
-            </C.FillView>
+            </C.View>
         )
     }
 
@@ -118,19 +118,19 @@ export default function SignInPage() {
             />
         }
         userList = (
-            <C.FillView>
+            <C.View>
                 <C.SnowLabel center>Select a user to login to {apiClient.webApiUrl}.</C.SnowLabel>
                 <C.SnowGrid items={users} renderItem={renderItem} />
-            </C.FillView>
+            </C.View>
 
         )
     }
     return (
-        <C.FillView>
+        <C.View>
             {userList}
             {selectServer}
             {passwordForm}
             <C.SnowLabel>{errors ? 'Errors: ' + JSON.stringify(errors) : ""}</C.SnowLabel>
-        </C.FillView>
+        </C.View>
     )
 }

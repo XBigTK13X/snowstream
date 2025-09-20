@@ -32,7 +32,7 @@ function ChannelEditRow(props) {
             <C.SnowModal scroll onRequestClose={() => { setShowModal(false) }}>
                 <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
                 <C.SnowTextButton title="Cancel" onPress={() => { setShowModal(false) }} />
-                <C.SnowGrid shrink itemsPerRow={2}>
+                <C.SnowGrid itemsPerRow={2}>
                     <C.SnowLabel>Filter</C.SnowLabel>
                     <C.SnowInput value={filter} onValueChange={setFilter} />
                 </C.SnowGrid>
@@ -74,17 +74,17 @@ function ChannelEditRow(props) {
 
     return (
         <C.View>
-            <C.SnowGrid shrink itemsPerRow={3}>
+            <C.SnowGrid itemsPerRow={3}>
                 <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
                 <C.SnowTextButton title="Save" onPress={() => { saveChannel(form) }} />
                 <C.SnowTextButton title={streamableName} onPress={() => { setShowModal(true) }} />
             </C.SnowGrid>
-            <C.SnowGrid shrink itemsPerRow={3}>
+            <C.SnowGrid itemsPerRow={3}>
                 <C.SnowLabel>ID</C.SnowLabel>
                 <C.SnowLabel>Name</C.SnowLabel>
                 <C.SnowLabel>Number</C.SnowLabel>
             </C.SnowGrid>
-            <C.SnowGrid shrink itemsPerRow={3}>
+            <C.SnowGrid itemsPerRow={3}>
                 <C.SnowInput onValueChange={changeForm('editedId')} value={form.editedId} />
                 <C.SnowInput onValueChange={changeForm('editedName')} value={form.editedName} />
                 <C.SnowInput onValueChange={changeForm('editedNumber')} value={form.editedNumber} />
@@ -131,7 +131,7 @@ export default function ChannelEditPage() {
     return (
         <C.FillView>
             <C.SnowText>There are {guideSource.channels.length} channels.</C.SnowText>
-            <C.SnowGrid shrink itemsPerRow={3}>
+            <C.SnowGrid itemsPerRow={3}>
                 <C.SnowLabel>Filter (required)</C.SnowLabel>
                 <C.SnowInput
                     onValueChange={setQuery}
