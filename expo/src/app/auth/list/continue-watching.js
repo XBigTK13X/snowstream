@@ -1,15 +1,5 @@
 import C from '../../../common'
 
-const styles = {
-    columns: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center'
-    },
-    column: {
-    }
-}
-
 export function ContinueWatchingListPage(props) {
     const { apiClient } = C.useAppContext()
 

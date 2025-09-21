@@ -88,7 +88,7 @@ export function WatchableListPage(props) {
         let itemsPerRow = 4
 
         return (
-            <C.FillView>
+            <C.View>
                 <C.View>
                     <C.SnowText>{pageTitle}</C.SnowText>
                     <C.SnowGrid itemsPerRow={itemsPerRow}>
@@ -119,7 +119,7 @@ export function WatchableListPage(props) {
                         shouldFocus
                         items={items} />
                 </C.FillView>
-            </C.FillView>
+            </C.View>
         )
     }
     return <C.SnowText>Loading items from shelf {localParams.shelfId}.</C.SnowText>

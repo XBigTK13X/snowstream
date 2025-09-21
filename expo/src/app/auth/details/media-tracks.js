@@ -261,7 +261,7 @@ export default function MediaTracksPage(props) {
             transcodeDisplay = `Direct Play / [Transcode]`
         }
         const controlTab = (
-            <C.FillView>
+            <C.View>
                 <C.SnowGrid itemsPerRow={4}>
                     {mainFeatureButton}
                     <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, localParams)} />
@@ -280,10 +280,10 @@ export default function MediaTracksPage(props) {
                         onPress={toggleTranscode}
                     />
                 </C.SnowGrid>
-            </C.FillView>
+            </C.View>
         )
         const trackTab = (
-            <C.FillView>
+            <C.View>
                 {versionPicker}
                 {extraPicker}
                 <C.SnowTrackSelector
@@ -292,10 +292,10 @@ export default function MediaTracksPage(props) {
                     audioTrack={audioTrack}
                     subtitleTrack={subtitleTrack}
                 />
-            </C.FillView>
+            </C.View>
         )
         const infoTab = (
-            <C.FillView>
+            <C.View>
                 <C.SnowGrid itemsPerRow={3}>
                     <C.SnowTextButton
                         tall
@@ -325,7 +325,7 @@ export default function MediaTracksPage(props) {
                     <C.SnowText >Plan: {JSON.stringify(videoFile.plan, null, 4)}</C.SnowText>
                     <C.SnowText >Options: {JSON.stringify(clientOptions, null, 4)}</C.SnowText>
                 </C.SnowGrid>
-            </C.FillView>
+            </C.View>
         )
         let adminTab = null
         if (isAdmin) {

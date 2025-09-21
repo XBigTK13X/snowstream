@@ -2,7 +2,7 @@ import React from 'react'
 import { View } from 'react-native'
 import { usePathname, useLocalSearchParams } from 'expo-router'
 import Snow, {
-    FillView,
+    SnowFillView,
     SnowGrid,
     SnowLabel,
     SnowModal,
@@ -56,12 +56,12 @@ export default function SnowVideoControls(props) {
                 <SnowGrid itemsPerRow={1}>
                     <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
                 </SnowGrid>
-                <FillView scroll>
+                <SnowFillView scroll>
                     <SnowGrid
                         itemsPerRow={1}
                         items={player.info.logs}
                         renderItem={(log) => { return <SnowText shrink>{log}</SnowText> }} />
-                </FillView>
+                </SnowFillView>
                 <SnowGrid itemsPerRow={1}>
                     <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
                 </SnowGrid>
@@ -180,7 +180,7 @@ export default function SnowVideoControls(props) {
                 visible={player.info.controlsVisible}
                 onRequestClose={player.action.onResumeVideo}
             >
-                <FillView flexStart scroll>
+                <SnowFillView flexStart scroll>
                     <SnowLabel center>{player.info.videoTitle}</SnowLabel>
                     {slider}
                     <SnowTabs headers={tabs}>
@@ -212,7 +212,7 @@ export default function SnowVideoControls(props) {
                             }} />
                         </SnowGrid>
                     </SnowTabs>
-                </FillView>
+                </SnowFillView>
             </SnowModal >
         )
     )

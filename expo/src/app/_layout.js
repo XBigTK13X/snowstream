@@ -45,7 +45,7 @@ const appStyle = {
         fade: 'rgb(23, 23, 23)',
         transparentDark: 'rgba(0,0,0,0.6)',
         panel: 'rgb(50,50,50)'
-    },
+    }
 }
 
 export default function RootLayout() {

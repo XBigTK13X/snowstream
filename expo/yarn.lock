@@ -4598,10 +4598,10 @@ react-native-screens@4.16.0:
     react-native-is-edge-to-edge "^1.2.1"
     warn-once "^0.1.0"
 
-react-native-snowui@1.0.17:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/react-native-snowui/-/react-native-snowui-1.0.17.tgz#46017a49b33db85900d77ef2c166fef42df2c3f1"
-  integrity sha512-8PRQy79W6MrXQKf5mBUM2RihQnq3iddov3CDsudAItsLdXbrnWsLpx+YmWsMN91ty7hKe1+fFHdxbwYCkqks9A==
+react-native-snowui@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-snowui/-/react-native-snowui-1.1.1.tgz#c8221eab62d803d2519791aed12418749eea999a"
+  integrity sha512-1RDOpR+I1wb+B7uZ5L1KQu79jupy7yZFcLIkAKcz6bZ7RN4ou9h6CpWjvMuFLPqErWESoqi67wG+Vg+/lNnrTg==
   dependencies:
     expo-image "^3.0.8"
     lodash "^4.17.21"
