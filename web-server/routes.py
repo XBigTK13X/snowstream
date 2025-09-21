@@ -102,6 +102,11 @@ def auth_required(router):
             for group in stream_source.groups:
                 stream_source.grouped_streamables[group].sort(key=lambda xx:xx.name_display if xx.name_display else xx.name)
         stream_source.groups.sort()
+        stream_source.has_groups = True
+        if len(stream_source.groups) == 1:
+            if stream_source.groups[0] == 'No Group':
+                stream_source.has_groups = False
+
         return stream_source
 
     @router.get("/streamable",tags=['Stream Source'])

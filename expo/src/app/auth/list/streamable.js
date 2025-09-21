@@ -20,7 +20,7 @@ export default function StreamableListPage() {
         if (!streamSource) {
             apiClient.getStreamSource(localParams.streamSourceId).then((response) => {
                 if (response) {
-                    if (response.groups && response.groups.length > 0) {
+                    if (response.has_groups) {
                         setStreamableGroups(response.groups)
                     }
                     else {
@@ -54,12 +54,18 @@ export default function StreamableListPage() {
     }
 
     if (streamSource && streamableItems) {
+        let groupsButton = null
+        if (streamSource.has_groups) {
+            groupsButton = (
+                <C.SnowGrid itemsPerRow={3}>
+                    <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
+                </C.SnowGrid>
+            )
+        }
         if (streamSource.has_guide) {
             return (
                 <C.View>
-                    <C.SnowGrid itemsPerRow={3}>
-                        <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
-                    </C.SnowGrid>
+                    {groupsButton}
                     {
                         streamableItems.map((streamable, itemIndex) => {
                             let currentProgram = "No guide information"
@@ -72,15 +78,18 @@ export default function StreamableListPage() {
                                 const pp = streamable.next_program
                                 nextProgram = `${pp.display_time} - ${pp.name}`
                             }
+                            let name = streamable.name_display ? streamable.name_display : streamable.name
                             return (
-                                <C.View>
+                                <C.View key={itemIndex}>
                                     <C.SnowGrid itemsPerRow={3}>
-                                        <C.SnowTextButton title={streamable.name_display ? streamable.name_display : streamable.name} onPress={() => {
-                                            routes.func(routes.streamablePlay, {
-                                                streamSourceId: streamSource.id,
-                                                streamableId: streamable.id,
-                                            })
-                                        }} />
+                                        <C.SnowTextButton title={name}
+                                            onPress={() => {
+                                                routes.goto(routes.streamablePlay, {
+                                                    streamSourceId: streamSource.id,
+                                                    streamableId: streamable.id,
+                                                })
+                                            }}
+                                        />
                                         <C.SnowText style={styles.tableColumn}>{currentProgram}</C.SnowText>
                                         <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
                                     </C.SnowGrid>
@@ -93,12 +102,13 @@ export default function StreamableListPage() {
             )
         } else {
             const renderItem = (streamable, itemIndex) => {
+                let name = streamable.name_display ? streamable.name_display : streamable.name
                 return (
                     <C.SnowTextButton
                         tall
                         shouldFocus={itemIndex === 0}
                         key={streamable.id}
-                        title={streamable.name_display ? streamable.name_display : streamable.name}
+                        title={name}
                         onPress={routes.func(routes.streamablePlay, {
                             streamSourceId: streamSource.id,
                             streamableId: streamable.id,
@@ -113,9 +123,7 @@ export default function StreamableListPage() {
             }
             return (
                 <C.View>
-                    <C.SnowGrid itemsPerRow={3}>
-                        <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
-                    </C.SnowGrid>
+                    {groupsButton}
                     <C.SnowGrid items={streamableItems} renderItem={renderItem} />
                 </C.View>
             )

@@ -98,7 +98,7 @@ export default function LandingPage(props) {
                 <C.SnowGrid itemsPerRow={3}>
                     <C.SnowTextButton
                         shouldFocus
-                        title="Continue Watching"
+                        title="Continue"
                         onPress={routes.func(routes.continueWatching)}
                     />
                     <C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />

@@ -441,7 +441,7 @@ export class ApiClient {
         return this.post(requestUrl)
     }
 
-    createStreamableTranscodeSession(streamableId, seekToSeconds) {
+    createStreamableTranscodeSession(streamableId, deviceProfile, seekToSeconds) {
         let requestUrl = `/transcode/session?streamable_id=${streamableId}&device_profile=${deviceProfile}`
         if (seekToSeconds) {
             requestUrl += `&seek_to_seconds=${Math.floor(seekToSeconds)}`

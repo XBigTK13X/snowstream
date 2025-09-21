@@ -1,4 +1,5 @@
 cd expo
+rm -rf .expo
 rm -rf node_modules
 rm yarn.lock || true
 rm package-lock.json || true
