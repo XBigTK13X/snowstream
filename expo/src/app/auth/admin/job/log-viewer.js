@@ -1,9 +1,8 @@
 import C from '../../../../common'
 
 export default function LogViewerPage() {
-    const localParams = C.useLocalSearchParams()
+    const { SnowStyle } = C.useStyleContext()
     const { apiClient } = C.useAppContext()
-    const { routes, config } = C.useAppContext()
     const [logPaths, setLogPaths] = C.React.useState(null)
     const [playbackLogs, setPlaybackLogs] = C.React.useState(null)
     const [transcodeLogs, setTranscodeLogs] = C.React.useState(null)
@@ -35,7 +34,7 @@ export default function LogViewerPage() {
     ]
 
     return (
-        <C.FillView>
+        <C.View>
             <C.SnowTabs headers={tabs}>
                 <C.SnowGrid itemsPerRow={1} items={logPaths} renderItem={(item, itemIndex) => {
                     return <C.SnowTextButton title={item} onPress={() => {
@@ -54,6 +53,6 @@ export default function LogViewerPage() {
                 }} />
             </C.SnowTabs>
             <C.SnowText>{logContent}</C.SnowText>
-        </C.FillView>
+        </C.View>
     )
 }

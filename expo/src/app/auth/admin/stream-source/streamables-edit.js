@@ -69,7 +69,7 @@ export default function StreamblesEditPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             <C.SnowText>There are {streamSource.streamables.length} streamables.</C.SnowText>
             <C.SnowGrid itemsPerRow={3}>
                 <C.SnowLabel>Filter (required)</C.SnowLabel>
@@ -95,6 +95,6 @@ export default function StreamblesEditPage() {
             </C.SnowGrid>
             <C.SnowBreak />
             {streamRows}
-        </C.FillView >
+        </C.View >
     )
 }

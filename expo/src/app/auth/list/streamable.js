@@ -56,7 +56,7 @@ export default function StreamableListPage() {
     if (streamSource && streamableItems) {
         if (streamSource.has_guide) {
             return (
-                <C.FillView>
+                <C.View>
                     <C.SnowGrid itemsPerRow={3}>
                         <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
                     </C.SnowGrid>
@@ -89,7 +89,7 @@ export default function StreamableListPage() {
                             )
                         })
                     }
-                </C.FillView>
+                </C.View>
             )
         } else {
             const renderItem = (streamable, itemIndex) => {
@@ -112,12 +112,12 @@ export default function StreamableListPage() {
                 )
             }
             return (
-                <C.FillView>
+                <C.View>
                     <C.SnowGrid itemsPerRow={3}>
                         <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
                     </C.SnowGrid>
                     <C.SnowGrid items={streamableItems} renderItem={renderItem} />
-                </C.FillView>
+                </C.View>
             )
         }
     }

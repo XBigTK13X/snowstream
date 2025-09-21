@@ -38,7 +38,7 @@ export default function PlaylistDetailsPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             <C.View>
                 <C.SnowText>Found {playlistItems.length} items from playlist {tagName}.</C.SnowText>
                 <C.SnowGrid itemsPerRow={2}>
@@ -46,9 +46,9 @@ export default function PlaylistDetailsPage() {
                     <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
                 </C.SnowGrid>
             </C.View>
-            <C.FillView>
+            <C.View>
                 <C.SnowPosterGrid items={playlistItems} />
-            </C.FillView>
-        </C.FillView>
+            </C.View>
+        </C.View>
     )
 }

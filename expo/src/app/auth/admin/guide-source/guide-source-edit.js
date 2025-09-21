@@ -89,7 +89,7 @@ export default function EpisodeGuideEditPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             {existingButtons}
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onValueChange={changeForm('name')} value={form.name} />
@@ -109,6 +109,6 @@ export default function EpisodeGuideEditPage() {
             <C.SnowInput onValueChange={changeForm('password')} value={form.password} />
 
             <C.SnowTextButton title="Save Guide Source" onPress={saveGuideSource} />
-        </C.FillView >
+        </C.View >
     )
 }

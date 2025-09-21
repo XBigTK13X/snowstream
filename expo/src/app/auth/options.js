@@ -91,7 +91,7 @@ export default function OptionsPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             <C.SnowGrid itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={() => {
                     changeClientOptions({
@@ -152,7 +152,7 @@ export default function OptionsPage() {
                     onValueChange={chooseHardwareDecoder}
                     valueIndex={hardwareDecoder === true ? 1 : 0} />
             </C.SnowGrid>
-        </C.FillView>
+        </C.View>
 
     )
 }

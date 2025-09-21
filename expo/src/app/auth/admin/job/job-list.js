@@ -20,7 +20,7 @@ export default function JobListPage() {
 
     if (!!jobs) {
         return (
-            <C.FillView>
+            <C.View>
                 <C.SnowGrid itemsPerRow={3}>
                     <C.SnowTextButton
                         title="Toggle Complete"
@@ -36,7 +36,7 @@ export default function JobListPage() {
                         />
                     )
                 }} />
-            </C.FillView>
+            </C.View>
         )
     }
     return (

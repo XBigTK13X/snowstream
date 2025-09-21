@@ -20,11 +20,11 @@ export default function AdminDashboardPage() {
         { title: 'Cleanup Rules', route: routes.admin.cleanupRuleList },
     ]
     return (
-        <C.FillView>
+        <C.View>
             <C.SnowGrid items={actionButtons} renderItem={renderItem} itemsPerRow={2}></C.SnowGrid>
             <C.SnowBreak />
             <C.SnowGrid items={dataButtons} renderItem={renderItem} itemsPerRow={3}></C.SnowGrid>
-        </C.FillView>
+        </C.View>
 
     )
 }

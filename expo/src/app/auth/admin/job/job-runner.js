@@ -103,7 +103,7 @@ export default function ShelfEditPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             <C.SnowGrid
                 itemsPerRow={4}
                 items={buttons}
@@ -136,6 +136,6 @@ export default function ShelfEditPage() {
                 <C.SnowLabel>Extract Only</C.SnowLabel>
                 <C.SnowInput onValueChange={setExtractOnly} value={extractOnly} />
             </C.SnowGrid>
-        </C.FillView>
+        </C.View>
     )
 }

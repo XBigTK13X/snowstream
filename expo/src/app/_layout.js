@@ -55,6 +55,6 @@ export default function RootLayout() {
                 <Header />
                 <C.Slot />
             </C.AppContextProvider >
-        </Snow.App>
+        </Snow.App >
     )
 }

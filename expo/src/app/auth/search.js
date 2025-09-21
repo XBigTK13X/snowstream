@@ -52,13 +52,13 @@ export default function SearchPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput
                 shouldFocus={true}
                 value={queryText}
                 onValueChange={updateQuery} />
             {resultsTabs}
-        </C.FillView>
+        </C.View>
     )
 }

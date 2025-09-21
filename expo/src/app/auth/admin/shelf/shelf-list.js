@@ -30,7 +30,7 @@ export default function ShelfListPage() {
             )
         }
         return (
-            <C.FillView>
+            <C.View>
                 <C.SnowTextButton title="Create New Shelf" onPress={routes.func(routes.admin.shelfEdit)} />
                 {
                     destinations.length > 0 ?
@@ -40,7 +40,7 @@ export default function ShelfListPage() {
                         </>
                         : null
                 }
-            </C.FillView>
+            </C.View>
         )
     }
 

@@ -129,7 +129,7 @@ export default function ChannelEditPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             <C.SnowText>There are {guideSource.channels.length} channels.</C.SnowText>
             <C.SnowGrid itemsPerRow={3}>
                 <C.SnowLabel>Filter (required)</C.SnowLabel>
@@ -158,6 +158,6 @@ export default function ChannelEditPage() {
             </C.SnowGrid>
             <C.SnowBreak />
             {channelRows}
-        </C.FillView >
+        </C.View >
     )
 }

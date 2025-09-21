@@ -72,7 +72,7 @@ export default function StreamSourceEditPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             {existingButtons}
 
             <C.SnowLabel>Name</C.SnowLabel>
@@ -93,6 +93,6 @@ export default function StreamSourceEditPage() {
             <C.SnowInput onValueChange={setStreamSourcePassword} value={streamSourcePassword} />
 
             <C.SnowTextButton title="Save Stream Source" onPress={saveStreamSource} />
-        </C.FillView >
+        </C.View >
     )
 }

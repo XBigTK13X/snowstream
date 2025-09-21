@@ -10,6 +10,7 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
+    const { SnowStyle } = C.useStyleContext();
     const { apiClient, clientOptions, isAdmin } = C.useAppContext();
     const { routes } = C.useAppContext();
     const localParams = C.useLocalSearchParams();
@@ -139,12 +140,13 @@ export default function MediaTracksPage(props) {
             }
             return (
                 <C.SnowModal
+                    scroll
                     onRequestClose={() => { setShowModal(false) }}
                 >
                     <C.SnowGrid itemsPerRow={1}>
                         <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
                     </C.SnowGrid>
-                    <C.FillView>
+                    <C.View>
                         <C.SnowLabel>Video File Info</C.SnowLabel>
                         <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
                         <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>
@@ -164,7 +166,7 @@ export default function MediaTracksPage(props) {
                                 )
                             })
                         }
-                    </C.FillView>
+                    </C.View>
                     <C.SnowGrid itemsPerRow={1}>
                         <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
                     </C.SnowGrid>
@@ -331,7 +333,7 @@ export default function MediaTracksPage(props) {
         if (isAdmin) {
             tabs.push('Admin')
             adminTab = (
-                <C.FillView>
+                <C.View>
                     <C.SnowGrid itemsPerRow={2}>
                         <C.SnowTextButton
                             title={`Rescan ${props.mediaKind}`}
@@ -352,11 +354,11 @@ export default function MediaTracksPage(props) {
                                 return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
                             }} />
                     </C.SnowGrid>
-                </C.FillView>
+                </C.View>
             )
         }
         return (
-            <C.FillView>
+            <C.View>
                 <C.View>
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(localParams, media) : media.name}
@@ -371,15 +373,15 @@ export default function MediaTracksPage(props) {
                         />
                     </C.SnowGrid>
                 </C.View>
-                <C.FillView>
+                <C.View>
                     <C.SnowTabs headers={tabs}>
                         {controlTab}
                         {trackTab}
                         {infoTab}
                         {adminTab}
                     </C.SnowTabs >
-                </C.FillView >
-            </C.FillView >
+                </C.View >
+            </C.View >
         )
     }
     return (

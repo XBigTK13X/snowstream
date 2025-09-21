@@ -200,7 +200,7 @@ export default function UserEditPage() {
     }
 
     return (
-        <C.FillView>
+        <C.View>
             <C.SnowGrid itemsPerRow={2}>
                 <C.SnowTextButton title="User Details" onPress={routes.func(routes.admin.userEdit, { userId: userId })} />
                 <C.SnowTextButton title="User Access" onPress={routes.func(routes.admin.userAccess, { userId: userId })} />
@@ -211,6 +211,6 @@ export default function UserEditPage() {
             {tagPicker}
 
             <C.SnowTextButton title="Save User Access" onPress={saveUserAccess} />
-        </C.FillView>
+        </C.View>
     )
 }
