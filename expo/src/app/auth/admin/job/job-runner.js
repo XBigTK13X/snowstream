@@ -105,6 +105,7 @@ export default function ShelfEditPage() {
     return (
         <C.View>
             <C.SnowGrid
+                shouldFocus
                 itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />

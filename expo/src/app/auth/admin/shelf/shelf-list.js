@@ -23,7 +23,6 @@ export default function ShelfListPage() {
             let destination = item
             return (
                 <C.SnowTextButton
-                    shouldFocus={itemIndex === 0}
                     title={destination.name}
                     onPress={routes.func(routes.admin.shelfEdit, { shelfId: destination.id })}
                 />
@@ -36,7 +35,7 @@ export default function ShelfListPage() {
                     destinations.length > 0 ?
                         <>
                             <C.SnowText>{destinations.length} shelves found</C.SnowText>
-                            <C.SnowGrid items={destinations} renderItem={renderItem} />
+                            <C.SnowGrid shouldFocus items={destinations} renderItem={renderItem} />
                         </>
                         : null
                 }

@@ -74,7 +74,7 @@ export default function EpisodeGuideEditPage() {
     let existingButtons = null
     if (localParams.guideSourceId) {
         existingButtons = (
-            <C.SnowGrid strink itemsPerRow={2}>
+            <C.SnowGrid shouldFocus itemsPerRow={2}>
                 <C.SnowTextButton title="Channels" onPress={routes.func(routes.admin.channelsEdit, { guideSourceId: localParams.guideSourceId })} />
                 <C.SnowTextButton title={`Delete (${deleteCount})`} onPress={deleteGuideSource} />
             </C.SnowGrid>

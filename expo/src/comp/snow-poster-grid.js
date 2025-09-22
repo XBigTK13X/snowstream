@@ -32,7 +32,7 @@ export function SnowPosterGrid(props) {
             <Snow.ImageGrid
                 snowStyle={props.snowStyle}
                 items={props.items}
-                shouldFocus={true}
+                shouldFocus={props.shouldFocus}
                 wideImage={false}
                 longPressToggle={true}
                 disableToggle={props.disableWatched}

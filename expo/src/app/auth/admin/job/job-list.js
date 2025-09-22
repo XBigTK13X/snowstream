@@ -21,7 +21,7 @@ export default function JobListPage() {
     if (!!jobs) {
         return (
             <C.View>
-                <C.SnowGrid itemsPerRow={3}>
+                <C.SnowGrid shouldFocus itemsPerRow={3}>
                     <C.SnowTextButton
                         title="Toggle Complete"
                         onPress={toggleComplete}

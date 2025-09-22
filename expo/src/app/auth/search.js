@@ -43,8 +43,8 @@ export default function SearchPage() {
             })
             resultsTabs = (
                 <C.SnowTabs headers={headers}>
-                    {searchResults.map(searchResult => {
-                        return <C.SnowPosterGrid disableWatched items={searchResult.items} />
+                    {searchResults.map((searchResult, resultIndex) => {
+                        return <C.SnowPosterGrid shouldFocus={resultIndex === 0} disableWatched items={searchResult.items} />
                     })}
                 </C.SnowTabs>
             )

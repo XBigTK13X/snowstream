@@ -17,7 +17,7 @@ export default function DisplayCleanupRuleListPage() {
         let rulesList = <C.SnowText>No display cleanup rules found</C.SnowText>
         if (rules.length) {
             rulesList = (
-                <C.SnowGrid itemsPerRow={1} items={rules} renderItem={(rule) => {
+                <C.SnowGrid shuoldFocus itemsPerRow={1} items={rules} renderItem={(rule) => {
                     let title = `${rule.needle} -> ${rule.replacement}`
                     return (
                         <C.SnowTextButton
