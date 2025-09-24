@@ -27,7 +27,7 @@
       "image": "./assets/icon/splash.png",
       "backgroundColor": "#ff9a3f"
     },
-    "icon": "./assets/icon/icon.png",
+    "icon": "./assets/icon/appicon.png",
     "name": "snowstream",
     "slug": "snowstream",
     "orientation": "landscape",
