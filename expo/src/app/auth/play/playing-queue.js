@@ -42,10 +42,7 @@ export default function PlayPlayingQueuePage() {
     }
 
     const onComplete = (apiClient, routes) => {
-        return apiClient.updatePlayingQueue(
-            source = playingQueue.source,
-            progress = playingQueue.progress + 1
-        )
+        return apiClient.updatePlayingQueue(playingQueue.source, playingQueue.progress + 1)
             .then(() => {
                 routes.replace(routes.playingQueuePlay, { playingQueueSource: playingQueue.source })
             })
