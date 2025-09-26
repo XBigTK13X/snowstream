@@ -143,7 +143,7 @@ export default function MediaTracksPage(props) {
                     scroll
                     onRequestClose={() => { setShowModal(false) }}
                 >
-                    <C.SnowGrid shouldFocus itemsPerRow={1}>
+                    <C.SnowGrid itemsPerRow={1}>
                         <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
                     </C.SnowGrid>
                     <C.View>

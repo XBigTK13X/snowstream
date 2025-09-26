@@ -41,7 +41,6 @@ export default function StreamableListPage() {
             return (
                 <C.SnowTextButton
                     tall
-                    shouldFocus={itemIndex === 0}
                     key={itemIndex}
                     title={group}
                     onPress={() => { chooseGroup(group) }}
@@ -106,7 +105,6 @@ export default function StreamableListPage() {
                 return (
                     <C.SnowTextButton
                         tall
-                        shouldFocus={itemIndex === 0}
                         key={streamable.id}
                         title={name}
                         onPress={routes.func(routes.streamablePlay, {

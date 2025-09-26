@@ -61,7 +61,7 @@ export default function StreamSourceEditPage() {
     let existingButtons = null
     if (streamSourceId) {
         existingButtons = (
-            <C.SnowGrid shouldFocus itemsPerRow={2}>
+            <C.SnowGrid itemsPerRow={2}>
                 <C.SnowTextButton title="Streamables" onPress={routes.func(routes.admin.streamablesEdit, { streamSourceId: localParams.streamSourceId })} />
                 <C.SnowTextButton title={`Delete (${streamSourceDeleteCount})`} onPress={deleteStreamSource} />
             </C.SnowGrid>

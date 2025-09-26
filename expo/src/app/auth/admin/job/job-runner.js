@@ -5,71 +5,73 @@ export default function ShelfEditPage() {
     const { routes } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
 
-    const [episodeOrder, setEpisodeOrder] = C.React.useState(localParams.episodeOrder ?? '')
-    const [extractOnly, setExtractOnly] = C.React.useState(localParams.extractOnly ?? '')
-    const [metadataId, setMetadataId] = C.React.useState(localParams.metadataId ? localParams.metadataId : '')
-    const [metadataSource, setMetadataSource] = C.React.useState(localParams.metadataSource ?? '')
-    const [seasonOrder, setSeasonOrder] = C.React.useState(localParams.seasonOrder ?? '')
-    const [skipExisting, setSkipExisting] = C.React.useState(localParams.skipExisting ?? '')
-    const [targetDirectory, setTargetDirectory] = C.React.useState(localParams.targetDirectory ?? '')
-    const [targetId, setTargetId] = C.React.useState(localParams.targetId ?? '')
-    const [targetKind, setTargetKind] = C.React.useState(localParams.targetKind ?? '')
-    const [updateImages, setUpdateImages] = C.React.useState(localParams.updateImages ?? '')
-    const [updateMetadata, setUpdateMetadata] = C.React.useState(localParams.updateMetadata ?? '')
-    const [updateVideos, setUpdateVideos] = C.React.useState(localParams.updateVideos ?? '')
+    const [form, setForm] = C.React.useState({
+        episodeOrder: localParams.episodeOrder ?? '',
+        extractOnly: localParams.extractOnly ?? '',
+        metadataId: localParams.metadataId ?? '',
+        metadataSource: localParams.metadataSource ?? '',
+        seasonOrder: localParams.seasonOrder ?? '',
+        skipExisting: localParams.skipExisting ?? '',
+        targetDirectory: localParams.targetDirectory ?? '',
+        targetId: localParams.targetId ?? '',
+        targetKind: localParams.targetKind ?? '',
+        updateImages: localParams.updateImages ?? '',
+        updateMetadata: localParams.updateMetadata ?? '',
+        updateVideos: localParams.updateVideos ?? '',
+    })
 
     const createJob = (apiCall) => {
         let params = {}
-        if (episodeOrder) {
-            params.episodeOrder = episodeOrder
+        if (form.episodeOrder !== '') {
+            params.episodeOrder = form.episodeOrder
         }
-        if (extractOnly) {
-            params.extractOnly = extractOnly
+        if (form.extractOnly !== '') {
+            params.extractOnly = form.extractOnly
         }
-        if (metadataId) {
-            params.metadataId = metadataId
+        if (form.metadataId !== '') {
+            params.metadataId = form.metadataId
         }
-        if (metadataSource) {
-            params.metadataSource = metadataSource
+        if (form.metadataSource !== '') {
+            params.metadataSource = form.metadataSource
         }
-        if (seasonOrder) {
-            params.seasonOrder = seasonOrder
+        if (form.seasonOrder !== '') {
+            params.seasonOrder = form.seasonOrder
         }
-        if (skipExisting) {
-            params.skipExisting = skipExisting
+        if (form.skipExisting !== '') {
+            params.skipExisting = form.skipExisting
         }
-        if (targetDirectory) {
-            params.targetDirectory = targetDirectory
+        if (form.targetDirectory !== '') {
+            params.targetDirectory = form.targetDirectory
         }
-        if (targetId) {
-            params.targetId = targetId
+        if (form.targetId !== '') {
+            params.targetId = form.targetId
         }
-        if (targetKind) {
-            params.targetKind = targetKind
+        if (form.targetKind !== '') {
+            params.targetKind = form.targetKind
         }
-        if (updateImages) {
-            params.updateImages = updateImages
+        if (form.updateImages !== '') {
+            params.updateImages = form.updateImages
         }
-        if (updateMetadata) {
-            params.updateMetadata = updateMetadata
+        if (form.updateMetadata !== '') {
+            params.updateMetadata = form.updateMetadata
         }
-        if (updateVideos) {
-            params.updateVideos = updateVideos
+        if (form.updateVideos !== '') {
+            params.updateVideos = form.updateVideos
         }
         routes.replace(routes.admin.jobRunner, params)
         let details = {
-            episodeOrder,
-            extractOnly,
-            metadataId,
-            metadataSource,
-            seasonOrder,
-            skipExisting,
-            targetDirectory,
-            targetId,
-            targetKind,
-            updateImages,
-            updateMetadata,
-            updateVideos,
+            episodeOrder: form.episodeOrder,
+            extractOnly: form.extractOnly,
+            metadataId: form.metadataId,
+            metadataSource: form.metadataSource,
+            seasonOrder: form.seasonOrder,
+            skipExisting: form.skipExisting,
+            targetDirectory: form.targetDirectory,
+            targetId: form.targetId,
+            targetKind: form.targetKind,
+            updateImages: form.updateImages,
+            updateMetadata: form.updateMetadata,
+            updateVideos: form.updateVideos,
         }
         return apiCall(details)
     }
@@ -102,40 +104,49 @@ export default function ShelfEditPage() {
         />
     }
 
+    const changeForm = (key) => {
+        return (val) => {
+            setForm((prev) => {
+                let result = { ...prev }
+                result[key] = val
+                return result
+            })
+        }
+    }
+
     return (
         <C.View>
             <C.SnowGrid
-                shouldFocus
                 itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />
             <C.SnowGrid itemsPerRow={1}>
                 <C.SnowLabel>Target Directory</C.SnowLabel>
-                <C.SnowInput onValueChange={setTargetDirectory} value={targetDirectory} />
+                <C.SnowInput onValueChange={changeForm('targetDirectory')} value={form.targetDirectory} />
             </C.SnowGrid>
             <C.SnowGrid itemsPerRow={6}>
                 <C.SnowLabel>Target Kind</C.SnowLabel>
-                <C.SnowInput onValueChange={setTargetKind} value={targetKind} />
+                <C.SnowInput onValueChange={changeForm('targetKind')} value={form.targetKind} />
                 <C.SnowLabel>Target Id</C.SnowLabel>
-                <C.SnowInput onValueChange={setTargetId} value={targetId} />
+                <C.SnowInput onValueChange={changeForm('targetId')} value={form.targetId} />
                 <C.SnowLabel>Metadata Id</C.SnowLabel>
-                <C.SnowInput onValueChange={setMetadataId} value={metadataId} />
+                <C.SnowInput onValueChange={changeForm('metadataId')} value={form.metadataId} />
                 <C.SnowLabel>Metadata Source</C.SnowLabel>
-                <C.SnowInput onValueChange={setMetadataSource} value={metadataSource} />
+                <C.SnowInput onValueChange={changeForm('metadataSource')} value={form.metadataSource} />
                 <C.SnowLabel>Season Order</C.SnowLabel>
-                <C.SnowInput onValueChange={setSeasonOrder} value={seasonOrder} />
+                <C.SnowInput onValueChange={changeForm('seasonOrder')} value={form.seasonOrder} />
                 <C.SnowLabel>Episode Order</C.SnowLabel>
-                <C.SnowInput onValueChange={setEpisodeOrder} value={episodeOrder} />
+                <C.SnowInput onValueChange={changeForm('episodeOrder')} value={form.episodeOrder} />
                 <C.SnowLabel>Update Images</C.SnowLabel>
-                <C.SnowInput onValueChange={setUpdateImages} value={updateImages} />
+                <C.SnowInput onValueChange={changeForm('updateImages')} value={form.updateImages} />
                 <C.SnowLabel>Update Metadata</C.SnowLabel>
-                <C.SnowInput onValueChange={setUpdateMetadata} value={updateMetadata} />
+                <C.SnowInput onValueChange={changeForm('updateMetadata')} value={form.updateMetadata} />
                 <C.SnowLabel>Update Videos</C.SnowLabel>
-                <C.SnowInput onValueChange={setUpdateVideos} value={updateVideos} />
+                <C.SnowInput onValueChange={changeForm('updateVideos')} value={form.updateVideos} />
                 <C.SnowLabel>Skip Existing</C.SnowLabel>
-                <C.SnowInput onValueChange={setSkipExisting} value={skipExisting} />
+                <C.SnowInput onValueChange={changeForm('skipExisting')} value={form.skipExisting} />
                 <C.SnowLabel>Extract Only</C.SnowLabel>
-                <C.SnowInput onValueChange={setExtractOnly} value={extractOnly} />
+                <C.SnowInput onValueChange={changeForm('extractOnly')} value={form.extractOnly} />
             </C.SnowGrid>
         </C.View>
     )

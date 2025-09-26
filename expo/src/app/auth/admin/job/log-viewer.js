@@ -36,7 +36,7 @@ export default function LogViewerPage() {
     return (
         <C.View>
             <C.SnowTabs headers={tabs}>
-                <C.SnowGrid shouldFocus itemsPerRow={1} items={logPaths} renderItem={(item, itemIndex) => {
+                <C.SnowGrid itemsPerRow={1} items={logPaths} renderItem={(item, itemIndex) => {
                     return <C.SnowTextButton title={item} onPress={() => {
                         loadLog(itemIndex)
                     }} />

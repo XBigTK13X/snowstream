@@ -18,7 +18,6 @@ export default function GuideSourceListPage() {
         const renderItem = (guideSource, itemIndex) => {
             return (
                 <C.SnowTextButton
-                    shouldFocus={itemIndex === 0}
                     title={guideSource.name}
                     onPress={routes.func(routes.admin.channelGuideSourceEdit, {
                         guideSourceId: guideSource.id,
@@ -30,7 +29,7 @@ export default function GuideSourceListPage() {
             <C.View>
                 <C.SnowTextButton title="Create New Channel Guide Source" onPress={routes.func(routes.admin.channelGuideSourceEdit)} />
                 <C.SnowText>{channelGuideSources.length} stream sources found</C.SnowText>
-                <C.SnowGrid shouldFocus items={channelGuideSources} renderItem={renderItem} />
+                <C.SnowGrid items={channelGuideSources} renderItem={renderItem} />
             </C.View>
         )
     }

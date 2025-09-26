@@ -120,7 +120,7 @@ export default function SignInPage() {
         userList = (
             <C.View>
                 <C.SnowLabel center>Select a user to login to {apiClient.webApiUrl}.</C.SnowLabel>
-                <C.SnowGrid shouldFocus items={users} renderItem={renderItem} />
+                <C.SnowGrid items={users} renderItem={renderItem} />
             </C.View>
 
         )

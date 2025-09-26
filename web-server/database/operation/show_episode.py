@@ -68,6 +68,7 @@ def sql_row_to_api_result(
     episode.poster_image = None
     episode.screencap_image = None
     episode.has_images = False
+    episode.has_videos = False
     image_ids = row.show_image_id_list
     image_local_paths = row.show_image_local_path_list
     image_web_paths = row.show_image_web_path_list
@@ -112,6 +113,7 @@ def sql_row_to_api_result(
                 continue
             if f'v-{row.video_id_list[ii]}' in dedupe:
                 continue
+            episode.has_videos = True
             dedupe[f'v-{row.video_id_list[ii]}'] = 1
             video_file = dbi.dm.Stub()
             video_file.model_kind = 'video_file'
@@ -339,6 +341,8 @@ def get_show_episode_list(
                 watch_group=watch_group
             )
             if not model.has_images and not show_season_id:
+                continue
+            if not model.has_videos:
                 continue
             if not ticket.is_allowed(tag_ids=model.tag_ids):
                 continue

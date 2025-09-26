@@ -18,7 +18,7 @@ export default function SessionListPage() {
             transcodes = (
                 <C.View>
                     <C.SnowLabel>Activate Transcodes</C.SnowLabel>
-                    <C.SnowGrid shouldFocus itemsPerRow={1}>
+                    <C.SnowGrid itemsPerRow={1}>
                         {sessions.transcodes.map((session, sessionIndex) => {
                             return (
                                 <C.SnowText key={sessionIndex}>{JSON.stringify(session)}</C.SnowText>

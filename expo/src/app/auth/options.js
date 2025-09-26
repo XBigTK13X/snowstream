@@ -92,7 +92,7 @@ export default function OptionsPage() {
 
     return (
         <C.View>
-            <C.SnowGrid shouldFocus itemsPerRow={3}>
+            <C.SnowGrid itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={() => {
                     changeClientOptions({
                         deviceId,

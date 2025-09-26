@@ -172,7 +172,6 @@ export default function KeepsakeDetailsPage(props) {
                         return (
                             <C.SnowImageButton
                                 wide={true}
-                                shouldFocus={itemIndex === 0}
                                 key={imageIndex}
                                 title={image.name}
                                 imageUrl={image.thumbnail_web_path}

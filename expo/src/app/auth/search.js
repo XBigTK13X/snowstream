@@ -44,7 +44,7 @@ export default function SearchPage() {
             resultsTabs = (
                 <C.SnowTabs headers={headers}>
                     {searchResults.map((searchResult, resultIndex) => {
-                        return <C.SnowPosterGrid shouldFocus={resultIndex === 0} disableWatched items={searchResult.items} />
+                        return <C.SnowPosterGrid disableWatched items={searchResult.items} />
                     })}
                 </C.SnowTabs>
             )
@@ -55,7 +55,7 @@ export default function SearchPage() {
         <C.View>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput
-                shouldFocus={true}
+                shouldFocus
                 value={queryText}
                 onValueChange={updateQuery} />
             {resultsTabs}

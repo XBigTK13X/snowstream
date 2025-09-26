@@ -17,7 +17,6 @@ export default function UserListPage() {
         const renderItem = (user, itemIndex) => {
             return (
                 <C.SnowTextButton
-                    shouldFocus={itemIndex === 0}
                     title={user.username || user.display_name}
                     onPress={routes.func(routes.admin.userEdit, { userId: user.id })}
                 />

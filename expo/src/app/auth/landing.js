@@ -3,7 +3,7 @@ import C from '../../common'
 export default function LandingPage(props) {
     const { apiClient } = C.useAppContext()
     const { routes, config } = C.useAppContext()
-    const { SnowStyle } = C.useStyleContext()
+    const { SnowStyle } = C.useStyleContext(props)
     const [shelves, setShelves] = C.React.useState(null)
     const [streamSources, setStreamSources] = C.React.useState(null)
     const { setMessageDisplay } = C.useAppContext()
@@ -24,6 +24,14 @@ export default function LandingPage(props) {
             })
         }
     })
+
+    const styles = {
+        footer: {
+            width: '100%',
+            textAlign: 'right',
+            color: SnowStyle.color.active
+        }
+    }
 
     let destinations = []
 
@@ -96,7 +104,7 @@ export default function LandingPage(props) {
     if (shelves || streamSources) {
         return (
             <C.View>
-                <C.SnowGrid shouldFocus itemsPerRow={3}>
+                <C.SnowGrid itemsPerRow={3}>
                     <C.SnowTextButton
                         title="Continue"
                         onPress={routes.func(routes.continueWatching)}
@@ -105,7 +113,7 @@ export default function LandingPage(props) {
                     <C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />
                 </C.SnowGrid>
                 {destinationsGrid}
-                <C.SnowText style={{ color: SnowStyle.color.active }} center>{`v${config.clientVersion} - built ${config.clientBuildDate}`}</C.SnowText>
+                <C.SnowText style={styles.footer} center>{`v${config.clientVersion} - built ${config.clientBuildDate}`}</C.SnowText>
             </C.View>
         )
     }

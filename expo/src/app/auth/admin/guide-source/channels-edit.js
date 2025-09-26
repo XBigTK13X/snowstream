@@ -36,7 +36,7 @@ function ChannelEditRow(props) {
                     <C.SnowLabel>Filter</C.SnowLabel>
                     <C.SnowInput value={filter} onValueChange={setFilter} />
                 </C.SnowGrid>
-                <C.SnowGrid shouldFocus>
+                <C.SnowGrid >
                     {props.streamables.map((streamable) => {
                         if (filter) {
                             let isFiltered = true

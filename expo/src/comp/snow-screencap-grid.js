@@ -28,7 +28,6 @@ export function SnowScreencapGrid(props) {
             <Snow.ImageGrid
                 snowStyle={props.snowStyle}
                 items={props.items}
-                shouldFocus={props.shouldFocus}
                 wideImage={true}
                 longPressToggle={true}
                 disableToggle={props.disableWatched}

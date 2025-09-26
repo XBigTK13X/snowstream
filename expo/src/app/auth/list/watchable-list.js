@@ -114,9 +114,7 @@ export function WatchableListPage(props) {
                             /> : null}
                     </C.SnowGrid>
                 </C.View>
-                <Grid
-                    shouldFocus
-                    items={items} />
+                <Grid items={items} />
             </C.View>
         )
     }
