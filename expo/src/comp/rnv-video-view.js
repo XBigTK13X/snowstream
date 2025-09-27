@@ -133,7 +133,7 @@ export default function RnvVideoView(props) {
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity
-                // Without this, the video has a white film over it
+                hasTVPreferredFocus={!player.info.controlsVisible}
                 activeOpacity={1}
                 focusable={!player.info.controlsVisible}
                 style={styles.touchable}

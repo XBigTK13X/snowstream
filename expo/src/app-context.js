@@ -133,6 +133,9 @@ export function AppContextProvider(props) {
             if (!storedOptions.hasOwnProperty('alwaysUsePlayer')) {
                 storedOptions.alwaysUsePlayer = 'all'
             }
+            if (!storedOptions.hasOwnProperty('useMpvFast')) {
+                storedOptions.useMpvFast = false
+            }
             setClientOptions(storedOptions)
         }
     })

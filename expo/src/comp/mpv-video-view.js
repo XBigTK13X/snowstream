@@ -1,6 +1,6 @@
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
-import { useStyleContext, SnowModal } from 'react-native-snowui'
+import Snow, { useStyleContext } from 'react-native-snowui'
 import { useAppContext } from '../app-context'
 import { usePlayerContext } from '../player-context'
 
@@ -44,9 +44,27 @@ export default function MpvVideoView(props) {
 
     React.useEffect(() => {
         if (!player.info.isReady) {
-            if (forwardRef.current && clientOptions.audioCompression) {
-                // Loudness normalization from Snowby
-                forwardRef.current.runCommand(`set|af|acompressor=ratio=4,loudnorm`)
+            if (forwardRef.current) {
+                if (clientOptions.useFastMpv) {
+                    forwardRef.current.runCommand(`set|hwdec|mediacodec`)
+                    forwardRef.current.runCommand(`set|vo|gpu`)
+                    forwardRef.current.runCommand(`set|profile|fast`)
+                    forwardRef.current.runCommand(`set|gpu-context|android`)
+                    forwardRef.current.runCommand(`set|scale|bilinear`)
+                    forwardRef.current.runCommand(`set|dscale|bilinear`)
+                    forwardRef.current.runCommand(`set|interpolation|no`)
+                    forwardRef.current.runCommand(`set|video-sync|display-resample`)
+                    forwardRef.current.runCommand(`set|opengl-es|yes`)
+                    forwardRef.current.runCommand(`set|audio-buffer|0.2`)
+                    forwardRef.current.runCommand(`set|cache|yes`)
+                }
+                else {
+                    if (clientOptions.audioCompression) {
+                        // Loudness normalization from Snowby
+                        forwardRef.current.runCommand(`set|af|acompressor=ratio=4,loudnorm`)
+                    }
+                }
+
             }
             player.action.onVideoReady()
         }
@@ -80,7 +98,7 @@ export default function MpvVideoView(props) {
     }, [player.info.subtitleDelay])
 
     return (
-        <SnowModal
+        <Snow.Modal
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
@@ -105,9 +123,10 @@ export default function MpvVideoView(props) {
                 // Without this, the video has a white film over it
                 activeOpacity={1}
                 focusable={!player.info.controlsVisible}
+                hasTVPreferredFocus={!player.info.controlsVisible}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
             </TouchableOpacity>
-        </SnowModal >
+        </Snow.Modal >
     )
 }

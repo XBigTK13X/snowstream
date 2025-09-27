@@ -36,6 +36,7 @@ export default function OptionsPage() {
     const [hardwareDecoder, setHardwareDecoder] = C.React.useState(clientOptions ? clientOptions.hardwareDecoder : '')
     const [alwaysTranscode, setAlwaysTranscode] = C.React.useState(clientOptions ? clientOptions.alwaysTranscode : '')
     const [alwaysUsePlayer, setAlwaysUsePlayer] = C.React.useState(clientOptions ? clientOptions.alwaysUsePlayer : '')
+    const [useMpvFast, setUseMpvFast] = C.React.useState(clientOptions ? clientOptions.useMpvFast : '')
 
     C.React.useEffect(() => {
         if (!deviceProfiles) {
@@ -84,6 +85,10 @@ export default function OptionsPage() {
 
     const chooseAlwaysUsePlayer = (selection) => {
         setAlwaysUsePlayer(players[selection])
+    }
+
+    const chooseUseMpvFast = (selection) => {
+        setUseMpvFast(selection === 0 ? false : true)
     }
 
     if (!deviceProfiles) {
@@ -151,6 +156,11 @@ export default function OptionsPage() {
                     options={['No', 'Yes']}
                     onValueChange={chooseHardwareDecoder}
                     valueIndex={hardwareDecoder === true ? 1 : 0} />
+                <C.SnowDropdown
+                    title="Fast Config (mpv)"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseUseMpvFast}
+                    valueIndex={useMpvFast === true ? 1 : 0} />
             </C.SnowGrid>
         </C.View>
 
