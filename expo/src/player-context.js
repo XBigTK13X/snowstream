@@ -437,7 +437,7 @@ export function PlayerContextProvider(props) {
                 }
                 else if (kind === 'up') {
                     setSubtitleColor((fontColor) => {
-                        newColor = { ...fontColor }
+                        let newColor = { ...fontColor }
                         newColor.shade -= 0.15;
                         if (newColor.shade < 0) {
                             newColor.shade = 0.0

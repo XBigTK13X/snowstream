@@ -197,7 +197,7 @@ export default function KeepsakeDetailsPage(props) {
                                 title={dir.display}
                                 key={dirIndex}
                                 onPress={() => {
-                                    routes.goto(routes.keepsakeDetails, { shelfId: localParams.shelfId, subdirectory: dir.path })
+                                    routes.goto(routes.keepsakeDetails, { shelfId: localParams.shelfId, subdirectory: dir.path, seekToSeconds: 0 })
                                 }}
                             />
                         )
