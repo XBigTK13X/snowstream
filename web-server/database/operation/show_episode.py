@@ -340,9 +340,9 @@ def get_show_episode_list(
                 trim_episode_files=trim_episode_files,
                 watch_group=watch_group
             )
-            if not model.has_images and not show_season_id:
+            if load_episode_files and not model.has_images and not show_season_id:
                 continue
-            if not model.has_videos:
+            if load_episode_files and not model.has_videos:
                 continue
             if not ticket.is_allowed(tag_ids=model.tag_ids):
                 continue

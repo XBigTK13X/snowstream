@@ -65,13 +65,15 @@ export default function NullVideoView(props) {
             focusable={!player.info.controlsVisible}
             style={styles.touchable}
             onPress={player.action.onPauseVideo}>
-            <View>
-                <Snow.Text>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
-                <Snow.Text>Here is a whole bunch of text.</Snow.Text>
-                <Snow.Text>It makes it easier to see how the transparency controls function.</Snow.Text>
-            </View>
-            <Snow.FillView>
-                <Snow.Text>{JSON.stringify(player.info, null, 4)}</Snow.Text>
+            <Snow.FillView style={{ width: '85%' }}>
+                <View>
+                    <Snow.Text>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
+                    <Snow.Text>Here is a whole bunch of text.</Snow.Text>
+                    <Snow.Text>It makes it easier to see how the transparency controls function.</Snow.Text>
+                </View>
+                <View>
+                    <Snow.Text>{JSON.stringify(player.info, null, 4)}</Snow.Text>
+                </View>
             </Snow.FillView>
         </TouchableOpacity>
     )

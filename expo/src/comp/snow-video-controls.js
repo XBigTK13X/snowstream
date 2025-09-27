@@ -26,9 +26,9 @@ export default function SnowVideoControls(props) {
 
         progress: {
             flexBasis: '100%',
-            textAlign: 'center'
+            textAlign: 'center',
+            fontWeight: 'bold',
         },
-
         logs: {
             backgroundColor: SnowStyle.color.background
         },

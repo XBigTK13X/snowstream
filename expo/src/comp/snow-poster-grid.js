@@ -2,9 +2,11 @@ import React from 'react'
 import { View } from 'react-native'
 import Snow from 'react-native-snowui'
 import { useAppContext } from '../app-context'
+import { useStyleContext } from 'react-native-snowui'
 
 export function SnowPosterGrid(props) {
     const { routes, apiClient } = useAppContext()
+    const { SnowStyle } = useStyleContext(props)
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null
@@ -30,6 +32,7 @@ export function SnowPosterGrid(props) {
                 </Snow.Label>
                 : null}
             <Snow.ImageGrid
+                itemsPerRow={SnowStyle.isWeb ? 4 : 5}
                 snowStyle={props.snowStyle}
                 items={props.items}
                 wideImage={false}

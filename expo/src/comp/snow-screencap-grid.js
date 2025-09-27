@@ -1,9 +1,11 @@
 import React from 'react'
 import Snow from 'react-native-snowui'
 import { useAppContext } from '../app-context'
+import { useStyleContext } from 'react-native-snowui'
 
 export function SnowScreencapGrid(props) {
     const { routes, apiClient } = useAppContext()
+    const { SnowStyle } = useStyleContext(props)
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null
@@ -27,6 +29,7 @@ export function SnowScreencapGrid(props) {
                 : null}
             <Snow.ImageGrid
                 snowStyle={props.snowStyle}
+                itemsPerRow={SnowStyle.isWeb ? 4 : 5}
                 items={props.items}
                 wideImage={true}
                 longPressToggle={true}
