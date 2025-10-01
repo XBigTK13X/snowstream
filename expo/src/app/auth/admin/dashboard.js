@@ -2,6 +2,14 @@ import C from '../../../common'
 
 export default function AdminDashboardPage() {
     const { routes } = C.useAppContext();
+    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
+    C.React.useEffect(() => {
+        pushFocusLayer("admin-dashboard")
+        return () => {
+            popFocusLayer()
+        }
+    }, [])
+
     const renderItem = (item) => {
         return <C.SnowTextButton title={item.title} onPress={routes.func(item.route)} />
     }
@@ -21,9 +29,15 @@ export default function AdminDashboardPage() {
     ]
     return (
         <C.View>
-            <C.SnowGrid items={actionButtons} renderItem={renderItem} itemsPerRow={2}></C.SnowGrid>
+            <C.SnowGrid
+                focusStart
+                focusKey="page-entry"
+                focusDown="data-buttons"
+                items={actionButtons}
+                renderItem={renderItem}
+                itemsPerRow={2}></C.SnowGrid>
             <C.SnowBreak />
-            <C.SnowGrid items={dataButtons} renderItem={renderItem} itemsPerRow={3}></C.SnowGrid>
+            <C.SnowGrid focusKey="data-buttons" items={dataButtons} renderItem={renderItem} itemsPerRow={3}></C.SnowGrid>
         </C.View>
 
     )

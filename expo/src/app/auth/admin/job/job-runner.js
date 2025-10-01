@@ -4,6 +4,13 @@ export default function ShelfEditPage() {
     const { apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
+    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
+    C.React.useEffect(() => {
+        pushFocusLayer("job-runner")
+        return () => {
+            popFocusLayer()
+        }
+    }, [])
 
     const [form, setForm] = C.React.useState({
         episodeOrder: localParams.episodeOrder ?? '',
@@ -117,14 +124,17 @@ export default function ShelfEditPage() {
     return (
         <C.View>
             <C.SnowGrid
+                focusStart
+                focusKey="page-entry"
+                focusDown="directory"
                 itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />
-            <C.SnowGrid itemsPerRow={1}>
+            <C.SnowGrid focusKey="directory" focusDown="payload" itemsPerRow={1}>
                 <C.SnowLabel>Target Directory</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('targetDirectory')} value={form.targetDirectory} />
             </C.SnowGrid>
-            <C.SnowGrid itemsPerRow={6}>
+            <C.SnowGrid focusKey="payload" itemsPerRow={6}>
                 <C.SnowLabel>Target Kind</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('targetKind')} value={form.targetKind} />
                 <C.SnowLabel>Target Id</C.SnowLabel>
