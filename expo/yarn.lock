@@ -2977,10 +2977,10 @@ expo-secure-store@15.0.7:
   resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-15.0.7.tgz#f74f928029889b8a32c0eafc2a214abee1e8b71e"
   integrity sha512-9q7+G1Zxr5P6J5NRIlm86KulvmYwc6UnQlYPjQLDu1drDnerz6AT6l884dPu29HgtDTn4rR0heYeeGFhMKM7/Q==
 
-expo-snowui@1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.2.2.tgz#eb65aa0c927db3c89b1cb0bb1c61eaf7da645896"
-  integrity sha512-ina2bzSg9OIjahWwjhRqNyT6MquY64Tb86yiz9ajfzzSwelo5uPZNHFXqcxvkHvHSFuimOCDcSqhpn3nVuEV9w==
+expo-snowui@1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.2.3.tgz#3069ad9f63f0bfdd07caf40337aa6d9950ce3c46"
+  integrity sha512-/O3Cj16JkIOXOX0K2EWjoL0hMVc4YPLUgSd+CxXi0Lm6C64MLoELHBHVigZl0sKdHBu81hrwwjJsMYww3MXtsA==
   dependencies:
     expo "^54.0.9"
     expo-image "^3.0.8"

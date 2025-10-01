@@ -16,6 +16,14 @@ export default function OptionsPage() {
     const { SnowStyle } = C.useStyleContext()
     const { apiClient, clientOptions, changeClientOptions } = C.useAppContext()
 
+    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
+    C.React.useEffect(() => {
+        pushFocusLayer("options")
+        return () => {
+            popFocusLayer()
+        }
+    }, [])
+
     let storedResolution = 0
     if (clientOptions) {
         if (clientOptions.resolutionHeight !== 2160) {
@@ -97,7 +105,11 @@ export default function OptionsPage() {
 
     return (
         <C.View>
-            <C.SnowGrid itemsPerRow={3}>
+            <C.SnowGrid
+                focusStart
+                focusKey="page-entry"
+                focusDown="device-profile"
+                itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={() => {
                     changeClientOptions({
                         deviceId,
@@ -110,10 +122,10 @@ export default function OptionsPage() {
                         deviceProfile
                     })
                 }} />
-                <C.View>
-                    <C.SnowLabel center>Device ID</C.SnowLabel>
+                <C.SnowView>
                     <C.SnowInput value={deviceId} onValueChange={setDeviceId} />
-                </C.View>
+                    <C.SnowLabel center>Device ID</C.SnowLabel>
+                </C.SnowView>
                 <C.SnowTextButton
                     title="Download Latest"
                     onPress={() => {
@@ -125,38 +137,53 @@ export default function OptionsPage() {
                     }}
                 />
             </C.SnowGrid>
+            <C.SnowBreak />
             <C.SnowDropdown
+                focusKey="device-profile"
+                focusDown="video-resolution"
                 title="Device Profile"
                 options={deviceProfiles}
                 onValueChange={chooseDeviceProfile}
                 valueIndex={deviceProfileIndex} />
             <C.SnowDropdown
+                focusKey="video-resolution"
+                focusDown="player-choice"
                 title="Video Resolution"
                 options={resolutions}
                 onValueChange={chooseResolution}
                 valueIndex={resolutionIndex} />
             <C.SnowDropdown
+                focusKey="player-choice"
+                focusDown="always-transcode"
                 title="Always Use Player"
                 options={players}
                 onValueChange={chooseAlwaysUsePlayer}
                 valueIndex={players.indexOf(alwaysUsePlayer)} />
-            <C.SnowGrid itemsPerRow={2}>
+            <C.SnowGrid assignFocus={false} itemsPerRow={2}>
                 <C.SnowDropdown
+                    focusKey="always-transcode"
+                    focusRight="audio-compression"
+                    focusDown="hardware-decoder"
                     title="Always Transcode"
                     options={['No', 'Yes']}
                     onValueChange={chooseAlwaysTranscode}
                     valueIndex={alwaysTranscode === true ? 1 : 0} />
                 <C.SnowDropdown
+                    focusKey="audio-compression"
+                    focusDown="fast-mpv"
                     title="Audio Compression (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseAudioCompression}
                     valueIndex={audioCompression === true ? 1 : 0} />
                 <C.SnowDropdown
+                    focusKey="hardware-decoder"
+                    focusRight="fast-mpv"
                     title="Hardware Decoder (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseHardwareDecoder}
                     valueIndex={hardwareDecoder === true ? 1 : 0} />
                 <C.SnowDropdown
+                    focusKey="fast-mpv"
                     title="Fast Config (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseUseMpvFast}
