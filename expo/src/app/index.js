@@ -75,12 +75,14 @@ export default function SignInPage() {
                 <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
                 <C.SnowInput
                     focusStart
+                    focusKey="password"
+                    focusDown="login"
                     secureTextEntry
                     onSubmit={login}
                     onValueChange={setPassword}
                     value={password}
                 />
-                <C.SnowGrid itemsPerRow={2} >
+                <C.SnowGrid focusKey="login" itemsPerRow={2} >
                     <C.SnowTextButton title="Login" onPress={login} />
                     <C.SnowTextButton title="Cancel" onPress={cancel} />
                 </C.SnowGrid>
@@ -91,18 +93,29 @@ export default function SignInPage() {
             <C.View>
                 <C.View>
                     <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
-                    <C.SnowGrid itemsPerRow={4} >
+                    <C.SnowGrid
+                        focusStart={!!users ? false : true}
+                        focusKey="servers"
+                        focusDown="password-input"
+                        itemsPerRow={4} >
                         <C.SnowTextButton title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
                         <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
                         <C.SnowTextButton title="Storm" onPress={() => { chooseServer(config.stormWebApiUrl) }} />
                     </C.SnowGrid>
                 </C.View>
-                <C.View>
-                    <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
-                    <C.SnowInput onSubmit={applyCustomServer} onValueChange={setCustomServer} value={customServer} />
-                    <C.SnowTextButton title="Connect to Server" onPress={applyCustomServer} />
-                </C.View>
-            </C.View>
+                <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
+                <C.SnowInput
+                    focusKey="password-input"
+                    focusDown="submit-login"
+                    onSubmit={applyCustomServer}
+                    onValueChange={setCustomServer}
+                    value={customServer} />
+                <C.SnowTextButton
+                    focusKey="submit-login"
+                    title="Connect to Server"
+                    onPress={applyCustomServer}
+                />
+            </C.View >
         )
     }
 
@@ -120,7 +133,13 @@ export default function SignInPage() {
         userList = (
             <C.View>
                 <C.SnowLabel center>Select a user to login to {apiClient.webApiUrl}.</C.SnowLabel>
-                <C.SnowGrid items={users} renderItem={renderItem} />
+                <C.SnowGrid
+                    focusStart
+                    focusKey="users"
+                    focusDown="servers"
+                    items={users}
+                    renderItem={renderItem}
+                />
             </C.View>
 
         )
