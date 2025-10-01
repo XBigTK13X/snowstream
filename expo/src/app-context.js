@@ -1,5 +1,5 @@
 import React from 'react';
-import Snow from 'react-native-snowui'
+import Snow from 'expo-snowui'
 import { Platform, useTVEventHandler, View } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import uuid from 'react-native-uuid';

@@ -1,6 +1,6 @@
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
-import Snow, { useStyleContext } from 'react-native-snowui'
+import Snow, { useStyleContext } from 'expo-snowui'
 // Don't want it being included outside of Android
 // Don't trying importing it until first render
 import { LibmpvVideo } from 'expo-libmpv'

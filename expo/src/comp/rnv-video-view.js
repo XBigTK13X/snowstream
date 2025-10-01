@@ -2,7 +2,7 @@ import React from 'react'
 import Video from 'react-native-video';
 import { ViewType } from 'react-native-video'
 import { Platform, View, TouchableOpacity } from 'react-native'
-import Snow, { useStyleContext } from 'react-native-snowui'
+import Snow, { useStyleContext } from 'expo-snowui'
 import { usePlayerContext } from '../player-context'
 
 const isWeb = Platform.OS === 'web'

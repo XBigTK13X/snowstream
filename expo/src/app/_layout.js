@@ -1,4 +1,4 @@
-import Snow from 'react-native-snowui'
+import Snow from 'expo-snowui'
 import C from '../common'
 
 const styles = {
@@ -15,8 +15,13 @@ function Header() {
     }
     return (
         <C.View style={styles.header}>
-            <C.SnowGrid>
-                <C.SnowTextButton title="Home" onPress={routes.func(routes.landing)} />
+            <C.SnowGrid
+                focusKey="header"
+                focusDown="page-entry">
+                <C.SnowTextButton
+                    title="Home"
+                    onPress={routes.func(routes.landing)}
+                />
                 <C.SnowTextButton title="Sign Out" onPress={routes.func(routes.signOut)} />
                 {isAdmin ? <C.SnowTextButton
                     title="Admin"
@@ -50,7 +55,7 @@ const appStyle = {
 
 export default function RootLayout() {
     return (
-        <Snow.App snowStyle={appStyle}>
+        <Snow.App DEBUG_FOCUS={true} snowStyle={appStyle}>
             <C.AppContextProvider>
                 <Header />
                 <C.Slot />

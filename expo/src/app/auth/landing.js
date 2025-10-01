@@ -7,6 +7,14 @@ export default function LandingPage(props) {
     const [shelves, setShelves] = C.React.useState(null)
     const [streamSources, setStreamSources] = C.React.useState(null)
     const { setMessageDisplay } = C.useAppContext()
+    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
+    C.React.useEffect(() => {
+        pushFocusLayer("landing")
+        return () => {
+            popFocusLayer()
+        }
+    }, [])
+
 
     if (config.debugVideoUrl) {
         //return <C.SnowTextButton title="Debug Video" onPress={routes.func(config.debugVideoUrl)} />
@@ -96,7 +104,10 @@ export default function LandingPage(props) {
         destinationsGrid = (
             <C.View>
                 <C.SnowBreak />
-                <C.SnowGrid itemsPerRow={3} items={destinations} />
+                <C.SnowGrid
+                    focusKey="destinations"
+                    focusUp="page-entry"
+                    itemsPerRow={3} items={destinations} />
             </C.View>
         )
     }
@@ -104,11 +115,11 @@ export default function LandingPage(props) {
     if (shelves || streamSources) {
         return (
             <C.View>
-                <C.SnowGrid itemsPerRow={3}>
-                    <C.SnowTextButton
-                        title="Continue"
-                        onPress={routes.func(routes.continueWatching)}
-                    />
+                <C.SnowGrid
+                    focusStart
+                    focusKey="page-entry"
+                    itemsPerRow={3}>
+                    <C.SnowTextButton title="Continue" onPress={routes.func(routes.continueWatching)} />
                     <C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />
                     <C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />
                 </C.SnowGrid>

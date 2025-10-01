@@ -1,7 +1,7 @@
 import React from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { usePlayerContext } from '../player-context'
-import Snow from 'react-native-snowui'
+import Snow from 'expo-snowui'
 
 export default function NullVideoView(props) {
     const { getWindowWidth, getWindowHeight } = Snow.useStyleContext(props)

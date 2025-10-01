@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { useFocusContext } from 'react-native-snowui'
+import { useFocusContext } from 'expo-snowui'
 import { useLocalSearchParams, usePathname } from 'expo-router'
 import { useAppContext } from './app-context'
 import util from './util'

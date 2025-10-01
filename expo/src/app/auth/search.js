@@ -55,7 +55,7 @@ export default function SearchPage() {
         <C.View>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput
-                shouldFocus
+                focusStart
                 value={queryText}
                 onValueChange={updateQuery} />
             {resultsTabs}

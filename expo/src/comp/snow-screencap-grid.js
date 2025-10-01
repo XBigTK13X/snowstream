@@ -1,11 +1,11 @@
 import React from 'react'
-import Snow from 'react-native-snowui'
+import Snow from 'expo-snowui'
 import { useAppContext } from '../app-context'
-import { useStyleContext } from 'react-native-snowui'
 
 export function SnowScreencapGrid(props) {
     const { routes, apiClient } = useAppContext()
-    const { SnowStyle } = useStyleContext(props)
+    const { SnowStyle } = Snow.useStyleContext(props)
+    const { readFocusProps } = Snow.useFocusContext()
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null
@@ -28,6 +28,7 @@ export function SnowScreencapGrid(props) {
                 </Snow.Label>
                 : null}
             <Snow.ImageGrid
+                {...readFocusProps(props)}
                 snowStyle={props.snowStyle}
                 itemsPerRow={SnowStyle.isWeb ? 4 : 5}
                 items={props.items}

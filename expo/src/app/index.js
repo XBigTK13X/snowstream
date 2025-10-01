@@ -74,9 +74,9 @@ export default function SignInPage() {
             <C.View>
                 <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
                 <C.SnowInput
+                    focusStart
                     secureTextEntry
                     onSubmit={login}
-                    shouldFocus
                     onValueChange={setPassword}
                     value={password}
                 />

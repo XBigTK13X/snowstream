@@ -1,12 +1,13 @@
 import React from 'react'
 import { View } from 'react-native'
-import Snow from 'react-native-snowui'
+import Snow from 'expo-snowui'
 import util from '../util'
 
 function TrackList(props) {
     if (!props.tracks) {
         return null
     }
+    const { readFocusProps } = Snow.useFocusContext()
     let activeTrack = props.activeTrack === -1 ? null : props.tracks.filter((track) => {
         return props.isAudio ? track.audio_index === props.activeTrack : track.subtitle_index === props.activeTrack
     })[0]
@@ -21,7 +22,7 @@ function TrackList(props) {
     )
     if (props.showDelay) {
         header = (
-            <Snow.Grid itemsPerRow={3} shrink>
+            <Snow.Grid {...readFocusProps(props)} itemsPerRow={3} shrink>
                 <Snow.Text>
                     {props.title} ({props.tracks.length}) {activeBitRate}
                 </Snow.Text>
@@ -33,8 +34,7 @@ function TrackList(props) {
     return (
         <View>
             {header}
-
-            <Snow.Grid short shrink itemsPerRow={4}>
+            <Snow.Grid {...readFocusProps(props)} short shrink itemsPerRow={4}>
                 {props.tracks.map((track, trackKey) => {
                     let display = track.language ? track.language + ' - ' : ''
                     display += `${(track.title.indexOf('.') === -1 && track.title) ? track.title + ' - ' : ''}`
@@ -72,9 +72,12 @@ export default function SnowTrackSelector(props) {
     if (!props.tracks) {
         return null
     }
+    console.log({})
     return (
         <Snow.FillView>
             {props.tracks.audio.length ? <TrackList
+                focusKey={props.focusKey}
+                focusDown="subtitle-tracks"
                 kind="audio"
                 title="Audio"
                 showDelay={props.showDelay}
@@ -86,6 +89,7 @@ export default function SnowTrackSelector(props) {
                 activeTrack={props.audioTrack}
             /> : null}
             {props.tracks.subtitle.length ? <TrackList
+                focusKey="subtitle-tracks"
                 kind="subtitle"
                 title="Subtitles"
                 showDelay={props.showDelay}

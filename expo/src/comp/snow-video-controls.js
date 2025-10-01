@@ -10,7 +10,7 @@ import Snow, {
     SnowTabs,
     SnowText,
     SnowTextButton
-} from 'react-native-snowui'
+} from 'expo-snowui'
 
 import { useAppContext } from '../app-context'
 import { usePlayerContext } from '../player-context'
@@ -53,7 +53,7 @@ export default function SnowVideoControls(props) {
             <SnowModal
                 style={styles.logs}
                 onRequestClose={() => { setShowLogs(false) }}>
-                <SnowGrid shouldFocus itemsPerRow={1}>
+                <SnowGrid focusStart itemsPerRow={1}>
                     <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
                 </SnowGrid>
                 <SnowFillView scroll>
@@ -186,7 +186,7 @@ export default function SnowVideoControls(props) {
                     <SnowTabs headers={tabs}>
                         <View>
                             <SnowGrid itemsPerRow={3}>
-                                <SnowTextButton shouldFocus title="Resume" onPress={player.action.onResumeVideo} />
+                                <SnowTextButton focusStart title="Resume" onPress={player.action.onResumeVideo} />
                                 <SnowTextButton title="Stop" onPress={() => { player.action.onStopVideo() }} />
                                 <SnowTextButton title="Home" onPress={() => { player.action.onStopVideo(true) }} />
                             </SnowGrid>

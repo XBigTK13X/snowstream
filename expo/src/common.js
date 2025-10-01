@@ -39,7 +39,7 @@ import util from './util'
 import { AppContextProvider, useAppContext } from './app-context'
 import { PlayerContextProvider, usePlayerContext } from './player-context'
 
-import {
+import Snow, {
     SnowBreak,
     SnowDropdown,
     SnowFillView,
@@ -55,9 +55,10 @@ import {
     SnowText,
     SnowTextButton,
     SnowToggle,
+    SnowView,
     useStyleContext,
     useFocusContext
-} from 'react-native-snowui'
+} from 'expo-snowui'
 
 import SnowPosterGrid from './comp/snow-poster-grid'
 import SnowScreencapGrid from './comp/snow-screencap-grid'
@@ -99,6 +100,7 @@ export default {
     Redirect,
     ScrollView,
     Slot,
+    Snow,
     SnowBreak,
     SnowDropdown,
     SnowGrid,
@@ -119,6 +121,7 @@ export default {
     SnowUpdateMediaButton,
     SnowVideoControls,
     SnowVideoPlayer,
+    SnowView,
     Stack,
     Text,
     TouchableOpacity,

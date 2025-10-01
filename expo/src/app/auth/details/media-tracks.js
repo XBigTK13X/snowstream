@@ -10,7 +10,6 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
-    const { SnowStyle } = C.useStyleContext();
     const { apiClient, clientOptions, isAdmin } = C.useAppContext();
     const { routes } = C.useAppContext();
     const localParams = C.useLocalSearchParams();
@@ -23,6 +22,14 @@ export default function MediaTracksPage(props) {
     const [forcePlayer, setForcePlayer] = C.React.useState(null)
     const [showModal, setShowModal] = C.React.useState(false)
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
+
+    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
+    C.React.useEffect(() => {
+        pushFocusLayer("media-tracks")
+        return () => {
+            popFocusLayer()
+        }
+    }, [])
 
     const shelfId = localParams.shelfId;
 
@@ -242,7 +249,7 @@ export default function MediaTracksPage(props) {
             }
             resumeControls = (
                 <C.SnowTextButton
-                    shouldFocus
+                    focusStart
                     tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
                     onPress={routes.func(props.getPlayRoute(routes), resumePlayDestination)}
@@ -263,13 +270,13 @@ export default function MediaTracksPage(props) {
             transcodeDisplay = `Direct Play / [Transcode]`
         }
         const controlTab = (
-            <C.View>
-                <C.SnowGrid itemsPerRow={4}>
+            <C.SnowView>
+                <C.SnowGrid focusDown="player" itemsPerRow={4}>
                     {mainFeatureButton}
                     <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, localParams)} />
                     {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
                 </C.SnowGrid>
-                <C.SnowGrid itemsPerRow={4}>
+                <C.SnowGrid focusKey="player" itemsPerRow={4}>
                     <C.SnowTextButton tall title={watchTitle} onLongPress={setWatchStatus} />
                     <C.SnowTextButton
                         title={playerDisplay}
@@ -282,10 +289,10 @@ export default function MediaTracksPage(props) {
                         onPress={toggleTranscode}
                     />
                 </C.SnowGrid>
-            </C.View>
+            </C.SnowView>
         )
         const trackTab = (
-            <C.View>
+            <C.SnowView>
                 {versionPicker}
                 {extraPicker}
                 <C.SnowTrackSelector
@@ -294,46 +301,46 @@ export default function MediaTracksPage(props) {
                     audioTrack={audioTrack}
                     subtitleTrack={subtitleTrack}
                 />
-            </C.View>
+            </C.SnowView>
         )
         const infoTab = (
-            <C.View>
-                <C.SnowGrid itemsPerRow={3}>
+            <C.SnowView>
+                <C.SnowGrid focusDown="quality" itemsPerRow={3}>
                     <C.SnowTextButton
                         tall
                         title="Inspection"
                         onPress={showInfo}
                     />
                 </C.SnowGrid>
-                <C.SnowGrid itemsPerRow={2}>
-                    <C.View>
+                <C.SnowGrid focusKey="quality" focusDown="json" itemsPerRow={2}>
+                    <C.SnowView>
                         <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
                         <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
                         <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
                         <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
-                    </C.View>
-                    <C.View
+                    </C.SnowView>
+                    <C.SnowView
                         style={styles.image}>
                         <C.SnowLabel>Discussion</C.SnowLabel>
                         <C.Image
                             source={{ uri: media.discussion_image_url }}
                             style={{ width: 200, height: 200 }}
                         />
-                    </C.View>
+                    </C.SnowView>
                 </C.SnowGrid>
                 <C.SnowText >Path: {videoFile.network_path}</C.SnowText>
-                <C.SnowGrid itemsPerRow={3}>
+                <C.SnowGrid focusKey="json" itemsPerRow={3}>
                     <C.SnowText >Params: {JSON.stringify(localParams, null, 4)}</C.SnowText>
                     <C.SnowText >Plan: {JSON.stringify(videoFile.plan, null, 4)}</C.SnowText>
                     <C.SnowText >Options: {JSON.stringify(clientOptions, null, 4)}</C.SnowText>
                 </C.SnowGrid>
-            </C.View>
+            </C.SnowView>
         )
         let adminTab = null
         if (isAdmin) {
             tabs.push('Admin')
             adminTab = (
-                <C.View>
+                <C.SnowView>
                     <C.SnowGrid itemsPerRow={2}>
                         <C.SnowTextButton
                             title={`Rescan ${props.mediaKind}`}
@@ -354,34 +361,37 @@ export default function MediaTracksPage(props) {
                                 return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
                             }} />
                     </C.SnowGrid>
-                </C.View>
+                </C.SnowView>
             )
         }
         return (
-            <C.View>
-                <C.View>
+            <C.SnowView>
+                <C.SnowView>
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(localParams, media) : media.name}
                     </C.SnowLabel>
-                    <C.SnowGrid itemsPerRow={4}>
+                    <C.SnowGrid
+                        focusStart
+                        focusKey="page-entry"
+                        focusDown="media-tabs"
+                        itemsPerRow={4}>
                         {resumeControls}
                         <C.SnowTextButton
                             tall
-                            shouldFocus={playFocus}
                             title={playTitle}
                             onPress={routes.func(props.getPlayRoute(routes), combinedPlayDestination)}
                         />
                     </C.SnowGrid>
-                </C.View>
-                <C.View>
-                    <C.SnowTabs headers={tabs}>
+                </C.SnowView>
+                <C.SnowView>
+                    <C.SnowTabs focusKey="media-tabs" headers={tabs}>
                         {controlTab}
                         {trackTab}
                         {infoTab}
                         {adminTab}
                     </C.SnowTabs >
-                </C.View >
-            </C.View >
+                </C.SnowView>
+            </C.SnowView>
         )
     }
     return (

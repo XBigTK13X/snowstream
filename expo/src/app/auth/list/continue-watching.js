@@ -2,9 +2,15 @@ import C from '../../../common'
 
 export function ContinueWatchingListPage(props) {
     const { apiClient } = C.useAppContext()
-
     const [continueWatchingList, setContinueWatchingList] = C.React.useState(null)
     const [resultsEmpty, setResultsEmpty] = C.React.useState(false)
+    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
+    C.React.useEffect(() => {
+        pushFocusLayer("continue-watching")
+        return () => {
+            popFocusLayer()
+        }
+    }, [])
 
     C.React.useEffect(() => {
         if (!continueWatchingList) {
@@ -32,7 +38,10 @@ export function ContinueWatchingListPage(props) {
 
         return (
             <C.View>
-                <C.SnowTabs headers={tabs}>
+                <C.SnowTabs
+                    focusStart
+                    focusKey="page-entry"
+                    headers={tabs}>
                     {continueWatchingList.map((kind) => {
                         return <C.SnowPosterGrid
                             disableWatched

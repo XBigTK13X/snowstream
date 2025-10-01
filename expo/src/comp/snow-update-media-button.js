@@ -11,7 +11,7 @@ import {
     SnowToggle,
     SnowHeader,
     SnowTextButton
-} from 'react-native-snowui'
+} from 'expo-snowui'
 
 export default function SnowUpdateMediaButton(props) {
     const [showRequest, setShowRequest] = React.useState(false)

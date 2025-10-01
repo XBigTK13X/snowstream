@@ -1,5 +1,5 @@
 import React from 'react'
-import Snow from 'react-native-snowui'
+import Snow from 'expo-snowui'
 import {
     AppState,
     Platform,
