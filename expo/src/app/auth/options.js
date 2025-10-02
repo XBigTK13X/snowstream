@@ -97,6 +97,21 @@ export default function OptionsPage() {
         return null
     }
 
+    const saveForm = () => {
+        const payload = {
+            alwaysTranscode,
+            alwaysUsePlayer,
+            audioCompression,
+            deviceId,
+            deviceProfile,
+            hardwareDecoder,
+            resolutionHeight,
+            resolutionWidth,
+            useMpvFast,
+        }
+        changeClientOptions(payload)
+    }
+
     return (
         <C.View>
             <C.SnowGrid
@@ -104,18 +119,7 @@ export default function OptionsPage() {
                 focusKey="page-entry"
                 focusDown="device-profile"
                 itemsPerRow={3}>
-                <C.SnowTextButton title="Save" onPress={() => {
-                    changeClientOptions({
-                        deviceId,
-                        resolutionWidth,
-                        resolutionHeight,
-                        audioCompression,
-                        hardwareDecoder,
-                        alwaysTranscode,
-                        alwaysUsePlayer,
-                        deviceProfile
-                    })
-                }} />
+                <C.SnowTextButton title="Save" onPress={saveForm} />
                 <C.SnowView>
                     <C.SnowInput value={deviceId} onValueChange={setDeviceId} />
                     <C.SnowLabel center>Device ID</C.SnowLabel>
