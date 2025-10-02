@@ -9,6 +9,8 @@ export default function StreamableListPage() {
     const [streamableGroups, setStreamableGroups] = C.React.useState(null)
     const [streamableItems, setStreamableItems] = C.React.useState(null)
 
+    C.useFocusLayer('streamable-list')
+
     const styles = {
         tableColumn: {
             borderLeftWidth: 2,
@@ -48,19 +50,22 @@ export default function StreamableListPage() {
             )
         }
         return (
-            <C.SnowGrid items={streamableGroups} renderItem={renderItem} />
+            <C.SnowGrid focusStart focusKey="page-entry" items={streamableGroups} renderItem={renderItem} />
         )
     }
 
     if (streamSource && streamableItems) {
         let groupsButton = null
+        let listFocusKey = 'page-entry'
         if (streamSource.has_groups) {
+            listFocusKey = 'streamable-list'
             groupsButton = (
                 <C.SnowGrid itemsPerRow={3}>
-                    <C.SnowTextButton title="Groups" onPress={() => { setStreamableItems(null) }} />
+                    <C.SnowTextButton focusKey="page-entry" focusDown="streamable-list" title="Groups" onPress={() => { setStreamableItems(null) }} />
                 </C.SnowGrid>
             )
         }
+
         if (streamSource.has_guide) {
             return (
                 <C.View>
@@ -69,6 +74,17 @@ export default function StreamableListPage() {
                         streamableItems.map((streamable, itemIndex) => {
                             let currentProgram = "No guide information"
                             let nextProgram = "No guide information"
+                            let focus = {}
+                            if (itemIndex === 0) {
+                                focus.focusStart = true
+                                focus.focusKey = listFocusKey
+                            }
+                            else {
+                                focus.focusKey = `${listFocusKey}-${itemIndex}`
+                            }
+                            if (itemIndex !== streamableItems.length - 1) {
+                                focus.focusDown = `${listFocusKey}-${itemIndex + 1}`
+                            }
                             if (streamable.current_program) {
                                 const pp = streamable.current_program
                                 currentProgram = `${pp.display_time} - ${pp.name}`
@@ -80,8 +96,10 @@ export default function StreamableListPage() {
                             let name = streamable.name_display ? streamable.name_display : streamable.name
                             return (
                                 <C.View key={itemIndex}>
-                                    <C.SnowGrid itemsPerRow={3}>
-                                        <C.SnowTextButton title={name}
+                                    <C.SnowGrid assignFocus="false" itemsPerRow={3}>
+                                        <C.SnowTextButton
+                                            {...focus}
+                                            title={name}
                                             onPress={() => {
                                                 routes.goto(routes.streamablePlay, {
                                                     streamSourceId: streamSource.id,
@@ -122,7 +140,7 @@ export default function StreamableListPage() {
             return (
                 <C.View>
                     {groupsButton}
-                    <C.SnowGrid items={streamableItems} renderItem={renderItem} />
+                    <C.SnowGrid focusStart focusKey={listFocusKey} items={streamableItems} renderItem={renderItem} />
                 </C.View>
             )
         }
