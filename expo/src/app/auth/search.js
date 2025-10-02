@@ -11,11 +11,12 @@ const styles = {
 }
 
 export default function SearchPage() {
-
     const { apiClient, config } = C.useAppContext()
 
     const [queryText, setQueryText] = C.React.useState('')
     const [searchResults, setSearchResults] = C.React.useState(null)
+
+    C.useFocusLayer('search')
 
     const executeQuery = () => {
         apiClient.search(queryText).then(response => {
@@ -42,7 +43,7 @@ export default function SearchPage() {
                 return `${searchResult.name} [${searchResult.items.length}]`
             })
             resultsTabs = (
-                <C.SnowTabs headers={headers}>
+                <C.SnowTabs focusKey="search-results" headers={headers}>
                     {searchResults.map((searchResult, resultIndex) => {
                         return <C.SnowPosterGrid disableWatched items={searchResult.items} />
                     })}
@@ -57,6 +58,7 @@ export default function SearchPage() {
             <C.SnowInput
                 focusStart
                 focusKey="page-entry"
+                focusDown="search-results"
                 value={queryText}
                 onValueChange={updateQuery} />
             {resultsTabs}

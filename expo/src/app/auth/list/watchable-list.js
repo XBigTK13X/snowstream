@@ -13,6 +13,8 @@ export function WatchableListPage(props) {
     )
     const [togglePlaylistedEnabled, setTogglePlaylistedEnabled] = C.React.useState(true)
 
+    C.useFocusLayer('watchable-list')
+
     C.React.useEffect(() => {
         if (!shelf) {
             apiClient.getShelf(localParams.shelfId).then((response) => {
@@ -49,20 +51,6 @@ export function WatchableListPage(props) {
             pageTitle = props.getPageTitle(shelf, items)
         }
 
-        const gotoItem = (item) => {
-            routes.gotoItem(item)
-        }
-
-        const toggleWatchedItem = (item) => {
-            return apiClient.toggleItemWatched(item)
-                .then((watched) => {
-                    return props.loadItems(apiClient, shelfId, showPlaylisted)
-                })
-                .then((response) => {
-                    setItems(response)
-                })
-        }
-
         const watchAll = () => {
             props.watchAll(apiClient, shelfId).then(response => {
                 routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
@@ -91,7 +79,7 @@ export function WatchableListPage(props) {
             <C.View>
                 <C.View>
                     <C.SnowText>{pageTitle}</C.SnowText>
-                    <C.SnowGrid itemsPerRow={itemsPerRow}>
+                    <C.SnowGrid focusKey="page-entry" focusDown="watchable-items" itemsPerRow={itemsPerRow}>
                         {(togglePlaylistedEnabled && props.toggleShowPlaylisted) ?
                             <C.SnowTextButton
                                 title={showPlaylisted == true ? 'Hide Playlisted' : 'Show Playlisted'}
@@ -114,7 +102,7 @@ export function WatchableListPage(props) {
                             /> : null}
                     </C.SnowGrid>
                 </C.View>
-                <Grid items={items} />
+                <Grid focusStart focusKey="watchable-items" items={items} />
             </C.View>
         )
     }

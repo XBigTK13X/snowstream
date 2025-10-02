@@ -2,7 +2,6 @@ import C from '../../../common'
 
 export default function AdminDashboardPage() {
     const { routes } = C.useAppContext();
-
     C.useFocusLayer('admin-dashboard')
 
     const renderItem = (item) => {
