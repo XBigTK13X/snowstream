@@ -41,13 +41,13 @@ export default function PlaylistDetailsPage() {
         <C.View>
             <C.View>
                 <C.SnowText>Found {playlistItems.length} items from playlist {tagName}.</C.SnowText>
-                <C.SnowGrid itemsPerRow={2}>
+                <C.SnowGrid focusKey="page-entry" focusDown="playlist-list" itemsPerRow={2}>
                     <C.SnowTextButton title="Watch All" onPress={watchAll} />
                     <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
                 </C.SnowGrid>
             </C.View>
             <C.View>
-                <C.SnowPosterGrid items={playlistItems} />
+                <C.SnowPosterGrid focusStart focusKey="playlist-list" items={playlistItems} />
             </C.View>
         </C.View>
     )

@@ -21,6 +21,6 @@ export default function PlaylistListPage() {
     }
 
     return (
-        <C.SnowPosterGrid items={playlistList} />
+        <C.SnowPosterGrid focusStart focusKey="page-entry" items={playlistList} />
     )
 }
