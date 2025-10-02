@@ -10,13 +10,8 @@ export default function SignInPage() {
     const [user, setUser] = C.React.useState(null)
     const [customServer, setCustomServer] = C.React.useState('')
     const [password, setPassword] = C.React.useState("")
-    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
-    C.React.useEffect(() => {
-        pushFocusLayer("index")
-        return () => {
-            popFocusLayer()
-        }
-    }, [])
+
+    C.useFocusLayer('index')
 
     C.React.useEffect(() => {
         if (!users && apiClient && clientOptions) {

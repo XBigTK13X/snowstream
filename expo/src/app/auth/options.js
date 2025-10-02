@@ -16,13 +16,7 @@ export default function OptionsPage() {
     const { SnowStyle } = C.useStyleContext()
     const { apiClient, clientOptions, changeClientOptions } = C.useAppContext()
 
-    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
-    C.React.useEffect(() => {
-        pushFocusLayer("options")
-        return () => {
-            popFocusLayer()
-        }
-    }, [])
+    C.useFocusLayer('options')
 
     let storedResolution = 0
     if (clientOptions) {

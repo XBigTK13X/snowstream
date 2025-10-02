@@ -4,13 +4,7 @@ export default function ShelfEditPage() {
     const { apiClient } = C.useAppContext()
     const { routes } = C.useAppContext()
     const localParams = C.useLocalSearchParams()
-    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
-    C.React.useEffect(() => {
-        pushFocusLayer("job-runner")
-        return () => {
-            popFocusLayer()
-        }
-    }, [])
+    C.useFocusLayer('job-runner')
 
     const [form, setForm] = C.React.useState({
         episodeOrder: localParams.episodeOrder ?? '',

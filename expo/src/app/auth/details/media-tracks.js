@@ -23,13 +23,7 @@ export default function MediaTracksPage(props) {
     const [showModal, setShowModal] = C.React.useState(false)
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
 
-    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
-    C.React.useEffect(() => {
-        pushFocusLayer("media-tracks")
-        return () => {
-            popFocusLayer()
-        }
-    }, [])
+    C.useFocusLayer('media-tracks')
 
     const shelfId = localParams.shelfId;
 

@@ -57,7 +57,8 @@ import Snow, {
     SnowToggle,
     SnowView,
     useStyleContext,
-    useFocusContext
+    useFocusContext,
+    useFocusLayer
 } from 'expo-snowui'
 
 import SnowPosterGrid from './comp/snow-poster-grid'
@@ -80,6 +81,7 @@ export default {
     usePlayerContext,
     useDebouncedCallback,
     useFocusContext,
+    useFocusLayer,
     useKeepAwake,
     useLocalSearchParams,
     useNavigation,

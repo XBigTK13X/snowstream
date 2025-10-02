@@ -2,13 +2,8 @@ import C from '../../../common'
 
 export default function AdminDashboardPage() {
     const { routes } = C.useAppContext();
-    const { pushFocusLayer, popFocusLayer } = C.useFocusContext()
-    C.React.useEffect(() => {
-        pushFocusLayer("admin-dashboard")
-        return () => {
-            popFocusLayer()
-        }
-    }, [])
+
+    C.useFocusLayer('admin-dashboard')
 
     const renderItem = (item) => {
         return <C.SnowTextButton title={item.title} onPress={routes.func(item.route)} />
