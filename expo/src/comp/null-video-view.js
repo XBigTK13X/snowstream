@@ -1,24 +1,11 @@
 import React from 'react'
+import Snow from 'expo-snowui'
 import { TouchableOpacity, View } from 'react-native'
 import { usePlayerContext } from '../player-context'
-import Snow from 'expo-snowui'
 
 export default function NullVideoView(props) {
     const { getWindowWidth, getWindowHeight } = Snow.useStyleContext(props)
     const player = usePlayerContext()
-    const styles = {
-        touchable: {
-            width: getWindowWidth,
-            height: getWindowHeight,
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-        }
-    }
     const [updateInterval, setUpdateInterval] = React.useState(null)
     const [lastSeek, setLastSeek] = React.useState(0)
 
@@ -60,10 +47,11 @@ export default function NullVideoView(props) {
         }
     }, [])
     return (
-        <TouchableOpacity
+        <Snow.Overlay
             transparent
-            focusable={!player.info.controlsVisible}
-            style={styles.touchable}
+            focusStart
+            focusKey="null-video"
+            focusLayer="null-video"
             onPress={player.action.onPauseVideo}>
             <Snow.FillView style={{ width: '85%' }}>
                 <View>
@@ -75,6 +63,6 @@ export default function NullVideoView(props) {
                     <Snow.Text>{JSON.stringify(player.info, null, 4)}</Snow.Text>
                 </View>
             </Snow.FillView>
-        </TouchableOpacity>
+        </Snow.Overlay>
     )
 }

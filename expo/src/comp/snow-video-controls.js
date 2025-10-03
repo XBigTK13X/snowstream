@@ -137,20 +137,19 @@ export default function SnowVideoControls(props) {
     let trackControls = null
     if (player.info.mediaTracks) {
         trackControls = (
-            <View>
-                <SnowTrackSelector
-                    style={styles.row}
-                    showDelay={true}
-                    audioDelay={player.info.audioDelaySeconds}
-                    setAudioDelay={player.action.setAudioDelay}
-                    subtitleDelay={player.info.subtitleDelaySeconds}
-                    setSubtitleDelay={player.action.setSubtitleDelay}
-                    tracks={player.info.mediaTracks}
-                    selectTrack={player.action.onSelectTrack}
-                    audioTrack={player.info.audioTrackIndex}
-                    subtitleTrack={player.info.subtitleTrackIndex}
-                />
-            </View>
+            <SnowTrackSelector
+                focusKey="track-selector"
+                style={styles.row}
+                showDelay={true}
+                audioDelay={player.info.audioDelaySeconds}
+                setAudioDelay={player.action.setAudioDelay}
+                subtitleDelay={player.info.subtitleDelaySeconds}
+                setSubtitleDelay={player.action.setSubtitleDelay}
+                tracks={player.info.mediaTracks}
+                selectTrack={player.action.onSelectTrack}
+                audioTrack={player.info.audioTrackIndex}
+                subtitleTrack={player.info.subtitleTrackIndex}
+            />
         )
     }
     let slider = null
@@ -187,14 +186,12 @@ export default function SnowVideoControls(props) {
                 <SnowFillView flexStart scroll>
                     <SnowLabel center>{player.info.videoTitle}</SnowLabel>
                     {slider}
-                    <SnowTabs focusKey="control-tabs" headers={tabs}>
-                        <View>
-                            <SnowGrid focusStart itemsPerRow={3}>
-                                <SnowTextButton title="Resume" onPress={player.action.onResumeVideo} />
-                                <SnowTextButton title="Stop" onPress={() => { player.action.onStopVideo() }} />
-                                <SnowTextButton title="Home" onPress={() => { player.action.onStopVideo(true) }} />
-                            </SnowGrid>
-                        </View>
+                    <SnowTabs focusStart focusKey="control-tabs" headers={tabs}>
+                        <SnowGrid itemsPerRow={3}>
+                            <SnowTextButton title="Resume" onPress={player.action.onResumeVideo} />
+                            <SnowTextButton title="Stop" onPress={() => { player.action.onStopVideo() }} />
+                            <SnowTextButton title="Home" onPress={() => { player.action.onStopVideo(true) }} />
+                        </SnowGrid>
                         {subtitleControls}
                         {trackControls}
                         <SnowGrid short itemsPerRow={2}>

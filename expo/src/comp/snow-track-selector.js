@@ -72,7 +72,6 @@ export default function SnowTrackSelector(props) {
     if (!props.tracks) {
         return null
     }
-    console.log({})
     return (
         <Snow.FillView>
             {props.tracks.audio.length ? <TrackList

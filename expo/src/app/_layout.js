@@ -44,6 +44,7 @@ const appStyle = {
         textDark: 'rgb(22, 22, 22)',
         active: 'rgb(150, 150, 150)',
         hover: 'rgb(119, 139, 255)',
+        hoverDark: 'rgba(83, 97, 177, 1)',
         core: 'rgb(219, 158, 44)',
         coreDark: 'rgb(136, 98, 27)',
         outlineDark: 'rgb(63, 63, 63)',
@@ -55,7 +56,7 @@ const appStyle = {
 
 export default function RootLayout() {
     return (
-        <Snow.App DEBUG_FOCUS={true} snowStyle={appStyle}>
+        <Snow.App DEBUG_FOCUS={'verbose'} snowStyle={appStyle}>
             <C.AppContextProvider>
                 <Header />
                 <C.Slot />

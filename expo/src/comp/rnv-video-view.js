@@ -41,18 +41,6 @@ export default function RnvVideoView(props) {
             justifyContent: 'center',
             backgroundColor: 'black' // Without this color, letterbox will be white by default
         },
-        touchable: {
-            width: getWindowWidth(),
-            height: getWindowHeight(),
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'black' // Without this color, letterbox will be white by default
-        },
         video: {
             alignSelf: 'center',
             position: 'absolute',
@@ -129,14 +117,15 @@ export default function RnvVideoView(props) {
 
     return (
         <Snow.Modal
-            focusStart
             focusLayer="rnv-view"
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
-            <TouchableOpacity
-                activeOpacity={1}
-                style={styles.touchable}
+            <Snow.Overlay
+                black // Without this color, letterbox will be white by default
+                focusStart
+                focusKey="rnv-video"
+                focusLayer="rnv-video"
                 onPress={player.action.onPauseVideo}>
                 <Video
                     style={styles.video}
@@ -199,7 +188,7 @@ export default function RnvVideoView(props) {
                     onVolumeChange={onRnvEvent('onVolumeChange')}
 
                 />
-            </TouchableOpacity>
+            </Snow.Overlay>
         </Snow.Modal>
     )
 }

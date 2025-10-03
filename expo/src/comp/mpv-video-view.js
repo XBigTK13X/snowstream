@@ -14,18 +14,6 @@ export default function MpvVideoView(props) {
     const player = usePlayerContext()
 
     const styles = {
-        touchable: {
-            width: getWindowWidth(),
-            height: getWindowHeight(),
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'transparent'
-        },
         wrapper: {
             width: getWindowWidth(),
             height: getWindowHeight(),
@@ -120,12 +108,14 @@ export default function MpvVideoView(props) {
                 selectedSubtitleTrack={player.info.subtitleTrackIndex}
                 seekToSeconds={player.info.seekToSeconds}
             />
-            <TouchableOpacity
-                // Without this, the video has a white film over it
+            <Snow.Overlay
+                focusStart
+                focusKey="mpv-video"
+                focusLayer="mpv-video"
+                transparent
                 activeOpacity={1}
-                style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
-            </TouchableOpacity>
+            </Snow.Overlay>
         </Snow.Modal >
     )
 }
