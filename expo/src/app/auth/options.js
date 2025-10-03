@@ -18,27 +18,30 @@ export default function OptionsPage() {
 
     C.useFocusLayer('options')
 
-    let storedResolution = 0
+    let storedResolutionIndex = 0
     if (clientOptions) {
         if (clientOptions.resolutionHeight !== 2160) {
-            storedResolution = 1
+            storedResolutionIndex = 1
         }
     }
-    const [resolutionIndex, setResolutionIndex] = C.React.useState(storedResolution)
-    const [resolutionWidth, setResolutionWidth] = C.React.useState(clientOptions ? clientOptions.resolutionWidth : '')
-    const [resolutionHeight, setResolutionHeight] = C.React.useState(clientOptions ? clientOptions.resolutionHeight : '')
 
     const [deviceProfiles, setDeviceProfiles] = C.React.useState(null)
-    const [deviceProfileIndex, setDeviceProfileIndex] = C.React.useState(null)
-    const [deviceProfile, setDeviceProfile] = C.React.useState('')
-    const [deviceId, setDeviceId] = C.React.useState(clientOptions ? clientOptions.deviceId : '')
 
+    const [form, setForm] = C.React.useState({
+        deviceProfileIndex: null,
+        deviceId: clientOptions?.deviceId ?? '',
+        resolutionIndex: storedResolutionIndex,
+        audioCompression: clientOptions?.audioCompression ?? '',
+        hardwareDecoder: clientOptions?.hardwareDecoder ?? '',
+        alwaysTranscode: clientOptions?.alwaysTranscode ?? '',
+        alwaysUsePlayer: clientOptions?.alwaysUsePlayer ?? '',
+        useMpvFast: clientOptions?.useMpvFast ?? '',
+    })
+    const formRef = C.React.useRef(form)
 
-    const [audioCompression, setAudioCompression] = C.React.useState(clientOptions ? clientOptions.audioCompression : '')
-    const [hardwareDecoder, setHardwareDecoder] = C.React.useState(clientOptions ? clientOptions.hardwareDecoder : '')
-    const [alwaysTranscode, setAlwaysTranscode] = C.React.useState(clientOptions ? clientOptions.alwaysTranscode : '')
-    const [alwaysUsePlayer, setAlwaysUsePlayer] = C.React.useState(clientOptions ? clientOptions.alwaysUsePlayer : '')
-    const [useMpvFast, setUseMpvFast] = C.React.useState(clientOptions ? clientOptions.useMpvFast : '')
+    C.React.useEffect(() => {
+        formRef.current = form
+    }, [form])
 
     C.React.useEffect(() => {
         if (!deviceProfiles) {
@@ -51,63 +54,56 @@ export default function OptionsPage() {
                     }
                 }
                 setDeviceProfiles(profiles)
-                setDeviceProfileIndex(storedDeviceProfile)
-                setDeviceProfile(clientOptions ? clientOptions.deviceProfile : '')
+                setForm((prev) => {
+                    return { ...prev, deviceProfileIndex: storedDeviceProfile }
+                })
             })
         }
-    })
-
-    const chooseResolution = (selection) => {
-        if (selection === 0) {
-            setResolutionHeight(SnowStyle.surface.uhd.height)
-            setResolutionWidth(SnowStyle.surface.uhd.width)
-        } else {
-            setResolutionHeight(SnowStyle.surface.fhd.height)
-            setResolutionWidth(SnowStyle.surface.fhd.width)
-        }
-        setResolutionIndex(selection)
-    }
-
-    const chooseDeviceProfile = (selection) => {
-        setDeviceProfile(deviceProfiles[selection])
-        setDeviceProfileIndex(selection)
-    }
-
-    const chooseAudioCompression = (selection) => {
-        setAudioCompression(selection === 0 ? false : true)
-    }
-
-    const chooseHardwareDecoder = (selection) => {
-        setHardwareDecoder(selection === 0 ? false : true)
-    }
-
-    const chooseAlwaysTranscode = (selection) => {
-        setAlwaysTranscode(selection === 0 ? false : true)
-    }
-
-    const chooseAlwaysUsePlayer = (selection) => {
-        setAlwaysUsePlayer(players[selection])
-    }
-
-    const chooseUseMpvFast = (selection) => {
-        setUseMpvFast(selection === 0 ? false : true)
-    }
+    }, [])
 
     if (!deviceProfiles) {
         return null
     }
 
+    const chooseResolution = (selection) => {
+        setForm(prev => ({ ...prev, resolutionIndex: selection }))
+    }
+
+    const chooseDeviceProfile = (selection) => {
+        setForm(prev => ({ ...prev, deviceProfileIndex: selection }))
+    }
+
+    const chooseAlwaysUsePlayer = (selection) => {
+        setForm(prev => ({ ...prev, alwaysUsePlayer: players[selection] }))
+    }
+
+    const chooseAudioCompression = (selection) => {
+        setForm(prev => ({ ...prev, audioCompression: selection === 0 ? false : true }))
+    }
+
+    const chooseHardwareDecoder = (selection) => {
+        setForm(prev => ({ ...prev, hardwareDecoder: selection === 0 ? false : true }))
+    }
+
+    const chooseAlwaysTranscode = (selection) => {
+        setForm(prev => ({ ...prev, alwaysTranscode: selection === 0 ? false : true }))
+    }
+
+    const chooseUseMpvFast = (selection) => {
+        setForm(prev => ({ ...prev, useMpvFast: selection === 0 ? false : true }))
+    }
+
+
+
     const saveForm = () => {
-        const payload = {
-            alwaysTranscode,
-            alwaysUsePlayer,
-            audioCompression,
-            deviceId,
-            deviceProfile,
-            hardwareDecoder,
-            resolutionHeight,
-            resolutionWidth,
-            useMpvFast,
+        let payload = { ...formRef.current }
+        payload.deviceProfile = deviceProfiles[payload.deviceProfileIndex]
+        if (payload.resolutionIndex === 0) {
+            payload.resolutionHeight = SnowStyle.surface.uhd.height
+            payload.resolutionWidth = SnowStyle.surface.uhd.width
+        } else {
+            payload.resolutionHeight = SnowStyle.surface.fhd.height
+            payload.resolutionWidth = SnowStyle.surface.fhd.width
         }
         changeClientOptions(payload)
     }
@@ -121,7 +117,7 @@ export default function OptionsPage() {
                 itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={saveForm} />
                 <C.SnowView>
-                    <C.SnowInput value={deviceId} onValueChange={setDeviceId} />
+                    <C.SnowInput value={form.deviceId} onValueChange={(val) => { setForm(prev => ({ ...prev, deviceId: val })) }} />
                     <C.SnowLabel center>Device ID</C.SnowLabel>
                 </C.SnowView>
                 <C.SnowTextButton
@@ -142,21 +138,21 @@ export default function OptionsPage() {
                 title="Device Profile"
                 options={deviceProfiles}
                 onValueChange={chooseDeviceProfile}
-                valueIndex={deviceProfileIndex} />
+                valueIndex={form.deviceProfileIndex} />
             <C.SnowDropdown
                 focusKey="video-resolution"
                 focusDown="player-choice"
                 title="Video Resolution"
                 options={resolutions}
                 onValueChange={chooseResolution}
-                valueIndex={resolutionIndex} />
+                valueIndex={form.resolutionIndex} />
             <C.SnowDropdown
                 focusKey="player-choice"
                 focusDown="always-transcode"
                 title="Always Use Player"
                 options={players}
                 onValueChange={chooseAlwaysUsePlayer}
-                valueIndex={players.indexOf(alwaysUsePlayer)} />
+                valueIndex={players.indexOf(form.alwaysUsePlayer)} />
             <C.SnowGrid assignFocus={false} itemsPerRow={2}>
                 <C.SnowDropdown
                     focusKey="always-transcode"
@@ -165,27 +161,27 @@ export default function OptionsPage() {
                     title="Always Transcode"
                     options={['No', 'Yes']}
                     onValueChange={chooseAlwaysTranscode}
-                    valueIndex={alwaysTranscode === true ? 1 : 0} />
+                    valueIndex={form.alwaysTranscode === true ? 1 : 0} />
                 <C.SnowDropdown
                     focusKey="audio-compression"
                     focusDown="fast-mpv"
                     title="Audio Compression (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseAudioCompression}
-                    valueIndex={audioCompression === true ? 1 : 0} />
+                    valueIndex={form.audioCompression === true ? 1 : 0} />
                 <C.SnowDropdown
                     focusKey="hardware-decoder"
                     focusRight="fast-mpv"
                     title="Hardware Decoder (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseHardwareDecoder}
-                    valueIndex={hardwareDecoder === true ? 1 : 0} />
+                    valueIndex={form.hardwareDecoder === true ? 1 : 0} />
                 <C.SnowDropdown
                     focusKey="fast-mpv"
                     title="Fast Config (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseUseMpvFast}
-                    valueIndex={useMpvFast === true ? 1 : 0} />
+                    valueIndex={form.useMpvFast === true ? 1 : 0} />
             </C.SnowGrid>
         </C.View>
 
