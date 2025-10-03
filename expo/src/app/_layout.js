@@ -55,7 +55,7 @@ const appStyle = {
 
 export default function RootLayout() {
     return (
-        <Snow.App DEBUG_FOCUS={false} snowStyle={appStyle}>
+        <Snow.App DEBUG_FOCUS={true} snowStyle={appStyle}>
             <C.AppContextProvider>
                 <Header />
                 <C.Slot />

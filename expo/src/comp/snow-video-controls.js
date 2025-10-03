@@ -51,6 +51,7 @@ export default function SnowVideoControls(props) {
     if (showLogs) {
         return (
             <SnowModal
+                focusLayer="log-viewer"
                 style={styles.logs}
                 onRequestClose={() => { setShowLogs(false) }}>
                 <SnowGrid focusStart itemsPerRow={1}>
@@ -160,6 +161,8 @@ export default function SnowVideoControls(props) {
         slider = (
             <View>
                 <SnowRangeSlider
+                    focusKey="seekbar"
+                    focusDown="control-tabs"
                     width={750}
                     debounce={true}
                     percent={player.info.progressPercent ?? 0}
@@ -174,6 +177,7 @@ export default function SnowVideoControls(props) {
     return (
         (
             <SnowModal
+                focusLayer="video-controls"
                 modalStyle={styles.prompt}
                 style={styles.background}
                 transparent
@@ -183,10 +187,10 @@ export default function SnowVideoControls(props) {
                 <SnowFillView flexStart scroll>
                     <SnowLabel center>{player.info.videoTitle}</SnowLabel>
                     {slider}
-                    <SnowTabs headers={tabs}>
+                    <SnowTabs focusKey="control-tabs" headers={tabs}>
                         <View>
-                            <SnowGrid itemsPerRow={3}>
-                                <SnowTextButton focusStart title="Resume" onPress={player.action.onResumeVideo} />
+                            <SnowGrid focusStart itemsPerRow={3}>
+                                <SnowTextButton title="Resume" onPress={player.action.onResumeVideo} />
                                 <SnowTextButton title="Stop" onPress={() => { player.action.onStopVideo() }} />
                                 <SnowTextButton title="Home" onPress={() => { player.action.onStopVideo(true) }} />
                             </SnowGrid>

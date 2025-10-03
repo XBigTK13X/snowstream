@@ -1,6 +1,5 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { useFocusContext } from 'expo-snowui'
 import { useLocalSearchParams, usePathname } from 'expo-router'
 import { useAppContext } from './app-context'
 import util from './util'
@@ -17,7 +16,6 @@ export function usePlayerContext() {
 
 export function PlayerContextProvider(props) {
     const localParams = useLocalSearchParams()
-    const { focusIsLocked, setLockedElement } = useFocusContext()
     const {
         apiClient,
         clientOptions,
@@ -150,7 +148,6 @@ export function PlayerContextProvider(props) {
 
     const onResumeVideo = () => {
         setControlsVisible(false)
-        setLockedElement(null)
         setIsPlaying(true)
         if (completeOnResume) {
             onPlaybackComplete()
@@ -422,7 +419,7 @@ export function PlayerContextProvider(props) {
     }
 
     const playerHandleRemote = (kind, action) => {
-        if (!controlsVisible && isReady && !focusIsLocked && !isTranscode) {
+        if (!controlsVisible && isReady && !isTranscode) {
             if (initialSeekComplete || !initialSeekSeconds) {
                 if (kind === 'right') {
                     onProgress(progressSeconds + 90, 'manual-seek')

@@ -98,6 +98,8 @@ export default function MpvVideoView(props) {
 
     return (
         <Snow.Modal
+            focusStart
+            focusLayer="mpv-view"
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
@@ -121,8 +123,6 @@ export default function MpvVideoView(props) {
             <TouchableOpacity
                 // Without this, the video has a white film over it
                 activeOpacity={1}
-                focusable={!player.info.controlsVisible}
-                hasTVPreferredFocus={!player.info.controlsVisible}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
             </TouchableOpacity>

@@ -129,13 +129,13 @@ export default function RnvVideoView(props) {
 
     return (
         <Snow.Modal
+            focusStart
+            focusLayer="rnv-view"
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
             <TouchableOpacity
-                hasTVPreferredFocus={!player.info.controlsVisible}
                 activeOpacity={1}
-                focusable={!player.info.controlsVisible}
                 style={styles.touchable}
                 onPress={player.action.onPauseVideo}>
                 <Video
@@ -150,7 +150,6 @@ export default function RnvVideoView(props) {
                     // SURFACE allows HDR video playback without tonemapping on Android/TV
                     viewType={ViewType.SURFACE}
                     fullscreen={false}
-                    focusable={true}
                     resizeMode="contain"
                     paused={!player.info.isPlaying}
                     playWhenInactive={false}

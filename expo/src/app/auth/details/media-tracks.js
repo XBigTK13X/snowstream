@@ -141,6 +141,7 @@ export default function MediaTracksPage(props) {
             }
             return (
                 <C.SnowModal
+                    focusLayer="video-inspection"
                     scroll
                     onRequestClose={() => { setShowModal(false) }}
                 >

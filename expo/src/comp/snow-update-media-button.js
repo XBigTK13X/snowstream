@@ -38,12 +38,13 @@ export default function SnowUpdateMediaButton(props) {
         let question = props.kind ? `Do you want to update this ${props.kind}?` : 'Do you want to update this item?'
         return (
             <SnowModal
+                focusLayer="update-media"
                 center
                 onRequestClose={() => {
                     setShowRequest(false)
                 }}>
                 <SnowHeader>{question}</SnowHeader>
-                <SnowGrid itemsPerRow={4}>
+                <SnowGrid focusStart focusKey="update-inputs" focusDown="update-toggles" itemsPerRow={4}>
                     <View style={{ alignItems: 'center' }}>
                         <SnowLabel>Remote Metadata ID</SnowLabel>
                         <SnowInput onValueChange={(text) => { setMetadataId(text) }} value={metadataId} />
@@ -53,12 +54,12 @@ export default function SnowUpdateMediaButton(props) {
                         <SnowInput onValueChange={(text) => { setMetadataSource(text) }} value={metadataSource} />
                     </View>
                 </SnowGrid>
-                <SnowGrid itemsPerRow={6}>
+                <SnowGrid focusKey="update-toggles" focusDown="update-submit" itemsPerRow={6}>
                     <SnowToggle title="Metadata" value={updateMetadata} onValueChange={setUpdateMetadata} />
                     <SnowToggle title="Images" value={updateImages} onValueChange={setUpdateImages} />
                     <SnowToggle title="Skip Existing" value={skipExisting} onValueChange={setSkipExisting} />
                 </SnowGrid>
-                <SnowGrid gridStyle={{ marginTop: 20 }} itemsPerRow={4}>
+                <SnowGrid focusKey="update-submit" gridStyle={{ marginTop: 20 }} itemsPerRow={4}>
                     <SnowTextButton disabled={!updateMetadata && !updateImages} title="Update Media" onPress={() => { onAccept() }} />
                     <SnowTextButton title="Cancel" onPress={onCancel} />
                 </SnowGrid>

@@ -29,7 +29,7 @@ function ChannelEditRow(props) {
     }
     if (showModal) {
         return (
-            <C.SnowModal scroll onRequestClose={() => { setShowModal(false) }}>
+            <C.SnowModal focusLayer="channel-list" scroll onRequestClose={() => { setShowModal(false) }}>
                 <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
                 <C.SnowTextButton title="Cancel" onPress={() => { setShowModal(false) }} />
                 <C.SnowGrid itemsPerRow={2}>

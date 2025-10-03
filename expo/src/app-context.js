@@ -257,11 +257,11 @@ export function AppContextProvider(props) {
 
     if (apiError) {
         return (
-            <Snow.Modal center>
+            <Snow.Modal focusLayer="api-error" center>
                 <Snow.Text>Unable to communicate with Snowstream.</Snow.Text>
                 <Snow.Text>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</Snow.Text>
                 <View>
-                    <Snow.Grid itemsPerRow={2}>
+                    <Snow.Grid focusStart focusKey="error-buttons" itemsPerRow={2}>
                         <Snow.TextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
                         <Snow.TextButton title="Change Server" onPress={() => { logout(true) }} />
                     </Snow.Grid>
