@@ -1,6 +1,6 @@
 import C from '../common'
 export default function SignInPage() {
-    const { session, routes, setWebApiUrl } = C.useAppContext()
+    const { sessionLoaded, session, routes, setWebApiUrl } = C.useAppContext()
     if (session) {
         return <C.Redirect href={routes.landing} />
     }
@@ -20,6 +20,10 @@ export default function SignInPage() {
             })
         }
     })
+
+    if (!sessionLoaded) {
+        return null
+    }
 
     const selectUser = (user) => {
         if (user.has_password) {

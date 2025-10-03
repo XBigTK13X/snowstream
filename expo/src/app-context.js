@@ -70,6 +70,7 @@ export function AppContextProvider(props) {
     const [apiClientKey, setApiClientKey] = React.useState(1)
     const [message, setMessage] = React.useState("All is well")
     const [session, setSession] = React.useState(null)
+    const [sessionLoaded, setSessionLoaded] = React.useState(false)
     const [isAdmin, setIsAdmin] = React.useState(false)
     const [displayName, setDisplayName] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
@@ -96,6 +97,7 @@ export function AppContextProvider(props) {
                 }))
                 setApiClientKey((prev) => { return prev + 1 })
             }
+            setSessionLoaded(true)
         }
     })
 
@@ -274,6 +276,7 @@ export function AppContextProvider(props) {
         config,
         routes,
         session,
+        sessionLoaded,
         isLoading,
         apiClient,
         isAdmin,

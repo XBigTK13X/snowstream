@@ -20,21 +20,29 @@ function TrackList(props) {
             {props.title} ({props.tracks.length}) {activeBitRate}
         </Snow.Text>
     )
+    let gridProps = readFocusProps(props)
     if (props.showDelay) {
+        gridProps.focusKey = props.focusKey + '-buttons'
         header = (
-            <Snow.Grid {...readFocusProps(props)} itemsPerRow={3} shrink>
+            <Snow.Grid assignFocus={false} itemsPerRow={3} shrink>
                 <Snow.Text>
                     {props.title} ({props.tracks.length}) {activeBitRate}
                 </Snow.Text>
-                <Snow.Input value={props.delay} onValueChange={props.setDelay} />
+                <Snow.Input
+                    focusKey={props.focusKey}
+                    focusDown={gridProps.focusKey}
+                    value={props.delay}
+                    onValueChange={props.setDelay}
+                />
                 <Snow.Text>Seconds Delay</Snow.Text>
             </Snow.Grid>
         )
+
     }
     return (
         <View>
             {header}
-            <Snow.Grid {...readFocusProps(props)} short shrink itemsPerRow={4}>
+            <Snow.Grid {...gridProps} short shrink itemsPerRow={4}>
                 {props.tracks.map((track, trackKey) => {
                     let display = track.language ? track.language + ' - ' : ''
                     display += `${(track.title.indexOf('.') === -1 && track.title) ? track.title + ' - ' : ''}`

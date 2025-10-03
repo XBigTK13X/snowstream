@@ -109,7 +109,7 @@ export default function OptionsPage() {
     }
 
     return (
-        <C.View>
+        <C.FillView>
             <C.SnowGrid
                 focusStart
                 focusKey="page-entry"
@@ -183,7 +183,7 @@ export default function OptionsPage() {
                     onValueChange={chooseUseMpvFast}
                     valueIndex={form.useMpvFast === true ? 1 : 0} />
             </C.SnowGrid>
-        </C.View>
+        </C.FillView>
 
     )
 }
