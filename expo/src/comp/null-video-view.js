@@ -47,12 +47,10 @@ export default function NullVideoView(props) {
         }
     }, [])
     return (
-        <Snow.Overlay
-            transparent
-            focusStart
-            focusKey="null-video"
-            focusLayer="null-video"
-            onPress={player.action.onPauseVideo}>
+        <Snow.Modal
+            assignFocus={false}
+            onRequestClose={() => { player.action.onStopVideo() }}
+        >
             <Snow.FillView style={{ width: '85%' }}>
                 <View>
                     <Snow.Text>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
@@ -63,6 +61,13 @@ export default function NullVideoView(props) {
                     <Snow.Text>{JSON.stringify(player.info, null, 4)}</Snow.Text>
                 </View>
             </Snow.FillView>
-        </Snow.Overlay>
+            <Snow.Overlay
+                transparent
+                focusStart
+                focusKey="null-video"
+                focusLayer="null-video"
+                onPress={player.action.onPauseVideo}>
+            </Snow.Overlay>
+        </Snow.Modal>
     )
 }

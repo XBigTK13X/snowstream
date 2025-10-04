@@ -117,7 +117,7 @@ export default function RnvVideoView(props) {
 
     return (
         <Snow.Modal
-            focusLayer="rnv-view"
+            assignFocus={false}
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>

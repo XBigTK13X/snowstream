@@ -1,3 +1,11 @@
+import { StyleSheet } from 'react-native';
+
+const fullScreen = StyleSheet.create({
+    fill: {
+        ...StyleSheet.absoluteFillObject,  // fills entire screen reliably
+        backgroundColor: 'black',          // override Modal's default black
+    }
+});
 import React from 'react'
 import { View } from 'react-native'
 import Snow from 'expo-snowui'
@@ -9,6 +17,7 @@ import { usePlayerContext } from '../player-context'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
+    const { SnowStyle } = Snow.useStyleContext(props)
     const { clientOptions } = useAppContext()
     const player = usePlayerContext()
 
@@ -69,33 +78,38 @@ export default function MpvVideoView(props) {
         }
     }, [player.info.subtitleDelay])
 
+    console.log({ overlay: SnowStyle.component.overlay })
+
     return (
-        <Snow.FillView>
+        <Snow.Modal transparent statusBarTranslucent
+            navigationBarTranslucent wrapper={false} assignFocus={false} onRequestClose={() => { player.action.onStopVideo() }}>
+            <View style={fullScreen.fill}>
+                <LibmpvVideo
+                    ref={forwardRef}
+                    playUrl={player.info.videoUrl}
+                    isPlaying={player.info.isPlaying}
+                    useHardwareDecoder={clientOptions.hardwareDecoder}
+                    surfaceWidth={player.info.videoWidth}
+                    surfaceHeight={player.info.videoHeight}
+                    onLibmpvEvent={(libmpvEvent) => {
+                        player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
+                    }}
+                    onLibmpvLog={(libmpvLog) => {
+                        player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
+                    }}
+                    selectedAudioTrack={player.info.audioTrackIndex}
+                    selectedSubtitleTrack={player.info.subtitleTrackIndex}
+                    seekToSeconds={player.info.seekToSeconds}
+                />
+            </View>
             <Snow.Overlay
                 focusStart
                 focusKey="mpv-video"
                 focusLayer="mpv-video"
                 transparent
                 onPress={player.action.onPauseVideo}
-            />
-            <LibmpvVideo
-                ref={forwardRef}
-                playUrl={player.info.videoUrl}
-                isPlaying={player.info.isPlaying}
-                useHardwareDecoder={clientOptions.hardwareDecoder}
-                surfaceWidth={player.info.videoWidth}
-                surfaceHeight={player.info.videoHeight}
-                onLibmpvEvent={(libmpvEvent) => {
-                    player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
-                }}
-                onLibmpvLog={(libmpvLog) => {
-                    player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
-                }}
-                selectedAudioTrack={player.info.audioTrackIndex}
-                selectedSubtitleTrack={player.info.subtitleTrackIndex}
-                seekToSeconds={player.info.seekToSeconds}
-            />
-
-        </Snow.FillView>
+            >
+            </Snow.Overlay>
+        </Snow.Modal>
     )
 }
