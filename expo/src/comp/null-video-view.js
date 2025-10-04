@@ -46,6 +46,7 @@ export default function NullVideoView(props) {
             }
         }
     }, [])
+    // See the comment in mpv-video-view for more info about this structure
     return (
         <Snow.Modal
             assignFocus={false}
@@ -62,7 +63,6 @@ export default function NullVideoView(props) {
                 </View>
             </Snow.FillView>
             <Snow.Overlay
-                transparent
                 focusStart
                 focusKey="null-video"
                 focusLayer="null-video"

@@ -114,19 +114,14 @@ export default function RnvVideoView(props) {
     }
 
     const shade = player.info.subtitleColor.shade * 255
-
+    // See the comment in mpv-video-view for more info about this structure
     return (
         <Snow.Modal
             assignFocus={false}
             wrapper={false}
             onRequestClose={() => { player.action.onStopVideo() }}
             style={styles.wrapper}>
-            <Snow.Overlay
-                black // Without this color, letterbox will be white by default
-                focusStart
-                focusKey="rnv-video"
-                focusLayer="rnv-video"
-                onPress={player.action.onPauseVideo}>
+            <Snow.FillView style={{ backgroundColor: 'black' }}>
                 <Video
                     style={styles.video}
                     source={{
@@ -186,9 +181,13 @@ export default function RnvVideoView(props) {
                     onTextTracks={onRnvEvent('onTextTracks')}
                     onVideoTracks={onRnvEvent('onVideoTracks')}
                     onVolumeChange={onRnvEvent('onVolumeChange')}
-
                 />
-            </Snow.Overlay>
+            </Snow.FillView>
+            <Snow.Overlay
+                focusStart
+                focusKey="rnv-video"
+                focusLayer="rnv-video"
+                onPress={player.action.onPauseVideo} />
         </Snow.Modal>
     )
 }

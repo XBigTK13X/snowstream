@@ -1,13 +1,5 @@
 import { StyleSheet } from 'react-native';
-
-const fullScreen = StyleSheet.create({
-    fill: {
-        ...StyleSheet.absoluteFillObject,  // fills entire screen reliably
-        backgroundColor: 'black',          // override Modal's default black
-    }
-});
 import React from 'react'
-import { View } from 'react-native'
 import Snow from 'expo-snowui'
 // Don't want it being included outside of Android
 // Don't trying importing it until first render
@@ -78,12 +70,19 @@ export default function MpvVideoView(props) {
         }
     }, [player.info.subtitleDelay])
 
-    console.log({ overlay: SnowStyle.component.overlay })
-
+    // The Modal draws the video player above everything else in the app
+    // The FillView ensures that if the surface doesn't take up the entire viewport, that the letter/pillar boxing is black
+    // The Video element renders to a native Surface
+    // The Overlay allows a user to tap/click select on a remote to pause
     return (
-        <Snow.Modal transparent statusBarTranslucent
-            navigationBarTranslucent wrapper={false} assignFocus={false} onRequestClose={() => { player.action.onStopVideo() }}>
-            <View style={fullScreen.fill}>
+        <Snow.Modal
+            transparent
+            statusBarTranslucent
+            navigationBarTranslucent
+            wrapper={false}
+            assignFocus={false}
+            onRequestClose={() => { player.action.onStopVideo() }}>
+            <Snow.FillView style={{ backgroundColor: 'black' }} >
                 <LibmpvVideo
                     ref={forwardRef}
                     playUrl={player.info.videoUrl}
@@ -101,15 +100,14 @@ export default function MpvVideoView(props) {
                     selectedSubtitleTrack={player.info.subtitleTrackIndex}
                     seekToSeconds={player.info.seekToSeconds}
                 />
-            </View>
+            </Snow.FillView>
             <Snow.Overlay
                 focusStart
                 focusKey="mpv-video"
                 focusLayer="mpv-video"
-                transparent
                 onPress={player.action.onPauseVideo}
             >
             </Snow.Overlay>
-        </Snow.Modal>
+        </Snow.Modal >
     )
 }
