@@ -57,23 +57,14 @@ export default function StreamSourceEditPage() {
             }))
         }
     }
-
-    let existingButtons = null
-    if (streamSourceId) {
-        existingButtons = (
-            <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="Streamables" onPress={routes.func(routes.admin.streamablesEdit, { streamSourceId: localParams.streamSourceId })} />
-                <C.SnowTextButton title={`Delete (${streamSourceDeleteCount})`} onPress={deleteStreamSource} />
-            </C.SnowGrid>
-        )
-    }
     if (streamSourceDeleted) {
         return <C.Redirect href={routes.admin.streamSourceList} />
     }
 
     return (
-        <C.View>
-            {existingButtons}
+        <C.SnowGrid focusStart focusKey='page-entry' itemsPerRow={1}>
+            {streamSourceId ? <C.SnowTextButton title="Streamables" onPress={routes.func(routes.admin.streamablesEdit, { streamSourceId: localParams.streamSourceId })} /> : null}
+            {streamSourceId ? <C.SnowTextButton title={`Delete (${streamSourceDeleteCount})`} onPress={deleteStreamSource} /> : null}
 
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onValueChange={setStreamSourceName} value={streamSourceName} />
@@ -93,6 +84,6 @@ export default function StreamSourceEditPage() {
             <C.SnowInput onValueChange={setStreamSourcePassword} value={streamSourcePassword} />
 
             <C.SnowTextButton title="Save Stream Source" onPress={saveStreamSource} />
-        </C.View >
+        </C.SnowGrid >
     )
 }

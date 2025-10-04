@@ -28,6 +28,7 @@ export default function JobDetailsPage() {
 
     return (
         <C.View>
+            <C.SnowTextButton title="Back" focusStart focusKey="page-entry" onPress={routes.funcBack()} />
             <C.SnowLabel>Job</C.SnowLabel>
             <C.SnowText>{job.kind} is {job.status}. {job.created_at} to {job.updated_at}</C.SnowText>
             <C.SnowLabel>Input</C.SnowLabel>

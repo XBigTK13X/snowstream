@@ -27,9 +27,9 @@ export default function StreamSourceListPage() {
         }
         return (
             <C.View>
-                <C.SnowTextButton title="Create New Stream Source" onPress={routes.func(routes.admin.streamSourceEdit)} />
+                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Stream Source" onPress={routes.func(routes.admin.streamSourceEdit)} />
                 <C.SnowText>{streamSources.length} stream sources found</C.SnowText>
-                <C.SnowGrid items={streamSources} renderItem={renderItem} />
+                <C.SnowGrid focusKey='item-list' items={streamSources} renderItem={renderItem} />
             </C.View>
         )
     }

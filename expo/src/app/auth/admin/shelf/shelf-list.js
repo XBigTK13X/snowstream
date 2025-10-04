@@ -30,12 +30,12 @@ export default function ShelfListPage() {
         }
         return (
             <C.View>
-                <C.SnowTextButton title="Create New Shelf" onPress={routes.func(routes.admin.shelfEdit)} />
+                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Shelf" onPress={routes.func(routes.admin.shelfEdit)} />
                 {
                     destinations.length > 0 ?
                         <>
                             <C.SnowText>{destinations.length} shelves found</C.SnowText>
-                            <C.SnowGrid items={destinations} renderItem={renderItem} />
+                            <C.SnowGrid focusKey="item-list" items={destinations} renderItem={renderItem} />
                         </>
                         : null
                 }

@@ -26,7 +26,7 @@ export default function JobListPage() {
             <C.View>
                 <C.SnowGrid focusKey="page-entry" focusDown="job-list" itemsPerRow={3}>
                     <C.SnowTextButton
-                        title="Toggle Complete"
+                        title={showComplete ? 'Hide Complete' : 'Show All'}
                         onPress={toggleComplete}
                     />
                 </C.SnowGrid>

@@ -70,6 +70,23 @@ function KeepsakeVideo(props) {
     )
 }
 
+function ZoomView(props) {
+    return (<C.SnowModal
+        assignFocus={false}
+        wrapper={false}
+        onRequestClose={() => { props.action }}>
+        <C.FillView style={{ backgroundColor: 'black' }}>
+            {props.children}
+        </C.FillView>
+        <C.SnowOverlay
+            focusStart
+            focusKey="zoomed-item"
+            focusLayer="zoomed-item"
+            onPress={props.action} />
+    </C.SnowModal >
+    )
+}
+
 export default function KeepsakeDetailsPage(props) {
     const { SnowStyle } = C.useStyleContext(props)
     const localParams = C.useLocalSearchParams()
@@ -109,28 +126,22 @@ export default function KeepsakeDetailsPage(props) {
     if (zoomedItem) {
         if (zoomedItem.model_kind === 'image_file') {
             return (
-                <C.View style={styles.zoomedImage}>
-                    <C.TouchableOpacity
-                        onPress={closeModal}
-                        style={styles.modal}>
-                        <C.Image
-                            style={styles.webImage}
-                            resicontentFitzeMode="contain"
-                            source={{ uri: zoomedItem.web_path }} />
-                    </C.TouchableOpacity>
-                </C.View>)
+                <ZoomView action={closeModal}>
+                    <C.Image
+                        style={styles.webImage}
+                        contentFit="contain"
+                        source={{ uri: zoomedItem.web_path }} />
+                </ZoomView>
+            )
         }
         return (
-            <C.View style={styles.zoomedImage}>
-                <C.TouchableOpacity
-                    onPress={closeModal}
-                    style={styles.modal}>
-                    <KeepsakeVideo
-                        videoFile={zoomedItem}
-                        closeModal={closeModal}
-                    />
-                </C.TouchableOpacity>
-            </C.View>)
+            <ZoomView action={closeModal}>
+                <KeepsakeVideo
+                    videoFile={zoomedItem}
+                    closeModal={closeModal}
+                />
+            </ZoomView>
+        )
     }
 
     if (!keepsake) {
@@ -142,11 +153,16 @@ export default function KeepsakeDetailsPage(props) {
     }
 
     let videos = null
-    if (keepsake.videos && keepsake.videos.length) {
+    let hasVideos = keepsake.videos && keepsake.videos.length
+    let images = null
+    let hasImages = keepsake.images && keepsake.images.length
+    let dirs = null
+    let hasDirs = keepsake.directories && keepsake.directories.length
+    if (hasVideos) {
         videos = (
             <C.View>
                 <C.SnowLabel>Videos</C.SnowLabel>
-                <C.SnowGrid wide={true}>
+                <C.SnowGrid focusStart focusKey='video-list' wide={true}>
                     {keepsake.videos.map((video, videoIndex) => {
                         return (
                             <C.SnowImageButton
@@ -162,12 +178,18 @@ export default function KeepsakeDetailsPage(props) {
             </C.View>
         )
     }
-    let images = null
-    if (keepsake.images && keepsake.images.length) {
+
+    if (hasImages) {
+        let focus = {}
+        if (hasVideos) {
+            focus.focusUp = 'video-list'
+        } else {
+            focus.focusStart = true
+        }
         images = (
             <C.View>
                 <C.SnowLabel>Images</C.SnowLabel>
-                <C.SnowGrid wide={true}>
+                <C.SnowGrid {...focus} focusKey='image-list' wide={true}>
                     {keepsake.images.map((image, imageIndex) => {
                         return (
                             <C.SnowImageButton
@@ -184,12 +206,21 @@ export default function KeepsakeDetailsPage(props) {
         )
     }
 
-    let dirs = null
-    if (keepsake.directories && keepsake.directories.length) {
+    if (hasDirs) {
+        let focus = {}
+        if (hasImages) {
+            focus.focusUp = 'image-list'
+        }
+        else if (hasVideos) {
+            focus.focusUp = 'video-list'
+        }
+        else {
+            focus.focusStart = true
+        }
         dirs = (
             <C.View>
                 <C.SnowLabel>Directories</C.SnowLabel>
-                <C.SnowGrid>
+                <C.SnowGrid {...focus} focusKey='directory-list'>
                     {keepsake.directories.map((dir, dirIndex) => {
                         return (
                             <C.SnowTextButton

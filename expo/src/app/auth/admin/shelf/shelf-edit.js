@@ -60,7 +60,7 @@ export default function ShelfEditPage() {
         return <C.Redirect href={routes.admin.shelfList} />
     }
     return (
-        <C.FillView >
+        <C.SnowGrid itemsPerRow={1} focusStart focusKey='page-entry'>
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onValueChange={setShelfName} value={shelfName} />
 
@@ -79,6 +79,6 @@ export default function ShelfEditPage() {
 
             <C.SnowTextButton title="Save Shelf" onPress={saveShelf} />
             {deleteButton}
-        </C.FillView >
+        </C.SnowGrid >
     )
 }

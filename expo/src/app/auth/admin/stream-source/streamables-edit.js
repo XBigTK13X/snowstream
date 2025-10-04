@@ -71,7 +71,7 @@ export default function StreamblesEditPage() {
     return (
         <C.View>
             <C.SnowText>There are {streamSource.streamables.length} streamables.</C.SnowText>
-            <C.SnowGrid itemsPerRow={3}>
+            <C.SnowGrid focusStart focusKey="page-entry" itemsPerRow={3}>
                 <C.SnowLabel>Filter (required)</C.SnowLabel>
                 <C.SnowInput
                     onValueChange={setQuery}
