@@ -35,7 +35,11 @@ export default function LandingPage(props) {
         }
     }
 
-    let destinations = []
+    let destinations = [
+        <C.SnowTextButton title="Continue" onPress={routes.func(routes.continueWatching)} />,
+        <C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />,
+        <C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />
+    ]
 
     if (shelves) {
         destinations = destinations.concat(shelves.map((shelf) => {
@@ -93,31 +97,14 @@ export default function LandingPage(props) {
         }))
     }
 
-    let destinationsGrid = null
-    if (destinations.length > 0) {
-        destinationsGrid = (
-            <C.View>
-                <C.SnowBreak />
-                <C.SnowGrid
-                    focusKey="destinations"
-                    focusUp="page-entry"
-                    itemsPerRow={3} items={destinations} />
-            </C.View>
-        )
-    }
-
-    if (shelves || streamSources) {
+    if (destinations) {
         return (
             <C.View>
                 <C.SnowGrid
                     focusStart
                     focusKey="page-entry"
-                    itemsPerRow={3}>
-                    <C.SnowTextButton title="Continue" onPress={routes.func(routes.continueWatching)} />
-                    <C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />
-                    <C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />
-                </C.SnowGrid>
-                {destinationsGrid}
+                    items={destinations}
+                    itemsPerRow={3} />
                 <C.SnowText style={styles.footer} center>{`v${config.clientVersion} - built ${config.clientBuildDate}`}</C.SnowText>
             </C.View>
         )

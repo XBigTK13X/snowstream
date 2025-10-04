@@ -90,6 +90,7 @@ function ZoomView(props) {
 export default function KeepsakeDetailsPage(props) {
     const { SnowStyle } = C.useStyleContext(props)
     const localParams = C.useLocalSearchParams()
+    C.useFocusLayer('landing')
 
     const { apiClient, routes } = C.useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
@@ -154,15 +155,19 @@ export default function KeepsakeDetailsPage(props) {
 
     let videos = null
     let hasVideos = keepsake.videos && keepsake.videos.length
+    let videoFocusKey = null
     let images = null
     let hasImages = keepsake.images && keepsake.images.length
+    let imageFocusKey = null
     let dirs = null
     let hasDirs = keepsake.directories && keepsake.directories.length
+    let dirsFocusKey = null
     if (hasVideos) {
+        videoFocusKey = 'page-entry'
         videos = (
             <C.View>
                 <C.SnowLabel>Videos</C.SnowLabel>
-                <C.SnowGrid focusStart focusKey='video-list' wide={true}>
+                <C.SnowGrid focusStart focusKey={videoFocusKey} wide={true}>
                     {keepsake.videos.map((video, videoIndex) => {
                         return (
                             <C.SnowImageButton
@@ -180,16 +185,19 @@ export default function KeepsakeDetailsPage(props) {
     }
 
     if (hasImages) {
+        imageFocusKey = 'image-list'
         let focus = {}
         if (hasVideos) {
-            focus.focusUp = 'video-list'
+            focus.focusUp = videoFocusKey
         } else {
             focus.focusStart = true
+            imageFocusKey = 'page-entry'
         }
+        focus.focusKey = imageFocusKey
         images = (
             <C.View>
                 <C.SnowLabel>Images</C.SnowLabel>
-                <C.SnowGrid {...focus} focusKey='image-list' wide={true}>
+                <C.SnowGrid {...focus} wide={true}>
                     {keepsake.images.map((image, imageIndex) => {
                         return (
                             <C.SnowImageButton
@@ -207,20 +215,23 @@ export default function KeepsakeDetailsPage(props) {
     }
 
     if (hasDirs) {
-        let focus = {}
+        let focus = {
+            focusKey: 'directory-list'
+        }
+        if (!hasImages && !hasVideos) {
+            focus.focusKey = 'page-entry'
+            focus.focusStart = true
+        }
         if (hasImages) {
-            focus.focusUp = 'image-list'
+            focus.focusUp = imageFocusKey
         }
         else if (hasVideos) {
-            focus.focusUp = 'video-list'
-        }
-        else {
-            focus.focusStart = true
+            focus.focusUp = videoFocusKey
         }
         dirs = (
             <C.View>
                 <C.SnowLabel>Directories</C.SnowLabel>
-                <C.SnowGrid {...focus} focusKey='directory-list'>
+                <C.SnowGrid {...focus} >
                     {keepsake.directories.map((dir, dirIndex) => {
                         return (
                             <C.SnowTextButton
