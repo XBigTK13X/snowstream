@@ -70,12 +70,10 @@ routes.func = (target, params) => {
 
 routes.back = () => {
     try {
-        router.back().catch(err => {
-            router.goto(routes.landing)
-        })
+        router.back()
     }
     catch {
-        router.goto(routes.landing)
+        routes.goto(routes.landing)
     }
 }
 
