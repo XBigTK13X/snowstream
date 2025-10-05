@@ -32,7 +32,7 @@ export default function StreamableListPage() {
                 setStreamSource(response)
             })
         }
-    })
+    }, [streamSource])
 
 
     if (streamSource && streamableGroups && !streamableItems) {

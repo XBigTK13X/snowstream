@@ -19,6 +19,9 @@ export default function SignInPage() {
                 setUsers(response)
             })
         }
+    }, [users, apiClient])
+
+    C.React.useEffect(() => {
         customServerRef.current = customServer
         userRef.current = user
         passwordRef.current = password

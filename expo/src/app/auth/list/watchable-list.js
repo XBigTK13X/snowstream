@@ -44,7 +44,8 @@ export function WatchableListPage(props) {
                     }
                 })
         }
-    })
+    }, [shelf])
+
     if (shelf && items !== null) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}.`
         if (props.getPageTitle) {

@@ -102,7 +102,7 @@ export default function KeepsakeDetailsPage(props) {
                 setKeepsake(response)
             })
         }
-    })
+    }, [keepsake])
 
     const styles = {
         modal: {

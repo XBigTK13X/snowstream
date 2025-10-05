@@ -15,7 +15,7 @@ export function ContinueWatchingListPage(props) {
                 }
             })
         }
-    })
+    }, [continueWatchingList])
 
     if (resultsEmpty) {
         return (

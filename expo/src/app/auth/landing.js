@@ -25,7 +25,7 @@ export default function LandingPage(props) {
                 })
             })
         }
-    })
+    }, [shelves])
 
     const styles = {
         footer: {

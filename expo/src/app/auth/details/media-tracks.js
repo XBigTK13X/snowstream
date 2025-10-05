@@ -50,7 +50,7 @@ export default function MediaTracksPage(props) {
                 }
             })
         }
-    })
+    }, [media])
     const setWatchStatus = (status) => {
         return props.toggleWatchStatus(apiClient, localParams)
             .then(() => {
