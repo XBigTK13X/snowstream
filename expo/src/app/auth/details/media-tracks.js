@@ -300,14 +300,14 @@ export default function MediaTracksPage(props) {
         )
         const infoTab = (
             <C.SnowView>
-                <C.SnowGrid focusDown="quality" itemsPerRow={3}>
+                <C.SnowGrid focusKey="inspection-top" focusDown="inspection-bottom" itemsPerRow={3}>
                     <C.SnowTextButton
                         tall
                         title="Inspection"
                         onPress={showInfo}
                     />
                 </C.SnowGrid>
-                <C.SnowGrid focusKey="quality" focusDown="json" itemsPerRow={2}>
+                <C.SnowGrid assignFocus={false} itemsPerRow={2}>
                     <C.SnowView>
                         <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
                         <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
@@ -324,10 +324,17 @@ export default function MediaTracksPage(props) {
                     </C.SnowView>
                 </C.SnowGrid>
                 <C.SnowText >Path: {videoFile.network_path}</C.SnowText>
-                <C.SnowGrid focusKey="json" itemsPerRow={3}>
+                <C.SnowGrid assignFocus={false} itemsPerRow={3}>
                     <C.SnowText >Params: {JSON.stringify(localParams, null, 4)}</C.SnowText>
                     <C.SnowText >Plan: {JSON.stringify(videoFile.plan, null, 4)}</C.SnowText>
                     <C.SnowText >Options: {JSON.stringify(clientOptions, null, 4)}</C.SnowText>
+                </C.SnowGrid>
+                <C.SnowGrid focusKey="inspection-bottom" itemsPerRow={3}>
+                    <C.SnowTextButton
+                        tall
+                        title="Inspection"
+                        onPress={showInfo}
+                    />
                 </C.SnowGrid>
             </C.SnowView>
         )

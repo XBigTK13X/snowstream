@@ -383,7 +383,12 @@ export function PlayerContextProvider(props) {
             return onCriticalError(response.error)
         }
         if (response.url) {
-            setVideoUrl(response.url)
+            // If the url isn't encoded for the player
+            // Then the media server (nginx) will throw a 404 on some path characters (like #)
+            const safeUrl = response.url.replace(/^([^:]+:\/\/[^/]+)(\/.*)?$/, (_, base, rest) =>
+                base + (rest ? '/' + rest.slice(1).split('/').map(encodeURIComponent).join('/') : '')
+            );
+            setVideoUrl(safeUrl)
         }
         if (response.name) {
             setVideoTitle(response.name)

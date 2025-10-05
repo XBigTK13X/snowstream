@@ -1,15 +1,15 @@
 import C from '../common'
 export default function SignInPage() {
     const { sessionLoaded, session, routes, setWebApiUrl } = C.useAppContext()
-    if (session) {
-        return <C.Redirect href={routes.landing} />
-    }
     const { apiClient, signIn, config, clientOptions } = C.useAppContext()
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
+    const userRef = C.React.useRef(user)
     const [customServer, setCustomServer] = C.React.useState('')
+    const customServerRef = C.React.useRef(customServer)
     const [password, setPassword] = C.React.useState("")
+    const passwordRef = C.React.useRef(password)
 
     C.useFocusLayer('index')
 
@@ -19,7 +19,14 @@ export default function SignInPage() {
                 setUsers(response)
             })
         }
+        customServerRef.current = customServer
+        userRef.current = user
+        passwordRef.current = password
     })
+
+    if (session) {
+        return <C.Redirect href={routes.landing} />
+    }
 
     if (!sessionLoaded) {
         return null
@@ -42,7 +49,7 @@ export default function SignInPage() {
     }
 
     const login = () => {
-        signIn(user.username, password)
+        signIn(userRef.current.username, passwordRef.current)
             .then((result) => {
                 if (result.failed) {
                     setErrors("Incorrect password for this user.")
@@ -75,9 +82,9 @@ export default function SignInPage() {
     let passwordForm = null
     let userList = null
     let selectServer = null
-    if (users && user && user.has_password) {
-        passwordForm = (
-            <C.View>
+    if (user?.has_password) {
+        return (
+            <C.SnowModal focusLayer="enter-password" onRequestClose={cancel}>
                 <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
                 <C.SnowInput
                     focusStart
@@ -92,41 +99,10 @@ export default function SignInPage() {
                     <C.SnowTextButton title="Login" onPress={login} />
                     <C.SnowTextButton title="Cancel" onPress={cancel} />
                 </C.SnowGrid>
-            </C.View>
-        )
-    } else {
-        selectServer = (
-            <C.View>
-                <C.View>
-                    <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
-                    <C.SnowGrid
-                        focusStart={!!users ? false : true}
-                        focusKey="servers"
-                        focusDown="password-input"
-                        itemsPerRow={4} >
-                        <C.SnowTextButton title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
-                        <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
-                        <C.SnowTextButton title="Storm" onPress={() => { chooseServer(config.stormWebApiUrl) }} />
-                    </C.SnowGrid>
-                </C.View>
-                <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
-                <C.SnowInput
-                    focusKey="password-input"
-                    focusDown="submit-login"
-                    onSubmit={applyCustomServer}
-                    onValueChange={setCustomServer}
-                    value={customServer} />
-                <C.SnowTextButton
-                    focusKey="submit-login"
-                    title="Connect to Server"
-                    onPress={applyCustomServer}
-                />
-            </C.View >
+            </C.SnowModal>
         )
     }
-
-
-    if (users && !user) {
+    if (users) {
         let renderItem = (item) => {
             if (!item.username) {
                 return null
@@ -150,11 +126,42 @@ export default function SignInPage() {
 
         )
     }
+    selectServer = (
+        <C.View>
+            <C.View>
+                <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
+                <C.SnowGrid
+                    focusStart={!!users ? false : true}
+                    focusKey="servers"
+                    focusDown="password-input"
+                    itemsPerRow={4} >
+                    <C.SnowTextButton title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
+                    <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
+                    <C.SnowTextButton title="Storm" onPress={() => { chooseServer(config.stormWebApiUrl) }} />
+                </C.SnowGrid>
+            </C.View>
+            <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
+            <C.SnowInput
+                focusKey="password-input"
+                focusDown="submit-login"
+                onSubmit={applyCustomServer}
+                onValueChange={setCustomServer}
+                value={customServer} />
+            <C.SnowTextButton
+                focusKey="submit-login"
+                title="Connect to Server"
+                onPress={applyCustomServer}
+            />
+        </C.View >
+    )
+
+
+
     return (
         <C.View>
+            {passwordForm}
             {userList}
             {selectServer}
-            {passwordForm}
             <C.SnowLabel>{errors ? 'Errors: ' + JSON.stringify(errors) : ""}</C.SnowLabel>
         </C.View>
     )
