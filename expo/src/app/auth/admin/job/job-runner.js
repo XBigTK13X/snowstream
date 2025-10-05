@@ -20,59 +20,64 @@ export default function ShelfEditPage() {
         updateMetadata: localParams.updateMetadata ?? '',
         updateVideos: localParams.updateVideos ?? '',
     })
+    const formRef = C.React.useRef(form)
+
+    C.React.useEffect(() => {
+        formRef.current = form
+    })
 
     const createJob = (apiCall) => {
         let params = {}
-        if (form.episodeOrder !== '') {
-            params.episodeOrder = form.episodeOrder
+        if (formRef.current.episodeOrder !== '') {
+            params.episodeOrder = formRef.current.episodeOrder
         }
-        if (form.extractOnly !== '') {
-            params.extractOnly = form.extractOnly
+        if (formRef.current.extractOnly !== '') {
+            params.extractOnly = formRef.current.extractOnly
         }
-        if (form.metadataId !== '') {
-            params.metadataId = form.metadataId
+        if (formRef.current.metadataId !== '') {
+            params.metadataId = formRef.current.metadataId
         }
-        if (form.metadataSource !== '') {
-            params.metadataSource = form.metadataSource
+        if (formRef.current.metadataSource !== '') {
+            params.metadataSource = formRef.current.metadataSource
         }
-        if (form.seasonOrder !== '') {
-            params.seasonOrder = form.seasonOrder
+        if (formRef.current.seasonOrder !== '') {
+            params.seasonOrder = formRef.current.seasonOrder
         }
-        if (form.skipExisting !== '') {
-            params.skipExisting = form.skipExisting
+        if (formRef.current.skipExisting !== '') {
+            params.skipExisting = formRef.current.skipExisting
         }
-        if (form.targetDirectory !== '') {
-            params.targetDirectory = form.targetDirectory
+        if (formRef.current.targetDirectory !== '') {
+            params.targetDirectory = formRef.current.targetDirectory
         }
-        if (form.targetId !== '') {
-            params.targetId = form.targetId
+        if (formRef.current.targetId !== '') {
+            params.targetId = formRef.current.targetId
         }
-        if (form.targetKind !== '') {
-            params.targetKind = form.targetKind
+        if (formRef.current.targetKind !== '') {
+            params.targetKind = formRef.current.targetKind
         }
-        if (form.updateImages !== '') {
-            params.updateImages = form.updateImages
+        if (formRef.current.updateImages !== '') {
+            params.updateImages = formRef.current.updateImages
         }
-        if (form.updateMetadata !== '') {
-            params.updateMetadata = form.updateMetadata
+        if (formRef.current.updateMetadata !== '') {
+            params.updateMetadata = formRef.current.updateMetadata
         }
-        if (form.updateVideos !== '') {
-            params.updateVideos = form.updateVideos
+        if (formRef.current.updateVideos !== '') {
+            params.updateVideos = formRef.current.updateVideos
         }
         routes.replace(routes.admin.jobRunner, params)
         let details = {
-            episodeOrder: form.episodeOrder,
-            extractOnly: form.extractOnly,
-            metadataId: form.metadataId,
-            metadataSource: form.metadataSource,
-            seasonOrder: form.seasonOrder,
-            skipExisting: form.skipExisting,
-            targetDirectory: form.targetDirectory,
-            targetId: form.targetId,
-            targetKind: form.targetKind,
-            updateImages: form.updateImages,
-            updateMetadata: form.updateMetadata,
-            updateVideos: form.updateVideos,
+            episodeOrder: formRef.current.episodeOrder,
+            extractOnly: formRef.current.extractOnly,
+            metadataId: formRef.current.metadataId,
+            metadataSource: formRef.current.metadataSource,
+            seasonOrder: formRef.current.seasonOrder,
+            skipExisting: formRef.current.skipExisting,
+            targetDirectory: formRef.current.targetDirectory,
+            targetId: formRef.current.targetId,
+            targetKind: formRef.current.targetKind,
+            updateImages: formRef.current.updateImages,
+            updateMetadata: formRef.current.updateMetadata,
+            updateVideos: formRef.current.updateVideos,
         }
         return apiCall(details)
     }
