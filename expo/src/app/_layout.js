@@ -9,17 +9,15 @@ const styles = {
 }
 
 function Header(props) {
-    const { isAdmin, displayName, routes } = C.useAppContext()
-    const { useFocusWiring } = C.useFocusContext()
-    const elementRef = useFocusWiring(props)
+    const { isAdmin, routes, displayName } = C.useAppContext()
 
-    if (!displayName) {
-        return null
-    }
+    C.React.useEffect(() => {
+        props.setHeaderReady(true)
+    })
+
     return (
         <C.View style={styles.header}>
             <C.SnowGrid
-                ref={elementRef}
                 focusKey="header"
                 focusDown="page-entry">
                 <C.SnowTextButton
@@ -37,7 +35,7 @@ function Header(props) {
                     onLongPress={routes.func(routes.options)} />
             </C.SnowGrid>
             <C.SnowBreak />
-        </C.View>
+        </C.View >
     )
 }
 
@@ -58,12 +56,43 @@ const appStyle = {
     }
 }
 
+function InnerApp() {
+    const [headerReady, setHeaderReady] = C.React.useState(false)
+    const { displayName } = C.useAppContext()
+    const { currentLayer } = C.useFocusContext()
+
+    C.React.useEffect(() => {
+        setHeaderReady(false)
+    }, [currentLayer])
+
+    if (!displayName) {
+        return <C.Slot />
+    }
+
+    let header = null
+    if (displayName) {
+        header = (
+            <Header setHeaderReady={setHeaderReady} />
+        )
+    }
+
+    if (!headerReady) {
+        return header
+    }
+
+    return (
+        <C.View>
+            {header}
+            <C.Slot />
+        </C.View>
+    )
+}
+
 export default function RootLayout() {
     return (
         <Snow.App DEBUG_FOCUS={config.debugFocus} snowStyle={appStyle}>
             <C.AppContextProvider>
-                <Header />
-                <C.Slot />
+                <InnerApp />
             </C.AppContextProvider >
         </Snow.App >
     )
