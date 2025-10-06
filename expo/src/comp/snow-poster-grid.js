@@ -4,7 +4,7 @@ import Snow from 'expo-snowui'
 import { useAppContext } from '../app-context'
 
 
-export function SnowPosterGrid(props) {
+function SnowPosterGridW(props) {
     const { routes, apiClient } = useAppContext()
     const { SnowStyle } = Snow.useStyleContext(props)
     const { readFocusProps } = Snow.useFocusContext()
@@ -48,5 +48,9 @@ export function SnowPosterGrid(props) {
         </View>
     )
 }
+
+SnowPosterGridW.isSnowFocusWired = true
+
+export const SnowPosterGrid = SnowPosterGridW
 
 export default SnowPosterGrid

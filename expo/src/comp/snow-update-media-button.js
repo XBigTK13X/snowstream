@@ -10,16 +10,19 @@ import {
     SnowGrid,
     SnowToggle,
     SnowHeader,
-    SnowTextButton
+    SnowTextButton,
+    useFocusContext
 } from 'expo-snowui'
 
-export default function SnowUpdateMediaButton(props) {
+function SnowUpdateMediaButtonW(props) {
     const [showRequest, setShowRequest] = React.useState(false)
     const [metadataId, setMetadataId] = React.useState(props.remoteId ? props.remoteId : '')
     const [metadataSource, setMetadataSource] = React.useState('')
     const [updateMetadata, setUpdateMetadata] = React.useState(true)
     const [updateImages, setUpdateImages] = React.useState(true)
     const [skipExisting, setSkipExisting] = React.useState(false)
+
+    const { readFocusProps } = useFocusContext()
 
     const onCancel = () => {
         setShowRequest(false)
@@ -69,6 +72,7 @@ export default function SnowUpdateMediaButton(props) {
     let title = props.kind ? `Update ${props.kind} Media` : 'Update Media'
     return (
         <SnowTextButton
+            {...readFocusProps(props)}
             tall={props.tall}
             title={title}
             onPress={() => {
@@ -76,4 +80,10 @@ export default function SnowUpdateMediaButton(props) {
             }} />
     )
 }
+
+SnowUpdateMediaButtonW.isSnowFocusWired = true
+
+export const SnowUpdateMediaButton = SnowUpdateMediaButtonW
+
+export default SnowUpdateMediaButton
 

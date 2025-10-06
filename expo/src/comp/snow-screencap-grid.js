@@ -2,7 +2,7 @@ import React from 'react'
 import Snow from 'expo-snowui'
 import { useAppContext } from '../app-context'
 
-export function SnowScreencapGrid(props) {
+export function SnowScreencapGridW(props) {
     const { routes, apiClient } = useAppContext()
     const { SnowStyle } = Snow.useStyleContext(props)
     const { readFocusProps } = Snow.useFocusContext()
@@ -43,5 +43,9 @@ export function SnowScreencapGrid(props) {
         </Snow.FillView>
     )
 }
+
+SnowScreencapGridW.isSnowFocusWired = true
+
+export const SnowScreencapGrid = SnowScreencapGridW
 
 export default SnowScreencapGrid

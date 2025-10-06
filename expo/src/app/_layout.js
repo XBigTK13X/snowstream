@@ -8,8 +8,10 @@ const styles = {
     }
 }
 
-function Header() {
+function Header(props) {
     const { isAdmin, displayName, routes } = C.useAppContext()
+    const { useFocusWiring } = C.useFocusContext()
+    const elementRef = useFocusWiring(props)
 
     if (!displayName) {
         return null
@@ -17,6 +19,7 @@ function Header() {
     return (
         <C.View style={styles.header}>
             <C.SnowGrid
+                ref={elementRef}
                 focusKey="header"
                 focusDown="page-entry">
                 <C.SnowTextButton
