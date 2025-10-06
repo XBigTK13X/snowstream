@@ -145,33 +145,36 @@ export default function MediaTracksPage(props) {
                     scroll
                     onRequestClose={() => { setShowModal(false) }}
                 >
-                    <C.SnowGrid focusStart focusKey="close-top" focusDown="close-bottom" itemsPerRow={1}>
+                    <C.SnowGrid focusStart focusKey="close-top" focusDown="info-tabs" itemsPerRow={1}>
                         <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
                     </C.SnowGrid>
-                    <C.View>
-                        <C.SnowLabel>Video File Info</C.SnowLabel>
-                        <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
-                        <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>
-                        <C.SnowLabel>Audio Info</C.SnowLabel>
-                        {
-                            audioInfos.map((info, index) => {
-                                return (
-                                    <C.SnowText key={'audio' + index}>{info.join('   ')}</C.SnowText>
-                                )
-                            })
-                        }
-                        <C.SnowLabel>Subtitle Info</C.SnowLabel>
-                        {
-                            subtitleInfos.map((info, index) => {
-                                return (
-                                    <C.SnowText key={'subtitle' + index}>{info.join('   ')}</C.SnowText>
-                                )
-                            })
-                        }
-                    </C.View>
-                    <C.SnowGrid focusKey="close-bottom" itemsPerRow={1}>
-                        <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
-                    </C.SnowGrid>
+                    <C.SnowTabs focusKey="info-tabs" focusDown="info-bottom" headers={['Video', 'Audio', 'Subtitle']}>
+                        <C.SnowView>
+                            <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
+                            <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>
+                            <C.SnowTarget focusKey="info-tabs-tab" />
+                        </C.SnowView>
+                        <C.SnowView>
+                            {
+                                audioInfos.map((info, index) => {
+                                    return (
+                                        <C.SnowText key={'audio' + index}>{info.join('   ')}</C.SnowText>
+                                    )
+                                })
+                            }
+                            <C.SnowTarget focusKey="info-tabs-tab" />
+                        </C.SnowView>
+                        <C.SnowView>
+                            {
+                                subtitleInfos.map((info, index) => {
+                                    return (
+                                        <C.SnowText key={'subtitle' + index}>{info.join('   ')}</C.SnowText>
+                                    )
+                                })
+                            }
+                            <C.SnowTarget focusKey="info-tabs-tab" />
+                        </C.SnowView>
+                    </C.SnowTabs>
                 </C.SnowModal>
             )
         }
@@ -300,7 +303,7 @@ export default function MediaTracksPage(props) {
         )
         const infoTab = (
             <C.SnowView>
-                <C.SnowGrid focusKey="inspection-top" focusDown="inspection-bottom" itemsPerRow={3}>
+                <C.SnowGrid focusKey="inspection-top" focusDown="inspection-middle" itemsPerRow={3}>
                     <C.SnowTextButton
                         tall
                         title="Inspection"
@@ -323,19 +326,14 @@ export default function MediaTracksPage(props) {
                         />
                     </C.SnowView>
                 </C.SnowGrid>
+                <C.SnowTarget focusKey="inspection-middle" focusDown="inspection-bottom" />
                 <C.SnowText >Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowGrid assignFocus={false} itemsPerRow={3}>
                     <C.SnowText >Params: {JSON.stringify(localParams, null, 4)}</C.SnowText>
                     <C.SnowText >Plan: {JSON.stringify(videoFile.plan, null, 4)}</C.SnowText>
                     <C.SnowText >Options: {JSON.stringify(clientOptions, null, 4)}</C.SnowText>
                 </C.SnowGrid>
-                <C.SnowGrid focusKey="inspection-bottom" itemsPerRow={3}>
-                    <C.SnowTextButton
-                        tall
-                        title="Inspection"
-                        onPress={showInfo}
-                    />
-                </C.SnowGrid>
+                <C.SnowTarget focusKey="inspection-bottom" />
             </C.SnowView>
         )
         let adminTab = null
