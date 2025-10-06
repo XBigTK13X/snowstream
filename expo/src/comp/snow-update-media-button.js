@@ -4,6 +4,7 @@ import {
 } from 'react-native'
 
 import {
+    SnowFillView,
     SnowInput,
     SnowLabel,
     SnowModal,
@@ -16,11 +17,25 @@ import {
 
 function SnowUpdateMediaButtonW(props) {
     const [showRequest, setShowRequest] = React.useState(false)
-    const [metadataId, setMetadataId] = React.useState(props.remoteId ? props.remoteId : '')
-    const [metadataSource, setMetadataSource] = React.useState('')
-    const [updateMetadata, setUpdateMetadata] = React.useState(true)
-    const [updateImages, setUpdateImages] = React.useState(true)
-    const [skipExisting, setSkipExisting] = React.useState(false)
+    const [form, setForm] = React.useState({
+        metadataId: props.remoteId ? props.remoteId : '',
+        metadataSource: '',
+        updateMetadata: true,
+        updateImages: true,
+        updateVideos: false,
+        skipExisting: false
+    })
+    const formRef = React.useRef(form)
+
+    React.useEffect(() => {
+        formRef.current = form
+    }, [form])
+
+    const changeForm = (key) => {
+        return (val) => {
+            setForm((prev) => { return { ...prev, [key]: val } })
+        }
+    }
 
     const { readFocusProps } = useFocusContext()
 
@@ -28,15 +43,10 @@ function SnowUpdateMediaButtonW(props) {
         setShowRequest(false)
     }
     const onAccept = () => {
-        props.updateMediaJob({
-            metadataId,
-            metadataSource,
-            updateMetadata,
-            updateImages,
-            skipExisting
-        })
+        props.updateMediaJob(formRef.current)
         setShowRequest(false)
     }
+    const allowSubmit = form.updateMetadata || form.updateImages || form.updateVideos
     if (showRequest) {
         let question = props.kind ? `Do you want to update this ${props.kind}?` : 'Do you want to update this item?'
         return (
@@ -46,26 +56,25 @@ function SnowUpdateMediaButtonW(props) {
                 onRequestClose={() => {
                     setShowRequest(false)
                 }}>
-                <SnowHeader>{question}</SnowHeader>
-                <SnowGrid focusStart focusKey="update-inputs" focusDown="update-toggles" itemsPerRow={4}>
-                    <View style={{ alignItems: 'center' }}>
+                <SnowFillView>
+                    <SnowHeader>{question}</SnowHeader>
+                    <SnowGrid focusStart focusKey="update-inputs" focusDown="update-toggles" itemsPerRow={2}>
                         <SnowLabel>Remote Metadata ID</SnowLabel>
-                        <SnowInput onValueChange={(text) => { setMetadataId(text) }} value={metadataId} />
-                    </View>
-                    <View style={{ alignItems: 'center' }}>
+                        <SnowInput onValueChange={changeForm('metadataId')} value={form.metadataId} />
                         <SnowLabel>Metadata Source</SnowLabel>
-                        <SnowInput onValueChange={(text) => { setMetadataSource(text) }} value={metadataSource} />
-                    </View>
-                </SnowGrid>
-                <SnowGrid focusKey="update-toggles" focusDown="update-submit" itemsPerRow={6}>
-                    <SnowToggle title="Metadata" value={updateMetadata} onValueChange={setUpdateMetadata} />
-                    <SnowToggle title="Images" value={updateImages} onValueChange={setUpdateImages} />
-                    <SnowToggle title="Skip Existing" value={skipExisting} onValueChange={setSkipExisting} />
-                </SnowGrid>
-                <SnowGrid focusKey="update-submit" gridStyle={{ marginTop: 20 }} itemsPerRow={4}>
-                    <SnowTextButton disabled={!updateMetadata && !updateImages} title="Update Media" onPress={() => { onAccept() }} />
-                    <SnowTextButton title="Cancel" onPress={onCancel} />
-                </SnowGrid>
+                        <SnowInput onValueChange={changeForm('metadataSource')} value={form.metadataSource} />
+                    </SnowGrid>
+                    <SnowGrid focusKey="update-toggles" focusDown="update-submit" itemsPerRow={3}>
+                        <SnowToggle title="Metadata" value={form.updateMetadata} onValueChange={changeForm('updateMetadata')} />
+                        <SnowToggle title="Images" value={form.updateImages} onValueChange={changeForm('updateImages')} />
+                        <SnowToggle title="Videos" value={form.updateVideos} onValueChange={changeForm('updateVideos')} />
+                        <SnowToggle title="Skip Existing" value={form.skipExisting} onValueChange={changeForm('skipExisting')} />
+                    </SnowGrid>
+                    <SnowGrid focusKey="update-submit" gridStyle={{ marginTop: 20 }} itemsPerRow={2}>
+                        <SnowTextButton disabled={!allowSubmit} title="Update Media" onPress={() => { onAccept() }} />
+                        <SnowTextButton title="Cancel" onPress={onCancel} />
+                    </SnowGrid>
+                </SnowFillView>
             </SnowModal>
         )
     }
