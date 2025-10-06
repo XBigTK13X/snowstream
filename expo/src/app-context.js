@@ -144,7 +144,7 @@ export function AppContextProvider(props) {
 
     if (Platform.isTV) {
         const remoteHandler = (remoteEvent) => {
-            if (config.debugTvFocus) {
+            if (config.debugFocus) {
                 util.log({ remoteEvent })
             }
             const callbacks = remoteCallbacksRef.current

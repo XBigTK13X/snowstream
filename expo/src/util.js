@@ -51,9 +51,19 @@ export function bitsToPretty(bits) {
     return `${(bits / 1000000000).toFixed(2)} Gb`
 }
 
+async function urlExists(url) {
+    return fetch(url, { method: 'head' })
+        .then((status) => {
+            return status.ok
+        }).catch(err => {
+            return false
+        })
+}
+
 export default {
     formatEpisodeTitle,
     secondsToTimestamp,
     log,
-    bitsToPretty
+    bitsToPretty,
+    urlExists
 }

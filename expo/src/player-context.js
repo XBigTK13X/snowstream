@@ -377,18 +377,25 @@ export function PlayerContextProvider(props) {
     }
 
     // The page received a response from the server for the specific kind of video to play
-    const loadVideo = (response) => {
+    const loadVideo = async (response) => {
         onAddLog({ kind: 'snowstream', message: 'video loaded', loadVideo: response })
         if (response.error) {
             return onCriticalError(response.error)
         }
         if (response.url) {
-            // If the url isn't encoded for the player
-            // Then the media server (nginx) will throw a 404 on some path characters (like #)
-            const safeUrl = response.url.replace(/^([^:]+:\/\/[^/]+)(\/.*)?$/, (_, base, rest) =>
-                base + (rest ? '/' + rest.slice(1).split('/').map(encodeURIComponent).join('/') : '')
-            );
-            setVideoUrl(safeUrl)
+            const urlExists = await util.urlExists(response.url)
+            if (urlExists) {
+                setVideoUrl(response.url)
+
+            }
+            else {
+                // If the url isn't encoded, then the media server (nginx)
+                // will throw a 404 on some path characters (like #)
+                const safeUrl = response.url.replace(/^([^:]+:\/\/[^/]+)(\/.*)?$/, (_, base, rest) =>
+                    base + (rest ? '/' + rest.slice(1).split('/').map(encodeURIComponent).join('/') : '')
+                );
+                setVideoUrl(safeUrl)
+            }
         }
         if (response.name) {
             setVideoTitle(response.name)

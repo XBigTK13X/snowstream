@@ -39,6 +39,12 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
+    React.useEffect(() => {
+        return () => {
+            player.action.onStopVideo()
+        }
+    }, [])
+
     if (Platform.OS !== 'web') {
         useKeepAwake();
     }
