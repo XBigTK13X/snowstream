@@ -37,7 +37,7 @@ class Config:
         self.rabbit_port = "9062"
         self.rabbit_queue = "snowstream"
         self.rabbit_user = "snowstream"
-        self.search_results_per_shelf_limit = 25
+        self.search_results_per_shelf_limit = 200
         self.supervisor_password = "snowstream"
         self.supervisor_url = "http://localhost:9065"
         self.supervisor_username = "snowstream"
