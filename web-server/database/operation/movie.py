@@ -551,9 +551,10 @@ def delete_movies_without_videos():
                 continue
             delete_ids.append(xx)
             results.append(f'id [{xx}] directory [{no_videos[xx]}]')
-        import pprint
-        pprint.pprint(delete_ids)
-        pprint.pprint(results)
+        if delete_ids:
+            delete_target = ','.join([f'{xx}' for xx in delete_ids])
+            db.execute(dbi.sql_text(f'delete from movie where movie.id in ({delete_target});'))
+            db.commit()
         return results
 
 def delete_movie_records(ticket:dbi.dm.Ticket, movie_id:int):

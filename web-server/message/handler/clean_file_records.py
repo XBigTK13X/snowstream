@@ -38,7 +38,7 @@ def handle(scope:JobMediaScope):
             db.op.update_job(job_id=scope.job_id, message=f"    {result}")
 
     db.op.update_job(job_id=scope.job_id, message=f"Searching for any content without video files")
-    results = db.op.purge_shelf_conent_without_video_files()
+    results = db.op.purge_shelf_content_without_video_files()
     if results:
         db.op.update_job(job_id=scope.job_id, message=f"Found {len(results)} shelf entries without video files")
         for result in results:

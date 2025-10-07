@@ -22,11 +22,13 @@ def handle(scope:JobMediaScope):
     elif scope.is_show():
         show = db.op.get_show_by_id(ticket=ticket,show_id=scope.target_id)
         episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=show.shelf.id,show_id=scope.target_id,load_episode_files=True,include_specials=True)
-        video_files = episode.video_files
+        for episode in episodes:
+            video_files += episode.video_files
     elif scope.is_season():
         season = db.op.get_show_season_by_id(ticket=ticket,season_id=scope.target_id)
         episodes = db.op.get_show_episode_list(ticket=ticket,shelf_id=season.show.shelf.id,show_season_id=scope.target_id,load_episode_files=True,include_specials=True)
-        video_files = episode.video_files
+        for episode in episodes:
+            video_files += episode.video_files
     elif scope.is_episode():
         episode = db.op.get_show_episode_by_id(ticket=ticket,episode_id=scope.target_id)
         video_files = episode.video_files

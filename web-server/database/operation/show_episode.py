@@ -569,7 +569,7 @@ def delete_show_episodes_without_videos():
                 video_file.id as video_file_id
             from
             show_episode
-                join show_season on show_season.id = show_episode.season_id
+                join show_season on show_season.id = show_episode.show_season_id
                 left join show_episode_video_file on show_episode_video_file.show_episode_id = show_episode.id
                 left join video_file on show_episode_video_file.video_file_id = video_file.id
             where
@@ -591,9 +591,10 @@ def delete_show_episodes_without_videos():
                 continue
             delete_ids.append(xx)
             results.append(f'id [{xx}] directory [{no_videos[xx]}]')
-        import pprint
-        pprint.pprint(delete_ids)
-        pprint.pprint(results)
+        if delete_ids:
+            delete_target = ','.join([f'{xx}' for xx in delete_ids])
+            db.execute(dbi.sql_text(f'delete from show_episode where show_episode.id in ({delete_target});'))
+            db.commit()
         return results
 
 def delete_show_episode_records(ticket:dbi.dm.Ticket, show_episode_id:int):

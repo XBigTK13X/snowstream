@@ -1,4 +1,11 @@
-import C from '../common'
+import React from 'react'
+import { View } from 'react-native'
+import {
+    SnowTextButton,
+    SnowGrid,
+    SnowBreak
+} from 'expo-snowui'
+import { useAppContext } from '../app-context'
 
 // If the Header doesn't render before the rest of the page
 // Then the focusMap winds up in the wrong focusLayer
@@ -12,43 +19,43 @@ const styles = {
 }
 
 function Header(props) {
-    const { isAdmin, routes, displayName } = C.useAppContext()
+    const { isAdmin, routes, displayName } = useAppContext()
 
-    C.React.useEffect(() => {
+    React.useEffect(() => {
         props.setHeaderReady(true)
     })
 
     return (
-        <C.View style={styles.header}>
-            <C.SnowGrid
+        <View style={styles.header}>
+            <SnowGrid
                 focusKey="header"
                 focusDown="page-entry">
-                <C.SnowTextButton
+                <SnowTextButton
                     title="Home"
                     onPress={routes.func(routes.landing)}
                 />
-                <C.SnowTextButton title="Sign Out" onPress={routes.func(routes.signOut)} />
-                {isAdmin ? <C.SnowTextButton
+                <SnowTextButton title="Sign Out" onPress={routes.func(routes.signOut)} />
+                {isAdmin ? <SnowTextButton
                     title="Admin"
                     onPress={routes.func(routes.admin.dashboard)} />
                     : null}
-                <C.SnowTextButton
+                <SnowTextButton
                     title={`${displayName}`}
                     onPress={routes.func(routes.info)}
                     onLongPress={routes.func(routes.options)} />
-            </C.SnowGrid>
-            <C.SnowBreak />
-        </C.View >
+            </SnowGrid>
+            <SnowBreak />
+        </View >
     )
 }
 
 export default function SnowHeaderPage(props) {
-    const [headerReady, setHeaderReady] = C.React.useState(false)
+    const [headerReady, setHeaderReady] = React.useState(false)
 
     return (
-        <C.View>
+        <View>
             <Header setHeaderReady={setHeaderReady} />
             {headerReady ? props.children : null}
-        </C.View>
+        </View>
     )
 }
