@@ -10,7 +10,6 @@ class ShowSeason(MediaUpdater):
         self.media_provider = scope.get_show_media_provider()
         self.show_season_id = scope.target_id
         self.metadata_id = scope.metadata_id
-        self.season_order = scope.season_order
         self.is_subjob = scope.is_subjob
         self.show_season = self.db.op.get_show_season_by_id(ticket=self.ticket,season_id=self.show_season_id)
         self.episodes = self.db.op.get_show_episode_list(ticket=self.ticket,shelf_id=self.show_season.show.shelf.id,show_season_id=self.show_season_id,include_specials=True)
@@ -33,7 +32,7 @@ class ShowSeason(MediaUpdater):
         return self.local_nfo_dict
 
     def read_remote_info(self):
-        self.metadata = self.media_provider.get_season_info(show_metadata_id=self.metadata_id, season_order=self.season_order)
+        self.metadata = self.media_provider.get_season_info(show_metadata_id=self.metadata_id, season_order=self.show_season.season_order_counter)
         self.metadata = self.media_provider.to_snowstream_season(self.metadata)
         return self.metadata
 
@@ -49,7 +48,7 @@ class ShowSeason(MediaUpdater):
             title = self.show_season.name,
             year = self.metadata['year']  if 'year' in self.metadata else None,
             release_date=self.metadata['release_date'],
-            season_order=self.season_order,
+            season_order=self.show_season.season_order_counter,
             tvdbid=self.metadata['tvdbid'],
             tmdbid=self.metadata['tmdbid'],
             tags=tags
@@ -83,7 +82,7 @@ class ShowSeason(MediaUpdater):
             return
         images = self.media_provider.get_season_images(
             show_metadata_id=self.metadata_id,
-            season_order=self.season_order
+            season_order=self.show_season.season_order_counter
         )
         if not images:
             return False

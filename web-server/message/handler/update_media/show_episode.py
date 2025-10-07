@@ -12,8 +12,6 @@ class ShowEpisode(MediaUpdater):
         self.media_provider = scope.get_show_media_provider()
         self.show_episode_id = scope.target_id
         self.show_metadata_id = scope.metadata_id
-        self.season_order = scope.season_order
-        self.episode_order = scope.episode_order
         self.show_episode = self.db.op.get_show_episode_by_id(ticket=self.ticket,episode_id=self.show_episode_id)
         self.episode_video_file = self.show_episode.video_files[0]
 
@@ -45,7 +43,7 @@ class ShowEpisode(MediaUpdater):
             for ii in range(self.show_episode.episode_order_counter,self.show_episode.episode_end_order_counter+1):
                 info = self.media_provider.get_episode_info(
                     show_metadata_id=self.show_metadata_id,
-                    season_order=self.season_order,
+                    season_order=self.show_episode.season.season_order_counter,
                     episode_order=ii
                 )
                 infos.append(info)
@@ -53,8 +51,8 @@ class ShowEpisode(MediaUpdater):
         else:
             info = self.media_provider.get_episode_info(
                 show_metadata_id=self.show_metadata_id,
-                season_order=self.season_order,
-                episode_order=self.episode_order
+                season_order=self.show_episode.season.season_order_counter,
+                episode_order=self.show_episode.episode_order_counter
             )
             self.metadata = self.media_provider.to_snowstream_episodes([info])
         return self.metadata
@@ -94,8 +92,8 @@ class ShowEpisode(MediaUpdater):
         if self.scope.extract_only:
             local_path = self.nfo.video_path_to_nfo_path(video_path=self.episode_video_file.local_path)
             local_xml = self.nfo.show_episode_to_xml(
-                season=self.season_order,
-                episode=self.episode_order,
+                season=self.show_episode.season.season_order_counter,
+                episode=self.show_episode.episode_order_counter,
                 title=self.show_episode.name,
                 end_episode=self.show_episode.episode_end_order_counter,
             )
@@ -153,8 +151,8 @@ class ShowEpisode(MediaUpdater):
             self.read_remote_info()
             images = self.media_provider.get_episode_images(
                 show_metadata_id=self.show_metadata_id,
-                season_order=self.season_order,
-                episode_order=self.episode_order
+                season_order=self.show_episode.season.season_order_counter,
+                episode_order=self.show_episode.episode_order_counter
             )
             if not images or not self.download_image(image_url=images['screencap'],local_path=local_path):
                 if not os.path.exists(local_path):
