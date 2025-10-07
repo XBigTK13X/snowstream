@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function StreamableListPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const { SnowStyle } = C.useStyleContext()
     const localParams = C.useLocalSearchParams()
     const [streamSource, setStreamSource] = C.React.useState(null)

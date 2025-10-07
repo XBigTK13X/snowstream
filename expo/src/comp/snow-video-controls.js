@@ -14,7 +14,8 @@ import Snow, {
     SnowTarget
 } from 'expo-snowui'
 
-import { useAppContext, usePlayerContext } from 'snowstream'
+import { useAppContext } from '../app-context'
+import { usePlayerContext } from '../player-context'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {

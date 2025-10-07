@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function UserEditPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
 
     const [userId, setUserId] = C.React.useState(null)
     const [userTags, setUserTags] = C.React.useState([])

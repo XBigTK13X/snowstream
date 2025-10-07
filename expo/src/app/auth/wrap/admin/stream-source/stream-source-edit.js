@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function StreamSourceEditPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const [streamSourceName, setStreamSourceName] = C.React.useState('')
     const [streamSourceKind, setStreamSourceKind] = C.React.useState('HdHomeRun')
     const [streamSourceKindIndex, setStreamSourceKindIndex] = C.React.useState(0)

@@ -11,7 +11,7 @@ class Config {
         this.debounceMilliseconds = 700
         this.progressMinDeltaSeconds = 5
 
-        this.debugFocus = 'verbose'
+        this.debugFocus = false
         this.debugVideoPlayer = false
 
         const animeUrl = "/auth/details/episode?shelfId=2&showId=54&seasonId=112&episodeId=2377&showName=Gintama&seasonOrder=2&episodeOrder=3"

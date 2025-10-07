@@ -1,10 +1,9 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 const kinds = ['Movies', 'Shows', 'Keepsakes']
 
 export default function ShelfEditPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const [shelfName, setShelfName] = C.React.useState('')
     const [localPath, setLocalPath] = C.React.useState('')
     const [networkPath, setNetworkPath] = C.React.useState('')

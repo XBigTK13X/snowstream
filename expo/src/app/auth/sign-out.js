@@ -1,8 +1,8 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function SignOutPage() {
-    const { signOut } = C.useAppContext();
-    const { routes } = C.useAppContext();
+    const { signOut } = useAppContext();
+    const { routes } = useAppContext();
     const [signedOut, setSignedOut] = C.React.useState(null)
 
     C.React.useEffect(() => {

@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function AdminPageLayout() {
-    const { isAdmin, isLoading } = C.useAppContext();
-    const { routes } = C.useAppContext();
+    const { isAdmin, isLoading, routes } = useAppContext();
 
     if (isLoading) {
         return <Text>Loading...</Text>;

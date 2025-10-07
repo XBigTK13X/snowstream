@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function TagEditPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const [tagName, setTagName] = C.React.useState('')
     const [tagId, setTagId] = C.React.useState(null)
     const [tagDeleteCount, setTagDeleteCount] = C.React.useState(3)

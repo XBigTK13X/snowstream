@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function PlaylistListPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient } = useAppContext()
     const [playlistList, setPlaylistList] = C.React.useState(null)
 
     C.React.useEffect(() => {

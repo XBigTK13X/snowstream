@@ -1,7 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 function StreamableEditRow(props) {
-    const { apiClient } = C.useAppContext()
+    const { apiClient } = useAppContext()
     const [form, setForm] = C.React.useState({
         id: props.streamable.id,
         nameDisplay: props.streamable.name_display ?? '',
@@ -40,8 +40,7 @@ function StreamableEditRow(props) {
 }
 
 export default function StreamblesEditPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient } = useAppContext()
     const [streamSource, setStreamSource] = C.React.useState(null)
     const [query, setQuery] = C.React.useState('')
     const [filteredStreams, setFilteredStreams] = C.React.useState([])

@@ -1,7 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export function ContinueWatchingListPage(props) {
-    const { apiClient } = C.useAppContext()
+    const { apiClient } = useAppContext()
     const [continueWatchingList, setContinueWatchingList] = C.React.useState(null)
     const [resultsEmpty, setResultsEmpty] = C.React.useState(false)
     C.useFocusLayer('continue-watching')

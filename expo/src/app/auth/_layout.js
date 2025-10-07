@@ -1,8 +1,8 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 
 export default function AuthPageLayout() {
-    const { isLoading, routes, session } = C.useAppContext();
+    const { isLoading, routes, session } = useAppContext();
 
     if (isLoading) {
         return <C.Text>Loading...</C.Text>;

@@ -1,7 +1,7 @@
-import { C } from 'snowstream'
+import { C, PlayerContextProvider, usePlayerContext } from 'snowstream'
 
 export function InnerPlayMediaPage(props) {
-    const player = C.usePlayerContext()
+    const player = usePlayerContext()
 
     if (player.info.playbackFailed) {
         return (
@@ -25,14 +25,14 @@ export function InnerPlayMediaPage(props) {
 
 export function PlayMediaPage(props) {
     return (
-        <C.PlayerContextProvider
+        <PlayerContextProvider
             loadVideo={props.loadVideo}
             loadTranscode={props.loadTranscode}
             onComplete={props.onComplete}
             updateProgress={props.updateProgress}
             increaseWatchCount={props.increaseWatchCount} >
             <InnerPlayMediaPage />
-        </C.PlayerContextProvider>
+        </PlayerContextProvider>
     )
 
 }

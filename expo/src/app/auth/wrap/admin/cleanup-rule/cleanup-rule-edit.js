@@ -1,4 +1,4 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 const targetKinds = [
     'All',
@@ -10,8 +10,7 @@ const targetKinds = [
 
 
 export default function DisplayCleanupRuleEditPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
 
     const [ruleLoaded, setRuleLoaded] = C.React.useState(false)
     const [ruleDeleteCount, setRuleDeleteCount] = C.React.useState(3)

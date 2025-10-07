@@ -1,4 +1,4 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 function ChannelEditRow() {
     return null
@@ -10,7 +10,7 @@ const guideSourceKinds = [
 ]
 
 export default function EpisodeGuideEditPage() {
-    const { apiClient, routes } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const localParams = C.useLocalSearchParams()
     const [guideSource, setGuideSource] = C.React.useState(null)
     const [kindIndex, setKindIndex] = C.React.useState(0)

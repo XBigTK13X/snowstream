@@ -1,7 +1,15 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 export default function SignInPage() {
-    const { sessionLoaded, session, routes, setWebApiUrl } = C.useAppContext()
-    const { apiClient, signIn, config, clientOptions } = C.useAppContext()
+    const {
+        sessionLoaded,
+        session,
+        routes,
+        setWebApiUrl,
+        apiClient,
+        signIn,
+        config,
+        clientOptions
+    } = useAppContext()
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)

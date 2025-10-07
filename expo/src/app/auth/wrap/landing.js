@@ -1,12 +1,10 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function LandingPage(props) {
-    const { apiClient } = C.useAppContext()
-    const { routes, config } = C.useAppContext()
+    const { apiClient, routes, config, setMessageDisplay } = useAppContext()
     const { SnowStyle } = C.useStyleContext(props)
     const [shelves, setShelves] = C.React.useState(null)
     const [streamSources, setStreamSources] = C.React.useState(null)
-    const { setMessageDisplay } = C.useAppContext()
     C.useFocusLayer('landing')
 
 

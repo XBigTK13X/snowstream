@@ -1,7 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function AdminDashboardPage() {
-    const { routes } = C.useAppContext();
+    const { routes } = useAppContext();
     C.useFocusLayer('admin-dashboard')
 
     const renderItem = (item) => {

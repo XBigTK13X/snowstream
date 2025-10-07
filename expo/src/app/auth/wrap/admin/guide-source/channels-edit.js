@@ -1,7 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 function ChannelEditRow(props) {
-    const { apiClient } = C.useAppContext()
+    const { apiClient } = useAppContext()
     const [form, setForm] = C.React.useState({
         id: props.channel.id,
         editedId: props.channel.edited_id ?? '',
@@ -95,8 +95,7 @@ function ChannelEditRow(props) {
 }
 
 export default function ChannelEditPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes } = C.useAppContext()
+    const { apiClient } = useAppContext()
     const [guideSource, setGuideSource] = C.React.useState(null)
     const [streamables, setStreamables] = C.React.useState(null)
     const [query, setQuery] = C.React.useState('')

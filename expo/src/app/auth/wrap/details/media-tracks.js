@@ -1,4 +1,4 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 const styles = {
     image: {
@@ -10,8 +10,7 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
-    const { apiClient, clientOptions, isAdmin } = C.useAppContext();
-    const { routes } = C.useAppContext();
+    const { apiClient, clientOptions, isAdmin, routes } = useAppContext();
     const localParams = C.useLocalSearchParams();
 
     const [media, setMedia] = C.React.useState(null);

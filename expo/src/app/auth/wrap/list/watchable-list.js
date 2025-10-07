@@ -1,7 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export function WatchableListPage(props) {
-    const { isAdmin, apiClient, routes, setMessageDisplay } = C.useAppContext()
+    const { isAdmin, apiClient, routes, setMessageDisplay } = useAppContext()
     const localParams = C.useLocalSearchParams()
 
     const [shelf, setShelf] = C.React.useState(null)

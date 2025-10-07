@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function DisplayCleanupRuleListPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes, config } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const [rules, setRules] = C.React.useState(null)
 
     C.React.useEffect(() => {

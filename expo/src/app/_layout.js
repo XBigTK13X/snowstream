@@ -1,5 +1,5 @@
 import Snow from 'expo-snowui'
-import { C, config } from 'snowstream'
+import { AppContextProvider, C, config } from 'snowstream'
 
 const appStyle = {
     color: {
@@ -21,9 +21,9 @@ const appStyle = {
 export default function RootLayout() {
     return (
         <Snow.App DEBUG_FOCUS={config.debugFocus} snowStyle={appStyle}>
-            <C.AppContextProvider>
+            <AppContextProvider>
                 <C.Slot />
-            </C.AppContextProvider >
+            </AppContextProvider >
         </Snow.App >
     )
 }

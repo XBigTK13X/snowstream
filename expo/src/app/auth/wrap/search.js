@@ -1,4 +1,4 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 const styles = {
     columns: {
@@ -11,7 +11,7 @@ const styles = {
 }
 
 export default function SearchPage() {
-    const { apiClient, config, routes } = C.useAppContext()
+    const { apiClient, config, routes } = useAppContext()
 
     const [queryText, setQueryText] = C.React.useState('')
     const [searchResults, setSearchResults] = C.React.useState(null)

@@ -1,9 +1,8 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function JobDetailsPage() {
     const localParams = C.useLocalSearchParams()
-    const { apiClient } = C.useAppContext()
-    const { routes, config } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const [job, setJob] = C.React.useState(null)
     const jobId = localParams.jobId
     C.React.useEffect(() => {

@@ -1,7 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext, PlayerContextProvider, usePlayerContext } from 'snowstream'
 
 function VideoPlayer() {
-    const player = C.usePlayerContext()
+    const player = usePlayerContext()
     if (player.info.playbackFailed) {
         return (
             <C.FillView>
@@ -23,7 +23,7 @@ function VideoPlayer() {
 }
 
 function KeepsakeVideo(props) {
-    return (<C.PlayerContextProvider
+    return (<PlayerContextProvider
         forceTranscode={C.isWeb}
         loadVideo={() => {
             return new Promise(resolve => {
@@ -66,7 +66,7 @@ function KeepsakeVideo(props) {
             return props.closeModal()
         }}>
         <VideoPlayer />
-    </C.PlayerContextProvider>
+    </PlayerContextProvider>
     )
 }
 
@@ -92,7 +92,7 @@ export default function KeepsakeDetailsPage(props) {
     const localParams = C.useLocalSearchParams()
     C.useFocusLayer('landing')
 
-    const { apiClient, routes } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 

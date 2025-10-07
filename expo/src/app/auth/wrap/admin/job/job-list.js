@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function JobListPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes, config } = C.useAppContext()
+    const { apiClient, routes } = useAppContext()
     const [jobs, setJobs] = C.React.useState(null)
     const [showComplete, setShowComplete] = C.React.useState(true)
 

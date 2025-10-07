@@ -1,6 +1,6 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 export default function InfoPage() {
-    const { displayName, config, apiClient } = C.useAppContext()
+    const { displayName, config, apiClient } = useAppContext()
     let authedInfo = 'Not logged in.'
     if (displayName) {
         authedInfo = `Logged in as [${displayName}]`

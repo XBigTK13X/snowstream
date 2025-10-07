@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function SessionListPage() {
-    const { apiClient } = C.useAppContext()
-    const { routes, config } = C.useAppContext()
+    const { apiClient } = useAppContext()
     const [sessions, setSessions] = C.React.useState(null)
     C.React.useEffect(() => {
         if (!sessions) {

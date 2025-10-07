@@ -1,4 +1,4 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 const players = [
     'all',
@@ -14,7 +14,7 @@ const resolutions = [
 
 export default function OptionsPage() {
     const { SnowStyle } = C.useStyleContext()
-    const { apiClient, clientOptions, changeClientOptions } = C.useAppContext()
+    const { apiClient, clientOptions, changeClientOptions } = useAppContext()
 
     C.useFocusLayer('options')
 

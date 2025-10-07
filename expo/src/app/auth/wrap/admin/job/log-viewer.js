@@ -1,8 +1,7 @@
-import { C } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
 
 export default function LogViewerPage() {
-    const { SnowStyle } = C.useStyleContext()
-    const { apiClient } = C.useAppContext()
+    const { apiClient } = useAppContext()
     const [logPaths, setLogPaths] = C.React.useState(null)
     const [playbackLogs, setPlaybackLogs] = C.React.useState(null)
     const [transcodeLogs, setTranscodeLogs] = C.React.useState(null)

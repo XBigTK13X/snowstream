@@ -4,6 +4,8 @@ import { router } from 'expo-router'
 // DOCS router method https://docs.expo.dev/router/navigating-pages/#imperative-navigation
 
 export var routes = {
+    info: '/info',
+    signIn: '/',
     admin: {
         dashboard: '/auth/wrap/admin/dashboard',
         cleanupRuleEdit: '/auth/wrap/admin/cleanup-rule/cleanup-rule-edit',
@@ -31,7 +33,6 @@ export var routes = {
     episodeDetails: '/auth/wrap/details/episode',
     episodeList: '/auth/wrap/list/episode',
     episodePlay: '/auth/play/episode',
-    info: '/info',
     keepsakeDetails: '/auth/wrap/details/keepsake',
     landing: '/auth/wrap/landing',
     movieDetails: '/auth/wrap/details/movie',
@@ -44,7 +45,6 @@ export var routes = {
     search: '/auth/wrap/search',
     seasonList: '/auth/wrap/list/season',
     showList: '/auth/wrap/list/show',
-    signIn: '/',
     signOut: '/auth/sign-out',
     streamableList: '/auth/wrap/list/streamable',
     streamablePlay: '/auth/play/streamable',
@@ -69,6 +69,7 @@ routes.func = (target, params) => {
 }
 
 routes.back = () => {
+    console.log("Going back")
     try {
         router.back()
     }
