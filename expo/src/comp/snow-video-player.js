@@ -73,7 +73,7 @@ export default function SnowVideoPlayer(props) {
     return (
         <View style={styles.dark}>
             {player.info.videoLoaded ? <VideoView /> : null}
-            <SnowVideoControls playerKind={player.playerKind} />
+            {player.info.controlsVisible ? <SnowVideoControls playerKind={player.playerKind} /> : null}
         </View >
     )
 }

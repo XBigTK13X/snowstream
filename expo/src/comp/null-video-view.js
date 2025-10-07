@@ -1,6 +1,6 @@
 import React from 'react'
 import Snow from 'expo-snowui'
-import { TouchableOpacity, View } from 'react-native'
+import { View } from 'react-native'
 import { usePlayerContext } from '../player-context'
 
 export default function NullVideoView(props) {
@@ -50,9 +50,10 @@ export default function NullVideoView(props) {
     return (
         <Snow.Modal
             assignFocus={false}
+            scroll
             onRequestClose={() => { player.action.onStopVideo() }}
         >
-            <Snow.FillView style={{ width: '85%' }}>
+            <View style={{ width: '85%' }}>
                 <View>
                     <Snow.Text>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
                     <Snow.Text>Here is a whole bunch of text.</Snow.Text>
@@ -61,7 +62,7 @@ export default function NullVideoView(props) {
                 <View>
                     <Snow.Text>{JSON.stringify(player.info, null, 4)}</Snow.Text>
                 </View>
-            </Snow.FillView>
+            </View>
             <Snow.Overlay
                 focusStart
                 focusKey="null-video"
