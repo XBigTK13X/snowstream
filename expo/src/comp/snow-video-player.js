@@ -7,10 +7,9 @@ import {
 } from 'react-native'
 import { useKeepAwake } from 'expo-keep-awake';
 
-import util from '../util'
+import { useAppContext, usePlayerContext, Util } from 'snowstream'
 import SnowVideoControls from './snow-video-controls'
-import { usePlayerContext } from '../player-context'
-import { useAppContext } from '../app-context'
+
 
 export default function SnowVideoPlayer(props) {
     const { SnowStyle, getWindowHeight, getWindowWidth } = Snow.useStyleContext(props)
@@ -67,7 +66,7 @@ export default function SnowVideoPlayer(props) {
     }
 
     if (config.debugVideoPlayer) {
-        util.log(player.info.videoUrl)
+        Util.log(player.info.videoUrl)
     }
 
     return (

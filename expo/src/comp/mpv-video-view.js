@@ -1,11 +1,9 @@
-import { StyleSheet } from 'react-native';
 import React from 'react'
 import Snow from 'expo-snowui'
 // Don't want it being included outside of Android
 // Don't trying importing it until first render
 import { LibmpvVideo } from 'expo-libmpv'
-import { useAppContext } from '../app-context'
-import { usePlayerContext } from '../player-context'
+import { useAppContext, usePlayerContext } from 'snowstream'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {

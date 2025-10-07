@@ -1,4 +1,4 @@
-import C from '../../../common'
+import { C } from 'snowstream'
 
 export function InnerPlayMediaPage(props) {
     const player = C.usePlayerContext()

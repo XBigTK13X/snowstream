@@ -1,4 +1,4 @@
-import C from '../common'
+import { C } from 'snowstream'
 export default function InfoPage() {
     const { displayName, config, apiClient } = C.useAppContext()
     let authedInfo = 'Not logged in.'

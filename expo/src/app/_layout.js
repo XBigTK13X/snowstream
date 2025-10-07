@@ -1,6 +1,5 @@
 import Snow from 'expo-snowui'
-import C from '../common'
-import { config } from '../settings'
+import { C, config } from 'snowstream'
 
 const appStyle = {
     color: {

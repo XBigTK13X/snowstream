@@ -1,7 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 import Snow from 'expo-snowui'
-import { useAppContext } from '../app-context'
+import { useAppContext } from 'snowstream'
 
 
 function SnowPosterGridW(props) {

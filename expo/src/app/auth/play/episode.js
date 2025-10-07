@@ -1,4 +1,4 @@
-import C from '../../../common'
+import { C } from 'snowstream'
 
 import PlayMediaPage from './media'
 

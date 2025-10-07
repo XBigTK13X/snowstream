@@ -1,6 +1,6 @@
 import React from 'react'
 import Snow from 'expo-snowui'
-import { useAppContext } from '../app-context'
+import { useAppContext } from 'snowstream'
 
 export function SnowScreencapGridW(props) {
     const { routes, apiClient } = useAppContext()

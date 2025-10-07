@@ -5,7 +5,7 @@ import {
     SnowGrid,
     SnowBreak
 } from 'expo-snowui'
-import { useAppContext } from '../app-context'
+import { useAppContext } from 'snowstream'
 
 // If the Header doesn't render before the rest of the page
 // Then the focusMap winds up in the wrong focusLayer

@@ -1,4 +1,4 @@
-import C from '../../common'
+import { C } from 'snowstream'
 
 export default function SignOutPage() {
     const { signOut } = C.useAppContext();

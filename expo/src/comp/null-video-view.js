@@ -1,10 +1,9 @@
 import React from 'react'
 import Snow from 'expo-snowui'
 import { View } from 'react-native'
-import { usePlayerContext } from '../player-context'
+import { usePlayerContext } from 'snowstream'
 
 export default function NullVideoView(props) {
-    const { getWindowWidth, getWindowHeight } = Snow.useStyleContext(props)
     const player = usePlayerContext()
     const [updateInterval, setUpdateInterval] = React.useState(null)
     const [lastSeek, setLastSeek] = React.useState(0)

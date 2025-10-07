@@ -1,4 +1,4 @@
-import C from '../../common'
+import { C } from 'snowstream'
 
 
 export default function AuthPageLayout() {
@@ -13,8 +13,6 @@ export default function AuthPageLayout() {
     }
 
     return (
-        <C.SnowHeaderPage>
-            <C.Slot />
-        </C.SnowHeaderPage>
+        <C.Slot />
     )
 }

@@ -9,11 +9,12 @@ import Snow, {
     SnowRangeSlider,
     SnowTabs,
     SnowText,
-    SnowTextButton
+    SnowTextButton,
+    SnowView,
+    SnowTarget
 } from 'expo-snowui'
 
-import { useAppContext } from '../app-context'
-import { usePlayerContext } from '../player-context'
+import { useAppContext, usePlayerContext } from 'snowstream'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
@@ -64,7 +65,14 @@ export default function SnowVideoControls(props) {
                         focusDown="close-bottom"
                         itemsPerRow={1}
                         items={player.info.logs}
-                        renderItem={(log) => { return <SnowText shrink>{log}</SnowText> }} />
+                        renderItem={(log) => {
+                            return (
+                                <SnowView>
+                                    <SnowText shrink>{log}</SnowText>
+                                    <SnowTarget />
+                                </SnowView>
+                            )
+                        }} />
                 </SnowFillView>
                 <SnowGrid focusKey="close-bottom" itemsPerRow={1}>
                     <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />

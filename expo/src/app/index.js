@@ -1,4 +1,4 @@
-import C from '../common'
+import { C } from 'snowstream'
 export default function SignInPage() {
     const { sessionLoaded, session, routes, setWebApiUrl } = C.useAppContext()
     const { apiClient, signIn, config, clientOptions } = C.useAppContext()
