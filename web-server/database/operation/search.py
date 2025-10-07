@@ -3,6 +3,7 @@ import database.operation.shelf as db_shelf
 import database.operation.movie as db_movie
 import database.operation.show as db_show
 import database.operation.show_episode as db_episode
+import database.operation.streamable as db_streamable
 
 def perform_search(ticket:dbi.dm.Ticket,query:str):
     result = {}
@@ -24,7 +25,6 @@ def perform_search(ticket:dbi.dm.Ticket,query:str):
                 episodes = db_episode.get_show_episode_list(ticket=ticket, shelf_id=shelf.id, search_query=query)
                 if episodes:
                     episode_results += episodes
-
         if movie_results:
             movie_results.sort(key=lambda xx:len(xx.name))
             results.append({
@@ -46,4 +46,14 @@ def perform_search(ticket:dbi.dm.Ticket,query:str):
                 'name': 'Episodes',
                 'items': episode_results
             })
+
+        streamables = db_streamable.get_streamable_list(ticket=ticket,search_query=query)
+        if streamables:
+            streamables.sort(key=lambda xx:len(xx.name))
+            results.append({
+                'kind': 'streamables',
+                'name': 'Streamables',
+                'items': streamables
+            })
+
     return results

@@ -29,17 +29,32 @@ def update_streamable_display(
         db.commit()
         return True
 
-def get_streamable_list():
+def get_streamable_list(ticket:dbi.dm.Ticket,search_query:str=None):
     with dbi.session() as db:
-        return (
+        query = (
             db.query(dbi.dm.Streamable)
-            .options(dbi.orm.joinedload(dbi.dm.Streamable.stream_source))
+            .outerjoin(dbi.dm.Channel, dbi.dm.Streamable.channel)
             .options(
+                dbi.orm.joinedload(dbi.dm.Streamable.stream_source),
                 dbi.orm.joinedload(dbi.dm.Streamable.channel)
-                .joinedload(dbi.dm.Channel.programs)
+                    .joinedload(dbi.dm.Channel.programs),
             )
-            .all()
         )
+        if search_query:
+            query = query.filter(dbi.or_(
+                dbi.dm.Channel.parsed_name.ilike(f"%{search_query}%"),
+                dbi.dm.Channel.edited_name.ilike(f"%{search_query}%"),
+                dbi.dm.Streamable.url.ilike(f"%{search_query}%"),
+                dbi.dm.Streamable.name.ilike(f"%{search_query}%"),
+                dbi.dm.Streamable.name_display.ilike(f"%{search_query}%"),
+                dbi.dm.Streamable.group.ilike(f"%{search_query}%"),
+                dbi.dm.Streamable.group_display.ilike(f"%{search_query}%"),
+            ))
+        if ticket.has_tag_restrictions():
+            pass
+        if ticket.has_stream_source_restrictions():
+            pass
+        return query.all()
 
 def get_streamable_by_id(streamable_id: int):
     with dbi.session() as db:

@@ -11,7 +11,7 @@ const styles = {
 }
 
 export default function SearchPage() {
-    const { apiClient, config } = C.useAppContext()
+    const { apiClient, config, routes } = C.useAppContext()
 
     const [queryText, setQueryText] = C.React.useState('')
     const [searchResults, setSearchResults] = C.React.useState(null)
@@ -47,6 +47,23 @@ export default function SearchPage() {
             resultsTabs = (
                 <C.SnowTabs key={resultKey} focusKey="search-results" headers={headers}>
                     {searchResults.map((searchResult, resultIndex) => {
+                        if (searchResult.kind === 'streamables') {
+                            return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
+                                return (
+                                    <C.SnowTextButton title={item.name}
+                                        onPress={routes.func(routes.streamablePlay, {
+                                            streamSourceId: item.stream_source.id,
+                                            streamableId: item.id,
+                                        })}
+                                        onLongPress={routes.func(routes.streamablePlay, {
+                                            streamSourceId: item.stream_source.id,
+                                            streamableId: item.id,
+                                            forcePlayer: 'exo'
+                                        })}
+                                    />
+                                )
+                            }} />
+                        }
                         return <C.SnowPosterGrid disableWatched items={searchResult.items} />
                     })}
                 </C.SnowTabs>

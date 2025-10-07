@@ -69,7 +69,8 @@ def handle(scope):
     if scope.is_stream_source():
         streamables = db.op.get_stream_source_by_id(ticket=db.Ticket(),stream_source_id=scope.target_id).streamables
     else:
-        streamables = db.op.get_streamable_list()
+        ticket=db.Ticket(ignore_watch_group=True)
+        streamables = db.op.get_streamable_list(ticket)
 
     db.op.update_job(job_id=scope.job_id, message=f"Applying {len(cleanup_rules)} cleanup rules to {len(streamables)} streamables")
     for streamable in streamables:

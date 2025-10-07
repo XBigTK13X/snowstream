@@ -100,12 +100,15 @@ export default function StreamableListPage() {
                                         <C.SnowTextButton
                                             {...focus}
                                             title={name}
-                                            onPress={() => {
-                                                routes.goto(routes.streamablePlay, {
-                                                    streamSourceId: streamSource.id,
-                                                    streamableId: streamable.id,
-                                                })
-                                            }}
+                                            onPress={routes.func(routes.streamablePlay, {
+                                                streamSourceId: streamSource.id,
+                                                streamableId: streamable.id,
+                                            })}
+                                            onLongPress={routes.func(routes.streamablePlay, {
+                                                streamSourceId: streamSource.id,
+                                                streamableId: streamable.id,
+                                                forcePlayer: 'exo'
+                                            })}
                                         />
                                         <C.SnowText style={styles.tableColumn}>{currentProgram}</C.SnowText>
                                         <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
