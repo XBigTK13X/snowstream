@@ -23,7 +23,7 @@ export function PlayerContextProvider(props) {
         routes,
         setRemoteCallbacks
     } = useAppContext()
-    const pathname = usePathname()
+    const currentRoute = usePathname()
 
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [videoTitle, setVideoTitle] = React.useState(null)
@@ -81,6 +81,8 @@ export function PlayerContextProvider(props) {
     const [subtitleDelaySeconds, setSubtitleDelaySeconds] = React.useState(0)
     const [subtitleFontSize, setSubtitleFontSize] = React.useState(42)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = React.useState(0)
+
+    const changeLocalParamsRef = React.useRef(null)
 
     const forcePlayer = localParams.forcePlayer
     let forceExo = false
@@ -161,6 +163,11 @@ export function PlayerContextProvider(props) {
         onCloseTranscodeSession()
         setControlsVisible(false)
         setIsPlaying(false)
+        // When swapping between players or swapping to/from transcode
+        // The onStopVideo will cause a routes.back() and kill the param change
+        if (changeLocalParamsRef.current) {
+            return
+        }
         if (props.onStopVideo) {
             props.onStopVideo()
         }
@@ -172,6 +179,11 @@ export function PlayerContextProvider(props) {
                 routes.back()
             }
         }
+    }
+
+    const onChangeLocalParams = (newParams) => {
+        changeLocalParamsRef.current = newParams
+        routes.replace(currentRoute, newParams)
     }
 
     const onVideoReady = () => {
@@ -338,7 +350,7 @@ export function PlayerContextProvider(props) {
     const onCriticalError = (err) => {
         if (!isTranscode) {
             setVideoLoaded(false)
-            routes.replace(pathname, { ...localParams, ...{ transcode: true } })
+            routes.replace(currentRoute, { ...localParams, ...{ transcode: true } })
         }
         else {
             setPlaybackFailed(err)
@@ -498,6 +510,24 @@ export function PlayerContextProvider(props) {
         }
     })
 
+    const action = {
+        onChangeLocalParams,
+        onCloseTranscodeSession,
+        onPauseVideo,
+        onPlaybackComplete,
+        onProgress,
+        onResumeVideo,
+        onSelectTrack,
+        onStopVideo,
+        onVideoError,
+        onVideoReady,
+        onVideoUpdate,
+        setAudioDelaySeconds,
+        setSubtitleColor,
+        setSubtitleDelaySeconds,
+        setSubtitleFontSize,
+    }
+
     const info = {
         audioDelaySeconds,
         audioTrackIndex,
@@ -529,26 +559,9 @@ export function PlayerContextProvider(props) {
         videoWidth: clientOptions.resolutionWidth
     }
 
-    const action = {
-        onCloseTranscodeSession,
-        onPlaybackComplete,
-        onVideoError,
-        onPauseVideo,
-        onProgress,
-        onVideoReady,
-        onResumeVideo,
-        onSelectTrack,
-        onStopVideo,
-        onVideoUpdate,
-        setAudioDelaySeconds,
-        setSubtitleColor,
-        setSubtitleDelaySeconds,
-        setSubtitleFontSize
-    }
-
     const playerContext = {
-        info,
         action,
+        info,
         VideoView
     }
 

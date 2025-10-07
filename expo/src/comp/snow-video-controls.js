@@ -36,9 +36,8 @@ export default function SnowVideoControls(props) {
             backgroundColor: SnowStyle.color.transparentDark
         }
     }
-    const { apiClient, routes, setRemoteCallbacks } = useAppContext()
+    const { apiClient, setRemoteCallbacks } = useAppContext()
     const localParams = useLocalSearchParams()
-    const currentRoute = usePathname()
     const player = usePlayerContext()
 
     const [showLogs, setShowLogs] = React.useState(false)
@@ -192,13 +191,13 @@ export default function SnowVideoControls(props) {
                                 newParams.forcePlayer = 'exo'
                             }
                             newParams.seekToSeconds = player.info.progressSeconds
-                            routes.replace(currentRoute, newParams)
+                            player.action.onChangeLocalParams(newParams)
                         }} />
                         <SnowTextButton title={transcodeTitle} onPress={() => {
                             let newParams = { ...localParams }
                             newParams.transcode = !player.info.isTranscode
                             newParams.seekToSeconds = player.info.progressSeconds
-                            routes.replace(currentRoute, newParams)
+                            player.action.onChangeLocalParams(newParams)
                         }} />
                     </SnowGrid>
                 </SnowTabs>
