@@ -520,6 +520,42 @@ def get_unknown_movie_list(shelf_id:int=None):
                 results.append(movie)
         return results
 
+def delete_movies_without_videos():
+    with dbi.session() as db:
+        raw_query = '''
+            select
+                movie.id as movie_id,
+                movie.directory as movie_directory,
+                movie_video_file.id as movie_video_file_id,
+                video_file.id as video_file_id
+            from
+            movie
+                left join movie_video_file on movie_video_file.movie_id = movie.id
+                left join video_file on movie_video_file.video_file_id = video_file.id
+            where
+                movie_video_file.video_file_id is null
+                or video_file.id is null;
+        '''
+        cursor = db.execute(dbi.sql_text(raw_query))
+        video_found = {}
+        no_videos = {}
+        for row in cursor:
+            if row.video_file_id:
+                video_found[row.movie_id] = True
+            else:
+                no_videos[row.movie_id] = row.movie_directory
+        delete_ids = []
+        results = []
+        for xx in no_videos.keys():
+            if xx in video_found:
+                continue
+            delete_ids.append(xx)
+            results.append(f'id [{xx}] directory [{no_videos[xx]}]')
+        import pprint
+        pprint.pprint(delete_ids)
+        pprint.pprint(results)
+        return results
+
 def delete_movie_records(ticket:dbi.dm.Ticket, movie_id:int):
     if not movie_id:
         return False

@@ -13,6 +13,8 @@ export default function AuthPageLayout() {
     }
 
     return (
-        <C.Slot />
+        <C.SnowHeaderPage>
+            <C.Slot />
+        </C.SnowHeaderPage>
     )
 }

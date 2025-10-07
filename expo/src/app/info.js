@@ -6,7 +6,7 @@ export default function InfoPage() {
         authedInfo = `Logged in as [${displayName}]`
     }
     return (
-        <C.View>
+        <C.SnowHeaderPage>
             <C.Text>{'\n'}</C.Text>
             <C.SnowText>
                 snowstream client v{config.clientVersion}.
@@ -17,6 +17,6 @@ export default function InfoPage() {
             <C.SnowText>
                 {authedInfo}
             </C.SnowText>
-        </C.View>
+        </C.SnowHeaderPage>
     )
 }

@@ -63,6 +63,7 @@ import Snow, {
     useFocusLayer
 } from 'expo-snowui'
 
+import SnowHeaderPage from './comp/snow-header-page'
 import SnowPosterGrid from './comp/snow-poster-grid'
 import SnowScreencapGrid from './comp/snow-screencap-grid'
 import SnowTrackSelector from './comp/snow-track-selector'
@@ -109,6 +110,7 @@ export default {
     SnowDropdown,
     SnowGrid,
     SnowHeader,
+    SnowHeaderPage,
     SnowImageButton,
     SnowImageGrid,
     SnowInput,

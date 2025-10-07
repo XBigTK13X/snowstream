@@ -144,19 +144,16 @@ def purge_missing_metadata_file_records():
         db.commit()
     return deleted_records
 
-def find_shelf_content_without_video_files():
+def purge_shelf_conent_without_video_files():
     results = []
     with dbi.session() as db:
-        ticket = dbi.dm.Ticket(ignore_watch_group=True)
-        movies = db_movie.get_movie_list(ticket=ticket)
-        for movie in movies:
-            if not movie.video_files:
-                results.append(movie.directory)
+        movies = db_movie.delete_movies_without_videos()
+        if movies:
+            results.append(movies)
 
-        episodes = db_episode.get_show_episode_list(ticket=ticket,include_specials=True)
-        for episode in episodes:
-            if not episode.video_files:
-                results.append(episode.season.directory)
+        episodes = db_episode.delete_show_episodes_without_videos()
+        if episodes:
+            results.append(episodes)
     return results
 
 def purge_orphaned_records():

@@ -559,6 +559,43 @@ def reset_show_episode_watch_count(ticket:dbi.dm.Ticket,show_episode_id:int):
         db.commit()
         return True
 
+def delete_show_episodes_without_videos():
+    with dbi.session() as db:
+        raw_query = '''
+            select
+                show_episode.id as episode_id,
+                show_season.directory as season_directory,
+                show_episode_video_file.id as episode_video_file_id,
+                video_file.id as video_file_id
+            from
+            show_episode
+                join show_season on show_season.id = show_episode.season_id
+                left join show_episode_video_file on show_episode_video_file.show_episode_id = show_episode.id
+                left join video_file on show_episode_video_file.video_file_id = video_file.id
+            where
+                show_episode_video_file.video_file_id is null
+                or video_file.id is null;
+        '''
+        cursor = db.execute(dbi.sql_text(raw_query))
+        video_found = {}
+        no_videos = {}
+        for row in cursor:
+            if row.video_file_id:
+                video_found[row.episode_id] = True
+            else:
+                no_videos[row.episode_id] = row.season_directory
+        delete_ids = []
+        results = []
+        for xx in no_videos.keys():
+            if xx in video_found:
+                continue
+            delete_ids.append(xx)
+            results.append(f'id [{xx}] directory [{no_videos[xx]}]')
+        import pprint
+        pprint.pprint(delete_ids)
+        pprint.pprint(results)
+        return results
+
 def delete_show_episode_records(ticket:dbi.dm.Ticket, show_episode_id:int):
     if not show_episode_id:
         return False
