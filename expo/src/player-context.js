@@ -83,7 +83,7 @@ export function PlayerContextProvider(props) {
     const [subtitleFontSize, setSubtitleFontSize] = React.useState(42)
     const [subtitleTrackIndex, setSubtitleTrackIndex] = React.useState(0)
 
-    const changeLocalParamsRef = React.useRef(null)
+    const changeRouteParamsRef = React.useRef(null)
 
     const forcePlayer = currentRoute.params.forcePlayer
     let forceExo = false
@@ -167,7 +167,7 @@ export function PlayerContextProvider(props) {
         // When swapping between players or swapping to/from transcode
         // The onStopVideo will cause a navPop and kill the param change
         // This prevents that failure
-        if (changeLocalParamsRef.current) {
+        if (changeRouteParamsRef.current) {
             return
         }
         if (props.onStopVideo) {
@@ -184,7 +184,7 @@ export function PlayerContextProvider(props) {
     }
 
     const onChangeRouteParams = (newParams) => {
-        changeLocalParamsRef.current = newParams
+        changeRouteParamsRef.current = newParams
         navPush(newParams)
     }
 

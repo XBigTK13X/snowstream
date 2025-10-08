@@ -680,15 +680,12 @@ def auth_required(router):
         absolute_subdirectory = shelf.local_path
         if subdirectory64:
             absolute_subdirectory = util.fromBase64(subdirectory64)
-        print(absolute_subdirectory)
         keepsakes = db.op.get_keepsake_list_by_directory(directory=absolute_subdirectory)
         images = []
         videos = []
         directories = []
         directory_dedupe = {}
         for keepsake in keepsakes:
-            import pprint
-            pprint.pprint(keepsake.directory)
             if keepsake.directory == absolute_subdirectory:
                 images = keepsake.image_files
                 videos = keepsake.video_files
