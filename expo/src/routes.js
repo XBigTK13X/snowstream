@@ -12,13 +12,13 @@ export var routes = {
     continueWatching: '/auth/wrap/list/continue-watching',
     episodeDetails: '/auth/wrap/details/episode',
     episodeList: '/auth/wrap/list/episode',
-    episodePlay: '/auth/play/episode',
+    episodePlay: '/auth/wrap/play/episode',
     keepsakeDetails: '/auth/wrap/details/keepsake',
     movieDetails: '/auth/wrap/details/movie',
     movieList: '/auth/wrap/list/movie',
-    moviePlay: '/auth/play/movie',
+    moviePlay: '/auth/wrap/play/movie',
     options: '/auth/wrap/options',
-    playingQueuePlay: '/auth/play/playing-queue',
+    playingQueuePlay: '/auth/wrap/play/playing-queue',
     playlistDetails: '/auth/wrap/details/playlist',
     playlistList: '/auth/wrap/list/playlist',
     search: '/auth/wrap/search',
@@ -26,7 +26,7 @@ export var routes = {
     showList: '/auth/wrap/list/show',
     signOut: '/auth/sign-out',
     streamableList: '/auth/wrap/list/streamable',
-    streamablePlay: '/auth/play/streamable',
+    streamablePlay: '/auth/wrap/play/streamable',
     admin: {
         dashboard: '/auth/wrap/admin/dashboard',
         cleanupRuleEdit: '/auth/wrap/admin/cleanup-rule/cleanup-rule-edit',
@@ -56,10 +56,6 @@ export var routes = {
         }
         router.replace({ pathname: target, params })
     }
-}
-
-routes.reset = () => {
-    router.replace(routes.signIn);
 }
 
 export function QuietReactWarning() {

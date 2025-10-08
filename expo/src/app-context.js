@@ -80,31 +80,39 @@ export function AppContextProvider(props) {
     const remoteCallbacksRef = React.useRef(remoteCallbacks)
 
     const pathname = usePathname()
-    const params = useLocalSearchParams()
+    const pathnameRef = React.useRef(pathname)
+    const localParams = useLocalSearchParams()
+    const localParamsRef = React.useRef(localParams)
 
-    const [navigationHistory, setNavigationHistory] = React.useState([{ route: pathname, params }])
+    const [navigationHistory, setNavigationHistory] = React.useState([{ route: pathname, params: localParams }])
     const navigationHistoryRef = React.useRef(navigationHistory)
+    const [navigationAllowed, setNavigationAllowed] = React.useState(true)
+    const navigationAllowedRef = React.useRef(navigationAllowed)
     const [rendered, setRendered] = React.useState(false)
 
-    const navPush = (route, params, isFunc) => {
+    const navPush = (route, routeParams, isFunc) => {
+        let foundParams = {}
         if (typeof route === 'object') {
-            params = route
+            foundParams = { ...route }
             route = navigationHistoryRef.current.at(-1).route
         }
-        if (params === true) {
+        if (routeParams === true) {
             isFunc = true
-            params = {}
+            foundParams = {}
         }
-        if (!params) {
-            params = {}
+        if (!routeParams) {
+            foundParams = {}
+        }
+        if (typeof routeParams === 'object') {
+            foundParams = { ...routeParams }
         }
         const func = () => {
             setNavigationHistory((prev) => {
                 let result = [...prev]
                 if (result.at(-1).route === route) {
-                    result.at(-1).params = params
+                    result.at(-1).params = foundParams
                 } else {
-                    result.push({ route, params })
+                    result.push({ route, params: foundParams })
                 }
                 return result
             })
@@ -121,7 +129,7 @@ export function AppContextProvider(props) {
                 let result = [...prev]
                 if (result.length > 1) {
                     result.pop()
-
+                    console.log({ resultEnd: result.at(-1) })
                 }
                 return result
             })
@@ -134,7 +142,7 @@ export function AppContextProvider(props) {
 
     const navReset = (isFunc) => {
         const func = () => {
-            setNavigationHistory([{ route: routes.landing, params: {} }])
+            setNavigationHistory([{ route: routes.signIn, params: {} }])
             routes.replace(routes.signIn)
         }
         if (isFunc) {
@@ -205,20 +213,45 @@ export function AppContextProvider(props) {
     }
 
     React.useEffect(() => {
+        navigationHistoryRef.current = navigationHistory
+    }, [navigationHistory])
+
+    // Keep expo-router in sync with the snowstream navigation state
+    React.useEffect(() => {
+        const current = navigationHistoryRef.current.at(-1)
+        console.log({ expo: pathname, current })
+        // On first render, expo-router will freak out if we try to sync the routes
         if (!rendered) {
+            console.log("Wait on first render")
             setRendered(true)
         }
         else {
-            navigationHistoryRef.current = navigationHistory
-            const current = navigationHistory.at(-1)
             if (pathname !== current.route) {
-                routes.replace(current.route, current.params)
+                // Sometimes expo-router flips out when moving between pages, this ignores that by waiting for the next render
+                if ((pathname === '/' && current.route !== '/' && current.route !== '/auth/wrap/landing')) {
+                    console.log("Wait on re-render")
+                    setRendered(false)
+                } else {
+
+                    if (pathname !== current.route && (current.route !== '/' || pathname !== routes.landing)) {
+                        console.log({ current })
+                        routes.replace(current.route, current.params)
+                    }
+                }
             }
         }
-    }, [navigationHistory, rendered])
+    }, [navigationHistory, rendered, pathname, localParams])
 
     React.useEffect(() => {
+        navigationAllowedRef.current = navigationAllowed
+    }, [navigationAllowed])
+
+    // When a modal is shown, prevent default event handlers from exiting the app
+    React.useEffect(() => {
         const onBackPress = () => {
+            if (!navigationAllowedRef.current) {
+                return true
+            }
             if (navigationHistoryRef.current.length > 1) {
                 navPop();
                 return true;
@@ -231,6 +264,38 @@ export function AppContextProvider(props) {
             backListener.remove()
         }
     }, []);
+
+    if (Platform.isTV) {
+        useTVEventHandler(remoteEvent => {
+            if (remoteEvent.eventType === 'menu' || remoteEvent.eventType === 'back') {
+                if (!navigationAllowedRef.current) {
+                    BackHandler.exitApp = () => {
+
+                    }
+                }
+            }
+        })
+    }
+
+    if (Platform.OS === 'web') {
+        React.useEffect(() => {
+            const onPopState = (e) => {
+                if (!navigationAllowedRef.current) {
+                    return
+                }
+                if (navigationHistoryRef.current.length > 1) {
+                    navPop()
+                } else {
+                    window.history.pushState(null, '', window.location.pathname)
+                }
+            }
+
+            window.addEventListener('popstate', onPopState)
+            window.history.pushState(null, '', window.location.pathname)
+
+            return () => window.removeEventListener('popstate', onPopState)
+        }, [])
+    }
 
     React.useEffect(() => {
         if (!apiClient) {
@@ -447,7 +512,8 @@ export function AppContextProvider(props) {
         navPop,
         navReset,
         navToItem,
-        navigationHistory
+        navigationHistory,
+        setNavigationAllowed
     }
 
     return (

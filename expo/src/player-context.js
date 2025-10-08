@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router'
 import { useAppContext } from './app-context'
 import util from './util'
@@ -23,7 +23,8 @@ export function PlayerContextProvider(props) {
         routes,
         setRemoteCallbacks,
         navPush,
-        navPop
+        navPop,
+        setNavigationAllowed
     } = useAppContext()
 
     const [videoUrl, setVideoUrl] = React.useState(null)
@@ -498,7 +499,7 @@ export function PlayerContextProvider(props) {
                 }
             }
         }
-    })
+    }, [localParams, manualSeekSeconds, videoLoading, apiClient, clientOptions, initialSeekSeconds])
 
     React.useEffect(() => {
         setRemoteCallbacks((callbacks) => {
@@ -511,7 +512,14 @@ export function PlayerContextProvider(props) {
                 return callbacks
             })
         }
-    })
+    }, [])
+
+    React.useEffect(() => {
+        setNavigationAllowed(false)
+        return () => {
+            setNavigationAllowed(true)
+        }
+    }, [])
 
     const action = {
         onChangeLocalParams,

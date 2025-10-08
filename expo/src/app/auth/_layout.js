@@ -75,26 +75,26 @@ function NoOp(props) {
 // But, the contexts don't work unless they are inside a top level Slot
 // So the RootLayout bootstraps expo-router
 // Then this layout bootstraps the app
-export default function AppLayout() {
+export default function AppLayout(props) {
     const pathname = C.usePathname()
-    const { session, sessionLoaded, isAdmin, routes } = useAppContext();
+    const { session, sessionLoaded, isAdmin, routes, navPush } = useAppContext();
     const [hasAuth, setHasAuth] = React.useState(false)
 
     React.useEffect(() => {
         if (!hasAuth) {
             if (pathname.includes('/auth/') && sessionLoaded && !session) {
                 setHasAuth(true)
-                routes.replace(routes.signIn)
+                navPush(routes.signIn)
             }
 
             if (pathname.includes('/admin/') && sessionLoaded && !isAdmin) {
                 setHasAuth(true)
-                routes.replace(routes.landing)
+                navPush(routes.landing)
             }
         }
     })
 
-    const hasHeader = pathname.includes('/wrap/')
+    const hasHeader = pathname.includes('/wrap/') && !pathname.includes('/play/')
     const HeaderWrapper = hasHeader ? SnowHeaderNavPage : NoOp
 
     return (

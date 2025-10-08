@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function SignOutPage() {
-    const { signOut } = useAppContext();
+    const { signOut, navReset } = useAppContext();
     const { routes } = useAppContext();
     const [signedOut, setSignedOut] = C.React.useState(null)
 
@@ -9,7 +9,7 @@ export default function SignOutPage() {
         if (!signedOut) {
             signOut()
             setSignedOut(true)
-            routes.reset()
+            navReset()
         }
     })
 

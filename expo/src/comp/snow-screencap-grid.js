@@ -3,11 +3,9 @@ import Snow from 'expo-snowui'
 import { useAppContext } from '../app-context'
 
 export function SnowScreencapGridW(props) {
-    const { routes, apiClient } = useAppContext()
+    const { apiClient, navToItem } = useAppContext()
     const { SnowStyle } = Snow.useStyleContext(props)
     const { readFocusProps } = Snow.useFocusContext()
-    const pathname = usePathname()
-    const localParams = useLocalSearchParams()
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null
