@@ -23,7 +23,7 @@ export function PlayerContextProvider(props) {
         navPush,
         navPop,
         setNavigationAllowed,
-        localParams
+        currentRoute
     } = useAppContext()
 
     const [videoUrl, setVideoUrl] = React.useState(null)
@@ -47,7 +47,7 @@ export function PlayerContextProvider(props) {
     const [countedWatch, setCountedWatch] = React.useState(false)
 
     let isTranscode = false
-    if (localParams.transcode === 'true') {
+    if (currentRoute.params.transcode === 'true') {
         isTranscode = true
     }
     if (clientOptions.alwaysTranscode) {
@@ -59,7 +59,7 @@ export function PlayerContextProvider(props) {
 
     // The initial seek only happens when resuming an in progress video instead of playing from the beginning
     const [initialSeekComplete, setInitialSeekComplete] = React.useState(isTranscode)
-    const initialSeekSeconds = localParams.seekToSeconds ? Math.floor(parseFloat(localParams.seekToSeconds, 10)) : 0
+    const initialSeekSeconds = currentRoute.params.seekToSeconds ? Math.floor(parseFloat(currentRoute.params.seekToSeconds, 10)) : 0
 
     // progress is the amount of seconds played in the video player
     const [progressSeconds, setProgressSeconds] = React.useState(isTranscode ? 0 : null)
@@ -85,12 +85,12 @@ export function PlayerContextProvider(props) {
 
     const changeLocalParamsRef = React.useRef(null)
 
-    const forcePlayer = localParams.forcePlayer
+    const forcePlayer = currentRoute.params.forcePlayer
     let forceExo = false
     if (forcePlayer === 'exo') {
         forceExo = true
     }
-    else if (localParams.videoIsHdr && forcePlayer !== 'mpv') {
+    else if (currentRoute.params.videoIsHdr && forcePlayer !== 'mpv') {
         forceExo = true
     }
     else if (clientOptions.alwaysUsePlayer === 'exo') {
@@ -132,7 +132,7 @@ export function PlayerContextProvider(props) {
     const onPlaybackComplete = () => {
         onProgress(durationSeconds, 'playback-complete').then(() => {
             if (props.onComplete) {
-                props.onComplete(apiClient, routes)
+                props.onComplete(apiClient, routes, navPush)
             } else {
                 navPop()
             }
@@ -145,7 +145,7 @@ export function PlayerContextProvider(props) {
         setVideoLoading(false)
         setVideoUrl(null)
         setTranscodeOnResume(false)
-        props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, manualSeekSeconds)
+        props.loadTranscode(apiClient, currentRoute.params, clientOptions.deviceProfile, manualSeekSeconds)
             .then(loadVideo)
     }
 
@@ -183,7 +183,7 @@ export function PlayerContextProvider(props) {
         }
     }
 
-    const onChangeLocalParams = (newParams) => {
+    const onChangeRouteParams = (newParams) => {
         changeLocalParamsRef.current = newParams
         navPush(newParams)
     }
@@ -238,12 +238,12 @@ export function PlayerContextProvider(props) {
             setProgressSeconds(nextProgressSeconds)
             if (durationSeconds > 0 && progressSeconds > 0) {
                 if (props.updateProgress) {
-                    props.updateProgress(apiClient, localParams, nextProgressSeconds, durationSeconds)
+                    props.updateProgress(apiClient, currentRoute.params, nextProgressSeconds, durationSeconds)
                         .then((isWatched) => {
                             if (isWatched && !countedWatch) {
                                 setCountedWatch(true)
                                 if (props.increaseWatchCount) {
-                                    return props.increaseWatchCount(apiClient, localParams)
+                                    return props.increaseWatchCount(apiClient, currentRoute.params)
                                 }
                             }
                         })
@@ -352,7 +352,7 @@ export function PlayerContextProvider(props) {
     const onCriticalError = (err) => {
         if (!isTranscode) {
             setVideoLoaded(false)
-            navPush({ ...localParams, transcode: true })
+            navPush({ ...currentRoute.params, transcode: true })
         }
         else {
             setPlaybackFailed(err)
@@ -477,28 +477,28 @@ export function PlayerContextProvider(props) {
         // If manualSeekSeconds is set, then a user triggered a video load by seeking during a transcode
         if (!videoLoading && !manualSeekSeconds) {
             setVideoLoading(true)
-            if (localParams.audioTrack) {
-                setAudioTrackIndex(parseInt(localParams.audioTrack), 10)
+            if (currentRoute.params.audioTrack) {
+                setAudioTrackIndex(parseInt(currentRoute.params.audioTrack), 10)
             }
-            if (localParams.subtitleTrack) {
-                setSubtitleTrackIndex(parseInt(localParams.subtitleTrack), 10)
+            if (currentRoute.params.subtitleTrack) {
+                setSubtitleTrackIndex(parseInt(currentRoute.params.subtitleTrack), 10)
             }
             if (isTranscode) {
                 if (props.loadTranscode) {
-                    onAddLog({ kind: 'snowstream', message: 'firing off a loadTranscode', localParams })
-                    props.loadTranscode(apiClient, localParams, clientOptions.deviceProfile, initialSeekSeconds)
+                    onAddLog({ kind: 'snowstream', message: 'firing off a loadTranscode', routeParams: currentRoute.params })
+                    props.loadTranscode(apiClient, currentRoute.params, clientOptions.deviceProfile, initialSeekSeconds)
                         .then(loadVideo)
                 }
             }
             else {
                 if (props.loadVideo) {
-                    onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo', localParams })
-                    props.loadVideo(apiClient, localParams, clientOptions.deviceProfile)
+                    onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo', routeParams: currentRoute.params })
+                    props.loadVideo(apiClient, currentRoute.params, clientOptions.deviceProfile)
                         .then(loadVideo)
                 }
             }
         }
-    }, [localParams, manualSeekSeconds, videoLoading, apiClient, clientOptions, initialSeekSeconds])
+    }, [currentRoute, manualSeekSeconds, videoLoading, apiClient, clientOptions, initialSeekSeconds])
 
     React.useEffect(() => {
         setRemoteCallbacks((callbacks) => {
@@ -521,7 +521,7 @@ export function PlayerContextProvider(props) {
     }, [])
 
     const action = {
-        onChangeLocalParams,
+        onChangeRouteParams,
         onCloseTranscodeSession,
         onPauseVideo,
         onPlaybackComplete,

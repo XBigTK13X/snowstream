@@ -30,6 +30,20 @@ def purge_missing_video_file_records():
                     dbi.dm.VideoFile.id == show_episode_video_file.video_file_id
                 ).delete()
         db.commit()
+
+        keepsake_video_files = db.query(dbi.dm.KeepsakeVideoFile).options(dbi.orm.joinedload(dbi.dm.KeepsakeVideoFile.video_file)).all()
+        for keepsake_video_file in keepsake_video_files:
+            if not dbi.os.path.exists(keepsake_video_file.video_file.local_path):
+                deleted_records.append(keepsake_video_file.video_file.local_path)
+                db.query(dbi.dm.KeepsakeVideoFile).filter(
+                    dbi.dm.KeepsakeVideoFile.keepsake_id == keepsake_video_file.keepsake_id,
+                    dbi.dm.KeepsakeVideoFile.video_file_id == keepsake_video_file.video_file_id
+                ).delete()
+                db.query(dbi.dm.VideoFile).filter(
+                    dbi.dm.VideoFile.id == keepsake_video_file.video_file_id
+                ).delete()
+        db.commit()
+
     return deleted_records
 
 def purge_missing_image_file_records():
@@ -86,6 +100,20 @@ def purge_missing_image_file_records():
                     dbi.dm.ImageFile.id == show_episode_image_file.image_file_id
                 ).delete()
         db.commit()
+
+        keepsake_image_files = db.query(dbi.dm.KeepsakeImageFile).options(dbi.orm.joinedload(dbi.dm.KeepsakeImageFile.image_file)).all()
+        for keepsake_image_file in keepsake_image_files:
+            if not dbi.os.path.exists(keepsake_image_file.image_file.local_path):
+                deleted_records.append(keepsake_image_file.image_file.local_path)
+                db.query(dbi.dm.KeepsakeImageFile).filter(
+                    dbi.dm.KeepsakeImageFile.keepsake_id == keepsake_image_file.keepsake_id,
+                    dbi.dm.KeepsakeImageFile.image_file_id == keepsake_image_file.image_file_id
+                ).delete()
+                db.query(dbi.dm.ImageFile).filter(
+                    dbi.dm.ImageFile.id == keepsake_image_file.image_file_id
+                ).delete()
+        db.commit()
+
     return deleted_records
 
 def purge_missing_metadata_file_records():
@@ -154,6 +182,8 @@ def purge_shelf_content_without_video_files():
         episodes = db_episode.delete_show_episodes_without_videos()
         if episodes:
             results += episodes
+
+
     return results
 
 def purge_orphaned_records():
@@ -169,11 +199,13 @@ def purge_orphaned_records():
                     left join movie_{kind} on movie_{kind}.{kind}_id = {kind}.id
                     {'' if kind == 'video_file' else f'left join show_season_{kind} on show_season_{kind}.{kind}_id = {kind}.id'}
                     {'' if kind == 'video_file' else f'left join show_{kind} on show_{kind}.{kind}_id = {kind}.id'}
+                    {'' if kind == 'metadata_file' else f'left join keepsake_{kind} on keepsake_{kind}.{kind}_id = {kind}.id'}
                 where
                     show_episode_{kind}.id is null
                     and movie_{kind}.id is null
                     {'' if kind == 'video_file' else f'and show_{kind}.id is null'}
                     {'' if kind == 'video_file' else f'and show_season_{kind}.id is null'}
+                    {'' if kind == 'metadata_file' else f'and keepsake_{kind}.id is null'}
                     ;
             '''
             cursor = db.execute(dbi.sql_text(file_query))

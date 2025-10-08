@@ -548,10 +548,10 @@ export class ApiClient {
         return this.post(`/movie/watch_count?movie_id=${movieId}`)
     }
 
-    getKeepsake(shelfId, subdirectory) {
+    getKeepsake(shelfId, subdirectory64) {
         let url = `/keepsake?shelf_id=${shelfId}`
-        if (subdirectory) {
-            url += `&subdirectory=${subdirectory}`
+        if (subdirectory64) {
+            url += `&subdirectory64=${subdirectory64}`
         }
         return this.get(url)
     }

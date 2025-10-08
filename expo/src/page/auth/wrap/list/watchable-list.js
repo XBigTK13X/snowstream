@@ -84,7 +84,7 @@ export function WatchableListPage(props) {
             buttons.push((
                 <C.SnowTextButton
                     title={showPlaylisted == true ? 'Hide Playlisted' : 'Show Playlisted'}
-                    onPress={() => { props.toggleShowPlaylisted(routes, shelfId, showPlaylisted === true ? false : true) }}
+                    onPress={() => { props.toggleShowPlaylisted(routes, navPush, shelfId, showPlaylisted === true ? false : true) }}
                 />
             ))
         }

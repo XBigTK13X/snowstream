@@ -7,8 +7,8 @@ export default function MovieListPage() {
         return apiClient.getMovieList(shelfId, showPlaylisted)
     }
 
-    const toggleShowPlaylisted = (routes, shelfId, showPlaylisted) => {
-        return routes.updateParams({ shelfId: shelfId, showPlaylisted })
+    const toggleShowPlaylisted = (routes, navPush, shelfId, showPlaylisted) => {
+        return navPush({ shelfId: shelfId, showPlaylisted })
     }
 
     const scanContentsJob = (apiClient, shelfId) => {

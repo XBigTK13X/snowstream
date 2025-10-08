@@ -1,11 +1,11 @@
 import PlayMediaPage from './media'
 
 export default function PlayMoviePage() {
-    const loadVideo = (apiClient, localParams, deviceProfile) => {
-        return apiClient.getMovie(localParams.movieId, deviceProfile).then((movie) => {
+    const loadVideo = (apiClient, routeParams, deviceProfile) => {
+        return apiClient.getMovie(routeParams.movieId, deviceProfile).then((movie) => {
             let videoFileIndex = 0
-            if (localParams.videoFileIndex) {
-                videoFileIndex = parseInt(localParams.videoFileIndex, 10)
+            if (routeParams.videoFileIndex) {
+                videoFileIndex = parseInt(routeParams.videoFileIndex, 10)
             }
             const videoFile = movie.video_files[videoFileIndex]
             return {
@@ -17,21 +17,21 @@ export default function PlayMoviePage() {
         })
     }
 
-    const loadTranscode = (apiClient, localParams, deviceProfile, progressSeconds) => {
+    const loadTranscode = (apiClient, routeParams, deviceProfile, progressSeconds) => {
         return new Promise((resolve) => {
-            apiClient.getMovie(localParams.movieId, deviceProfile)
+            apiClient.getMovie(routeParams.movieId, deviceProfile)
                 .then((movie) => {
                     let videoFileIndex = 0
-                    if (localParams.videoFileIndex) {
-                        videoFileIndex = parseInt(localParams.videoFileIndex, 10)
+                    if (routeParams.videoFileIndex) {
+                        videoFileIndex = parseInt(routeParams.videoFileIndex, 10)
                     }
                     const videoFile = movie.video_files[videoFileIndex]
                     return apiClient.createVideoFileTranscodeSession(
                         videoFile.id,
-                        localParams.audioTrack,
-                        localParams.subtitleTrack,
+                        routeParams.audioTrack,
+                        routeParams.subtitleTrack,
                         deviceProfile,
-                        progressSeconds ?? localParams.seekToSeconds
+                        progressSeconds ?? routeParams.seekToSeconds
                     )
                         .then((transcodeSession) => {
                             return resolve({
@@ -51,12 +51,12 @@ export default function PlayMoviePage() {
 
     }
 
-    const updateProgress = (apiClient, localParams, progressSeconds, duration) => {
-        return apiClient.setMovieWatchProgress(localParams.movieId, progressSeconds, duration)
+    const updateProgress = (apiClient, routeParams, progressSeconds, duration) => {
+        return apiClient.setMovieWatchProgress(routeParams.movieId, progressSeconds, duration)
     }
 
-    const increaseWatchCount = (apiClient, localParams) => {
-        return apiClient.increaseMovieWatchCount(localParams.movieId)
+    const increaseWatchCount = (apiClient, routeParams) => {
+        return apiClient.increaseMovieWatchCount(routeParams.movieId)
     }
     return (
         <PlayMediaPage

@@ -62,7 +62,7 @@ export default function ShelfEditPage() {
         if (formRef.current.updateVideos !== '') {
             params.updateVideos = formRef.current.updateVideos
         }
-        routes.updateParams(params)
+        navPush(params)
         let details = {
             episodeOrder: formRef.current.episodeOrder,
             extractOnly: formRef.current.extractOnly,

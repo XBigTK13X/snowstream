@@ -1,8 +1,8 @@
 import PlayMediaPage from './media'
 
 export default function PlayStreamablePage() {
-    const loadVideo = (apiClient, localParams) => {
-        return apiClient.getStreamable(localParams.streamableId).then((response) => {
+    const loadVideo = (apiClient, routeParams) => {
+        return apiClient.getStreamable(routeParams.streamableId).then((response) => {
             return {
                 url: response.url,
                 name: response.name,
@@ -11,8 +11,8 @@ export default function PlayStreamablePage() {
         })
     }
 
-    const loadTranscode = (apiClient, localParams, deviceProfile) => {
-        return apiClient.getStreamable(localParams.streamableId)
+    const loadTranscode = (apiClient, routeParams, deviceProfile) => {
+        return apiClient.getStreamable(routeParams.streamableId)
             .then((streamable) => {
                 return apiClient.createStreamableTranscodeSession(streamable.id, deviceProfile)
                     .then((response) => {

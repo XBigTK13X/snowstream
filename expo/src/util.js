@@ -76,6 +76,21 @@ function queryToObject(query) {
     return Object.fromEntries(params.entries())
 }
 
+function toBase64(input) {
+    if (typeof input === 'object') {
+        return btoa(JSON.stringify(input))
+    }
+    return btoa(input)
+}
+
+function fromBase64(input) {
+    let result = atob(input)
+    try {
+        result = JSON.parse(result)
+    } catch (swallow) { }
+    return result
+}
+
 export default {
     formatEpisodeTitle,
     secondsToTimestamp,
@@ -83,5 +98,7 @@ export default {
     bitsToPretty,
     urlExists,
     queryToObject,
-    stateToUrl
+    stateToUrl,
+    fromBase64,
+    toBase64
 }

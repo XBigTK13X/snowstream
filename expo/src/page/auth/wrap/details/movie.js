@@ -4,33 +4,33 @@ export default function MovieDetailsPage() {
 
     return <MediaTracksPage
         mediaKind="Movie"
-        loadMedia={(apiClient, localParams, deviceProfile) => {
-            return apiClient.getMovie(localParams.movieId, deviceProfile)
+        loadMedia={(apiClient, routeParams, deviceProfile) => {
+            return apiClient.getMovie(routeParams.movieId, deviceProfile)
         }}
-        toggleWatchStatus={(apiClient, localParams) => {
-            return apiClient.toggleMovieWatchStatus(localParams.movieId)
+        toggleWatchStatus={(apiClient, routeParams) => {
+            return apiClient.toggleMovieWatchStatus(routeParams.movieId)
         }}
-        gotoShelf={(routes, navPush, localParams) => {
-            return navPush(routes.movieList, { shelfId: localParams.shelfId }, true)
+        gotoShelf={(routes, navPush, routeParams) => {
+            return navPush(routes.movieList, { shelfId: routeParams.shelfId }, true)
         }}
         getPlayRoute={(routes) => {
             return routes.moviePlay
         }}
-        getPlayParameters={(localParams) => {
+        getPlayParameters={(routeParams) => {
             return {
-                movieId: localParams.movieId
+                movieId: routeParams.movieId
             }
         }}
-        getScanDetails={(localParams) => {
+        getScanDetails={(routeParams) => {
             return {
                 targetKind: 'movie',
-                targetId: localParams.movieId
+                targetId: routeParams.movieId
             }
         }}
-        getUpdateMediaJobDetails={(localParams) => {
+        getUpdateMediaJobDetails={(routeParams) => {
             return {
                 targetKind: 'movie',
-                targetId: localParams.movieId
+                targetId: routeParams.movieId
             }
         }}
     />

@@ -10,36 +10,36 @@ export default function EpisodeDetailsPage() {
             getRemoteMetadataId={(media) => {
                 return media.season.show.remote_metadata_id
             }}
-            getMediaName={(localParams, media) => {
-                return `${localParams.showName} - ${media.name}`
+            getMediaName={(routeParams, media) => {
+                return `${routeParams.showName} - ${media.name}`
             }}
-            loadMedia={(apiClient, localParams, deviceProfile) => {
-                return apiClient.getEpisode(localParams.episodeId, deviceProfile)
+            loadMedia={(apiClient, routeParams, deviceProfile) => {
+                return apiClient.getEpisode(routeParams.episodeId, deviceProfile)
             }}
-            toggleWatchStatus={(apiClient, localParams) => {
-                return apiClient.toggleEpisodeWatchStatus(localParams.episodeId)
+            toggleWatchStatus={(apiClient, routeParams) => {
+                return apiClient.toggleEpisodeWatchStatus(routeParams.episodeId)
             }}
-            gotoShelf={(routes, navPush, localParams) => {
-                return navPush(routes.showList, { shelfId: localParams.shelfId }, true)
+            gotoShelf={(routes, navPush, routeParams) => {
+                return navPush(routes.showList, { shelfId: routeParams.shelfId }, true)
             }}
-            getNavButtons={(routes, navPush, localParams) => {
+            getNavButtons={(routes, navPush, routeParams) => {
                 const episodeListPayload = {
-                    shelfId: localParams.shelfId,
-                    showId: localParams.showId,
-                    seasonId: localParams.seasonId,
-                    showName: localParams.showName,
-                    seasonOrder: localParams.seasonOrder,
+                    shelfId: routeParams.shelfId,
+                    showId: routeParams.showId,
+                    seasonId: routeParams.seasonId,
+                    showName: routeParams.showName,
+                    seasonOrder: routeParams.seasonOrder,
                 }
                 const seasonListPayload = {
-                    shelfId: localParams.shelfId,
-                    showId: localParams.showId,
-                    showName: localParams.showName,
+                    shelfId: routeParams.shelfId,
+                    showId: routeParams.showId,
+                    showName: routeParams.showName,
                 }
                 return [
-                    <C.SnowTextButton tall key="show" title={localParams.showName}
+                    <C.SnowTextButton tall key="show" title={routeParams.showName}
                         onPress={navPush(routes.seasonList, seasonListPayload, true)}
                     />,
-                    <C.SnowTextButton tall key="season" title={`Season ${localParams.seasonOrder} `}
+                    <C.SnowTextButton tall key="season" title={`Season ${routeParams.seasonOrder} `}
                         onPress={navPush(routes.episodeList, episodeListPayload, true)}
                     />
                 ]
@@ -47,30 +47,30 @@ export default function EpisodeDetailsPage() {
             getPlayRoute={(routes) => {
                 return routes.episodePlay
             }}
-            getPlayParameters={(localParams) => {
+            getPlayParameters={(routeParams) => {
                 return {
-                    episodeId: localParams.episodeId,
-                    showId: localParams.showId,
-                    seasonId: localParams.seasonId,
-                    showName: localParams.showName,
-                    seasonOrder: localParams.seasonOrder,
-                    episodeOrder: localParams.episodeOrder
+                    episodeId: routeParams.episodeId,
+                    showId: routeParams.showId,
+                    seasonId: routeParams.seasonId,
+                    showName: routeParams.showName,
+                    seasonOrder: routeParams.seasonOrder,
+                    episodeOrder: routeParams.episodeOrder
                 }
             }}
-            getScanDetails={(localParams) => {
+            getScanDetails={(routeParams) => {
                 return {
                     targetKind: 'episode',
-                    targetId: localParams.episodeId,
-                    seasonOrder: localParams.seasonOrder,
-                    episodeOrder: localParams.episodeOrder
+                    targetId: routeParams.episodeId,
+                    seasonOrder: routeParams.seasonOrder,
+                    episodeOrder: routeParams.episodeOrder
                 }
             }}
-            getUpdateMediaJobDetails={(localParams) => {
+            getUpdateMediaJobDetails={(routeParams) => {
                 return {
                     targetKind: 'episode',
-                    targetId: localParams.episodeId,
-                    seasonOrder: localParams.seasonOrder,
-                    episodeOrder: localParams.episodeOrder
+                    targetId: routeParams.episodeId,
+                    seasonOrder: routeParams.seasonOrder,
+                    episodeOrder: routeParams.episodeOrder
                 }
             }}
         />

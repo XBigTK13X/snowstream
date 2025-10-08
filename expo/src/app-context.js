@@ -470,6 +470,8 @@ export function AppContextProvider(props) {
         )
     }
 
+    const currentRoute = { ...navigationHistory.at(-1) }
+
     const appContext = {
         config,
         routes,
@@ -493,7 +495,7 @@ export function AppContextProvider(props) {
         navToItem,
         navigationHistory,
         setNavigationAllowed,
-        currentRoute: navigationHistory.at(-1)
+        currentRoute
     }
 
     return (

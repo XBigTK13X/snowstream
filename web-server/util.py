@@ -118,3 +118,6 @@ def search_to_base64_qrcode(query:str):
     buffer.seek(0)
     encoded = base64.b64encode(buffer.read()).decode('utf-8')
     return f'data:image/png;base64,{encoded}'
+
+def fromBase64(input:str):
+    return base64.b64decode(input).decode('utf-8')

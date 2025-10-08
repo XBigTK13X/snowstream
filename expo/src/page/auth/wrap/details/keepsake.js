@@ -35,7 +35,7 @@ function KeepsakeVideo(props) {
                 })
             })
         }}
-        loadTranscode={(apiClient, localParams, deviceProfile, initialSeekSeconds) => {
+        loadTranscode={(apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
             return new Promise((resolve) => {
                 return apiClient.createVideoFileTranscodeSession(
                     props.videoFile.id,
@@ -97,12 +97,13 @@ export default function KeepsakeDetailsPage(props) {
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
     C.React.useEffect(() => {
-        if (!keepsake) {
-            apiClient.getKeepsake(currentRoute.params.shelfId, currentRoute.params.subdirectory).then((response) => {
-                setKeepsake(response)
-            })
-        }
-    }, [keepsake])
+        apiClient.getKeepsake(
+            currentRoute.params.shelfId,
+            currentRoute.params.subdirectory64
+        ).then((response) => {
+            setKeepsake(response)
+        })
+    }, [currentRoute])
 
     const styles = {
         modal: {
@@ -241,6 +242,7 @@ export default function KeepsakeDetailsPage(props) {
                                 onPress={navPush(routes.keepsakeDetails, {
                                     shelfId: currentRoute.params.shelfId,
                                     subdirectory: dir.path,
+                                    subdirectory64: C.util.toBase64(dir.path),
                                     seekToSeconds: 0
                                 }, true)}
                             />

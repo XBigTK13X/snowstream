@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function JobDetailsPage() {
-    const { apiClient, routes, currentRoute } = useAppContext()
+    const { apiClient, navPop, currentRoute } = useAppContext()
     const [job, setJob] = C.React.useState(null)
     C.React.useEffect(() => {
         if (!job) {
@@ -25,7 +25,7 @@ export default function JobDetailsPage() {
 
     return (
         <C.View>
-            <C.SnowTextButton title="Back" focusStart focusKey="page-entry" onPress={routes.funcBack()} />
+            <C.SnowTextButton title="Back" focusStart focusKey="page-entry" onPress={navPop(true)} />
             <C.SnowLabel>Job</C.SnowLabel>
             <C.SnowText>{job.kind} is {job.status}. {job.created_at} to {job.updated_at}</C.SnowText>
             <C.SnowLabel>Input</C.SnowLabel>
