@@ -1,11 +1,12 @@
 import React from 'react'
 import { View } from 'react-native'
 import Snow from 'expo-snowui'
+import { usePathname, useLocalSearchParams } from 'expo-router'
 import { useAppContext } from '../app-context'
 
 
 function SnowPosterGridW(props) {
-    const { routes, apiClient } = useAppContext()
+    const { navToItem, apiClient } = useAppContext()
     const { SnowStyle } = Snow.useStyleContext(props)
     const { readFocusProps } = Snow.useFocusContext()
 
@@ -43,7 +44,7 @@ function SnowPosterGridW(props) {
                 getItemName={(item) => { return item.name }}
                 getItemImageUrl={getImageUrl}
                 getItemToggleStatus={getItemToggleStatus}
-                onPress={(item) => { routes.gotoItem(item) }}
+                onPress={navToItem}
                 onLongPress={onLongPress} />
         </View>
     )

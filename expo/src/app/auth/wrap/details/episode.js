@@ -19,10 +19,10 @@ export default function EpisodeDetailsPage() {
             toggleWatchStatus={(apiClient, localParams) => {
                 return apiClient.toggleEpisodeWatchStatus(localParams.episodeId)
             }}
-            gotoShelf={(routes, localParams) => {
-                return routes.func(routes.showList, { shelfId: localParams.shelfId })
+            gotoShelf={(routes, navPush, localParams) => {
+                return navPush(routes.showList, { shelfId: localParams.shelfId }, true)
             }}
-            getNavButtons={(routes, localParams) => {
+            getNavButtons={(routes, navPush, localParams) => {
                 const episodeListPayload = {
                     shelfId: localParams.shelfId,
                     showId: localParams.showId,
@@ -37,10 +37,10 @@ export default function EpisodeDetailsPage() {
                 }
                 return [
                     <C.SnowTextButton tall key="show" title={localParams.showName}
-                        onPress={routes.func(routes.seasonList, seasonListPayload)}
+                        onPress={navPush(routes.seasonList, seasonListPayload, true)}
                     />,
                     <C.SnowTextButton tall key="season" title={`Season ${localParams.seasonOrder} `}
-                        onPress={routes.func(routes.episodeList, episodeListPayload)}
+                        onPress={navPush(routes.episodeList, episodeListPayload, true)}
                     />
                 ]
             }}

@@ -1,8 +1,9 @@
 import React from 'react';
 import Snow from 'expo-snowui'
-import { Platform, useTVEventHandler, View } from 'react-native';
+import { Platform, useTVEventHandler, View, BackHandler } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import uuid from 'react-native-uuid';
+import { usePathname, useLocalSearchParams } from 'expo-router'
 
 import util from './util'
 import { config } from './settings'
@@ -77,6 +78,159 @@ export function AppContextProvider(props) {
     const [clientOptions, setClientOptions] = React.useState(null)
     const [remoteCallbacks, setRemoteCallbacks] = React.useState({})
     const remoteCallbacksRef = React.useRef(remoteCallbacks)
+
+    const pathname = usePathname()
+    const params = useLocalSearchParams()
+
+    const [navigationHistory, setNavigationHistory] = React.useState([{ route: pathname, params }])
+    const navigationHistoryRef = React.useRef(navigationHistory)
+    const [rendered, setRendered] = React.useState(false)
+
+    const navPush = (route, params, isFunc) => {
+        if (typeof route === 'object') {
+            params = route
+            route = navigationHistoryRef.current.at(-1).route
+        }
+        if (params === true) {
+            isFunc = true
+            params = {}
+        }
+        if (!params) {
+            params = {}
+        }
+        const func = () => {
+            setNavigationHistory((prev) => {
+                let result = [...prev]
+                if (result.at(-1).route === route) {
+                    result.at(-1).params = params
+                } else {
+                    result.push({ route, params })
+                }
+                return result
+            })
+        }
+        if (isFunc) {
+            return func
+        }
+        return func()
+    }
+
+    const navPop = (isFunc) => {
+        const func = () => {
+            setNavigationHistory((prev) => {
+                let result = [...prev]
+                if (result.length > 1) {
+                    result.pop()
+
+                }
+                return result
+            })
+        }
+        if (isFunc) {
+            return func
+        }
+        return func()
+    }
+
+    const navReset = (isFunc) => {
+        const func = () => {
+            setNavigationHistory([{ route: routes.landing, params: {} }])
+            routes.replace(routes.signIn)
+        }
+        if (isFunc) {
+            return func
+        }
+        return func()
+    }
+
+    const navToItem = (arg) => {
+        let isFunc = true
+        let itemArg = null
+        if (typeof arg === 'object') {
+            isFunc = false
+            itemArg = arg
+        }
+        const func = (item) => {
+            if (itemArg) {
+                item = itemArg
+            }
+            if (item.model_kind === 'movie') {
+                navPush(routes.movieDetails, {
+                    shelfId: item.shelf.id,
+                    movieId: item.id
+                })
+            }
+            else if (item.model_kind === 'show') {
+                navPush(routes.seasonList, {
+                    shelfId: item.shelf.id,
+                    showId: item.id,
+                    showName: item.name
+                })
+            }
+            else if (item.model_kind === 'show_season') {
+                navPush(routes.episodeList, {
+                    shelfId: item.show.shelf.id,
+                    showId: item.show.id,
+                    seasonId: item.id,
+                    showName: item.show.name,
+                    seasonOrder: item.season_order_counter
+                })
+            }
+            else if (item.model_kind === 'show_episode') {
+                navPush(routes.episodeDetails, {
+                    shelfId: item.season.show.shelf.id,
+                    showId: item.season.show.id,
+                    seasonId: item.season.id,
+                    episodeId: item.id,
+                    showName: item.season.show.name,
+                    seasonOrder: item.season.season_order_counter,
+                    episodeOrder: item.episode_order_counter
+                })
+            }
+            else if (item.model_kind === 'playlist') {
+                navPush(routes.playlistDetails, {
+                    tagId: item.id,
+                    tagName: item.name
+                })
+            }
+            else {
+                util.log("Unhandled media item route")
+                util.log({ item })
+            }
+        }
+        if (isFunc) {
+            return func
+        }
+        return func()
+    }
+
+    React.useEffect(() => {
+        if (!rendered) {
+            setRendered(true)
+        }
+        else {
+            navigationHistoryRef.current = navigationHistory
+            const current = navigationHistory.at(-1)
+            if (pathname !== current.route) {
+                routes.replace(current.route, current.params)
+            }
+        }
+    }, [navigationHistory, rendered])
+
+    React.useEffect(() => {
+        const onBackPress = () => {
+            if (navigationHistoryRef.current.length > 1) {
+                navPop();
+                return true;
+            }
+            return false;
+        };
+
+        const backListener = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+        return () => {
+            backListener.remove()
+        }
+    }, []);
 
     React.useEffect(() => {
         if (!apiClient) {
@@ -237,7 +391,7 @@ export function AppContextProvider(props) {
                 })
             })
             .then(() => {
-                return routes.reset()
+                return navReset()
             })
     }
 
@@ -288,7 +442,12 @@ export function AppContextProvider(props) {
         setRemoteCallbacks,
         setWebApiUrl,
         clientOptions,
-        changeClientOptions
+        changeClientOptions,
+        navPush,
+        navPop,
+        navReset,
+        navToItem,
+        navigationHistory
     }
 
     return (

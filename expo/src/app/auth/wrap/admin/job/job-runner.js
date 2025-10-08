@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function ShelfEditPage() {
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, navPush } = useAppContext()
     const localParams = C.useLocalSearchParams()
     C.useFocusLayer('job-runner')
 
@@ -63,7 +63,7 @@ export default function ShelfEditPage() {
         if (formRef.current.updateVideos !== '') {
             params.updateVideos = formRef.current.updateVideos
         }
-        routes.replace(routes.admin.jobRunner, params)
+        routes.updateParams(params)
         let details = {
             episodeOrder: formRef.current.episodeOrder,
             extractOnly: formRef.current.extractOnly,
@@ -102,7 +102,9 @@ export default function ShelfEditPage() {
             onPress={() => {
                 createJob(item.apiCall).then(job => {
                     if (item.name !== 'Delete Cached Text') {
-                        routes.goto(routes.admin.jobDetails, { jobId: job.id })
+                        navPush(routes.admin.jobDetails, {
+                            jobId: job.id
+                        })
                     }
                 })
             }}

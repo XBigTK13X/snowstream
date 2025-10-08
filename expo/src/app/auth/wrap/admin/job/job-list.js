@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function JobListPage() {
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, navPush } = useAppContext()
     const [jobs, setJobs] = C.React.useState(null)
     const [showComplete, setShowComplete] = C.React.useState(true)
 
@@ -34,7 +34,7 @@ export default function JobListPage() {
                     return (
                         <C.SnowTextButton
                             title={title}
-                            onPress={routes.func(routes.admin.jobDetails, { jobId: job.id })}
+                            onPress={navPush(routes.admin.jobDetails, { jobId: job.id }, true)}
                         />
                     )
                 }} />

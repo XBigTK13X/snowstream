@@ -5,7 +5,7 @@ export default function ShowListPage() {
         return apiClient.getShowList(shelfId, showPlaylisted)
     }
     const toggleShowPlaylisted = (routes, shelfId, showPlaylisted) => {
-        return routes.replace(routes.showList, { shelfId: shelfId, showPlaylisted })
+        return routes.updateParams({ shelfId: shelfId, showPlaylisted })
     }
     const scanContentsJob = (apiClient, shelfId) => {
         return apiClient.createJobShelvesScan({

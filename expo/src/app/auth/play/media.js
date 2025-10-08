@@ -19,7 +19,8 @@ export function InnerPlayMediaPage(props) {
         return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
     }
     return (
-        <C.SnowVideoPlayer />
+        // It gets cleaned up by the video player modal
+        <C.SnowVideoPlayer skipCleanup />
     )
 }
 

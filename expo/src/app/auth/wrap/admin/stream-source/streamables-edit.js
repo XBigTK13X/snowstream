@@ -77,10 +77,10 @@ export default function StreamblesEditPage() {
                     value={query}
                     onDebounce={(val) => {
                         let results = streamSource.streamables.filter((streamable) => {
-                            if (streamable.name.toLowerCase().indexOf(val) !== -1) {
+                            if (streamable.name.toLowerCase().includes(val)) {
                                 return true
                             }
-                            if (streamable.name_display && streamable.name_display.toLowerCase().indexOf(val) !== -1) {
+                            if (streamable.name_display && streamable.name_display.toLowerCase().includes(val)) {
                                 return true
                             }
                             return false

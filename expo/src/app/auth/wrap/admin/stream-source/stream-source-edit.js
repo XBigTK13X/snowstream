@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function StreamSourceEditPage() {
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, navPush } = useAppContext()
     const [streamSourceName, setStreamSourceName] = C.React.useState('')
     const [streamSourceKind, setStreamSourceKind] = C.React.useState('HdHomeRun')
     const [streamSourceKindIndex, setStreamSourceKindIndex] = C.React.useState(0)
@@ -62,7 +62,11 @@ export default function StreamSourceEditPage() {
 
     return (
         <C.SnowGrid focusStart focusKey='page-entry' itemsPerRow={1}>
-            {streamSourceId ? <C.SnowTextButton title="Streamables" onPress={routes.func(routes.admin.streamablesEdit, { streamSourceId: localParams.streamSourceId })} /> : null}
+            {streamSourceId ? (
+                <C.SnowTextButton
+                    title="Streamables"
+                    onPress={navPush(routes.admin.streamablesEdit, { streamSourceId: localParams.streamSourceId }, true)} />
+            ) : null}
             {streamSourceId ? <C.SnowTextButton title={`Delete (${streamSourceDeleteCount})`} onPress={deleteStreamSource} /> : null}
 
             <C.SnowLabel>Name</C.SnowLabel>

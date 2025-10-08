@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function LandingPage(props) {
-    const { apiClient, routes, config, setMessageDisplay } = useAppContext()
+    const { apiClient, routes, config, setMessageDisplay, navPush } = useAppContext()
     const { SnowStyle } = C.useStyleContext(props)
     const [shelves, setShelves] = C.React.useState(null)
     const [streamSources, setStreamSources] = C.React.useState(null)
@@ -9,7 +9,7 @@ export default function LandingPage(props) {
 
 
     if (config.debugVideoUrl) {
-        //return <C.SnowTextButton title="Debug Video" onPress={routes.func(config.debugVideoUrl)} />
+        //return <C.SnowTextButton title="Debug Video" onPress={navPush(config.debugVideoUrl)} />
         return <C.Redirect href={config.debugVideoUrl} />
     }
 
@@ -34,9 +34,9 @@ export default function LandingPage(props) {
     }
 
     let destinations = [
-        <C.SnowTextButton title="Continue" onPress={routes.func(routes.continueWatching)} />,
-        <C.SnowTextButton title="Search" onPress={routes.func(routes.search)} />,
-        <C.SnowTextButton title="Playlists" onPress={routes.func(routes.playlistList)} />
+        <C.SnowTextButton title="Continue" onPress={navPush(routes.continueWatching, true)} />,
+        <C.SnowTextButton title="Search" onPress={navPush(routes.search, true)} />,
+        <C.SnowTextButton title="Playlists" onPress={navPush(routes.playlistList, true)} />
     ]
 
     if (shelves) {
@@ -45,7 +45,7 @@ export default function LandingPage(props) {
                 return (
                     <C.SnowTextButton
                         title={shelf.name}
-                        onPress={routes.func(routes.movieList, { shelfId: shelf.id })}
+                        onPress={navPush(routes.movieList, { shelfId: shelf.id }, true)}
                         onLongPress={() => {
                             apiClient.toggleMovieShelfWatchStatus(shelf.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
@@ -60,7 +60,9 @@ export default function LandingPage(props) {
                 return (
                     <C.SnowTextButton
                         title={shelf.name}
-                        onPress={routes.func(routes.showList, { shelfId: shelf.id })}
+                        onPress={
+                            navPush(routes.showList, { shelfId: shelf.id }, true)
+                        }
                         onLongPress={() => {
                             apiClient.toggleShowShelfWatchStatus(shelf.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
@@ -68,14 +70,15 @@ export default function LandingPage(props) {
                                     setMessageDisplay(`Set shelf ${shelf.name} to ${watched ? 'watched' : 'unwatched'}`)
                                 })
                             })
-                        }}
+                        }
+                        }
                     />
                 )
             } else if (shelf.kind === 'Keepsakes') {
                 return (
                     <C.SnowTextButton
                         title={shelf.name}
-                        onPress={routes.func(routes.keepsakeDetails, { shelfId: shelf.id, seekToSeconds: 0 })}
+                        onPress={navPush(routes.keepsakeDetails, { shelfId: shelf.id, seekToSeconds: 0 }, true)}
                     />
                 )
             }
@@ -88,9 +91,9 @@ export default function LandingPage(props) {
         destinations = destinations.concat(streamSources.map((streamSource) => {
             return (<C.SnowTextButton
                 title={streamSource.name}
-                onPress={routes.func(routes.streamableList, {
-                    streamSourceId: streamSource.id,
-                })}
+                onPress={navPush(routes.streamableList, {
+                    streamSourceId: streamSource.id
+                }, true)}
             />)
         }))
     }

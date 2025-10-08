@@ -24,7 +24,9 @@ export default function PlaylistDetailsPage() {
         return apiClient
             .getPlayingQueue({ tagId })
             .then(response => {
-                routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
+                navPush(routes.playingQueuePlay, {
+                    playingQueueSource: response.source
+                })
             })
     }
 
@@ -32,7 +34,9 @@ export default function PlaylistDetailsPage() {
         return apiClient
             .getPlayingQueue({ tagId, shuffle: true })
             .then(response => {
-                routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
+                navPush(routes.playingQueuePlay, {
+                    playingQueueSource: response.source
+                })
             })
     }
 

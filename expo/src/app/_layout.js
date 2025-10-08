@@ -1,5 +1,7 @@
 import Snow from 'expo-snowui'
-import { AppContextProvider, C, config } from 'snowstream'
+import { AppContextProvider, C, config, useAppContext } from 'snowstream'
+import { routes } from '../routes'
+import { useRouter } from 'expo-router'
 
 const appStyle = {
     color: {

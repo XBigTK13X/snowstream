@@ -10,8 +10,8 @@ export default function MovieDetailsPage() {
         toggleWatchStatus={(apiClient, localParams) => {
             return apiClient.toggleMovieWatchStatus(localParams.movieId)
         }}
-        gotoShelf={(routes, localParams) => {
-            return routes.func(routes.movieList, { shelfId: localParams.shelfId })
+        gotoShelf={(routes, navPush, localParams) => {
+            return navPush(routes.movieList, { shelfId: localParams.shelfId }, true)
         }}
         getPlayRoute={(routes) => {
             return routes.moviePlay

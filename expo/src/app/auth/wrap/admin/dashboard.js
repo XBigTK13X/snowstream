@@ -1,11 +1,11 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function AdminDashboardPage() {
-    const { routes } = useAppContext();
+    const { routes, navPush } = useAppContext();
     C.useFocusLayer('admin-dashboard')
 
     const renderItem = (item) => {
-        return <C.SnowTextButton title={item.title} onPress={routes.func(item.route)} />
+        return <C.SnowTextButton title={item.title} onPress={navPush(item.route, true)} />
     }
     const actionButtons = [
         { title: 'Run Job', route: routes.admin.jobRunner },

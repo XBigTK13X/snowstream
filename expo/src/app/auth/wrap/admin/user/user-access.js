@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function UserEditPage() {
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, navPush } = useAppContext()
 
     const [userId, setUserId] = C.React.useState(null)
     const [userTags, setUserTags] = C.React.useState([])
@@ -201,8 +201,8 @@ export default function UserEditPage() {
     return (
         <C.View>
             <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="User Details" onPress={routes.func(routes.admin.userEdit, { userId: userId })} />
-                <C.SnowTextButton title="User Access" onPress={routes.func(routes.admin.userAccess, { userId: userId })} />
+                <C.SnowTextButton title="User Details" onPress={navPush(routes.admin.userEdit, { userId: userId }, true)} />
+                <C.SnowTextButton title="User Access" onPress={navPush(routes.admin.userAccess, { userId: userId }, true)} />
             </C.SnowGrid>
 
             {shelfPicker}

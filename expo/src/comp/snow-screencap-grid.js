@@ -6,6 +6,8 @@ export function SnowScreencapGridW(props) {
     const { routes, apiClient } = useAppContext()
     const { SnowStyle } = Snow.useStyleContext(props)
     const { readFocusProps } = Snow.useFocusContext()
+    const pathname = usePathname()
+    const localParams = useLocalSearchParams()
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null
@@ -38,7 +40,7 @@ export function SnowScreencapGridW(props) {
                 getItemName={(item) => { return item.name }}
                 getItemImageUrl={getImageUrl}
                 getItemToggleStatus={getItemToggleStatus}
-                onPress={(item) => { routes.gotoItem(item) }}
+                onPress={navToItem}
                 onLongPress={onLongPress} />
         </Snow.FillView>
     )

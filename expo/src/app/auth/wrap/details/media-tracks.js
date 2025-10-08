@@ -10,7 +10,7 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
-    const { apiClient, clientOptions, isAdmin, routes } = useAppContext();
+    const { apiClient, clientOptions, isAdmin, routes, navPush } = useAppContext();
     const localParams = C.useLocalSearchParams();
 
     const [media, setMedia] = C.React.useState(null);
@@ -249,7 +249,7 @@ export default function MediaTracksPage(props) {
                     focusStart
                     tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
-                    onPress={routes.func(props.getPlayRoute(routes), resumePlayDestination)}
+                    onPress={navPush(props.getPlayRoute(routes), resumePlayDestination, true)}
                 />
             )
         }
@@ -270,8 +270,8 @@ export default function MediaTracksPage(props) {
             <C.SnowView>
                 <C.SnowGrid focusDown="player" itemsPerRow={4}>
                     {mainFeatureButton}
-                    <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, localParams)} />
-                    {props.getNavButtons ? props.getNavButtons(routes, localParams).map((button) => { return button }) : null}
+                    <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, navPush, localParams)} />
+                    {props.getNavButtons ? props.getNavButtons(routes, navPush, localParams).map((button) => { return button }) : null}
                 </C.SnowGrid>
                 <C.SnowGrid focusKey="player" itemsPerRow={4}>
                     <C.SnowTextButton tall title={watchTitle} onLongPress={setWatchStatus} />
@@ -378,7 +378,7 @@ export default function MediaTracksPage(props) {
                         <C.SnowTextButton
                             tall
                             title={playTitle}
-                            onPress={routes.func(props.getPlayRoute(routes), combinedPlayDestination)}
+                            onPress={navPush(props.getPlayRoute(routes), combinedPlayDestination, true)}
                         />
                     </C.SnowGrid>
                 </C.SnowView>

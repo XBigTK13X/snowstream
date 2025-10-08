@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { useLocalSearchParams, usePathname } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { useAppContext } from './app-context'
 import util from './util'
 
@@ -21,9 +21,10 @@ export function PlayerContextProvider(props) {
         clientOptions,
         config,
         routes,
-        setRemoteCallbacks
+        setRemoteCallbacks,
+        navPush,
+        navPop
     } = useAppContext()
-    const currentRoute = usePathname()
 
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [videoTitle, setVideoTitle] = React.useState(null)
@@ -133,7 +134,7 @@ export function PlayerContextProvider(props) {
             if (props.onComplete) {
                 props.onComplete(apiClient, routes)
             } else {
-                routes.back()
+                navPop()
             }
         })
     }
@@ -164,7 +165,8 @@ export function PlayerContextProvider(props) {
         setControlsVisible(false)
         setIsPlaying(false)
         // When swapping between players or swapping to/from transcode
-        // The onStopVideo will cause a routes.back() and kill the param change
+        // The onStopVideo will cause a navPop and kill the param change
+        // This prevents that failure
         if (changeLocalParamsRef.current) {
             return
         }
@@ -173,17 +175,17 @@ export function PlayerContextProvider(props) {
         }
         else {
             if (goHome) {
-                routes.goto(routes.landing)
+                navPush(routes.landing)
             }
             else {
-                routes.back()
+                navPop()
             }
         }
     }
 
     const onChangeLocalParams = (newParams) => {
         changeLocalParamsRef.current = newParams
-        routes.replace(currentRoute, newParams)
+        navPush(newParams)
     }
 
     const onVideoReady = () => {
@@ -291,7 +293,7 @@ export function PlayerContextProvider(props) {
 
         if (!isTranscode) {
             if (playerKind === 'mpv') {
-                if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('Starting playback') !== -1) {
+                if (info && info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.includes('Starting playback')) {
                     performInitialSeek()
                 }
             }
@@ -341,7 +343,7 @@ export function PlayerContextProvider(props) {
             }
         }
         else {
-            if (info.libmpvLog && info.libmpvLog.text && info.libmpvLog.text.indexOf('Description:') === -1) {
+            if (info.libmpvLog && info.libmpvLog.text && !info.libmpvLog.text.includes('Description:')) {
                 onAddLog(info)
             }
         }
@@ -350,11 +352,15 @@ export function PlayerContextProvider(props) {
     const onCriticalError = (err) => {
         if (!isTranscode) {
             setVideoLoaded(false)
-            routes.replace(currentRoute, { ...localParams, ...{ transcode: true } })
+            navPush({ ...localParams, transcode: true })
         }
         else {
             setPlaybackFailed(err)
         }
+    }
+
+    const isRnvCode = (err, code) => {
+        return err.error.code === code || err.error.code === `${code}` || err.error.errorCode === code || err.error.errorCode === `${code}`
     }
 
     const onVideoError = (err) => {
@@ -364,11 +370,8 @@ export function PlayerContextProvider(props) {
 
         onAddLog(err)
 
-        if (err && err.kind && err.kind == 'rnv') {
-            if (err.error.code === 4) {
-                onCriticalError(err)
-            }
-            if (err.error.code === 24001) {
+        if (err && err.kind && err.kind === 'rnv') {
+            if (isRnvCode(err, 4) || isRnvCode(err, 24001) || isRnvCode(err, 24003)) {
                 onCriticalError(err)
             }
             else {

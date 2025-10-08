@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function StreamableListPage() {
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, navPush } = useAppContext()
     const { SnowStyle } = C.useStyleContext()
     const localParams = C.useLocalSearchParams()
     const [streamSource, setStreamSource] = C.React.useState(null)
@@ -99,15 +99,15 @@ export default function StreamableListPage() {
                                         <C.SnowTextButton
                                             {...focus}
                                             title={name}
-                                            onPress={routes.func(routes.streamablePlay, {
+                                            onPress={navPush(routes.streamablePlay, {
                                                 streamSourceId: streamSource.id,
                                                 streamableId: streamable.id,
-                                            })}
-                                            onLongPress={routes.func(routes.streamablePlay, {
+                                            }, true)}
+                                            onLongPress={navPush(routes.streamablePlay, {
                                                 streamSourceId: streamSource.id,
                                                 streamableId: streamable.id,
                                                 forcePlayer: 'exo'
-                                            })}
+                                            }, true)}
                                         />
                                         <C.SnowText style={styles.tableColumn}>{currentProgram}</C.SnowText>
                                         <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
@@ -127,15 +127,15 @@ export default function StreamableListPage() {
                         tall
                         key={streamable.id}
                         title={name}
-                        onPress={routes.func(routes.streamablePlay, {
+                        onPress={navPush(routes.streamablePlay, {
                             streamSourceId: streamSource.id,
                             streamableId: streamable.id,
-                        })}
-                        onLongPress={routes.func(routes.streamablePlay, {
+                        }, true)}
+                        onLongPress={navPush(routes.streamablePlay, {
                             streamSourceId: streamSource.id,
                             streamableId: streamable.id,
                             forcePlayer: 'exo'
-                        })}
+                        }, true)}
                     />
                 )
             }

@@ -39,16 +39,17 @@ export default function SnowVideoPlayer(props) {
         }
     }
 
-    React.useEffect(() => {
-        return () => {
-            player.action.onStopVideo()
-        }
-    }, [])
+    if (!props.skipCleanup) {
+        React.useEffect(() => {
+            return () => {
+                player.action.onStopVideo()
+            }
+        }, [])
+    }
 
     if (Platform.OS !== 'web') {
         useKeepAwake();
     }
-
 
     React.useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', appState => {

@@ -1,4 +1,5 @@
 import { C, useAppContext } from 'snowstream'
+// This is the default expo-router route '/'
 export default function SignInPage() {
     const {
         sessionLoaded,
@@ -35,12 +36,12 @@ export default function SignInPage() {
         passwordRef.current = password
     })
 
-    if (session) {
-        return <C.Redirect href={routes.landing} />
-    }
-
     if (!sessionLoaded) {
         return null
+    }
+
+    if (session) {
+        return <C.Redirect href={routes.landing} />
     }
 
     const selectUser = (user) => {

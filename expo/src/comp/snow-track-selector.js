@@ -45,7 +45,7 @@ function TrackList(props) {
             <Snow.Grid {...gridProps} short shrink itemsPerRow={4}>
                 {props.tracks.map((track, trackKey) => {
                     let display = track.language ? track.language + ' - ' : ''
-                    display += `${(track.title.indexOf('.') === -1 && track.title) ? track.title + ' - ' : ''}`
+                    display += `${(!track.title.includes('.') && track.title) ? track.title + ' - ' : ''}`
                     if (props.isAudio) {
                         display += `${track.codec.replace('A_', '')} - `
                         display += `${track.channel_count}ch`

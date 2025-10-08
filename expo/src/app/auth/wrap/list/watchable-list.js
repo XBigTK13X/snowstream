@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export function WatchableListPage(props) {
-    const { isAdmin, apiClient, routes, setMessageDisplay } = useAppContext()
+    const { isAdmin, apiClient, routes, setMessageDisplay, navPush } = useAppContext()
     const localParams = C.useLocalSearchParams()
 
     const [shelf, setShelf] = C.React.useState(null)
@@ -54,13 +54,17 @@ export function WatchableListPage(props) {
 
         const watchAll = () => {
             props.watchAll(apiClient, shelfId).then(response => {
-                routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
+                navPush(routes.playingQueuePlay, {
+                    playingQueueSource: response.source
+                })
             })
         }
 
         const shuffleAll = () => {
             props.shuffleAll(apiClient, shelfId).then(response => {
-                routes.goto(routes.playingQueuePlay, { playingQueueSource: response.source })
+                navPush(routes.playingQueuePlay, {
+                    playingQueueSource: response.source
+                })
             })
         }
 

@@ -92,7 +92,7 @@ export default function KeepsakeDetailsPage(props) {
     const localParams = C.useLocalSearchParams()
     C.useFocusLayer('landing')
 
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, navPush } = useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
@@ -238,9 +238,11 @@ export default function KeepsakeDetailsPage(props) {
                                 tall
                                 title={dir.display}
                                 key={dirIndex}
-                                onPress={() => {
-                                    routes.goto(routes.keepsakeDetails, { shelfId: localParams.shelfId, subdirectory: dir.path, seekToSeconds: 0 })
-                                }}
+                                onPress={navPush(routes.keepsakeDetails, {
+                                    shelfId: localParams.shelfId,
+                                    subdirectory: dir.path,
+                                    seekToSeconds: 0
+                                }, true)}
                             />
                         )
                     })}

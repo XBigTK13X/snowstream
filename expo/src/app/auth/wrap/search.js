@@ -11,7 +11,7 @@ const styles = {
 }
 
 export default function SearchPage() {
-    const { apiClient, config, routes } = useAppContext()
+    const { apiClient, config, routes, navPush } = useAppContext()
 
     const [queryText, setQueryText] = C.React.useState('')
     const [searchResults, setSearchResults] = C.React.useState(null)
@@ -51,15 +51,15 @@ export default function SearchPage() {
                             return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
                                 return (
                                     <C.SnowTextButton title={item.name}
-                                        onPress={routes.func(routes.streamablePlay, {
+                                        onPress={navPush(routes.streamablePlay, {
                                             streamSourceId: item.stream_source.id,
                                             streamableId: item.id,
-                                        })}
-                                        onLongPress={routes.func(routes.streamablePlay, {
+                                        }, true)}
+                                        onLongPress={navPush(routes.streamablePlay, {
                                             streamSourceId: item.stream_source.id,
                                             streamableId: item.id,
                                             forcePlayer: 'exo'
-                                        })}
+                                        }, true)}
                                     />
                                 )
                             }} />

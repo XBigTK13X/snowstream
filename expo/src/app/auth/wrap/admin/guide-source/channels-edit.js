@@ -40,10 +40,10 @@ function ChannelEditRow(props) {
                     {props.streamables.map((streamable) => {
                         if (filter) {
                             let isFiltered = true
-                            if (streamable.name_display && streamable.name_display.toLowerCase() !== -1) {
+                            if (streamable.name_display && streamable.name_display.toLowerCase().includes(filter)) {
                                 isFiltered = false
                             }
-                            if (streamable.name.toLowerCase().indexOf(filter) !== -1) {
+                            if (streamable.name.toLowerCase().includes(filter)) {
                                 isFiltered = false
                             }
                             if (isFiltered) {
@@ -137,13 +137,13 @@ export default function ChannelEditPage() {
                     value={query}
                     onDebounce={(val) => {
                         let results = guideSource.channels.filter((channel) => {
-                            if (channel.parsed_name && channel.parsed_name.toLowerCase().indexOf(val) !== -1) {
+                            if (channel.parsed_name && channel.parsed_name.toLowerCase().includes(val)) {
                                 return true
                             }
-                            if (channel.parsed_id && ('' + channel.parsed_id).toLowerCase().indexOf(val) !== -1) {
+                            if (channel.parsed_id && ('' + channel.parsed_id).toLowerCase().includes(val)) {
                                 return true
                             }
-                            if (channel.parsed_number && ('' + channel.parsed_number).toLowerCase().indexOf(val) !== -1) {
+                            if (channel.parsed_number && ('' + channel.parsed_number).toLowerCase().includes(val)) {
                                 return true
                             }
                             return false
