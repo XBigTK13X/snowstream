@@ -1832,9 +1832,9 @@ base64-js@^1.2.3, base64-js@^1.3.1, base64-js@^1.5.1:
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 baseline-browser-mapping@^2.8.9:
-  version "2.8.13"
-  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.8.13.tgz#3d49a18ee27114765401f4985bdc27018603854e"
-  integrity sha512-7s16KR8io8nIBWQyCYhmFhd+ebIzb9VKTzki+wOJXHTxTnV6+mFGH3+Jwn1zoKaY9/H9T/0BcKCZnzXljPnpSQ==
+  version "2.8.14"
+  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.8.14.tgz#b73b0ae23efcb967e30b381c09a1a001777ec927"
+  integrity sha512-GM9c0cWWR8Ga7//Ves/9KRgTS8nLausCkP3CGiFLrnwA2CDUluXgaQqvrULoR2Ujrd/mz/lkX87F5BHFsNr5sQ==
 
 better-opn@~3.0.2:
   version "3.0.2"
@@ -1965,9 +1965,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001746:
-  version "1.0.30001748"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001748.tgz#628a5a9293014e58f8ba1216bb4966b04c58bee0"
-  integrity sha512-5P5UgAr0+aBmNiplks08JLw+AW/XG/SurlgZLgB1dDLfAw7EfRGxIwzPHxdSCGY/BTKDqIVyJL87cCN6s0ZR0w==
+  version "1.0.30001749"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001749.tgz#21a43b923577932097fe32bcaabb6da7f4677632"
+  integrity sha512-0rw2fJOmLfnzCRbkm8EyHL8SvI2Apu5UbnQuTsJ0ClgrH8hcwFooJ1s5R0EP8o8aVrFu8++ae29Kt9/gZAZp/Q==
 
 chalk@^2.0.1, chalk@^2.4.2:
   version "2.4.2"
@@ -2451,10 +2451,10 @@ expo-keep-awake@15.0.7, expo-keep-awake@~15.0.7:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-15.0.7.tgz#4eada556e1cca6c9c2e5aa39478fd01816cd0bc9"
   integrity sha512-CgBNcWVPnrIVII5G54QDqoE125l+zmqR4HR8q+MQaCfHet+dYpS5vX5zii/RMayzGN4jPgA4XYIQ28ePKFjHoA==
 
-expo-libmpv@0.2.5:
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/expo-libmpv/-/expo-libmpv-0.2.5.tgz#173feba64ca81a7c7afe0b5688831ce32efbe883"
-  integrity sha512-LT0TXXt5Lqxno+JVAA+xPgLQZA2raDFF2fxS+wZeZqA76BbZhnduGTb6nbBOpPL8Ps4e3R4Plp+O/jEf1xITYw==
+expo-libmpv@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/expo-libmpv/-/expo-libmpv-0.3.0.tgz#cab1a4b3e127faf8cae4042121dc10b3a39847d3"
+  integrity sha512-o66BkZZ2gL+zDXq+KOKS1R8LOPkd1cUEJc4T+VdRfwjjGEcribdMHDEoZKuUo/aYgp3/AmiqLo/xNAeCcXYAcw==
   dependencies:
     expo-build-properties "~1.0.7"
 

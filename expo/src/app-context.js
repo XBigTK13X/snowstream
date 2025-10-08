@@ -227,6 +227,7 @@ export function AppContextProvider(props) {
     // When a modal is shown, prevent default event handlers from exiting the app
     React.useEffect(() => {
         const onBackPress = () => {
+            console.log("Back handler")
             if (!navigationAllowedRef.current) {
                 return true
             }
