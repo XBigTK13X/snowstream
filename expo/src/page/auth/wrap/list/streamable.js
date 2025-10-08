@@ -1,9 +1,9 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function StreamableListPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes, navPush, currentRoute } = useAppContext()
     const { SnowStyle } = C.useStyleContext()
-    const localParams = C.useLocalSearchParams()
+
     const [streamSource, setStreamSource] = C.React.useState(null)
     const [streamableGroups, setStreamableGroups] = C.React.useState(null)
     const [streamableItems, setStreamableItems] = C.React.useState(null)
@@ -19,7 +19,7 @@ export default function StreamableListPage() {
 
     C.React.useEffect(() => {
         if (!streamSource) {
-            apiClient.getStreamSource(localParams.streamSourceId).then((response) => {
+            apiClient.getStreamSource(currentRoute.params.streamSourceId).then((response) => {
                 if (response) {
                     if (response.has_groups) {
                         setStreamableGroups(response.groups)
@@ -147,5 +147,5 @@ export default function StreamableListPage() {
             )
         }
     }
-    return <C.Text>Loading stream source {localParams.streamSourceId}.</C.Text>
+    return <C.Text>Loading stream source {currentRoute.params.streamSourceId}.</C.Text>
 }

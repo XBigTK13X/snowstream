@@ -1,3 +1,4 @@
+import { View } from 'react-native'
 import Snow from 'expo-snowui'
 import { AppContextProvider, config, useAppContext } from 'snowstream'
 import { Pages } from '../pages'
@@ -31,10 +32,13 @@ function CurrentPage(props) {
 
 export default function PageLoader() {
     return (
-        <Snow.App DEBUG_FOCUS={config.debugFocus} snowStyle={appStyle}>
-            <AppContextProvider>
-                <CurrentPage />
-            </AppContextProvider >
-        </Snow.App >
+        // You need this outer view, or else the screen flashes white on first load
+        <View style={{ flex: 1, backgroundColor: appStyle.color.background }}>
+            <Snow.App DEBUG_FOCUS={config.debugFocus} snowStyle={appStyle}>
+                <AppContextProvider>
+                    <CurrentPage />
+                </AppContextProvider >
+            </Snow.App >
+        </View >
     )
 }

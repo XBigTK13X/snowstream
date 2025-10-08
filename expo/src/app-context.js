@@ -82,14 +82,13 @@ export function AppContextProvider(props) {
     let initialParams = {}
     if (Platform.OS === 'web') {
         initialPath = window.location.pathname;
-        initialParams = Object.fromEntries(new URLSearchParams(window.location.search).entries())
+        initialParams = util.queryToObject(window.location.search)
     }
 
     const [navigationHistory, setNavigationHistory] = React.useState([{ route: initialPath, params: initialParams }])
     const navigationHistoryRef = React.useRef(navigationHistory)
     const [navigationAllowed, setNavigationAllowed] = React.useState(true)
     const navigationAllowedRef = React.useRef(navigationAllowed)
-    const [rendered, setRendered] = React.useState(false)
 
     const navPush = (route, routeParams, isFunc) => {
         let foundParams = {}
@@ -112,8 +111,14 @@ export function AppContextProvider(props) {
                 let result = [...prev]
                 if (result.at(-1).route === route) {
                     result.at(-1).params = foundParams
+                    if (Platform.OS === 'web') {
+                        window.history.replaceState(foundParams, '', util.stateToUrl(route, foundParams))
+                    }
                 } else {
                     result.push({ route, params: foundParams })
+                    if (Platform.OS === 'web') {
+                        window.history.pushState(foundParams, '', util.stateToUrl(route, foundParams))
+                    }
                 }
                 return result
             })
@@ -259,12 +264,13 @@ export function AppContextProvider(props) {
                 if (navigationHistoryRef.current.length > 1) {
                     navPop()
                 } else {
-                    window.history.pushState(null, '', window.location.pathname)
+                    // This prevents back from leaving the app
+                    window.history.pushState(null, '', window.location.pathname + window.location.search)
                 }
             }
 
             window.addEventListener('popstate', onPopState)
-            window.history.pushState(null, '', window.location.pathname)
+            window.history.pushState(null, '', window.location.pathname + window.location.search)
 
             return () => window.removeEventListener('popstate', onPopState)
         }, [])

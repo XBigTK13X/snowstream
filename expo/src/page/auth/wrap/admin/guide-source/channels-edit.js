@@ -95,16 +95,14 @@ function ChannelEditRow(props) {
 }
 
 export default function ChannelEditPage() {
-    const { apiClient } = useAppContext()
+    const { apiClient, currentRoute } = useAppContext()
     const [guideSource, setGuideSource] = C.React.useState(null)
     const [streamables, setStreamables] = C.React.useState(null)
     const [query, setQuery] = C.React.useState('')
     const [filteredChannels, setFilteredChannels] = C.React.useState([])
-
-    const localParams = C.useLocalSearchParams()
     C.React.useEffect(() => {
         if (!guideSource) {
-            apiClient.getChannelGuideSource(localParams.guideSourceId).then((guideSource) => {
+            apiClient.getChannelGuideSource(currentRoute.params.guideSourceId).then((guideSource) => {
                 setGuideSource(guideSource)
             }).then(() => {
                 apiClient.getStreamableList().then((streamableList) => {

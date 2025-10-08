@@ -10,7 +10,7 @@ export default function LandingPage(props) {
     C.React.useEffect(() => {
         if (config.debugVideoUrl) {
             parts = config.debugVideoUrl.split('?')
-            navPush(parts[0], Object.fromEntries(new URLSearchParams(parts[1]).entries()))
+            navPush(parts[0], C.util.queryToObject(parts[1]))
         }
     }, [config])
 

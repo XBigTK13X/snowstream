@@ -1,15 +1,14 @@
 import { C, useAppContext } from 'snowstream'
 
 export function WatchableListPage(props) {
-    const { isAdmin, apiClient, routes, setMessageDisplay, navPush } = useAppContext()
-    const localParams = C.useLocalSearchParams()
+    const { isAdmin, apiClient, routes, setMessageDisplay, navPush, currentRoute } = useAppContext()
 
     const [shelf, setShelf] = C.React.useState(null)
     const [items, setItems] = C.React.useState(null)
 
-    const shelfId = localParams.shelfId
+    const shelfId = currentRoute.params.shelfId
     const [showPlaylisted, setShowPlaylisted] = C.React.useState(
-        localParams.showPlaylisted ? localParams.showPlaylisted === 'true' : false
+        currentRoute.params.showPlaylisted ? currentRoute.params.showPlaylisted === 'true' : false
     )
     const [togglePlaylistedEnabled, setTogglePlaylistedEnabled] = C.React.useState(true)
 
@@ -17,7 +16,7 @@ export function WatchableListPage(props) {
 
     C.React.useEffect(() => {
         if (!shelf) {
-            apiClient.getShelf(localParams.shelfId).then((response) => {
+            apiClient.getShelf(currentRoute.params.shelfId).then((response) => {
                 setShelf(response)
             })
             props.loadItems(apiClient, shelfId, showPlaylisted)
@@ -126,7 +125,7 @@ export function WatchableListPage(props) {
             </C.View>
         )
     }
-    return <C.SnowText>Loading items from shelf {localParams.shelfId}.</C.SnowText>
+    return <C.SnowText>Loading items from shelf {currentRoute.params.shelfId}.</C.SnowText>
 }
 
 export default WatchableListPage

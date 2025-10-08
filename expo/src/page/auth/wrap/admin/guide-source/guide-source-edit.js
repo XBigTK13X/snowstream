@@ -10,8 +10,7 @@ const guideSourceKinds = [
 ]
 
 export default function EpisodeGuideEditPage() {
-    const { apiClient, routes, navPush } = useAppContext()
-    const localParams = C.useLocalSearchParams()
+    const { apiClient, routes, navPush, currentRoute } = useAppContext()
     const [guideSource, setGuideSource] = C.React.useState(null)
     const [kindIndex, setKindIndex] = C.React.useState(0)
     const [form, setForm] = C.React.useState({
@@ -26,8 +25,8 @@ export default function EpisodeGuideEditPage() {
     const [deleted, setDeleted] = C.React.useState(false)
 
     C.React.useEffect(() => {
-        if (!guideSource && localParams.guideSourceId) {
-            apiClient.getChannelGuideSource(localParams.guideSourceId).then((guideSource) => {
+        if (!guideSource && currentRoute.params.guideSourceId) {
+            apiClient.getChannelGuideSource(currentRoute.params.guideSourceId).then((guideSource) => {
                 setGuideSource(guideSource)
                 setForm({
                     id: guideSource.id,
@@ -72,10 +71,10 @@ export default function EpisodeGuideEditPage() {
     }
 
     let existingButtons = null
-    if (localParams.guideSourceId) {
+    if (currentRoute.params.guideSourceId) {
         existingButtons = (
             <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="Channels" onPress={navPush(routes.admin.channelsEdit, { guideSourceId: localParams.guideSourceId }, true)} />
+                <C.SnowTextButton title="Channels" onPress={navPush(routes.admin.channelsEdit, { guideSourceId: currentRoute.params.guideSourceId }, true)} />
                 <C.SnowTextButton title={`Delete (${deleteCount})`} onPress={deleteGuideSource} />
             </C.SnowGrid>
         )

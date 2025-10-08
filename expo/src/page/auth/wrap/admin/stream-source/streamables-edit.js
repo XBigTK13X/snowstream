@@ -40,15 +40,14 @@ function StreamableEditRow(props) {
 }
 
 export default function StreamblesEditPage() {
-    const { apiClient } = useAppContext()
+    const { apiClient, currentRoute } = useAppContext()
     const [streamSource, setStreamSource] = C.React.useState(null)
     const [query, setQuery] = C.React.useState('')
     const [filteredStreams, setFilteredStreams] = C.React.useState([])
 
-    const localParams = C.useLocalSearchParams()
     C.React.useEffect(() => {
         if (!streamSource) {
-            apiClient.getStreamSource(localParams.streamSourceId).then((streamSource) => {
+            apiClient.getStreamSource(currentRoute.params.streamSourceId).then((streamSource) => {
                 setStreamSource(streamSource)
             })
         }

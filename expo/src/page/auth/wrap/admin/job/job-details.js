@@ -1,13 +1,11 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function JobDetailsPage() {
-    const localParams = C.useLocalSearchParams()
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, currentRoute } = useAppContext()
     const [job, setJob] = C.React.useState(null)
-    const jobId = localParams.jobId
     C.React.useEffect(() => {
         if (!job) {
-            apiClient.getJob(jobId).then((response) => {
+            apiClient.getJob(currentRoute.params.jobId).then((response) => {
                 if (response && response.logs && response.logs.length) {
                     response.logs.reverse()
                 }

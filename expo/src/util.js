@@ -60,10 +60,28 @@ async function urlExists(url) {
         })
 }
 
+function stateToUrl(route, state) {
+    if (!state || !Object.keys(state).length) {
+        return route
+    }
+    const params = new URLSearchParams(state).toString()
+    return `${route}?${params}`
+}
+
+function queryToObject(query) {
+    if (!query) {
+        return {}
+    }
+    const params = new URLSearchParams(query)
+    return Object.fromEntries(params.entries())
+}
+
 export default {
     formatEpisodeTitle,
     secondsToTimestamp,
     log,
     bitsToPretty,
-    urlExists
+    urlExists,
+    queryToObject,
+    stateToUrl
 }

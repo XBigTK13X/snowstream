@@ -3,7 +3,8 @@ import { C, useAppContext } from 'snowstream'
 const kinds = ['Movies', 'Shows', 'Keepsakes']
 
 export default function ShelfEditPage() {
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, currentRoute } = useAppContext()
+
     const [shelfName, setShelfName] = C.React.useState('')
     const [localPath, setLocalPath] = C.React.useState('')
     const [networkPath, setNetworkPath] = C.React.useState('')
@@ -12,10 +13,10 @@ export default function ShelfEditPage() {
     const [shelfId, setShelfId] = C.React.useState(null)
     const [shelfDeleteCount, setShelfDeleteCount] = C.React.useState(3)
     const [shelfDeleted, setShelfDeleted] = C.React.useState(false)
-    const localParams = C.useLocalSearchParams()
+
     C.React.useEffect(() => {
-        if (!shelfId && localParams.shelfId) {
-            apiClient.getShelf(localParams.shelfId).then((shelf) => {
+        if (!shelfId && currentRoute.params.shelfId) {
+            apiClient.getShelf(currentRoute.params.shelfId).then((shelf) => {
                 setShelfId(shelf.id)
                 setShelfKind(shelf.kind)
                 setShelfKindIndex(shelf.kind == 'Movies' ? 0 : 1)

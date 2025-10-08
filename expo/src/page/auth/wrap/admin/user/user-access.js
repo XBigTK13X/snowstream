@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function UserEditPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes, navPush, currentRoute } = useAppContext()
 
     const [userId, setUserId] = C.React.useState(null)
     const [userTags, setUserTags] = C.React.useState([])
@@ -12,12 +12,10 @@ export default function UserEditPage() {
     const [shelves, setShelves] = C.React.useState('')
     const [streamSources, setStreamSources] = C.React.useState('')
 
-    const localParams = C.useLocalSearchParams()
-
     C.React.useEffect(() => {
-        if (!userId && localParams.userId) {
-            apiClient.getUser(localParams.userId).then((response) => {
-                setUserId(localParams.userId)
+        if (!userId && currentRoute.params.userId) {
+            apiClient.getUser(currentRoute.params.userId).then((response) => {
+                setUserId(currentRoute.params.userId)
                 if (response.access_tags) {
                     setUserTags(response.access_tags.map(item => item.id))
                     setUserShelves(response.access_shelves.map(item => item.id))

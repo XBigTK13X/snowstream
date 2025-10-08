@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function StreamSourceEditPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes, navPush, currentRoute } = useAppContext()
+
     const [streamSourceName, setStreamSourceName] = C.React.useState('')
     const [streamSourceKind, setStreamSourceKind] = C.React.useState('HdHomeRun')
     const [streamSourceKindIndex, setStreamSourceKindIndex] = C.React.useState(0)
@@ -11,10 +12,10 @@ export default function StreamSourceEditPage() {
     const [streamSourceId, setStreamSourceId] = C.React.useState(null)
     const [streamSourceDeleteCount, setStreamSourceDeleteCount] = C.React.useState(3)
     const [streamSourceDeleted, setStreamSourceDeleted] = C.React.useState(false)
-    const localParams = C.useLocalSearchParams()
+
     C.React.useEffect(() => {
-        if (!streamSourceId && localParams.streamSourceId) {
-            apiClient.getStreamSource(localParams.streamSourceId).then((streamSource) => {
+        if (!streamSourceId && currentRoute.params.streamSourceId) {
+            apiClient.getStreamSource(currentRoute.params.streamSourceId).then((streamSource) => {
                 setStreamSourceName(streamSource.name || '')
                 setStreamSourceKind(streamSource.kind || '')
                 setStreamSourceUrl(streamSource.url || '')
@@ -65,7 +66,7 @@ export default function StreamSourceEditPage() {
             {streamSourceId ? (
                 <C.SnowTextButton
                     title="Streamables"
-                    onPress={navPush(routes.admin.streamablesEdit, { streamSourceId: localParams.streamSourceId }, true)} />
+                    onPress={navPush(routes.admin.streamablesEdit, { streamSourceId: currentRoute.params.streamSourceId }, true)} />
             ) : null}
             {streamSourceId ? <C.SnowTextButton title={`Delete (${streamSourceDeleteCount})`} onPress={deleteStreamSource} /> : null}
 

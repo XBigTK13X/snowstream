@@ -89,16 +89,16 @@ function ZoomView(props) {
 
 export default function KeepsakeDetailsPage(props) {
     const { SnowStyle } = C.useStyleContext(props)
-    const localParams = C.useLocalSearchParams()
+
     C.useFocusLayer('landing')
 
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes, navPush, currentRoute } = useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
     C.React.useEffect(() => {
         if (!keepsake) {
-            apiClient.getKeepsake(localParams.shelfId, localParams.subdirectory).then((response) => {
+            apiClient.getKeepsake(currentRoute.params.shelfId, currentRoute.params.subdirectory).then((response) => {
                 setKeepsake(response)
             })
         }
@@ -147,10 +147,10 @@ export default function KeepsakeDetailsPage(props) {
 
     if (!keepsake) {
         let subdir = ''
-        if (localParams.subdirectory) {
-            subdir = ` subdirectory [${localParams.subdirectory}]`
+        if (currentRoute.params.subdirectory) {
+            subdir = ` subdirectory [${currentRoute.params.subdirectory}]`
         }
-        return <C.Text>Loading keepsakes from shelf {localParams.shelfId}.</C.Text>
+        return <C.Text>Loading keepsakes from shelf {currentRoute.params.shelfId}.</C.Text>
     }
 
     let videos = null
@@ -239,7 +239,7 @@ export default function KeepsakeDetailsPage(props) {
                                 title={dir.display}
                                 key={dirIndex}
                                 onPress={navPush(routes.keepsakeDetails, {
-                                    shelfId: localParams.shelfId,
+                                    shelfId: currentRoute.params.shelfId,
                                     subdirectory: dir.path,
                                     seekToSeconds: 0
                                 }, true)}

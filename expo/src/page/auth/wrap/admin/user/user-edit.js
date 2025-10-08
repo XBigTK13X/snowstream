@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function UserEditPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes, navPush, currentRoute } = useAppContext()
+
     const [userId, setUserId] = C.React.useState(null)
     const [userDisplayName, setUserDisplayName] = C.React.useState('')
     const [userEnabled, setUserEnabled] = C.React.useState('')
@@ -11,11 +12,10 @@ export default function UserEditPage() {
     const [userDeleteCount, setUserDeleteCount] = C.React.useState(3)
     const [userDeleted, setUserDeleted] = C.React.useState(false)
     const [userHasPassword, setUserHasPassword] = C.React.useState(false)
-    const localParams = C.useLocalSearchParams()
 
     C.React.useEffect(() => {
-        if (userId == null && localParams.userId) {
-            apiClient.getUser(localParams.userId).then((user) => {
+        if (userId == null && currentRoute.params.userId) {
+            apiClient.getUser(currentRoute.params.userId).then((user) => {
                 if (user) {
                     setUserId(user.id)
                     setUserEnabled(user.enabled || true)

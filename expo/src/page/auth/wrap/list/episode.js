@@ -3,10 +3,10 @@ import { C } from 'snowstream'
 import { WatchableListPage } from './watchable-list'
 
 export default function EpisodeListPage() {
-    const localParams = C.useLocalSearchParams()
-    const showName = localParams.showName
-    const seasonId = localParams.seasonId
-    const seasonOrder = localParams.seasonOrder
+    const { currentRoute } = C.useAppContext()
+    const showName = currentRoute.params.showName
+    const seasonId = currentRoute.params.seasonId
+    const seasonOrder = currentRoute.params.seasonOrder
     const getPageTitle = (shelf, items) => {
         return `Found ${items.length} episodes for ${showName} season ${seasonOrder}`
     }

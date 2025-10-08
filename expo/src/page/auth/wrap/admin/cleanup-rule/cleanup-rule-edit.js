@@ -10,12 +10,11 @@ const targetKinds = [
 
 
 export default function DisplayCleanupRuleEditPage() {
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, currentRoute } = useAppContext()
 
     const [ruleLoaded, setRuleLoaded] = C.React.useState(false)
     const [ruleDeleteCount, setRuleDeleteCount] = C.React.useState(3)
     const [ruleDeleted, setRuleDeleted] = C.React.useState(false)
-    const localParams = C.useLocalSearchParams()
 
     const [ruleForm, setRuleForm] = C.React.useState({
         needle: '',
@@ -27,8 +26,8 @@ export default function DisplayCleanupRuleEditPage() {
     })
 
     C.React.useEffect(() => {
-        if (!ruleLoaded && localParams.ruleId) {
-            apiClient.getDisplayCleanupRule(localParams.ruleId)
+        if (!ruleLoaded && currentRoute.params.ruleId) {
+            apiClient.getDisplayCleanupRule(currentRoute.params.ruleId)
                 .then((rule) => {
                     setRuleForm({
                         id: rule.id,

@@ -83,27 +83,25 @@ export default function AuthPageLoader(props) {
     const { apiClient, session, sessionLoaded, isAdmin, routes, navPush, currentRoute } = useAppContext();
     const [hasAuth, setHasAuth] = React.useState(false)
 
-    let pathname = currentRoute.route
-
     React.useEffect(() => {
         if (!hasAuth) {
-            if (pathname.includes('/auth/') && sessionLoaded && !session) {
+            if (currentRoute.route.includes('/auth/') && sessionLoaded && !session) {
                 setHasAuth(true)
                 navPush(routes.signIn)
             }
 
-            if (pathname.includes('/admin/') && sessionLoaded && !isAdmin) {
+            if (currentRoute.route.includes('/admin/') && sessionLoaded && !isAdmin) {
                 setHasAuth(true)
                 navPush(routes.landing)
             }
         }
-    })
+    }, [hasAuth, session, sessionLoaded, isAdmin, currentRoute])
 
     if (!apiClient) {
         return null
     }
 
-    const hasHeader = pathname.includes('/wrap/') && !pathname.includes('/play/')
+    const hasHeader = currentRoute.route.includes('/wrap/')
     const HeaderWrapper = hasHeader ? SnowHeaderNavPage : NoOp
 
     return (

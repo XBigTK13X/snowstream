@@ -1,15 +1,16 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function TagEditPage() {
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, currentRoute } = useAppContext()
+
     const [tagName, setTagName] = C.React.useState('')
     const [tagId, setTagId] = C.React.useState(null)
     const [tagDeleteCount, setTagDeleteCount] = C.React.useState(3)
     const [tagDeleted, setTagDeleted] = C.React.useState(false)
-    const localParams = C.useLocalSearchParams()
+
     C.React.useEffect(() => {
-        if (!tagId && localParams.tagId) {
-            apiClient.getTag(localParams.tagId).then((tag) => {
+        if (!tagId && currentRoute.params.tagId) {
+            apiClient.getTag(currentRoute.params.tagId).then((tag) => {
                 setTagId(tag.id)
                 setTagName(tag.name)
             })

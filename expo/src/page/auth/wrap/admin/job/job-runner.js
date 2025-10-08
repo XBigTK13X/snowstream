@@ -1,23 +1,22 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function ShelfEditPage() {
-    const { apiClient, routes, navPush } = useAppContext()
-    const localParams = C.useLocalSearchParams()
+    const { apiClient, routes, navPush, currentRoute } = useAppContext()
     C.useFocusLayer('job-runner')
 
     const [form, setForm] = C.React.useState({
-        episodeOrder: localParams.episodeOrder ?? '',
-        extractOnly: localParams.extractOnly ?? '',
-        metadataId: localParams.metadataId ?? '',
-        metadataSource: localParams.metadataSource ?? '',
-        seasonOrder: localParams.seasonOrder ?? '',
-        skipExisting: localParams.skipExisting ?? '',
-        targetDirectory: localParams.targetDirectory ?? '',
-        targetId: localParams.targetId ?? '',
-        targetKind: localParams.targetKind ?? '',
-        updateImages: localParams.updateImages ?? '',
-        updateMetadata: localParams.updateMetadata ?? '',
-        updateVideos: localParams.updateVideos ?? '',
+        episodeOrder: currentRoute.params.episodeOrder ?? '',
+        extractOnly: currentRoute.params.extractOnly ?? '',
+        metadataId: currentRoute.params.metadataId ?? '',
+        metadataSource: currentRoute.params.metadataSource ?? '',
+        seasonOrder: currentRoute.params.seasonOrder ?? '',
+        skipExisting: currentRoute.params.skipExisting ?? '',
+        targetDirectory: currentRoute.params.targetDirectory ?? '',
+        targetId: currentRoute.params.targetId ?? '',
+        targetKind: currentRoute.params.targetKind ?? '',
+        updateImages: currentRoute.params.updateImages ?? '',
+        updateMetadata: currentRoute.params.updateMetadata ?? '',
+        updateVideos: currentRoute.params.updateVideos ?? '',
     })
     const formRef = C.React.useRef(form)
 
