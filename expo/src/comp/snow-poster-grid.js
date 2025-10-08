@@ -1,7 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
 import Snow from 'expo-snowui'
-import { usePathname, useLocalSearchParams } from 'expo-router'
 import { useAppContext } from '../app-context'
 
 

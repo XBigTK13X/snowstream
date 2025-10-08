@@ -1,6 +1,5 @@
 import React from 'react'
 import { View } from 'react-native'
-import { usePathname, useLocalSearchParams } from 'expo-router'
 import Snow, {
     SnowFillView,
     SnowGrid,
@@ -38,8 +37,7 @@ export default function SnowVideoControls(props) {
             backgroundColor: SnowStyle.color.transparentDark
         }
     }
-    const { apiClient, setRemoteCallbacks } = useAppContext()
-    const localParams = useLocalSearchParams()
+    const { apiClient, setRemoteCallbacks, localParams } = useAppContext()
     const player = usePlayerContext()
 
     const [showLogs, setShowLogs] = React.useState(false)

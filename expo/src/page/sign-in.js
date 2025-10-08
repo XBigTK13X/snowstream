@@ -1,4 +1,5 @@
 import { C, useAppContext } from 'snowstream'
+
 // This is the default expo-router route '/'
 export default function SignInPage() {
     const {
@@ -9,7 +10,9 @@ export default function SignInPage() {
         apiClient,
         signIn,
         config,
-        clientOptions
+        clientOptions,
+        navReset,
+        navPush
     } = useAppContext()
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
@@ -36,12 +39,14 @@ export default function SignInPage() {
         passwordRef.current = password
     })
 
-    if (!sessionLoaded) {
-        return null
-    }
+    C.React.useEffect(() => {
+        if (session) {
+            navPush(routes.landing)
+        }
+    }, [session])
 
-    if (session) {
-        return <C.Redirect href={routes.landing} />
+    if (!sessionLoaded || session) {
+        return null
     }
 
     const selectUser = (user) => {
@@ -51,7 +56,7 @@ export default function SignInPage() {
         else {
             signIn(user.username, 'SNOWSTREAM_EMPTY')
                 .then(() => {
-                    routes.replace(routes.landing)
+                    navReset()
                 })
                 .catch((err) => {
                     setErrors(err)
@@ -67,7 +72,7 @@ export default function SignInPage() {
                     setErrors("Incorrect password for this user.")
                 }
                 else {
-                    routes.replace(routes.landing)
+                    navReset()
                 }
             })
             .catch((err) => {

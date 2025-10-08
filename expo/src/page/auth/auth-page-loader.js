@@ -6,6 +6,7 @@ import {
     SnowGrid,
     SnowBreak
 } from 'expo-snowui'
+import { Pages } from '../../pages'
 
 
 // If the Header doesn't render before the rest of the page
@@ -69,16 +70,20 @@ function NoOp(props) {
     return <>{props.children}</>
 }
 
-// Each wrapper was previously a layout.
-// However, at one point the players were moved into a sibling dir to remove the header
-// That broke back navigation
-// But, the contexts don't work unless they are inside a top level Slot
-// So the RootLayout bootstraps expo-router
-// Then this layout bootstraps the app
-export default function AppLayout(props) {
-    const pathname = C.usePathname()
-    const { session, sessionLoaded, isAdmin, routes, navPush } = useAppContext();
+function CurrentAuthPage(props) {
+    const { currentRoute } = useAppContext()
+    const Page = Pages[currentRoute.route]
+    if (!Page) {
+        return <C.SnowText>Unmapped route {currentRoute.route}</C.SnowText>
+    }
+    return <Page />
+}
+
+export default function AuthPageLoader(props) {
+    const { apiClient, session, sessionLoaded, isAdmin, routes, navPush, currentRoute } = useAppContext();
     const [hasAuth, setHasAuth] = React.useState(false)
+
+    let pathname = currentRoute.route
 
     React.useEffect(() => {
         if (!hasAuth) {
@@ -94,12 +99,16 @@ export default function AppLayout(props) {
         }
     })
 
+    if (!apiClient) {
+        return null
+    }
+
     const hasHeader = pathname.includes('/wrap/') && !pathname.includes('/play/')
     const HeaderWrapper = hasHeader ? SnowHeaderNavPage : NoOp
 
     return (
         <HeaderWrapper>
-            <C.Slot />
+            <CurrentAuthPage />
         </HeaderWrapper>
     )
 }

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router'
+import { Platform } from 'react-native';
 import { useAppContext } from './app-context'
 import util from './util'
 
@@ -15,7 +14,6 @@ export function usePlayerContext() {
 }
 
 export function PlayerContextProvider(props) {
-    const localParams = useLocalSearchParams()
     const {
         apiClient,
         clientOptions,
@@ -24,7 +22,8 @@ export function PlayerContextProvider(props) {
         setRemoteCallbacks,
         navPush,
         navPop,
-        setNavigationAllowed
+        setNavigationAllowed,
+        localParams
     } = useAppContext()
 
     const [videoUrl, setVideoUrl] = React.useState(null)

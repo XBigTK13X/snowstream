@@ -7,11 +7,12 @@ export default function LandingPage(props) {
     const [streamSources, setStreamSources] = C.React.useState(null)
     C.useFocusLayer('landing')
 
-
-    if (config.debugVideoUrl) {
-        //return <C.SnowTextButton title="Debug Video" onPress={navPush(config.debugVideoUrl)} />
-        return <C.Redirect href={config.debugVideoUrl} />
-    }
+    C.React.useEffect(() => {
+        if (config.debugVideoUrl) {
+            parts = config.debugVideoUrl.split('?')
+            navPush(parts[0], Object.fromEntries(new URLSearchParams(parts[1]).entries()))
+        }
+    }, [config])
 
     C.React.useEffect(() => {
         if (!shelves) {
@@ -24,6 +25,10 @@ export default function LandingPage(props) {
             })
         }
     }, [shelves])
+
+    if (config.debugVideoUrl) {
+        return null
+    }
 
     const styles = {
         footer: {

@@ -3,7 +3,6 @@ import Snow from 'expo-snowui'
 import { Platform, useTVEventHandler, View, BackHandler } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import uuid from 'react-native-uuid';
-import { usePathname, useLocalSearchParams } from 'expo-router'
 
 import util from './util'
 import { config } from './settings'
@@ -79,12 +78,14 @@ export function AppContextProvider(props) {
     const [remoteCallbacks, setRemoteCallbacks] = React.useState({})
     const remoteCallbacksRef = React.useRef(remoteCallbacks)
 
-    const pathname = usePathname()
-    const pathnameRef = React.useRef(pathname)
-    const localParams = useLocalSearchParams()
-    const localParamsRef = React.useRef(localParams)
+    let initialPath = routes.landing
+    let initialParams = {}
+    if (Platform.OS === 'web') {
+        initialPath = window.location.pathname;
+        initialParams = Object.fromEntries(new URLSearchParams(window.location.search).entries())
+    }
 
-    const [navigationHistory, setNavigationHistory] = React.useState([{ route: pathname, params: localParams }])
+    const [navigationHistory, setNavigationHistory] = React.useState([{ route: initialPath, params: initialParams }])
     const navigationHistoryRef = React.useRef(navigationHistory)
     const [navigationAllowed, setNavigationAllowed] = React.useState(true)
     const navigationAllowedRef = React.useRef(navigationAllowed)
@@ -129,7 +130,6 @@ export function AppContextProvider(props) {
                 let result = [...prev]
                 if (result.length > 1) {
                     result.pop()
-                    console.log({ resultEnd: result.at(-1) })
                 }
                 return result
             })
@@ -143,7 +143,6 @@ export function AppContextProvider(props) {
     const navReset = (isFunc) => {
         const func = () => {
             setNavigationHistory([{ route: routes.signIn, params: {} }])
-            routes.replace(routes.signIn)
         }
         if (isFunc) {
             return func
@@ -215,32 +214,6 @@ export function AppContextProvider(props) {
     React.useEffect(() => {
         navigationHistoryRef.current = navigationHistory
     }, [navigationHistory])
-
-    // Keep expo-router in sync with the snowstream navigation state
-    React.useEffect(() => {
-        const current = navigationHistoryRef.current.at(-1)
-        console.log({ expo: pathname, current })
-        // On first render, expo-router will freak out if we try to sync the routes
-        if (!rendered) {
-            console.log("Wait on first render")
-            setRendered(true)
-        }
-        else {
-            if (pathname !== current.route) {
-                // Sometimes expo-router flips out when moving between pages, this ignores that by waiting for the next render
-                if ((pathname === '/' && current.route !== '/' && current.route !== '/auth/wrap/landing')) {
-                    console.log("Wait on re-render")
-                    setRendered(false)
-                } else {
-
-                    if (pathname !== current.route && (current.route !== '/' || pathname !== routes.landing)) {
-                        console.log({ current })
-                        routes.replace(current.route, current.params)
-                    }
-                }
-            }
-        }
-    }, [navigationHistory, rendered, pathname, localParams])
 
     React.useEffect(() => {
         navigationAllowedRef.current = navigationAllowed
@@ -513,7 +486,8 @@ export function AppContextProvider(props) {
         navReset,
         navToItem,
         navigationHistory,
-        setNavigationAllowed
+        setNavigationAllowed,
+        currentRoute: navigationHistory.at(-1)
     }
 
     return (

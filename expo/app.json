@@ -10,7 +10,6 @@
           "androidTVBanner": "./assets/icon/android/tvbanner.png"
         }
       ],
-      "expo-router",
       "expo-secure-store",
       "react-native-video",
       [

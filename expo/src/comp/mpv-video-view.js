@@ -79,7 +79,9 @@ export default function MpvVideoView(props) {
             navigationBarTranslucent
             wrapper={false}
             assignFocus={false}
-            onRequestClose={() => { player.action.onStopVideo() }}>
+            onRequestClose={() => {
+                player.action.onStopVideo()
+            }}>
             <Snow.FillView style={{ backgroundColor: 'black' }} >
                 <LibmpvVideo
                     ref={forwardRef}

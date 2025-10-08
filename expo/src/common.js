@@ -14,17 +14,6 @@ import {
     View,
 } from 'react-native'
 
-import {
-    Link,
-    Redirect,
-    Slot,
-    Stack,
-    useLocalSearchParams,
-    useNavigation,
-    usePathname,
-    useRouter
-} from 'expo-router'
-
 import { Image } from 'expo-image'
 
 import { useKeepAwake } from 'expo-keep-awake';
@@ -80,23 +69,16 @@ export default {
     useFocusContext,
     useFocusLayer,
     useKeepAwake,
-    useLocalSearchParams,
-    useNavigation,
-    usePathname,
-    useRouter,
     useStyleContext,
     useTVEventHandler,
     util,
     AppState,
     FillView: SnowFillView,
     Image,
-    Link,
     Linking,
     Platform,
     React,
-    Redirect,
     ScrollView,
-    Slot,
     Snow,
     SnowBreak,
     SnowDropdown,
@@ -121,7 +103,6 @@ export default {
     SnowVideoControls,
     SnowVideoPlayer,
     SnowView,
-    Stack,
     Text,
     TouchableOpacity,
     TVEventHandler,

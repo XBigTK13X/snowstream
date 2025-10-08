@@ -1,32 +1,30 @@
-import util from './util'
-import { router, usePathname, useLocalSearchParams } from 'expo-router'
-
 // DOCS router method https://docs.expo.dev/router/navigating-pages/#imperative-navigation
 
 // /wrap/ routes will have the nav header
-
 export var routes = {
-    signIn: '/',
-    info: '/auth/wrap/info',
+    signIn: '/sign-in',
     landing: '/auth/wrap/landing',
+    signOut: '/auth/sign-out',
+    info: '/auth/wrap/info',
+
     continueWatching: '/auth/wrap/list/continue-watching',
     episodeDetails: '/auth/wrap/details/episode',
     episodeList: '/auth/wrap/list/episode',
-    episodePlay: '/auth/wrap/play/episode',
+    episodePlay: '/auth/play/episode',
     keepsakeDetails: '/auth/wrap/details/keepsake',
     movieDetails: '/auth/wrap/details/movie',
     movieList: '/auth/wrap/list/movie',
-    moviePlay: '/auth/wrap/play/movie',
+    moviePlay: '/auth/play/movie',
     options: '/auth/wrap/options',
-    playingQueuePlay: '/auth/wrap/play/playing-queue',
+    playingQueuePlay: '/auth/play/playing-queue',
     playlistDetails: '/auth/wrap/details/playlist',
     playlistList: '/auth/wrap/list/playlist',
     search: '/auth/wrap/search',
     seasonList: '/auth/wrap/list/season',
     showList: '/auth/wrap/list/show',
-    signOut: '/auth/sign-out',
     streamableList: '/auth/wrap/list/streamable',
-    streamablePlay: '/auth/wrap/play/streamable',
+    streamablePlay: '/auth/play/streamable',
+
     admin: {
         dashboard: '/auth/wrap/admin/dashboard',
         cleanupRuleEdit: '/auth/wrap/admin/cleanup-rule/cleanup-rule-edit',
@@ -49,12 +47,6 @@ export var routes = {
         userAccess: '/auth/wrap/admin/user/user-access',
         userEdit: '/auth/wrap/admin/user/user-edit',
         userList: '/auth/wrap/admin/user/user-list',
-    },
-    replace: (target, params) => {
-        if (!params) {
-            return router.replace(target)
-        }
-        router.replace({ pathname: target, params })
     }
 }
 

@@ -1,7 +1,7 @@
 import Snow from 'expo-snowui'
-import { AppContextProvider, C, config, useAppContext } from 'snowstream'
-import { routes } from '../routes'
-import { useRouter } from 'expo-router'
+import { AppContextProvider, config, useAppContext } from 'snowstream'
+import { Pages } from '../pages'
+import AuthPageLoader from './auth/auth-page-loader'
 
 const appStyle = {
     color: {
@@ -20,11 +20,20 @@ const appStyle = {
     }
 }
 
-export default function RootLayout() {
+function CurrentPage(props) {
+    const { currentRoute, routes } = useAppContext()
+    if (currentRoute.route === routes.signIn || currentRoute.route === '/') {
+        const Page = Pages[routes.signIn]
+        return <Page />
+    }
+    return <AuthPageLoader />
+}
+
+export default function PageLoader() {
     return (
         <Snow.App DEBUG_FOCUS={config.debugFocus} snowStyle={appStyle}>
             <AppContextProvider>
-                <C.Slot />
+                <CurrentPage />
             </AppContextProvider >
         </Snow.App >
     )
