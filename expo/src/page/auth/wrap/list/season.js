@@ -1,9 +1,9 @@
-import { C } from 'snowstream'
+import { useAppContext } from 'snowstream'
 
 import { WatchableListPage } from './watchable-list'
 
 export default function SeasonListPage() {
-    const { currentRoute } = C.useAppContext()
+    const { currentRoute } = useAppContext()
 
     const showId = currentRoute.params.showId
     const showName = currentRoute.params.showName

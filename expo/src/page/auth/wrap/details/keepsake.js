@@ -62,7 +62,7 @@ function KeepsakeVideo(props) {
         onComplete={() => {
             return props.closeModal()
         }}
-        onStopVideo={() => {
+        onipVideo={() => {
             return props.closeModal()
         }}>
         <VideoPlayer />
