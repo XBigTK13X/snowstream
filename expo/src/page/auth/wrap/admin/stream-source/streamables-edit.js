@@ -47,7 +47,7 @@ export default function StreamblesEditPage() {
 
     C.React.useEffect(() => {
         if (!streamSource) {
-            apiClient.getStreamSource(currentRoute.params.streamSourceId).then((streamSource) => {
+            apiClient.getStreamSource(currentRoute.routeParams.streamSourceId).then((streamSource) => {
                 setStreamSource(streamSource)
             })
         }

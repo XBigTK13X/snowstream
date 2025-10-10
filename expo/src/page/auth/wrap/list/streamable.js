@@ -1,14 +1,13 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function StreamableListPage() {
-    const { apiClient, routes, navPush, currentRoute } = useAppContext()
-    const { SnowStyle } = C.useStyleContext()
+    const { navPush, currentRoute } = C.useSnowContext()
+    const { apiClient, routes } = useAppContext()
+    const { SnowStyle } = C.useSnowContext()
 
     const [streamSource, setStreamSource] = C.React.useState(null)
     const [streamableGroups, setStreamableGroups] = C.React.useState(null)
     const [streamableItems, setStreamableItems] = C.React.useState(null)
-
-    C.useFocusLayer('streamable-list')
 
     const styles = {
         tableColumn: {
@@ -19,7 +18,7 @@ export default function StreamableListPage() {
 
     C.React.useEffect(() => {
         if (!streamSource) {
-            apiClient.getStreamSource(currentRoute.params.streamSourceId).then((response) => {
+            apiClient.getStreamSource(currentRoute.routeParams.streamSourceId).then((response) => {
                 if (response) {
                     if (response.has_groups) {
                         setStreamableGroups(response.groups)
@@ -147,5 +146,5 @@ export default function StreamableListPage() {
             )
         }
     }
-    return <C.Text>Loading stream source {currentRoute.params.streamSourceId}.</C.Text>
+    return <C.Text>Loading stream source {currentRoute.routeParams.streamSourceId}.</C.Text>
 }

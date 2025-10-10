@@ -26,8 +26,8 @@ export default function DisplayCleanupRuleEditPage() {
     })
 
     C.React.useEffect(() => {
-        if (!ruleLoaded && currentRoute.params.ruleId) {
-            apiClient.getDisplayCleanupRule(currentRoute.params.ruleId)
+        if (!ruleLoaded && currentRoute.routeParams.ruleId) {
+            apiClient.getDisplayCleanupRule(currentRoute.routeParams.ruleId)
                 .then((rule) => {
                     setRuleForm({
                         id: rule.id,
@@ -62,7 +62,7 @@ export default function DisplayCleanupRuleEditPage() {
         deleteButton = <C.SnowTextButton title={`Delete Shelf (${ruleDeleteCount})`} onPress={deleteRule} />
     }
     if (ruleDeleted) {
-        return <C.Redirect href={routes.admin.cleanupRuleList} />
+        return <C.Redirect href={routes.adminCleanupRuleList} />
     }
     return (
         <C.FillView >

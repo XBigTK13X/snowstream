@@ -1,7 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 import { C, useAppContext } from 'snowstream'
-import {
+import Snow, {
     SnowTextButton,
     SnowGrid,
     SnowBreak
@@ -21,7 +21,8 @@ const styles = {
 }
 
 function HeaderNav(props) {
-    const { displayName, routes, isAdmin, navPush } = useAppContext();
+    const { navPush } = C.useSnowContext()
+    const { displayName, routes, isAdmin } = useAppContext();
 
     React.useEffect(() => {
         props.setHeaderReady(true)
@@ -39,7 +40,7 @@ function HeaderNav(props) {
                 <SnowTextButton title="Sign Out" onPress={navPush(props.routes.signOut, true)} />
                 {isAdmin ? <SnowTextButton
                     title="Admin"
-                    onPress={navPush(routes.admin.dashboard, true)} />
+                    onPress={navPush(routes.adminDashboard, true)} />
                     : null}
                 <SnowTextButton
                     title={`${displayName}`}
@@ -66,31 +67,19 @@ function SnowHeaderNavPage(props) {
     )
 }
 
-function NoOp(props) {
-    return <>{props.children}</>
-}
-
-function CurrentAuthPage(props) {
-    const { currentRoute } = useAppContext()
-    const Page = Pages[currentRoute.route]
-    if (!Page) {
-        return <C.SnowText>Unmapped route {currentRoute.route}</C.SnowText>
-    }
-    return <Page />
-}
-
 export default function AuthPageLoader(props) {
-    const { apiClient, session, sessionLoaded, isAdmin, routes, navPush, currentRoute } = useAppContext();
+    const { apiClient, session, sessionLoaded, isAdmin, routes } = useAppContext();
+    const { CurrentPage, currentRoute, navPush } = Snow.useSnowContext()
     const [hasAuth, setHasAuth] = React.useState(false)
 
     React.useEffect(() => {
         if (!hasAuth) {
-            if (currentRoute.route.includes('/auth/') && sessionLoaded && !session) {
+            if (currentRoute.routePath.includes('/auth/') && sessionLoaded && !session) {
                 setHasAuth(true)
                 navPush(routes.signIn)
             }
 
-            if (currentRoute.route.includes('/admin/') && sessionLoaded && !isAdmin) {
+            if (currentRoute.routePath.includes('/admin/') && sessionLoaded && !isAdmin) {
                 setHasAuth(true)
                 navPush(routes.landing)
             }
@@ -101,12 +90,15 @@ export default function AuthPageLoader(props) {
         return null
     }
 
-    const hasHeader = currentRoute.route.includes('/wrap/')
-    const HeaderWrapper = hasHeader ? SnowHeaderNavPage : NoOp
-
+    const hasHeader = currentRoute.routePath.includes('/wrap/')
+    if (hasHeader) {
+        return (
+            <SnowHeaderNavPage>
+                <CurrentPage />
+            </SnowHeaderNavPage>
+        )
+    }
     return (
-        <HeaderWrapper>
-            <CurrentAuthPage />
-        </HeaderWrapper>
+        <CurrentPage />
     )
 }

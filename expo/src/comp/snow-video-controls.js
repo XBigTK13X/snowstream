@@ -18,7 +18,7 @@ import { usePlayerContext } from '../player-context'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
-    const { SnowStyle } = Snow.useStyleContext(props)
+    const { SnowStyle } = Snow.useSnowContext(props)
     const styles = {
         background: {
             backgroundColor: SnowStyle.color.transparentDark,
@@ -192,7 +192,7 @@ export default function SnowVideoControls(props) {
                     <SnowGrid short itemsPerRow={2}>
                         <SnowTextButton title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
                         <SnowTextButton title={swapTitle} onPress={() => {
-                            let newParams = { ...currentRoute.params }
+                            let newParams = { ...currentRoute.routeParams }
                             newParams.forcePlayer = 'mpv'
                             if (player.info.playerKind === 'mpv') {
                                 newParams.forcePlayer = 'exo'
@@ -201,7 +201,7 @@ export default function SnowVideoControls(props) {
                             player.action.onChangeRouteParams(newParams)
                         }} />
                         <SnowTextButton title={transcodeTitle} onPress={() => {
-                            let newParams = { ...currentRoute.params }
+                            let newParams = { ...currentRoute.routeParams }
                             newParams.transcode = !player.info.isTranscode
                             newParams.seekToSeconds = player.info.progressSeconds
                             player.action.onChangeRouteParams(newParams)

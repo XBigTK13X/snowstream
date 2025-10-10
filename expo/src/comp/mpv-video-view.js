@@ -7,7 +7,6 @@ import { useAppContext, usePlayerContext } from 'snowstream'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
-    const { SnowStyle } = Snow.useStyleContext(props)
     const { clientOptions } = useAppContext()
     const player = usePlayerContext()
 

@@ -13,10 +13,8 @@ const resolutions = [
 ]
 
 export default function OptionsPage() {
-    const { SnowStyle } = C.useStyleContext()
+    const { SnowStyle } = C.useSnowContext()
     const { apiClient, clientOptions, changeClientOptions } = useAppContext()
-
-    C.useFocusLayer('options')
 
     let storedResolutionIndex = 0
     if (clientOptions) {

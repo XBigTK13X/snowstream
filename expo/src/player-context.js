@@ -1,5 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
+import Snow from 'expo-snowui'
 import { useAppContext } from './app-context'
 import util from './util'
 
@@ -18,13 +19,15 @@ export function PlayerContextProvider(props) {
         apiClient,
         clientOptions,
         config,
-        routes,
+        routes
+    } = useAppContext()
+    const {
         setRemoteCallbacks,
         navPush,
         navPop,
         setNavigationAllowed,
         currentRoute
-    } = useAppContext()
+    } = Snow.useSnowContext()
 
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [videoTitle, setVideoTitle] = React.useState(null)
@@ -47,7 +50,7 @@ export function PlayerContextProvider(props) {
     const [countedWatch, setCountedWatch] = React.useState(false)
 
     let isTranscode = false
-    if (currentRoute.params.transcode === 'true') {
+    if (currentRoute.routeParams.transcode === 'true') {
         isTranscode = true
     }
     if (clientOptions.alwaysTranscode) {
@@ -59,7 +62,7 @@ export function PlayerContextProvider(props) {
 
     // The initial seek only happens when resuming an in progress video instead of playing from the beginning
     const [initialSeekComplete, setInitialSeekComplete] = React.useState(isTranscode)
-    const initialSeekSeconds = currentRoute.params.seekToSeconds ? Math.floor(parseFloat(currentRoute.params.seekToSeconds, 10)) : 0
+    const initialSeekSeconds = currentRoute.routeParams.seekToSeconds ? Math.floor(parseFloat(currentRoute.routeParams.seekToSeconds, 10)) : 0
 
     // progress is the amount of seconds played in the video player
     const [progressSeconds, setProgressSeconds] = React.useState(isTranscode ? 0 : null)
@@ -85,12 +88,12 @@ export function PlayerContextProvider(props) {
 
     const changeRouteParamsRef = React.useRef(null)
 
-    const forcePlayer = currentRoute.params.forcePlayer
+    const forcePlayer = currentRoute.routeParams.forcePlayer
     let forceExo = false
     if (forcePlayer === 'exo') {
         forceExo = true
     }
-    else if (currentRoute.params.videoIsHdr && forcePlayer !== 'mpv') {
+    else if (currentRoute.routeParams.videoIsHdr && forcePlayer !== 'mpv') {
         forceExo = true
     }
     else if (clientOptions.alwaysUsePlayer === 'exo') {
@@ -145,7 +148,7 @@ export function PlayerContextProvider(props) {
         setVideoLoading(false)
         setVideoUrl(null)
         setTranscodeOnResume(false)
-        props.loadTranscode(apiClient, currentRoute.params, clientOptions.deviceProfile, manualSeekSeconds)
+        props.loadTranscode(apiClient, currentRoute.routeParams, clientOptions.deviceProfile, manualSeekSeconds)
             .then(loadVideo)
     }
 
@@ -238,12 +241,12 @@ export function PlayerContextProvider(props) {
             setProgressSeconds(nextProgressSeconds)
             if (durationSeconds > 0 && progressSeconds > 0) {
                 if (props.updateProgress) {
-                    props.updateProgress(apiClient, currentRoute.params, nextProgressSeconds, durationSeconds)
+                    props.updateProgress(apiClient, currentRoute.routeParams, nextProgressSeconds, durationSeconds)
                         .then((isWatched) => {
                             if (isWatched && !countedWatch) {
                                 setCountedWatch(true)
                                 if (props.increaseWatchCount) {
-                                    return props.increaseWatchCount(apiClient, currentRoute.params)
+                                    return props.increaseWatchCount(apiClient, currentRoute.routeParams)
                                 }
                             }
                         })
@@ -352,7 +355,7 @@ export function PlayerContextProvider(props) {
     const onCriticalError = (err) => {
         if (!isTranscode) {
             setVideoLoaded(false)
-            navPush({ ...currentRoute.params, transcode: true })
+            navPush({ ...currentRoute.routeParams, transcode: true })
         }
         else {
             setPlaybackFailed(err)
@@ -477,23 +480,23 @@ export function PlayerContextProvider(props) {
         // If manualSeekSeconds is set, then a user triggered a video load by seeking during a transcode
         if (!videoLoading && !manualSeekSeconds) {
             setVideoLoading(true)
-            if (currentRoute.params.audioTrack) {
-                setAudioTrackIndex(parseInt(currentRoute.params.audioTrack), 10)
+            if (currentRoute.routeParams.audioTrack) {
+                setAudioTrackIndex(parseInt(currentRoute.routeParams.audioTrack), 10)
             }
-            if (currentRoute.params.subtitleTrack) {
-                setSubtitleTrackIndex(parseInt(currentRoute.params.subtitleTrack), 10)
+            if (currentRoute.routeParams.subtitleTrack) {
+                setSubtitleTrackIndex(parseInt(currentRoute.routeParams.subtitleTrack), 10)
             }
             if (isTranscode) {
                 if (props.loadTranscode) {
-                    onAddLog({ kind: 'snowstream', message: 'firing off a loadTranscode', routeParams: currentRoute.params })
-                    props.loadTranscode(apiClient, currentRoute.params, clientOptions.deviceProfile, initialSeekSeconds)
+                    onAddLog({ kind: 'snowstream', message: 'firing off a loadTranscode', routeParams: currentRoute.routeParams })
+                    props.loadTranscode(apiClient, currentRoute.routeParams, clientOptions.deviceProfile, initialSeekSeconds)
                         .then(loadVideo)
                 }
             }
             else {
                 if (props.loadVideo) {
-                    onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo', routeParams: currentRoute.params })
-                    props.loadVideo(apiClient, currentRoute.params, clientOptions.deviceProfile)
+                    onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo', routeParams: currentRoute.routeParams })
+                    props.loadVideo(apiClient, currentRoute.routeParams, clientOptions.deviceProfile)
                         .then(loadVideo)
                 }
             }

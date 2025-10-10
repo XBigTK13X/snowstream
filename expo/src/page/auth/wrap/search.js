@@ -1,38 +1,18 @@
 import { C, useAppContext } from 'snowstream'
 
-const styles = {
-    columns: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center'
-    },
-    column: {
-    }
-}
-
 export default function SearchPage() {
-    const { apiClient, config, routes, navPush } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const { navPush } = C.useSnowContext()
 
     const [queryText, setQueryText] = C.React.useState('')
     const [searchResults, setSearchResults] = C.React.useState(null)
     const [resultKey, setResultKey] = C.React.useState(null)
-
-    C.useFocusLayer('search')
 
     const executeQuery = () => {
         apiClient.search(queryText).then(response => {
             setSearchResults(response)
             setResultKey(`query-${queryText}`)
         })
-    }
-
-    const debouncedSearch = C.useDebouncedCallback(executeQuery, config.debounceMilliseconds)
-
-    const updateQuery = (value) => {
-        if (value !== queryText) {
-            setQueryText(value)
-            debouncedSearch(value)
-        }
     }
 
     let resultsTabs = null
@@ -79,7 +59,8 @@ export default function SearchPage() {
                 focusKey="page-entry"
                 focusDown="search-results"
                 value={queryText}
-                onValueChange={updateQuery} />
+                onValueChange={setQueryText}
+                onDebounce={executeQuery} />
             {resultsTabs}
         </C.View>
     )

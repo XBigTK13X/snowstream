@@ -3,8 +3,8 @@ import { C, useAppContext } from 'snowstream'
 export default function PlaylistDetailsPage() {
     const { apiClient, routes, currentRoute } = useAppContext()
 
-    const tagId = currentRoute.params.tagId
-    const tagName = currentRoute.params.tagName
+    const tagId = currentRoute.routeParams.tagId
+    const tagName = currentRoute.routeParams.tagName
 
     const [playlistItems, setPlaylistItems] = C.React.useState(null)
 

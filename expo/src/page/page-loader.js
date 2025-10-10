@@ -1,7 +1,8 @@
 import { View } from 'react-native'
 import Snow from 'expo-snowui'
 import { AppContextProvider, config, useAppContext } from 'snowstream'
-import { Pages } from '../pages'
+import { routes } from '../routes'
+import { pages } from '../pages'
 import AuthPageLoader from './auth/auth-page-loader'
 
 const appStyle = {
@@ -21,11 +22,11 @@ const appStyle = {
     }
 }
 
-function CurrentPage(props) {
-    const { currentRoute, routes } = useAppContext()
-    if (currentRoute.route === routes.signIn || currentRoute.route === '/') {
-        const Page = Pages[routes.signIn]
-        return <Page />
+function PageWrapper(props) {
+    const { CurrentPage, currentRoute } = Snow.useSnowContext()
+    const { routes } = useAppContext()
+    if (currentRoute.routeKey === routes.signIn || currentRoute.routeKey === '/') {
+        return <CurrentPage />
     }
     return <AuthPageLoader />
 }
@@ -34,9 +35,16 @@ export default function PageLoader() {
     return (
         // You need this outer view, or else the screen flashes white on first load
         <View style={{ flex: 1, backgroundColor: appStyle.color.background }}>
-            <Snow.App DEBUG_FOCUS={config.debugFocus} snowStyle={appStyle}>
+            <Snow.App
+                DEBUG_FOCUS={config.debugFocus}
+                DEBUG_NAVIGATION={config.debugNavigation}
+                snowStyle={appStyle}
+                routePaths={routes}
+                routePages={pages}
+                initialRoutePath={routes.signIn}
+            >
                 <AppContextProvider>
-                    <CurrentPage />
+                    <PageWrapper />
                 </AppContextProvider >
             </Snow.App >
         </View >

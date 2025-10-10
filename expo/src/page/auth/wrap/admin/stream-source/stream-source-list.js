@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function StreamSourceListPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const { navPush } = C.useSnowContext()
     const [streamSources, setStreamSources] = C.React.useState(null)
 
     C.React.useEffect(() => {
@@ -18,7 +19,7 @@ export default function StreamSourceListPage() {
             return (
                 <C.SnowTextButton
                     title={streamSource.name}
-                    onPress={navPush(routes.admin.streamSourceEdit, {
+                    onPress={navPush(routes.adminStreamSourceEdit, {
                         streamSourceId: streamSource.id,
                     }, true)}
                 />
@@ -26,7 +27,7 @@ export default function StreamSourceListPage() {
         }
         return (
             <C.View>
-                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Stream Source" onPress={navPush(routes.admin.streamSourceEdit, true)} />
+                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Stream Source" onPress={navPush(routes.adminStreamSourceEdit, true)} />
                 <C.SnowText>{streamSources.length} stream sources found</C.SnowText>
                 <C.SnowGrid focusKey='item-list' items={streamSources} renderItem={renderItem} />
             </C.View>

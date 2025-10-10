@@ -2,7 +2,7 @@ import React from 'react'
 import Video from 'react-native-video';
 import { ViewType } from 'react-native-video'
 import { Platform, View, TouchableOpacity } from 'react-native'
-import Snow, { useStyleContext } from 'expo-snowui'
+import Snow from 'expo-snowui'
 import { usePlayerContext } from 'snowstream'
 
 const isWeb = Platform.OS === 'web'
@@ -22,7 +22,7 @@ const bufferConfig = {
 // https://docs.thewidlarzgroup.com/react-native-video/component/props
 
 export default function RnvVideoView(props) {
-    const { getWindowWidth, getWindowHeight } = useStyleContext(props)
+    const { getWindowWidth, getWindowHeight } = Snow.useSnowContext(props)
     const player = usePlayerContext()
     const videoRef = React.useRef(null);
     const [userPlayed, setUserPlayed] = React.useState(false)

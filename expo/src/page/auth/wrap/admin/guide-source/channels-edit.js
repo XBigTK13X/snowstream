@@ -102,7 +102,7 @@ export default function ChannelEditPage() {
     const [filteredChannels, setFilteredChannels] = C.React.useState([])
     C.React.useEffect(() => {
         if (!guideSource) {
-            apiClient.getChannelGuideSource(currentRoute.params.guideSourceId).then((guideSource) => {
+            apiClient.getChannelGuideSource(currentRoute.routeParams.guideSourceId).then((guideSource) => {
                 setGuideSource(guideSource)
             }).then(() => {
                 apiClient.getStreamableList().then((streamableList) => {

@@ -12,6 +12,7 @@ class Config {
         this.progressMinDeltaSeconds = 5
 
         this.debugFocus = null
+        this.debugNavigation = true
         this.debugVideoPlayer = false
 
         const animeUrl = "/auth/wrap/details/episode?shelfId=2&showId=54&seasonId=112&episodeId=2377&showName=Gintama&seasonOrder=2&episodeOrder=3"

@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function ShelfListPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const { navPush } = C.useSnowContext()
     const [shelves, setShelves] = C.React.useState(null)
     C.React.useEffect(() => {
         if (!shelves) {
@@ -23,13 +24,13 @@ export default function ShelfListPage() {
             return (
                 <C.SnowTextButton
                     title={destination.name}
-                    onPress={navPush(routes.admin.shelfEdit, { shelfId: destination.id }, true)}
+                    onPress={navPush(routes.adminShelfEdit, { shelfId: destination.id }, true)}
                 />
             )
         }
         return (
             <C.View>
-                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Shelf" onPress={navPush(routes.admin.shelfEdit, true)} />
+                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Shelf" onPress={navPush(routes.adminShelfEdit, true)} />
                 {
                     destinations.length > 0 ?
                         <>

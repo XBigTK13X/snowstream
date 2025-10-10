@@ -60,45 +60,12 @@ async function urlExists(url) {
         })
 }
 
-function stateToUrl(route, state) {
-    if (!state || !Object.keys(state).length) {
-        return route
-    }
-    const params = new URLSearchParams(state).toString()
-    return `${route}?${params}`
-}
 
-function queryToObject(query) {
-    if (!query) {
-        return {}
-    }
-    const params = new URLSearchParams(query)
-    return Object.fromEntries(params.entries())
-}
-
-function toBase64(input) {
-    if (typeof input === 'object') {
-        return btoa(JSON.stringify(input))
-    }
-    return btoa(input)
-}
-
-function fromBase64(input) {
-    let result = atob(input)
-    try {
-        result = JSON.parse(result)
-    } catch (swallow) { }
-    return result
-}
 
 export default {
     formatEpisodeTitle,
     secondsToTimestamp,
     log,
     bitsToPretty,
-    urlExists,
-    queryToObject,
-    stateToUrl,
-    fromBase64,
-    toBase64
+    urlExists
 }

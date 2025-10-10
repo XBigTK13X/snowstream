@@ -7,7 +7,8 @@ function TrackList(props) {
     if (!props.tracks) {
         return null
     }
-    const { readFocusProps } = Snow.useFocusContext()
+    const { readFocusProps } = Snow.useSnowContext()
+
     let activeTrack = props.activeTrack === -1 ? null : props.tracks.filter((track) => {
         return props.isAudio ? track.audio_index === props.activeTrack : track.subtitle_index === props.activeTrack
     })[0]

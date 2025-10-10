@@ -1,7 +1,9 @@
+import Snow from 'expo-snowui'
 import { C, useAppContext } from 'snowstream'
 
 export default function UserEditPage() {
-    const { apiClient, routes, navPush, currentRoute } = useAppContext()
+    const { navPush, currentRoute } = Snow.useSnowContext()
+    const { apiClient, routes } = useAppContext()
 
     const [userId, setUserId] = C.React.useState(null)
     const [userTags, setUserTags] = C.React.useState([])
@@ -13,9 +15,9 @@ export default function UserEditPage() {
     const [streamSources, setStreamSources] = C.React.useState('')
 
     C.React.useEffect(() => {
-        if (!userId && currentRoute.params.userId) {
-            apiClient.getUser(currentRoute.params.userId).then((response) => {
-                setUserId(currentRoute.params.userId)
+        if (!userId && currentRoute.routeParams.userId) {
+            apiClient.getUser(currentRoute.routeParams.userId).then((response) => {
+                setUserId(currentRoute.routeParams.userId)
                 if (response.access_tags) {
                     setUserTags(response.access_tags.map(item => item.id))
                     setUserShelves(response.access_shelves.map(item => item.id))
@@ -199,8 +201,8 @@ export default function UserEditPage() {
     return (
         <C.View>
             <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="User Details" onPress={navPush(routes.admin.userEdit, { userId: userId }, true)} />
-                <C.SnowTextButton title="User Access" onPress={navPush(routes.admin.userAccess, { userId: userId }, true)} />
+                <C.SnowTextButton title="User Details" onPress={navPush(routes.adminUserEdit, { userId: userId }, true)} />
+                <C.SnowTextButton title="User Access" onPress={navPush(routes.adminUserAccess, { userId: userId }, true)} />
             </C.SnowGrid>
 
             {shelfPicker}

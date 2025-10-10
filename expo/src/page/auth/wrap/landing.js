@@ -1,11 +1,10 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function LandingPage(props) {
-    const { apiClient, routes, config, setMessageDisplay, navPush } = useAppContext()
-    const { SnowStyle } = C.useStyleContext(props)
+    const { apiClient, routes, config } = useAppContext()
+    const { SnowStyle, navPush } = C.useSnowContext(props)
     const [shelves, setShelves] = C.React.useState(null)
     const [streamSources, setStreamSources] = C.React.useState(null)
-    C.useFocusLayer('landing')
 
     C.React.useEffect(() => {
         if (config.debugVideoUrl) {
@@ -55,7 +54,6 @@ export default function LandingPage(props) {
                             apiClient.toggleMovieShelfWatchStatus(shelf.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
                                     setShelves(response)
-                                    setMessageDisplay(`Set shelf ${shelf.name} to ${watched ? 'watched' : 'unwatched'}.`)
                                 })
                             })
                         }}
@@ -72,7 +70,6 @@ export default function LandingPage(props) {
                             apiClient.toggleShowShelfWatchStatus(shelf.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
                                     setShelves(response)
-                                    setMessageDisplay(`Set shelf ${shelf.name} to ${watched ? 'watched' : 'unwatched'}`)
                                 })
                             })
                         }

@@ -44,7 +44,7 @@ import UserAccessPage from './page/auth/wrap/admin/user/user-access'
 import UserEditPage from './page/auth/wrap/admin/user/user-edit'
 import UserListPage from './page/auth/wrap/admin/user/user-list'
 
-export var Pages = {
+export var pages = {
     [routes.signIn]: SignInPage,
     [routes.landing]: LandingPage,
     [routes.signOut]: SignOutPage,
@@ -68,27 +68,27 @@ export var Pages = {
     [routes.streamableList]: StreamableListPage,
     [routes.streamablePlay]: StreamablePlayPage,
 
-    [routes.admin.dashboard]: DashboardPage,
-    [routes.admin.cleanupRuleEdit]: CleanupRuleEditPage,
-    [routes.admin.cleanupRuleList]: CleanupRuleListPage,
-    [routes.admin.channelsEdit]: ChannelsEditPage,
-    [routes.admin.channelGuideSourceList]: ChannelGuideSourceListPage,
-    [routes.admin.channelGuideSourceEdit]: ChannelGuideSourceEditPage,
-    [routes.admin.jobDetails]: JobDetailsPage,
-    [routes.admin.jobList]: JobListPage,
-    [routes.admin.jobRunner]: JobRunnerPage,
-    [routes.admin.logViewer]: LogViewerPage,
-    [routes.admin.sessionList]: SessionListPage,
-    [routes.admin.shelfEdit]: ShelfEditPage,
-    [routes.admin.shelfList]: ShelfListPage,
-    [routes.admin.streamablesEdit]: StreamablesEditPage,
-    [routes.admin.streamSourceEdit]: StreamSourceEditPage,
-    [routes.admin.streamSourceList]: StreamSourceListPage,
-    [routes.admin.tagEdit]: TagEditPage,
-    [routes.admin.tagList]: TagListPage,
-    [routes.admin.userAccess]: UserAccessPage,
-    [routes.admin.userEdit]: UserEditPage,
-    [routes.admin.userList]: UserListPage,
+    [routes.adminDashboard]: DashboardPage,
+    [routes.adminCleanupRuleEdit]: CleanupRuleEditPage,
+    [routes.adminCleanupRuleList]: CleanupRuleListPage,
+    [routes.adminChannelsEdit]: ChannelsEditPage,
+    [routes.adminChannelGuideSourceList]: ChannelGuideSourceListPage,
+    [routes.adminChannelGuideSourceEdit]: ChannelGuideSourceEditPage,
+    [routes.adminJobDetails]: JobDetailsPage,
+    [routes.adminJobList]: JobListPage,
+    [routes.adminJobRunner]: JobRunnerPage,
+    [routes.adminLogViewer]: LogViewerPage,
+    [routes.adminSessionList]: SessionListPage,
+    [routes.adminShelfEdit]: ShelfEditPage,
+    [routes.adminShelfList]: ShelfListPage,
+    [routes.adminStreamablesEdit]: StreamablesEditPage,
+    [routes.adminStreamSourceEdit]: StreamSourceEditPage,
+    [routes.adminStreamSourceList]: StreamSourceListPage,
+    [routes.adminTagEdit]: TagEditPage,
+    [routes.adminTagList]: TagListPage,
+    [routes.adminUserAccess]: UserAccessPage,
+    [routes.adminUserEdit]: UserEditPage,
+    [routes.adminUserList]: UserListPage,
 }
 
 

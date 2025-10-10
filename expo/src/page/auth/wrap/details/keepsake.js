@@ -88,18 +88,17 @@ function ZoomView(props) {
 }
 
 export default function KeepsakeDetailsPage(props) {
-    const { SnowStyle } = C.useStyleContext(props)
+    const { SnowStyle, navPush, currentRoute } = C.useSnowContext(props)
 
-    C.useFocusLayer('landing')
 
-    const { apiClient, routes, navPush, currentRoute } = useAppContext()
+    const { apiClient, routes } = useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
     C.React.useEffect(() => {
         apiClient.getKeepsake(
-            currentRoute.params.shelfId,
-            currentRoute.params.subdirectory64
+            currentRoute.routeParams.shelfId,
+            currentRoute.routeParams.subdirectory64
         ).then((response) => {
             setKeepsake(response)
         })
@@ -148,10 +147,10 @@ export default function KeepsakeDetailsPage(props) {
 
     if (!keepsake) {
         let subdir = ''
-        if (currentRoute.params.subdirectory) {
-            subdir = ` subdirectory [${currentRoute.params.subdirectory}]`
+        if (currentRoute.routeParams.subdirectory) {
+            subdir = ` subdirectory [${currentRoute.routeParams.subdirectory}]`
         }
-        return <C.Text>Loading keepsakes from shelf {currentRoute.params.shelfId}.</C.Text>
+        return <C.Text>Loading keepsakes from shelf {currentRoute.routeParams.shelfId}.</C.Text>
     }
 
     let videos = null
@@ -240,7 +239,7 @@ export default function KeepsakeDetailsPage(props) {
                                 title={dir.display}
                                 key={dirIndex}
                                 onPress={navPush(routes.keepsakeDetails, {
-                                    shelfId: currentRoute.params.shelfId,
+                                    shelfId: currentRoute.routeParams.shelfId,
                                     subdirectory: dir.path,
                                     subdirectory64: C.util.toBase64(dir.path),
                                     seekToSeconds: 0

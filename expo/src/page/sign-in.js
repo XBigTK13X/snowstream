@@ -3,6 +3,10 @@ import { C, useAppContext } from 'snowstream'
 // This is the default expo-router route '/'
 export default function SignInPage() {
     const {
+        navReset,
+        navPush
+    } = C.useSnowContext()
+    const {
         sessionLoaded,
         session,
         routes,
@@ -10,10 +14,9 @@ export default function SignInPage() {
         apiClient,
         signIn,
         config,
-        clientOptions,
-        navReset,
-        navPush
+        clientOptions
     } = useAppContext()
+
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
@@ -22,8 +25,6 @@ export default function SignInPage() {
     const customServerRef = C.React.useRef(customServer)
     const [password, setPassword] = C.React.useState("")
     const passwordRef = C.React.useRef(password)
-
-    C.useFocusLayer('index')
 
     C.React.useEffect(() => {
         if (!users && apiClient && clientOptions) {

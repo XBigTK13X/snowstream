@@ -5,7 +5,7 @@ export default function JobDetailsPage() {
     const [job, setJob] = C.React.useState(null)
     C.React.useEffect(() => {
         if (!job) {
-            apiClient.getJob(currentRoute.params.jobId).then((response) => {
+            apiClient.getJob(currentRoute.routeParams.jobId).then((response) => {
                 if (response && response.logs && response.logs.length) {
                     response.logs.reverse()
                 }

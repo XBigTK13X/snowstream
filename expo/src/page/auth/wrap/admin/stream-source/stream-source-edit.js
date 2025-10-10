@@ -1,7 +1,9 @@
+import Snow from 'expo-snowui'
 import { C, useAppContext } from 'snowstream'
 
 export default function StreamSourceEditPage() {
-    const { apiClient, routes, navPush, currentRoute } = useAppContext()
+    const { navPush, currentRoute } = Snow.useSnowContext()
+    const { apiClient, routes } = useAppContext()
 
     const [streamSourceName, setStreamSourceName] = C.React.useState('')
     const [streamSourceKind, setStreamSourceKind] = C.React.useState('HdHomeRun')
@@ -14,8 +16,8 @@ export default function StreamSourceEditPage() {
     const [streamSourceDeleted, setStreamSourceDeleted] = C.React.useState(false)
 
     C.React.useEffect(() => {
-        if (!streamSourceId && currentRoute.params.streamSourceId) {
-            apiClient.getStreamSource(currentRoute.params.streamSourceId).then((streamSource) => {
+        if (!streamSourceId && currentRoute.routeParams.streamSourceId) {
+            apiClient.getStreamSource(currentRoute.routeParams.streamSourceId).then((streamSource) => {
                 setStreamSourceName(streamSource.name || '')
                 setStreamSourceKind(streamSource.kind || '')
                 setStreamSourceUrl(streamSource.url || '')
@@ -58,7 +60,7 @@ export default function StreamSourceEditPage() {
         }
     }
     if (streamSourceDeleted) {
-        return <C.Redirect href={routes.admin.streamSourceList} />
+        return <C.Redirect href={routes.adminStreamSourceList} />
     }
 
     return (
@@ -66,7 +68,7 @@ export default function StreamSourceEditPage() {
             {streamSourceId ? (
                 <C.SnowTextButton
                     title="Streamables"
-                    onPress={navPush(routes.admin.streamablesEdit, { streamSourceId: currentRoute.params.streamSourceId }, true)} />
+                    onPress={navPush(routes.adminStreamablesEdit, { streamSourceId: currentRoute.routeParams.streamSourceId }, true)} />
             ) : null}
             {streamSourceId ? <C.SnowTextButton title={`Delete (${streamSourceDeleteCount})`} onPress={deleteStreamSource} /> : null}
 

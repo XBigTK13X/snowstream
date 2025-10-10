@@ -15,8 +15,8 @@ export default function ShelfEditPage() {
     const [shelfDeleted, setShelfDeleted] = C.React.useState(false)
 
     C.React.useEffect(() => {
-        if (!shelfId && currentRoute.params.shelfId) {
-            apiClient.getShelf(currentRoute.params.shelfId).then((shelf) => {
+        if (!shelfId && currentRoute.routeParams.shelfId) {
+            apiClient.getShelf(currentRoute.routeParams.shelfId).then((shelf) => {
                 setShelfId(shelf.id)
                 setShelfKind(shelf.kind)
                 setShelfKindIndex(shelf.kind == 'Movies' ? 0 : 1)
@@ -57,7 +57,7 @@ export default function ShelfEditPage() {
         deleteButton = <C.SnowTextButton title={`Delete Shelf (${shelfDeleteCount})`} onPress={deleteShelf} />
     }
     if (shelfDeleted) {
-        return <C.Redirect href={routes.admin.shelfList} />
+        return <C.Redirect href={routes.adminShelfList} />
     }
     return (
         <C.SnowGrid itemsPerRow={1} focusStart focusKey='page-entry'>

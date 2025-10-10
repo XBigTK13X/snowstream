@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function GuideSourceListPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const { navPush } = C.useSnowContext()
     const [channelGuideSources, setChannelGuideSources] = C.React.useState(null)
 
     C.React.useEffect(() => {
@@ -18,7 +19,7 @@ export default function GuideSourceListPage() {
             return (
                 <C.SnowTextButton
                     title={guideSource.name}
-                    onPress={navPush(routes.admin.channelGuideSourceEdit, {
+                    onPress={navPush(routes.adminChannelGuideSourceEdit, {
                         guideSourceId: guideSource.id,
                     }, true)}
                 />
@@ -26,7 +27,7 @@ export default function GuideSourceListPage() {
         }
         return (
             <C.View>
-                <C.SnowTextButton title="Create New Channel Guide Source" onPress={navPush(routes.admin.channelGuideSourceEdit, true)} />
+                <C.SnowTextButton title="Create New Channel Guide Source" onPress={navPush(routes.adminChannelGuideSourceEdit, true)} />
                 <C.SnowText>{channelGuideSources.length} stream sources found</C.SnowText>
                 <C.SnowGrid items={channelGuideSources} renderItem={renderItem} />
             </C.View>

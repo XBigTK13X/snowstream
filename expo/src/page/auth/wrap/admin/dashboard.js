@@ -1,25 +1,25 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function AdminDashboardPage() {
-    const { routes, navPush } = useAppContext();
-    C.useFocusLayer('admin-dashboard')
+    const { routes } = useAppContext();
+    const { navPush } = C.useSnowContext()
 
     const renderItem = (item) => {
         return <C.SnowTextButton title={item.title} onPress={navPush(item.route, true)} />
     }
     const actionButtons = [
-        { title: 'Run Job', route: routes.admin.jobRunner },
-        { title: 'Job List', route: routes.admin.jobList },
-        { title: 'Logs', route: routes.admin.logViewer },
-        { title: 'Sessions', route: routes.admin.sessionList },
+        { title: 'Run Job', route: routes.adminJobRunner },
+        { title: 'Job List', route: routes.adminJobList },
+        { title: 'Logs', route: routes.adminLogViewer },
+        { title: 'Sessions', route: routes.adminSessionList },
     ]
     const dataButtons = [
-        { title: 'Shelves', route: routes.admin.shelfList },
-        { title: 'Stream Sources', route: routes.admin.streamSourceList },
-        { title: 'Channel Guides', route: routes.admin.channelGuideSourceList },
-        { title: 'Users', route: routes.admin.userList },
-        { title: 'Tags', route: routes.admin.tagList },
-        { title: 'Cleanup Rules', route: routes.admin.cleanupRuleList },
+        { title: 'Shelves', route: routes.adminShelfList },
+        { title: 'Stream Sources', route: routes.adminStreamSourceList },
+        { title: 'Channel Guides', route: routes.adminChannelGuideSourceList },
+        { title: 'Users', route: routes.adminUserList },
+        { title: 'Tags', route: routes.adminTagList },
+        { title: 'Cleanup Rules', route: routes.adminCleanupRuleList },
     ]
     return (
         <C.View>

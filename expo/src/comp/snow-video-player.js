@@ -13,7 +13,7 @@ import { usePlayerContext } from '../player-context'
 import { useAppContext } from '../app-context'
 
 export default function SnowVideoPlayer(props) {
-    const { SnowStyle, getWindowHeight, getWindowWidth } = Snow.useStyleContext(props)
+    const { SnowStyle, getWindowHeight, getWindowWidth } = Snow.useSnowContext(props)
     const player = usePlayerContext()
     if (!player) {
         return null

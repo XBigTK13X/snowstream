@@ -9,8 +9,8 @@ export default function TagEditPage() {
     const [tagDeleted, setTagDeleted] = C.React.useState(false)
 
     C.React.useEffect(() => {
-        if (!tagId && currentRoute.params.tagId) {
-            apiClient.getTag(currentRoute.params.tagId).then((tag) => {
+        if (!tagId && currentRoute.routeParams.tagId) {
+            apiClient.getTag(currentRoute.routeParams.tagId).then((tag) => {
                 setTagId(tag.id)
                 setTagName(tag.name)
             })
@@ -40,7 +40,7 @@ export default function TagEditPage() {
         deleteButton = <C.SnowTextButton title={`Delete Tag (${tagDeleteCount})`} onPress={deleteTag} />
     }
     if (tagDeleted) {
-        return <C.Redirect href={routes.admin.tagList} />
+        return <C.Redirect href={routes.adminTagList} />
     }
     return (
         <C.View>

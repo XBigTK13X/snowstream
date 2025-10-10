@@ -10,13 +10,12 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
+    const { navPush, currentRoute } = C.useSnowContext()
     const {
         apiClient,
         clientOptions,
         isAdmin,
         routes,
-        navPush,
-        currentRoute
     } = useAppContext();
 
     const [media, setMedia] = C.React.useState(null);
@@ -28,13 +27,13 @@ export default function MediaTracksPage(props) {
     const [showModal, setShowModal] = C.React.useState(false)
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
 
-    C.useFocusLayer('media-tracks')
+    console.log({ currentRoute })
 
-    const shelfId = currentRoute.params.shelfId;
+    const shelfId = currentRoute.routeParams.shelfId;
 
     C.React.useEffect(() => {
         if (!media) {
-            props.loadMedia(apiClient, currentRoute.params, clientOptions.deviceProfile).then((response) => {
+            props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
                 setMedia(response)
                 let plan = response.video_files[videoFileIndex].plan
                 if (plan) {
@@ -57,9 +56,9 @@ export default function MediaTracksPage(props) {
         }
     }, [media])
     const setWatchStatus = (status) => {
-        return props.toggleWatchStatus(apiClient, currentRoute.params)
+        return props.toggleWatchStatus(apiClient, currentRoute.routeParams)
             .then(() => {
-                return props.loadMedia(apiClient, currentRoute.params, clientOptions.deviceProfile)
+                return props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile)
             })
             .then((response) => {
                 setMedia(response)
@@ -235,7 +234,7 @@ export default function MediaTracksPage(props) {
         else if (props.getRemoteMetadataId) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
-        const mediaDestination = props.getPlayParameters(currentRoute.params)
+        const mediaDestination = props.getPlayParameters(currentRoute.routeParams)
         let combinedPlayDestination = { ...playDestination, ...mediaDestination, transcode: shouldTranscode }
         if (forcePlayer !== null) {
             combinedPlayDestination = { ...combinedPlayDestination, forcePlayer: player }
@@ -276,8 +275,8 @@ export default function MediaTracksPage(props) {
             <C.SnowView>
                 <C.SnowGrid focusDown="player" itemsPerRow={4}>
                     {mainFeatureButton}
-                    <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, navPush, currentRoute.params)} />
-                    {props.getNavButtons ? props.getNavButtons(routes, navPush, currentRoute.params).map((button) => { return button }) : null}
+                    <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, navPush, currentRoute.routeParams)} />
+                    {props.getNavButtons ? props.getNavButtons(routes, navPush, currentRoute.routeParams).map((button) => { return button }) : null}
                 </C.SnowGrid>
                 <C.SnowGrid focusKey="player" itemsPerRow={4}>
                     <C.SnowTextButton tall title={watchTitle} onLongPress={setWatchStatus} />
@@ -334,7 +333,7 @@ export default function MediaTracksPage(props) {
                 <C.SnowTarget focusKey="inspection-middle" focusDown="inspection-bottom" />
                 <C.SnowText >Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowGrid assignFocus={false} itemsPerRow={3}>
-                    <C.SnowText >Params: {JSON.stringify(currentRoute.params, null, 4)}</C.SnowText>
+                    <C.SnowText >Params: {JSON.stringify(currentRoute.routeParams, null, 4)}</C.SnowText>
                     <C.SnowText >Plan: {JSON.stringify(videoFile.plan, null, 4)}</C.SnowText>
                     <C.SnowText >Options: {JSON.stringify(clientOptions, null, 4)}</C.SnowText>
                 </C.SnowGrid>
@@ -351,7 +350,7 @@ export default function MediaTracksPage(props) {
                             title={`Rescan ${props.mediaKind}`}
                             tall
                             onPress={() => {
-                                const scanDetails = props.getScanDetails(currentRoute.params)
+                                const scanDetails = props.getScanDetails(currentRoute.routeParams)
                                 return apiClient.createJobShelvesScan(scanDetails).then(() => {
                                     let readDetails = { ...scanDetails, ...{ updateVideos: true, updateMetadata: true } }
                                     return apiClient.createJobReadMediaFiles(readDetails)
@@ -362,7 +361,7 @@ export default function MediaTracksPage(props) {
                             remoteId={remoteMetadataId}
                             kind={props.mediaKind}
                             updateMediaJob={(promptDetails) => {
-                                const mediaDetails = props.getUpdateMediaJobDetails(currentRoute.params)
+                                const mediaDetails = props.getUpdateMediaJobDetails(currentRoute.routeParams)
                                 return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
                             }} />
                     </C.SnowGrid>
@@ -373,7 +372,7 @@ export default function MediaTracksPage(props) {
             <C.SnowView>
                 <C.SnowView>
                     <C.SnowLabel center>
-                        {props.getMediaName ? props.getMediaName(currentRoute.params, media) : media.name}
+                        {props.getMediaName ? props.getMediaName(currentRoute.routeParams, media) : media.name}
                     </C.SnowLabel>
                     <C.SnowGrid
                         focusStart
@@ -401,7 +400,7 @@ export default function MediaTracksPage(props) {
     }
     return (
         <C.SnowText>
-            Loading {props.mediaKind} {currentRoute.params.movieId ? currentRoute.params.movieId : currentRoute.params.episodeId}.
+            Loading {props.mediaKind} {currentRoute.routeParams.movieId ? currentRoute.routeParams.movieId : currentRoute.routeParams.episodeId}.
         </C.SnowText>
     );
 }

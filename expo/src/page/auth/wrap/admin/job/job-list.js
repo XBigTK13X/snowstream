@@ -1,11 +1,10 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function JobListPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const { navPush } = C.useSnowContext()
     const [jobs, setJobs] = C.React.useState(null)
     const [showComplete, setShowComplete] = C.React.useState(true)
-
-    C.useFocusLayer('job-list')
 
     C.React.useEffect(() => {
         if (!jobs) {
@@ -34,7 +33,7 @@ export default function JobListPage() {
                     return (
                         <C.SnowTextButton
                             title={title}
-                            onPress={navPush(routes.admin.jobDetails, { jobId: job.id }, true)}
+                            onPress={navPush(routes.adminJobDetails, { jobId: job.id }, true)}
                         />
                     )
                 }} />

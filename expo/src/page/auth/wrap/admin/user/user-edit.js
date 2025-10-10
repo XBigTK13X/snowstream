@@ -1,7 +1,9 @@
+import Snow from 'expo-snowui'
 import { C, useAppContext } from 'snowstream'
 
 export default function UserEditPage() {
-    const { apiClient, routes, navPush, currentRoute } = useAppContext()
+    const { navPush, currentRoute } = Snow.useSnowContext()
+    const { apiClient, routes } = useAppContext()
 
     const [userId, setUserId] = C.React.useState(null)
     const [userDisplayName, setUserDisplayName] = C.React.useState('')
@@ -14,8 +16,8 @@ export default function UserEditPage() {
     const [userHasPassword, setUserHasPassword] = C.React.useState(false)
 
     C.React.useEffect(() => {
-        if (userId == null && currentRoute.params.userId) {
-            apiClient.getUser(currentRoute.params.userId).then((user) => {
+        if (userId == null && currentRoute.routeParams.userId) {
+            apiClient.getUser(currentRoute.routeParams.userId).then((user) => {
                 if (user) {
                     setUserId(user.id)
                     setUserEnabled(user.enabled || true)
@@ -63,15 +65,15 @@ export default function UserEditPage() {
         deleteButton = <C.SnowTextButton title={`Delete User (${userDeleteCount})`} onPress={deleteUser} />
     }
     if (userDeleted) {
-        return <C.Redirect href={routes.admin.userList} />
+        return <C.Redirect href={routes.adminUserList} />
     }
 
     let existingUserControls = null
     if (userId) {
         existingUserControls = (
             <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="User Details" onPress={navPush(routes.admin.userEdit, { userId: userId }, true)} />
-                <C.SnowTextButton title="User Access" onPress={navPush(routes.admin.userAccess, { userId: userId }, true)} />
+                <C.SnowTextButton title="User Details" onPress={navPush(routes.adminUserEdit, { userId: userId }, true)} />
+                <C.SnowTextButton title="User Access" onPress={navPush(routes.adminUserAccess, { userId: userId }, true)} />
             </C.SnowGrid>
         )
     }

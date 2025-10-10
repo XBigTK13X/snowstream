@@ -4,9 +4,9 @@ import { WatchableListPage } from './watchable-list'
 
 export default function EpisodeListPage() {
     const { currentRoute } = useAppContext()
-    const showName = currentRoute.params.showName
-    const seasonId = currentRoute.params.seasonId
-    const seasonOrder = currentRoute.params.seasonOrder
+    const showName = currentRoute.routeParams.showName
+    const seasonId = currentRoute.routeParams.seasonId
+    const seasonOrder = currentRoute.routeParams.seasonOrder
     const getPageTitle = (shelf, items) => {
         return `Found ${items.length} episodes for ${showName} season ${seasonOrder}`
     }

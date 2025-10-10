@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function UserListPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const { navPush } = C.useSnowContext()
     const [users, setUsers] = C.React.useState(null)
 
     C.React.useEffect(() => {
@@ -17,14 +18,14 @@ export default function UserListPage() {
             return (
                 <C.SnowTextButton
                     title={user.username || user.display_name}
-                    onPress={navPush(routes.admin.userEdit, { userId: user.id }, true)}
+                    onPress={navPush(routes.adminUserEdit, { userId: user.id }, true)}
                 />
             )
 
         }
         return (
             <C.View>
-                <C.SnowTextButton title="Create New User" onPress={navPush(routes.admin.userEdit, true)} />
+                <C.SnowTextButton title="Create New User" onPress={navPush(routes.adminUserEdit, true)} />
                 <C.SnowText>{users.length} users found</C.SnowText>
                 <C.SnowGrid items={users} renderItem={renderItem} />
             </C.View>

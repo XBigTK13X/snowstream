@@ -4,8 +4,7 @@ import { useAppContext } from '../app-context'
 
 export function SnowScreencapGridW(props) {
     const { apiClient, navToItem } = useAppContext()
-    const { SnowStyle } = Snow.useStyleContext(props)
-    const { readFocusProps } = Snow.useFocusContext()
+    const { SnowStyle, readFocusProps } = Snow.useSnowContext(props)
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null

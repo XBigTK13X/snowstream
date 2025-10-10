@@ -1,22 +1,21 @@
 import { C, useAppContext } from 'snowstream'
 
 export function WatchableListPage(props) {
-    const { isAdmin, apiClient, routes, setMessageDisplay, navPush, currentRoute } = useAppContext()
+    const { navPush, currentRoute } = C.useSnowContext()
+    const { isAdmin, apiClient, routes, } = useAppContext()
 
     const [shelf, setShelf] = C.React.useState(null)
     const [items, setItems] = C.React.useState(null)
 
-    const shelfId = currentRoute.params.shelfId
+    const shelfId = currentRoute.routeParams.shelfId
     const [showPlaylisted, setShowPlaylisted] = C.React.useState(
-        currentRoute.params.showPlaylisted ? currentRoute.params.showPlaylisted === 'true' : false
+        currentRoute.routeParams.showPlaylisted ? currentRoute.routeParams.showPlaylisted === 'true' : false
     )
     const [togglePlaylistedEnabled, setTogglePlaylistedEnabled] = C.React.useState(true)
 
-    C.useFocusLayer('watchable-list')
-
     C.React.useEffect(() => {
         if (!shelf) {
-            apiClient.getShelf(currentRoute.params.shelfId).then((response) => {
+            apiClient.getShelf(currentRoute.routeParams.shelfId).then((response) => {
                 setShelf(response)
             })
             props.loadItems(apiClient, shelfId, showPlaylisted)
@@ -31,15 +30,6 @@ export function WatchableListPage(props) {
                                     setItems(response)
                                 })
                         }
-                        else {
-                            setMessageDisplay(`Found no items to display.`)
-                        }
-                    }
-                    if (response.length == 1) {
-                        setMessageDisplay(`Found ${response.length} item to display.`)
-                    }
-                    if (response.length > 1) {
-                        setMessageDisplay(`Found ${response.length} items to display.`)
                     }
                 })
         }
@@ -125,7 +115,7 @@ export function WatchableListPage(props) {
             </C.View>
         )
     }
-    return <C.SnowText>Loading items from shelf {currentRoute.params.shelfId}.</C.SnowText>
+    return <C.SnowText>Loading items from shelf {currentRoute.routeParams.shelfId}.</C.SnowText>
 }
 
 export default WatchableListPage

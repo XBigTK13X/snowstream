@@ -1,22 +1,23 @@
+import Snow from 'expo-snowui'
 import { C, useAppContext } from 'snowstream'
 
 export default function ShelfEditPage() {
-    const { apiClient, routes, navPush, currentRoute } = useAppContext()
-    C.useFocusLayer('job-runner')
+    const { navPush, currentRoute } = Snow.useSnowContext()
+    const { apiClient, routes } = useAppContext()
 
     const [form, setForm] = C.React.useState({
-        episodeOrder: currentRoute.params.episodeOrder ?? '',
-        extractOnly: currentRoute.params.extractOnly ?? '',
-        metadataId: currentRoute.params.metadataId ?? '',
-        metadataSource: currentRoute.params.metadataSource ?? '',
-        seasonOrder: currentRoute.params.seasonOrder ?? '',
-        skipExisting: currentRoute.params.skipExisting ?? '',
-        targetDirectory: currentRoute.params.targetDirectory ?? '',
-        targetId: currentRoute.params.targetId ?? '',
-        targetKind: currentRoute.params.targetKind ?? '',
-        updateImages: currentRoute.params.updateImages ?? '',
-        updateMetadata: currentRoute.params.updateMetadata ?? '',
-        updateVideos: currentRoute.params.updateVideos ?? '',
+        episodeOrder: currentRoute.routeParams.episodeOrder ?? '',
+        extractOnly: currentRoute.routeParams.extractOnly ?? '',
+        metadataId: currentRoute.routeParams.metadataId ?? '',
+        metadataSource: currentRoute.routeParams.metadataSource ?? '',
+        seasonOrder: currentRoute.routeParams.seasonOrder ?? '',
+        skipExisting: currentRoute.routeParams.skipExisting ?? '',
+        targetDirectory: currentRoute.routeParams.targetDirectory ?? '',
+        targetId: currentRoute.routeParams.targetId ?? '',
+        targetKind: currentRoute.routeParams.targetKind ?? '',
+        updateImages: currentRoute.routeParams.updateImages ?? '',
+        updateMetadata: currentRoute.routeParams.updateMetadata ?? '',
+        updateVideos: currentRoute.routeParams.updateVideos ?? '',
     })
     const formRef = C.React.useRef(form)
 
@@ -101,7 +102,7 @@ export default function ShelfEditPage() {
             onPress={() => {
                 createJob(item.apiCall).then(job => {
                     if (item.name !== 'Delete Cached Text') {
-                        navPush(routes.admin.jobDetails, {
+                        navPush(routes.adminJobDetails, {
                             jobId: job.id
                         })
                     }

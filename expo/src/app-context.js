@@ -1,57 +1,12 @@
 import React from 'react';
 import Snow from 'expo-snowui'
-import { Platform, useTVEventHandler, View, BackHandler } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { Platform, useTVEventHandler, View } from 'react-native';
 import uuid from 'react-native-uuid';
 
 import util from './util'
 import { config } from './settings'
 import { routes } from './routes'
 import { ApiClient } from './api-client'
-
-const setStoredValue = (key, value) => {
-    return new Promise(resolve => {
-        if (Platform.OS === 'web') {
-            if (value === null) {
-                localStorage.removeItem(key);
-                return resolve(true)
-            } else {
-                localStorage.setItem(key, value);
-                return resolve(true)
-            }
-        } else {
-            if (value == null) {
-                SecureStore.deleteItemAsync(key);
-                return resolve(true)
-            } else {
-                if (value === false) {
-                    value = 'false'
-                }
-                if (value === true) {
-                    value = 'true'
-                }
-                SecureStore.setItem(key, value);
-                return resolve(true)
-            }
-        }
-    })
-}
-
-const getStoredValue = (key) => {
-    let value = null
-    if (Platform.OS === 'web') {
-        value = localStorage.getItem(key)
-    } else {
-        value = SecureStore.getItem(key)
-    }
-    if (value === 'true') {
-        return true
-    }
-    if (value === 'false') {
-        return false
-    }
-    return value
-}
 
 const AppContext = React.createContext({});
 
@@ -64,96 +19,16 @@ export function useAppContext() {
 }
 
 export function AppContextProvider(props) {
-    const { SnowStyle } = Snow.useStyleContext(props)
+    const { SnowStyle, navPush } = Snow.useSnowContext(props)
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
     const [apiClientKey, setApiClientKey] = React.useState(1)
-    const [message, setMessage] = React.useState("All is well")
     const [session, setSession] = React.useState(null)
     const [sessionLoaded, setSessionLoaded] = React.useState(false)
     const [isAdmin, setIsAdmin] = React.useState(false)
     const [displayName, setDisplayName] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [clientOptions, setClientOptions] = React.useState(null)
-    const [remoteCallbacks, setRemoteCallbacks] = React.useState({})
-    const remoteCallbacksRef = React.useRef(remoteCallbacks)
-
-    let initialPath = routes.landing
-    let initialParams = {}
-    if (Platform.OS === 'web') {
-        initialPath = window.location.pathname;
-        initialParams = util.queryToObject(window.location.search)
-    }
-
-    const [navigationHistory, setNavigationHistory] = React.useState([{ route: initialPath, params: initialParams }])
-    const navigationHistoryRef = React.useRef(navigationHistory)
-    const [navigationAllowed, setNavigationAllowed] = React.useState(true)
-    const navigationAllowedRef = React.useRef(navigationAllowed)
-
-    const navPush = (route, routeParams, isFunc) => {
-        let foundParams = {}
-        if (typeof route === 'object') {
-            foundParams = { ...route }
-            route = navigationHistoryRef.current.at(-1).route
-        }
-        if (routeParams === true) {
-            isFunc = true
-            foundParams = {}
-        }
-        if (!routeParams) {
-            foundParams = {}
-        }
-        if (typeof routeParams === 'object') {
-            foundParams = { ...routeParams }
-        }
-        const func = () => {
-            setNavigationHistory((prev) => {
-                let result = [...prev]
-                if (result.at(-1).route === route) {
-                    result.at(-1).params = foundParams
-                    if (Platform.OS === 'web') {
-                        window.history.replaceState(foundParams, '', util.stateToUrl(route, foundParams))
-                    }
-                } else {
-                    result.push({ route, params: foundParams })
-                    if (Platform.OS === 'web') {
-                        window.history.pushState(foundParams, '', util.stateToUrl(route, foundParams))
-                    }
-                }
-                return result
-            })
-        }
-        if (isFunc) {
-            return func
-        }
-        return func()
-    }
-
-    const navPop = (isFunc) => {
-        const func = () => {
-            setNavigationHistory((prev) => {
-                let result = [...prev]
-                if (result.length > 1) {
-                    result.pop()
-                }
-                return result
-            })
-        }
-        if (isFunc) {
-            return func
-        }
-        return func()
-    }
-
-    const navReset = (isFunc) => {
-        const func = () => {
-            setNavigationHistory([{ route: routes.signIn, params: {} }])
-        }
-        if (isFunc) {
-            return func
-        }
-        return func()
-    }
 
     const navToItem = (arg) => {
         let isFunc = true
@@ -216,75 +91,16 @@ export function AppContextProvider(props) {
         return func()
     }
 
-    React.useEffect(() => {
-        navigationHistoryRef.current = navigationHistory
-    }, [navigationHistory])
 
-    React.useEffect(() => {
-        navigationAllowedRef.current = navigationAllowed
-    }, [navigationAllowed])
-
-    // When a modal is shown, prevent default event handlers from exiting the app
-    React.useEffect(() => {
-        const onBackPress = () => {
-            console.log("Back handler")
-            if (!navigationAllowedRef.current) {
-                return true
-            }
-            if (navigationHistoryRef.current.length > 1) {
-                navPop();
-                return true;
-            }
-            return false;
-        };
-
-        const backListener = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-        return () => {
-            backListener.remove()
-        }
-    }, []);
-
-    if (Platform.isTV) {
-        useTVEventHandler(remoteEvent => {
-            if (remoteEvent.eventType === 'menu' || remoteEvent.eventType === 'back') {
-                if (!navigationAllowedRef.current) {
-                    BackHandler.exitApp = () => {
-
-                    }
-                }
-            }
-        })
-    }
-
-    if (Platform.OS === 'web') {
-        React.useEffect(() => {
-            const onPopState = (e) => {
-                if (!navigationAllowedRef.current) {
-                    return
-                }
-                if (navigationHistoryRef.current.length > 1) {
-                    navPop()
-                } else {
-                    // This prevents back from leaving the app
-                    window.history.pushState(null, '', window.location.pathname + window.location.search)
-                }
-            }
-
-            window.addEventListener('popstate', onPopState)
-            window.history.pushState(null, '', window.location.pathname + window.location.search)
-
-            return () => window.removeEventListener('popstate', onPopState)
-        }, [])
-    }
 
     React.useEffect(() => {
         if (!apiClient) {
-            const storedSession = getStoredValue('session')
+            const storedSession = Snow.loadData('session')
             setSession(storedSession)
-            const storedAdmin = getStoredValue('isAdmin')
+            const storedAdmin = Snow.loadData('isAdmin')
             setIsAdmin(storedAdmin)
-            setDisplayName(getStoredValue('displayName'))
-            const storedWebApiUrl = getStoredValue('webApiUrl')
+            setDisplayName(Snow.loadData('displayName'))
+            const storedWebApiUrl = Snow.loadData('webApiUrl')
             setIsLoading(false)
             if (storedWebApiUrl) {
                 setApiClient(new ApiClient({
@@ -298,11 +114,11 @@ export function AppContextProvider(props) {
             }
             setSessionLoaded(true)
         }
-    })
+    }, [apiClient, sessionLoaded])
 
     React.useEffect(() => {
         if (!clientOptions) {
-            let storedOptions = getStoredValue('clientOptions')
+            let storedOptions = Snow.loadData('clientOptions')
             if (storedOptions) {
                 storedOptions = JSON.parse(storedOptions)
             }
@@ -339,30 +155,7 @@ export function AppContextProvider(props) {
             }
             setClientOptions(storedOptions)
         }
-    })
-
-    if (Platform.isTV) {
-        const remoteHandler = (remoteEvent) => {
-            if (config.debugFocus) {
-                util.log({ remoteEvent })
-            }
-            const callbacks = remoteCallbacksRef.current
-            for (const [key, callback] of Object.entries(callbacks)) {
-                if (callback == null) {
-                    continue
-                }
-                // action 0  = start, action 1 = end for longpresses
-                const kind = remoteEvent.eventType
-                const action = remoteEvent.eventKeyAction
-                callback(kind, action)
-            }
-        }
-        useTVEventHandler(remoteHandler);
-    }
-
-    React.useEffect(() => {
-        remoteCallbacksRef.current = remoteCallbacks
-    }, [remoteCallbacks])
+    }, [clientOptions])
 
     const onApiError = (err) => {
         if (!apiError) {
@@ -371,7 +164,7 @@ export function AppContextProvider(props) {
     }
 
     const setWebApiUrl = (webApiUrl) => {
-        return setStoredValue('webApiUrl', webApiUrl)
+        return Snow.saveData('webApiUrl', webApiUrl)
             .then(() => {
                 setApiClient(null)
                 setApiClientKey((prev) => { return prev + 1 })
@@ -396,11 +189,11 @@ export function AppContextProvider(props) {
                         setDisplayName(loginResponse.displayName)
                         setSession(loginResponse.authToken)
                         setIsAdmin(loginResponse.isAdmin)
-                        setStoredValue('displayName', loginResponse.displayName)
+                        Snow.saveData('displayName', loginResponse.displayName)
                             .then(() => {
-                                return setStoredValue('session', loginResponse.authToken);
+                                return Snow.saveData('session', loginResponse.authToken);
                             }).then(() => {
-                                return setStoredValue('isAdmin', loginResponse.isAdmin)
+                                return Snow.saveData('isAdmin', loginResponse.isAdmin)
                             }).then(() => {
                                 return resolve({ token: loginResponse.authToken })
                             })
@@ -419,15 +212,15 @@ export function AppContextProvider(props) {
         setDisplayName(null)
         setIsAdmin(false)
         setClientOptions(null)
-        return setStoredValue('session', null)
+        return Snow.saveData('session', null)
             .then(() => {
-                return setStoredValue('displayName', null)
+                return Snow.saveData('displayName', null)
             }).then(() => {
-                return setStoredValue('isAdmin', null)
+                return Snow.saveData('isAdmin', null)
             }).then(() => {
                 return new Promise(resolve => {
                     if (removeApiUrl) {
-                        return setStoredValue('webApiUrl', null).then(() => {
+                        return Snow.saveData('webApiUrl', null).then(() => {
                             setApiClient(null)
                             return resolve()
                         })
@@ -449,7 +242,7 @@ export function AppContextProvider(props) {
         if (options) {
             stored = JSON.stringify(options)
         }
-        setStoredValue('clientOptions', stored)
+        Snow.saveData('clientOptions', stored)
         setClientOptions(options)
         if (shouldLogout) {
             logout();
@@ -471,8 +264,6 @@ export function AppContextProvider(props) {
         )
     }
 
-    const currentRoute = { ...navigationHistory.at(-1) }
-
     const appContext = {
         config,
         routes,
@@ -482,21 +273,12 @@ export function AppContextProvider(props) {
         apiClient,
         isAdmin,
         displayName,
-        message,
-        setMessageDisplay: setMessage,
         signIn: login,
         signOut: logout,
-        setRemoteCallbacks,
         setWebApiUrl,
         clientOptions,
         changeClientOptions,
-        navPush,
-        navPop,
-        navReset,
-        navToItem,
-        navigationHistory,
-        setNavigationAllowed,
-        currentRoute
+        navToItem
     }
 
     return (

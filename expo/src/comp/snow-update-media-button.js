@@ -12,7 +12,7 @@ import {
     SnowToggle,
     SnowHeader,
     SnowTextButton,
-    useFocusContext
+    useSnowContext
 } from 'expo-snowui'
 
 function SnowUpdateMediaButtonW(props) {
@@ -37,7 +37,7 @@ function SnowUpdateMediaButtonW(props) {
         }
     }
 
-    const { readFocusProps } = useFocusContext()
+    const { readFocusProps } = useSnowContext()
 
     const onCancel = () => {
         setShowRequest(false)

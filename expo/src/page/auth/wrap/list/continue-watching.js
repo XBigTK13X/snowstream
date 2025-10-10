@@ -4,7 +4,6 @@ export function ContinueWatchingListPage(props) {
     const { apiClient } = useAppContext()
     const [continueWatchingList, setContinueWatchingList] = C.React.useState(null)
     const [resultsEmpty, setResultsEmpty] = C.React.useState(false)
-    C.useFocusLayer('continue-watching')
 
     C.React.useEffect(() => {
         if (!continueWatchingList) {

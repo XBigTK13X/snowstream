@@ -1,3 +1,4 @@
+import Snow from 'expo-snowui'
 import { C, useAppContext } from 'snowstream'
 
 function ChannelEditRow() {
@@ -10,7 +11,8 @@ const guideSourceKinds = [
 ]
 
 export default function EpisodeGuideEditPage() {
-    const { apiClient, routes, navPush, currentRoute } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const { navPush, currentRoute } = Snow.useSnowContext()
     const [guideSource, setGuideSource] = C.React.useState(null)
     const [kindIndex, setKindIndex] = C.React.useState(0)
     const [form, setForm] = C.React.useState({
@@ -25,8 +27,8 @@ export default function EpisodeGuideEditPage() {
     const [deleted, setDeleted] = C.React.useState(false)
 
     C.React.useEffect(() => {
-        if (!guideSource && currentRoute.params.guideSourceId) {
-            apiClient.getChannelGuideSource(currentRoute.params.guideSourceId).then((guideSource) => {
+        if (!guideSource && currentRoute.routeParams.guideSourceId) {
+            apiClient.getChannelGuideSource(currentRoute.routeParams.guideSourceId).then((guideSource) => {
                 setGuideSource(guideSource)
                 setForm({
                     id: guideSource.id,
@@ -71,16 +73,16 @@ export default function EpisodeGuideEditPage() {
     }
 
     let existingButtons = null
-    if (currentRoute.params.guideSourceId) {
+    if (currentRoute.routeParams.guideSourceId) {
         existingButtons = (
             <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="Channels" onPress={navPush(routes.admin.channelsEdit, { guideSourceId: currentRoute.params.guideSourceId }, true)} />
+                <C.SnowTextButton title="Channels" onPress={navPush(routes.adminChannelsEdit, { guideSourceId: currentRoute.routeParams.guideSourceId }, true)} />
                 <C.SnowTextButton title={`Delete (${deleteCount})`} onPress={deleteGuideSource} />
             </C.SnowGrid>
         )
     }
     if (deleted) {
-        return <C.Redirect href={routes.admin.channelGuideSourceList} />
+        return <C.Redirect href={routes.adminChannelGuideSourceList} />
     }
 
     if (!form) {

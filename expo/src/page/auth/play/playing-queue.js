@@ -41,7 +41,7 @@ export default function PlayPlayingQueuePage() {
         })
     }
 
-    const onComplete = (apiClient, routes) => {
+    const onComplete = (apiClient, routes, navPush) => {
         return apiClient.updatePlayingQueue(playingQueue.source, playingQueue.progress + 1)
             .then(() => {
                 navPush({ playingQueueSource: playingQueue.source })

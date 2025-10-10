@@ -6,8 +6,7 @@ import { useAppContext } from '../app-context'
 
 function SnowPosterGridW(props) {
     const { navToItem, apiClient } = useAppContext()
-    const { SnowStyle } = Snow.useStyleContext(props)
-    const { readFocusProps } = Snow.useFocusContext()
+    const { SnowStyle, readFocusProps } = Snow.useSnowContext(props)
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null

@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function DisplayCleanupRuleListPage() {
-    const { apiClient, routes, navPush } = useAppContext()
+    const { apiClient, routes } = useAppContext()
+    const { navPush } = C.useSnowContext()
     const [rules, setRules] = C.React.useState(null)
 
     C.React.useEffect(() => {
@@ -21,7 +22,7 @@ export default function DisplayCleanupRuleListPage() {
                     return (
                         <C.SnowTextButton
                             title={title}
-                            onPress={navPush(routes.admin.cleanupRuleEdit, { ruleId: rule.id }, true)}
+                            onPress={navPush(routes.adminCleanupRuleEdit, { ruleId: rule.id }, true)}
                         />
                     )
                 }} />
@@ -29,7 +30,7 @@ export default function DisplayCleanupRuleListPage() {
         }
         return (
             <C.View>
-                <C.SnowTextButton title="Create New Rule" onPress={navPush(routes.admin.cleanupRuleEdit, true)} />
+                <C.SnowTextButton title="Create New Rule" onPress={navPush(routes.adminCleanupRuleEdit, true)} />
                 {rulesList}
             </C.View>
         )
