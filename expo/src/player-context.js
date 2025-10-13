@@ -26,7 +26,6 @@ export function PlayerContextProvider(props) {
         removeActionListener,
         navPush,
         navPop,
-        setNavigationAllowed,
         currentRoute
     } = Snow.useSnowContext()
 
@@ -524,13 +523,6 @@ export function PlayerContextProvider(props) {
             }
         }
     }, [currentRoute, manualSeekSeconds, videoLoading, apiClient, clientOptions, initialSeekSeconds])
-
-    React.useEffect(() => {
-        setNavigationAllowed(false)
-        return () => {
-            setNavigationAllowed(true)
-        }
-    }, [])
 
     const action = {
         onChangeRouteParams,

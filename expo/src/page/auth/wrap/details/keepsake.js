@@ -241,7 +241,7 @@ export default function KeepsakeDetailsPage(props) {
                                 onPress={navPush(routes.keepsakeDetails, {
                                     shelfId: currentRoute.routeParams.shelfId,
                                     subdirectory: dir.path,
-                                    subdirectory64: C.util.toBase64(dir.path),
+                                    subdirectory64: C.Snow.toBase64(dir.path),
                                     seekToSeconds: 0
                                 }, true)}
                             />

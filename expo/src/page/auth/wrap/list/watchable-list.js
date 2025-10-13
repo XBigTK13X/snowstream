@@ -14,7 +14,7 @@ export function WatchableListPage(props) {
     const [togglePlaylistedEnabled, setTogglePlaylistedEnabled] = C.React.useState(true)
 
     C.React.useEffect(() => {
-        if (!shelf) {
+        if (!shelf && currentRoute?.routeParams) {
             apiClient.getShelf(currentRoute.routeParams.shelfId).then((response) => {
                 setShelf(response)
             })
@@ -33,7 +33,7 @@ export function WatchableListPage(props) {
                     }
                 })
         }
-    }, [shelf])
+    }, [shelf, currentRoute])
 
     if (shelf && items !== null) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}.`

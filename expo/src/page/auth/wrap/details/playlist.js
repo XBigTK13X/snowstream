@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function PlaylistDetailsPage() {
-    const { apiClient, routes, currentRoute } = useAppContext()
+    const { currentRoute } = C.useSnowContext()
+    const { apiClient, routes } = useAppContext()
 
     const tagId = currentRoute.routeParams.tagId
     const tagName = currentRoute.routeParams.tagName

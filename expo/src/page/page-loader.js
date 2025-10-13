@@ -34,7 +34,7 @@ function PageWrapper(props) {
 export default function PageLoader() {
     return (
         <Snow.App
-            DEBUG_SNOW={config.debugSnowui}
+            DEBUG_LAYERS={config.debugSnowui}
             snowStyle={appStyle}
             routePaths={routes}
             routePages={pages}

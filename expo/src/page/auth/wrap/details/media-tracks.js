@@ -10,7 +10,7 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
-    const { navPush, currentRoute } = C.useSnowContext()
+    const { navPush, currentRoute, showModal, hideModal } = C.useSnowContext()
     const {
         apiClient,
         clientOptions,
@@ -24,10 +24,15 @@ export default function MediaTracksPage(props) {
     const [videoFileIndex, setVideoFileIndex] = C.React.useState(0)
     const [player, setPlayer] = C.React.useState(null)
     const [forcePlayer, setForcePlayer] = C.React.useState(null)
-    const [showModal, setShowModal] = C.React.useState(false)
+    const [showInfoModal, setShowInfoModal] = C.React.useState(false)
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
 
     const shelfId = currentRoute.routeParams.shelfId;
+
+    let videoFile = null
+    if (media) {
+        videoFile = media.video_files[videoFileIndex]
+    }
 
     C.React.useEffect(() => {
         if (!media) {
@@ -53,6 +58,7 @@ export default function MediaTracksPage(props) {
             })
         }
     }, [media])
+
     const setWatchStatus = (status) => {
         return props.toggleWatchStatus(apiClient, currentRoute.routeParams)
             .then(() => {
@@ -101,20 +107,15 @@ export default function MediaTracksPage(props) {
     }
 
     const showInfo = () => {
-        setShowModal(true)
+        setShowInfoModal(true)
     }
 
     const toggleTranscode = () => {
         setShouldTranscode(!shouldTranscode)
     }
 
-    if (media) {
-        const videoFile = media.video_files[videoFileIndex]
-        if (!videoFile) {
-            return <SnowText>No video file found for this selection.</SnowText>
-        }
-        const videoTrack = videoFile.info.tracks.video[0]
-        if (showModal) {
+    C.React.useEffect(() => {
+        if (showInfoModal) {
             let fileInfos = []
             for (const [key, value] of Object.entries(videoFile.info)) {
                 if (key !== 'tracks') {
@@ -141,45 +142,62 @@ export default function MediaTracksPage(props) {
                     }
                 }
             }
-            return (
-                <C.SnowModal
-                    focusLayer="video-inspection"
-                    scroll
-                    onRequestClose={() => { setShowModal(false) }}
-                >
-                    <C.SnowGrid focusStart focusKey="close-top" focusDown="info-tabs" itemsPerRow={1}>
-                        <C.SnowTextButton title="Close" onPress={() => { setShowModal(false) }} />
-                    </C.SnowGrid>
-                    <C.SnowTabs focusKey="info-tabs" focusDown="info-bottom" headers={['Video', 'Audio', 'Subtitle']}>
-                        <C.SnowView>
-                            <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
-                            <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>
-                            <C.SnowTarget focusKey="info-tabs-tab" />
-                        </C.SnowView>
-                        <C.SnowView>
-                            {
-                                audioInfos.map((info, index) => {
-                                    return (
-                                        <C.SnowText key={'audio' + index}>{info.join('   ')}</C.SnowText>
-                                    )
-                                })
-                            }
-                            <C.SnowTarget focusKey="info-tabs-tab" />
-                        </C.SnowView>
-                        <C.SnowView>
-                            {
-                                subtitleInfos.map((info, index) => {
-                                    return (
-                                        <C.SnowText key={'subtitle' + index}>{info.join('   ')}</C.SnowText>
-                                    )
-                                })
-                            }
-                            <C.SnowTarget focusKey="info-tabs-tab" />
-                        </C.SnowView>
-                    </C.SnowTabs>
-                </C.SnowModal>
-            )
+            const InfoModal = () => {
+                return (
+                    <C.FillView>
+                        <C.SnowGrid focusStart focusKey="close-top" focusDown="info-tabs" itemsPerRow={1}>
+                            <C.SnowTextButton title="Close" onPress={() => { setShowInfoModal(false) }} />
+                        </C.SnowGrid>
+                        <C.SnowTabs focusKey="info-tabs" focusDown="info-bottom" headers={['Video', 'Audio', 'Subtitle']}>
+                            <C.SnowView>
+                                <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
+                                <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>
+                                <C.SnowTarget focusKey="info-tabs-tab" />
+                            </C.SnowView>
+                            <C.SnowView>
+                                {
+                                    audioInfos.map((info, index) => {
+                                        return (
+                                            <C.SnowText key={'audio' + index}>{info.join('   ')}</C.SnowText>
+                                        )
+                                    })
+                                }
+                                <C.SnowTarget focusKey="info-tabs-tab" />
+                            </C.SnowView>
+                            <C.SnowView>
+                                {
+                                    subtitleInfos.map((info, index) => {
+                                        return (
+                                            <C.SnowText key={'subtitle' + index}>{info.join('   ')}</C.SnowText>
+                                        )
+                                    })
+                                }
+                                <C.SnowTarget focusKey="info-tabs-tab" />
+                            </C.SnowView>
+                        </C.SnowTabs>
+                    </C.FillView>
+                )
+            }
+            showModal({
+                props: {
+                    focusLayer: "video-inspection",
+                    scroll: true,
+                    onRequestClose: () => { setShowInfoModal(false) }
+                },
+                render: InfoModal
+            })
         }
+        return () => {
+            hideModal()
+        }
+    }, [showInfoModal, media])
+
+    if (media) {
+        if (!videoFile) {
+            return <SnowText>No video file found for this selection.</SnowText>
+        }
+        const videoTrack = videoFile.info.tracks.video[0]
+
         const watchTitle = media.watched ? "Mark Unwatched (hold)" : "Mark Watched (hold)"
         const playDestination = {
             videoFileIndex: videoFileIndex,
@@ -366,6 +384,7 @@ export default function MediaTracksPage(props) {
                 </C.SnowView>
             )
         }
+
         return (
             <C.SnowView>
                 <C.SnowView>

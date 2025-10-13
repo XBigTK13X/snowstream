@@ -19,7 +19,7 @@ export function useAppContext() {
 }
 
 export function AppContextProvider(props) {
-    const { SnowStyle, navPush } = Snow.useSnowContext(props)
+    const { SnowStyle, navPush, showModal, hideModal } = Snow.useSnowContext(props)
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
     const [apiClientKey, setApiClientKey] = React.useState(1)
@@ -249,20 +249,32 @@ export function AppContextProvider(props) {
         }
     }
 
-    if (apiError) {
-        return (
-            <Snow.Modal focusLayer="api-error" center>
-                <Snow.Text>Unable to communicate with Snowstream.</Snow.Text>
-                <Snow.Text>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</Snow.Text>
-                <View>
-                    <Snow.Grid focusStart focusKey="error-buttons" itemsPerRow={2}>
-                        <Snow.TextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
-                        <Snow.TextButton title="Change Server" onPress={() => { logout(true) }} />
-                    </Snow.Grid>
-                </View>
-            </Snow.Modal>
-        )
-    }
+    React.useEffect(() => {
+        if (apiError) {
+            showModal({
+                props: {
+                    focusLayer: "api-error",
+                    center: true
+                },
+                render: () => {
+                    <Snow.FillView >
+                        <Snow.Text>Unable to communicate with Snowstream.</Snow.Text>
+                        <Snow.Text>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</Snow.Text>
+                        <View>
+                            <Snow.Grid focusStart focusKey="error-buttons" itemsPerRow={2}>
+                                <Snow.TextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
+                                <Snow.TextButton title="Change Server" onPress={() => { logout(true) }} />
+                            </Snow.Grid>
+                        </View>
+                    </Snow.FillView>
+                }
+            })
+        }
+        else {
+            hideModal()
+        }
+    }, [apiError])
+
 
     const appContext = {
         config,

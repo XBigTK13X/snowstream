@@ -4,7 +4,9 @@ import { C, useAppContext } from 'snowstream'
 export default function SignInPage() {
     const {
         navReset,
-        navPush
+        navPush,
+        showModal,
+        hideModal
     } = C.useSnowContext()
     const {
         sessionLoaded,
@@ -20,11 +22,8 @@ export default function SignInPage() {
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
-    const userRef = C.React.useRef(user)
     const [customServer, setCustomServer] = C.React.useState('')
-    const customServerRef = C.React.useRef(customServer)
     const [password, setPassword] = C.React.useState("")
-    const passwordRef = C.React.useRef(password)
 
     C.React.useEffect(() => {
         if (!users && apiClient && clientOptions) {
@@ -34,20 +33,49 @@ export default function SignInPage() {
         }
     }, [users, apiClient])
 
-    console.log({ password, ref: passwordRef.current })
-
-    C.React.useEffect(() => {
-        console.log({ customServer, user, password })
-        customServerRef.current = customServer
-        userRef.current = user
-        passwordRef.current = password
-    }, [customServer, user, password])
-
     C.React.useEffect(() => {
         if (session) {
             navPush(routes.landing)
         }
     }, [session])
+
+    const cancelPassword = () => {
+        setPassword('')
+        setUser(null)
+    }
+
+    C.React.useEffect(() => {
+        if (user?.has_password)
+            showModal({
+                props: {
+                    focusLayer: "enter-password",
+                    onRequestClose: cancelPassword
+                },
+                render: () => {
+                    return (
+                        <C.View>
+                            <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
+                            <C.SnowInput
+                                focusStart
+                                focusKey="password"
+                                focusDown="login"
+                                onSubmit={login}
+                                onValueChange={setPassword}
+                                value={password}
+                            />
+                            <C.SnowGrid focusKey="login" itemsPerRow={2} >
+                                <C.SnowTextButton title="Login" onPress={login} />
+                                <C.SnowTextButton title="Cancel" onPress={cancelPassword} />
+                            </C.SnowGrid>
+                        </C.View>
+                    )
+                }
+
+            })
+        return () => {
+            hideModal()
+        }
+    }, [user, password])
 
     if (!sessionLoaded || session) {
         return null
@@ -70,7 +98,7 @@ export default function SignInPage() {
     }
 
     const login = () => {
-        signIn(userRef.current.username, passwordRef.current)
+        signIn(user?.username, password)
             .then((result) => {
                 if (result.failed) {
                     setErrors("Incorrect password for this user.")
@@ -84,11 +112,6 @@ export default function SignInPage() {
             })
     }
 
-    const cancel = () => {
-        setPassword('')
-        setUser(null)
-    }
-
     const chooseServer = (serverUrl) => {
         setUsers(null)
         setWebApiUrl(serverUrl)
@@ -96,7 +119,6 @@ export default function SignInPage() {
 
 
     const applyCustomServer = () => {
-        console.log("applyCustom")
         setUsers(null)
         setWebApiUrl(customServer)
     }
@@ -104,25 +126,6 @@ export default function SignInPage() {
     let passwordForm = null
     let userList = null
     let selectServer = null
-    if (user?.has_password) {
-        return (
-            <C.SnowModal focusLayer="enter-password" onRequestClose={cancel}>
-                <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
-                <C.SnowInput
-                    focusStart
-                    focusKey="password"
-                    focusDown="login"
-                    onSubmit={login}
-                    onValueChange={setPassword}
-                    value={password}
-                />
-                <C.SnowGrid focusKey="login" itemsPerRow={2} >
-                    <C.SnowTextButton title="Login" onPress={login} />
-                    <C.SnowTextButton title="Cancel" onPress={cancel} />
-                </C.SnowGrid>
-            </C.SnowModal>
-        )
-    }
     if (users) {
         let renderItem = (item) => {
             if (!item.username) {
