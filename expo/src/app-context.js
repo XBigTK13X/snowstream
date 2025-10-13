@@ -1,6 +1,6 @@
 import React from 'react';
 import Snow from 'expo-snowui'
-import { Platform, useTVEventHandler, View } from 'react-native';
+import { View } from 'react-native';
 import uuid from 'react-native-uuid';
 
 import util from './util'

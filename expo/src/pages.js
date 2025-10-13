@@ -1,7 +1,6 @@
 import { routes } from './routes'
 import SignInPage from './page/sign-in'
 import LandingPage from './page/auth/wrap/landing'
-import SignOutPage from './page/auth/sign-out'
 import InfoPage from './page/auth/wrap/info'
 
 import ContinueWatchingPage from './page/auth/wrap/list/continue-watching'
@@ -47,7 +46,6 @@ import UserListPage from './page/auth/wrap/admin/user/user-list'
 export var pages = {
     [routes.signIn]: SignInPage,
     [routes.landing]: LandingPage,
-    [routes.signOut]: SignOutPage,
     [routes.info]: InfoPage,
 
     [routes.continueWatching]: ContinueWatchingPage,

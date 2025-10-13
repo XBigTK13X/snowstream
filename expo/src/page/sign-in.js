@@ -34,11 +34,14 @@ export default function SignInPage() {
         }
     }, [users, apiClient])
 
+    console.log({ password, ref: passwordRef.current })
+
     C.React.useEffect(() => {
+        console.log({ customServer, user, password })
         customServerRef.current = customServer
         userRef.current = user
         passwordRef.current = password
-    })
+    }, [customServer, user, password])
 
     C.React.useEffect(() => {
         if (session) {
@@ -93,6 +96,7 @@ export default function SignInPage() {
 
 
     const applyCustomServer = () => {
+        console.log("applyCustom")
         setUsers(null)
         setWebApiUrl(customServer)
     }
@@ -108,7 +112,6 @@ export default function SignInPage() {
                     focusStart
                     focusKey="password"
                     focusDown="login"
-                    secureTextEntry
                     onSubmit={login}
                     onValueChange={setPassword}
                     value={password}
@@ -151,7 +154,7 @@ export default function SignInPage() {
                 <C.SnowGrid
                     focusStart={!!users ? false : true}
                     focusKey="servers"
-                    focusDown="password-input"
+                    focusDown="custom-server-input"
                     itemsPerRow={4} >
                     <C.SnowTextButton title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
                     <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
@@ -160,13 +163,13 @@ export default function SignInPage() {
             </C.View>
             <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
             <C.SnowInput
-                focusKey="password-input"
-                focusDown="submit-login"
+                focusKey="custom-server-input"
+                focusDown="submit-custom-server"
                 onSubmit={applyCustomServer}
                 onValueChange={setCustomServer}
                 value={customServer} />
             <C.SnowTextButton
-                focusKey="submit-login"
+                focusKey="submit-custom-server"
                 title="Connect to Server"
                 onPress={applyCustomServer}
             />

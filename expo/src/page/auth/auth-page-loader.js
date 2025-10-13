@@ -6,7 +6,6 @@ import Snow, {
     SnowGrid,
     SnowBreak
 } from 'expo-snowui'
-import { Pages } from '../../pages'
 
 
 // If the Header doesn't render before the rest of the page
@@ -22,7 +21,7 @@ const styles = {
 
 function HeaderNav(props) {
     const { navPush } = C.useSnowContext()
-    const { displayName, routes, isAdmin } = useAppContext();
+    const { displayName, routes, isAdmin, signOut } = useAppContext();
 
     React.useEffect(() => {
         props.setHeaderReady(true)
@@ -37,7 +36,7 @@ function HeaderNav(props) {
                     title="Home"
                     onPress={navPush(routes.landing, true)}
                 />
-                <SnowTextButton title="Sign Out" onPress={navPush(props.routes.signOut, true)} />
+                <SnowTextButton title="Sign Out" onPress={signOut} />
                 {isAdmin ? <SnowTextButton
                     title="Admin"
                     onPress={navPush(routes.adminDashboard, true)} />
@@ -62,7 +61,7 @@ function SnowHeaderNavPage(props) {
                 displayName={displayName}
                 routes={routes}
                 setHeaderReady={setHeaderReady} />
-            {headerReady ? props.children : null}
+            {headerReady ? props.children : <View />}
         </View>
     )
 }

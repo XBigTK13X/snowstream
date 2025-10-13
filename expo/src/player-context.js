@@ -22,7 +22,8 @@ export function PlayerContextProvider(props) {
         routes
     } = useAppContext()
     const {
-        setRemoteCallbacks,
+        addActionListener,
+        removeActionListener,
         navPush,
         navPop,
         setNavigationAllowed,
@@ -66,6 +67,7 @@ export function PlayerContextProvider(props) {
 
     // progress is the amount of seconds played in the video player
     const [progressSeconds, setProgressSeconds] = React.useState(isTranscode ? 0 : null)
+    const progressSecondsRef = React.useRef(progressSeconds)
     // duration is the amount of seconds in the loaded content
     const [durationSeconds, setDurationSeconds] = React.useState(0.0)
     // seek triggers a seek event on the low level video player
@@ -99,6 +101,9 @@ export function PlayerContextProvider(props) {
     else if (clientOptions.alwaysUsePlayer === 'exo') {
         forceExo = true
     }
+
+    const allowShortcutsRef = React.useRef(false)
+
 
     let progressPercent = null
     let progressDisplay = null
@@ -448,21 +453,27 @@ export function PlayerContextProvider(props) {
         }
     }
 
-    const playerHandleRemote = (kind, action) => {
-        if (!controlsVisible && isReady && !isTranscode) {
-            if (initialSeekComplete || !initialSeekSeconds) {
-                if (kind === 'right') {
-                    onProgress(progressSeconds + 90, 'manual-seek')
+    React.useEffect(() => {
+        addActionListener('player-controls', {
+            onRight: () => {
+                if (allowShortcutsRef.current) {
+                    onProgress(progressSecondsRef.current + 85, 'manual-seek')
                 }
-                else if (kind === 'left') {
-                    onProgress(progressSeconds - 5, 'manual-seek')
+            },
+            onLeft: () => {
+                if (allowShortcutsRef.current) {
+                    onProgress(progressSecondsRef.current - 7, 'manual-seek')
                 }
-                else if (kind === 'down') {
+            },
+            onDown: () => {
+                if (allowShortcutsRef.current) {
                     setSubtitleFontSize((fontSize) => {
                         return fontSize -= 4
                     })
                 }
-                else if (kind === 'up') {
+            },
+            onUp: () => {
+                if (allowShortcutsRef.current) {
                     setSubtitleColor((fontColor) => {
                         let newColor = { ...fontColor }
                         newColor.shade -= 0.15;
@@ -473,8 +484,19 @@ export function PlayerContextProvider(props) {
                     })
                 }
             }
-        };
-    }
+        })
+        return () => {
+            removeActionListener('player-controls')
+        }
+    }, [])
+
+    React.useEffect(() => {
+        allowShortcutsRef.current = !controlsVisible && isReady && !isTranscode && initialSeekComplete || !initialSeekSeconds
+    }, [controlsVisible, isReady, isTranscode, initialSeekComplete, initialSeekSeconds])
+
+    React.useEffect(() => {
+        progressSecondsRef.current = progressSeconds
+    }, [progressSeconds])
 
     React.useEffect(() => {
         // If manualSeekSeconds is set, then a user triggered a video load by seeking during a transcode
@@ -502,19 +524,6 @@ export function PlayerContextProvider(props) {
             }
         }
     }, [currentRoute, manualSeekSeconds, videoLoading, apiClient, clientOptions, initialSeekSeconds])
-
-    React.useEffect(() => {
-        setRemoteCallbacks((callbacks) => {
-            callbacks['player'] = playerHandleRemote
-            return callbacks
-        })
-        return () => {
-            setRemoteCallbacks((callbacks) => {
-                callbacks['player'] = null
-                return callbacks
-            })
-        }
-    }, [])
 
     React.useEffect(() => {
         setNavigationAllowed(false)

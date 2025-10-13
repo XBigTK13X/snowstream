@@ -33,20 +33,16 @@ function PageWrapper(props) {
 
 export default function PageLoader() {
     return (
-        // You need this outer view, or else the screen flashes white on first load
-        <View style={{ flex: 1, backgroundColor: appStyle.color.background }}>
-            <Snow.App
-                DEBUG_FOCUS={config.debugFocus}
-                DEBUG_NAVIGATION={config.debugNavigation}
-                snowStyle={appStyle}
-                routePaths={routes}
-                routePages={pages}
-                initialRoutePath={routes.signIn}
-            >
-                <AppContextProvider>
-                    <PageWrapper />
-                </AppContextProvider >
-            </Snow.App >
-        </View >
+        <Snow.App
+            DEBUG_SNOW={config.debugSnowui}
+            snowStyle={appStyle}
+            routePaths={routes}
+            routePages={pages}
+            initialRoutePath={routes.signIn}
+        >
+            <AppContextProvider>
+                <PageWrapper />
+            </AppContextProvider >
+        </Snow.App >
     )
 }

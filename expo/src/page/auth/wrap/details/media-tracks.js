@@ -27,8 +27,6 @@ export default function MediaTracksPage(props) {
     const [showModal, setShowModal] = C.React.useState(false)
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
 
-    console.log({ currentRoute })
-
     const shelfId = currentRoute.routeParams.shelfId;
 
     C.React.useEffect(() => {

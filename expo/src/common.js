@@ -10,7 +10,6 @@ import {
     TouchableOpacity,
     TVEventHandler,
     TVFocusGuideView,
-    useTVEventHandler,
     View,
 } from 'react-native'
 
@@ -66,7 +65,6 @@ export default {
     useDebouncedCallback,
     useKeepAwake,
     useSnowContext,
-    useTVEventHandler,
     util,
     AppState,
     FillView: SnowFillView,

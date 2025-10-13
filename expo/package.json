@@ -11,7 +11,7 @@
         "expo-libmpv": "0.3.0",
         "expo-linking": "8.0.8",
         "expo-secure-store": "15.0.7",
-        "expo-snowui": "1.4.3",
+        "expo-snowui": "1.5.2",
         "expo-splash-screen": "31.0.10",
         "react": "19.1.0",
         "react-dom": "19.1.0",
@@ -19,7 +19,7 @@
         "react-native-safe-area-context": "5.6.1",
         "react-native-screens": "4.16.0",
         "react-native-uuid": "2.0.3",
-        "react-native-video": "6.16.1",
+        "react-native-video": "6.17.0",
         "react-native-web": "0.21.1",
         "use-debounce": "10.0.6"
     },

@@ -37,7 +37,7 @@ export default function SnowVideoControls(props) {
             backgroundColor: SnowStyle.color.transparentDark
         }
     }
-    const { apiClient, setRemoteCallbacks, currentRoute } = useAppContext()
+    const { apiClient, currentRoute } = useAppContext()
     const player = usePlayerContext()
 
     const [showLogs, setShowLogs] = React.useState(false)
@@ -171,7 +171,6 @@ export default function SnowVideoControls(props) {
                         debounce={true}
                         percent={player.info.progressPercent ?? 0}
                         onValueChange={onPercentChange}
-                        setRemoteCallbacks={setRemoteCallbacks}
                     />
                     <SnowText style={styles.progress}>{player.info.progressDisplay ?? ''} / {player.info.durationDisplay}</SnowText>
                 </View>

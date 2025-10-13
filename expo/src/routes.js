@@ -1,10 +1,7 @@
-// DOCS router method https://docs.expo.dev/router/navigating-pages/#imperative-navigation
-
 // /wrap/ routes will have the nav header
 export var routes = {
     signIn: '/sign-in',
     landing: '/auth/wrap/landing',
-    signOut: '/auth/sign-out',
     info: '/auth/wrap/info',
 
     continueWatching: '/auth/wrap/list/continue-watching',
