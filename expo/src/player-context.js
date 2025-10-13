@@ -4,17 +4,17 @@ import Snow from 'expo-snowui'
 import { useAppContext } from './app-context'
 import util from './util'
 
-const PlayerContext = React.createContext({});
+const InternalPlayerContext = React.createContext({});
 
-export function usePlayerContext() {
-    const value = React.useContext(PlayerContext);
+export function useInternalPlayerContext() {
+    const value = React.useContext(InternalPlayerContext);
     if (!value) {
-        throw new Error('usePlayerContext must be wrapped in a <PlayerContextProvider />');
+        throw new Error('useInternalPlayerContext must be wrapped in a <InternalPlayerContextProvider />');
     }
     return value;
 }
 
-export function PlayerContextProvider(props) {
+export function InternalPlayerContextProvider(props) {
     const {
         apiClient,
         clientOptions,
@@ -28,6 +28,8 @@ export function PlayerContextProvider(props) {
         navPop,
         currentRoute
     } = Snow.useSnowContext()
+
+    const [setupPayload, setSetupPayload] = React.useState({})
 
     const [videoUrl, setVideoUrl] = React.useState(null)
     const [videoTitle, setVideoTitle] = React.useState(null)
@@ -53,10 +55,10 @@ export function PlayerContextProvider(props) {
     if (currentRoute.routeParams.transcode === 'true') {
         isTranscode = true
     }
-    if (clientOptions.alwaysTranscode) {
+    if (clientOptions?.alwaysTranscode) {
         isTranscode = true
     }
-    if (props.forceTranscode) {
+    if (setupPayload?.forceTranscode) {
         isTranscode = true
     }
 
@@ -97,7 +99,7 @@ export function PlayerContextProvider(props) {
     else if (currentRoute.routeParams.videoIsHdr && forcePlayer !== 'mpv') {
         forceExo = true
     }
-    else if (clientOptions.alwaysUsePlayer === 'exo') {
+    else if (clientOptions?.alwaysUsePlayer === 'exo') {
         forceExo = true
     }
 
@@ -116,7 +118,7 @@ export function PlayerContextProvider(props) {
 
     let playerKind = null
     let VideoView = null
-    if (clientOptions.alwaysUsePlayer === 'null') {
+    if (clientOptions?.alwaysUsePlayer === 'null') {
         VideoView = require('./comp/null-video-view').default
         playerKind = 'null'
     }
@@ -131,6 +133,10 @@ export function PlayerContextProvider(props) {
         }
     }
 
+    const setup = (payload) => {
+        setSetupPayload(payload)
+    }
+
     const onPauseVideo = () => {
         setControlsVisible(true)
         setIsPlaying(false)
@@ -138,8 +144,8 @@ export function PlayerContextProvider(props) {
 
     const onPlaybackComplete = () => {
         onProgress(durationSeconds, 'playback-complete').then(() => {
-            if (props.onComplete) {
-                props.onComplete(apiClient, routes, navPush)
+            if (setupPayload?.onComplete) {
+                setupPayload?.onComplete(apiClient, routes, navPush)
             } else {
                 navPop()
             }
@@ -152,7 +158,7 @@ export function PlayerContextProvider(props) {
         setVideoLoading(false)
         setVideoUrl(null)
         setTranscodeOnResume(false)
-        props.loadTranscode(apiClient, currentRoute.routeParams, clientOptions.deviceProfile, manualSeekSeconds)
+        setupPayload?.loadTranscode(apiClient, currentRoute.routeParams, clientOptions.deviceProfile, manualSeekSeconds)
             .then(loadVideo)
     }
 
@@ -177,8 +183,8 @@ export function PlayerContextProvider(props) {
         if (changeRouteParamsRef.current) {
             return
         }
-        if (props.onStopVideo) {
-            props.onStopVideo()
+        if (setupPayload?.onStopVideo) {
+            setupPayload?.onStopVideo()
         }
         else {
             if (goHome) {
@@ -244,13 +250,13 @@ export function PlayerContextProvider(props) {
         if (source === 'manual-seek' || enoughTimeDiff) {
             setProgressSeconds(nextProgressSeconds)
             if (durationSeconds > 0 && progressSeconds > 0) {
-                if (props.updateProgress) {
-                    props.updateProgress(apiClient, currentRoute.routeParams, nextProgressSeconds, durationSeconds)
+                if (setupPayload?.updateProgress) {
+                    setupPayload?.updateProgress(apiClient, currentRoute.routeParams, nextProgressSeconds, durationSeconds)
                         .then((isWatched) => {
                             if (isWatched && !countedWatch) {
                                 setCountedWatch(true)
-                                if (props.increaseWatchCount) {
-                                    return props.increaseWatchCount(apiClient, currentRoute.routeParams)
+                                if (setupPayload?.increaseWatchCount) {
+                                    return setupPayload?.increaseWatchCount(apiClient, currentRoute.routeParams)
                                 }
                             }
                         })
@@ -261,7 +267,7 @@ export function PlayerContextProvider(props) {
         // Transcode streams have no seek capability
         // Destroy and create a new one instead at the requested timestamp
         if (source === 'manual-seek' && isTranscode) {
-            if (props.loadTranscode) {
+            if (setupPayload?.loadTranscode) {
                 setManualSeekSeconds(nextProgressSeconds)
                 setTranscodeOnResume(true)
             }
@@ -508,21 +514,21 @@ export function PlayerContextProvider(props) {
                 setSubtitleTrackIndex(parseInt(currentRoute.routeParams.subtitleTrack), 10)
             }
             if (isTranscode) {
-                if (props.loadTranscode) {
+                if (setupPayload?.loadTranscode) {
                     onAddLog({ kind: 'snowstream', message: 'firing off a loadTranscode', routeParams: currentRoute.routeParams })
-                    props.loadTranscode(apiClient, currentRoute.routeParams, clientOptions.deviceProfile, initialSeekSeconds)
+                    setupPayload?.loadTranscode(apiClient, currentRoute.routeParams, clientOptions.deviceProfile, initialSeekSeconds)
                         .then(loadVideo)
                 }
             }
             else {
-                if (props.loadVideo) {
+                if (setupPayload?.loadVideo) {
                     onAddLog({ kind: 'snowstream', message: 'firing off a loadVideo', routeParams: currentRoute.routeParams })
-                    props.loadVideo(apiClient, currentRoute.routeParams, clientOptions.deviceProfile)
+                    setupPayload?.loadVideo(apiClient, currentRoute.routeParams, clientOptions.deviceProfile)
                         .then(loadVideo)
                 }
             }
         }
-    }, [currentRoute, manualSeekSeconds, videoLoading, apiClient, clientOptions, initialSeekSeconds])
+    }, [currentRoute, manualSeekSeconds, videoLoading, apiClient, clientOptions, initialSeekSeconds, setupPayload])
 
     const action = {
         onChangeRouteParams,
@@ -566,25 +572,72 @@ export function PlayerContextProvider(props) {
         subtitleFontSize,
         subtitleTrackIndex,
         mediaTracks,
-        videoHeight: clientOptions.resolutionHeight,
+        videoHeight: clientOptions?.resolutionHeight,
         videoTitle,
         videoLoaded,
         videoUrl,
-        videoWidth: clientOptions.resolutionWidth
+        videoWidth: clientOptions?.resolutionWidth
     }
 
     const playerContext = {
+        setup,
         action,
         info,
         VideoView
     }
 
     return (
-        <PlayerContext.Provider
+        <InternalPlayerContext.Provider
             value={playerContext}>
             {props.children}
-        </PlayerContext.Provider>
+        </InternalPlayerContext.Provider>
     );
 }
 
-export default PlayerContextProvider
+
+export const ExternalPlayerContext = React.createContext({});
+
+export function usePlayerContext() {
+    const value = React.useContext(ExternalPlayerContext);
+    if (!value) {
+        throw new Error('usePlayerContext must be wrapped in a <ExternalPlayerContextProvider />');
+    }
+    return value;
+}
+
+export const ExternalPlayerContextProvider = (props) => {
+    const [externalPlayerContext, setExternalPlayerContext] = React.useState({})
+    const context = {
+        ...externalPlayerContext,
+        setExternalPlayerContext
+    }
+    return (
+        <ExternalPlayerContext.Provider value={context}>
+            {props.children}
+        </ExternalPlayerContext.Provider>
+    )
+}
+
+export function PlayerContextBridge(props) {
+    const internalPlayerContext = useInternalPlayerContext()
+    const { setExternalPlayerContext } = usePlayerContext()
+    React.useEffect(() => {
+        setExternalPlayerContext({ ...internalPlayerContext })
+    }, [internalPlayerContext])
+    console.log({ internalPlayerContext })
+    return (
+        <>
+            {props.children}
+        </>
+    );
+}
+
+export function PlayerContextProvider(props) {
+    return (
+        <InternalPlayerContextProvider >
+            <PlayerContextBridge>
+                {props.children}
+            </PlayerContextBridge>
+        </InternalPlayerContextProvider >
+    )
+}

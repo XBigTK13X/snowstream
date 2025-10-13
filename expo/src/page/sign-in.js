@@ -5,8 +5,8 @@ export default function SignInPage() {
     const {
         navReset,
         navPush,
-        showModal,
-        hideModal
+        pushModal,
+        popModal
     } = C.useSnowContext()
     const {
         sessionLoaded,
@@ -46,7 +46,7 @@ export default function SignInPage() {
 
     C.React.useEffect(() => {
         if (user?.has_password)
-            showModal({
+            pushModal({
                 props: {
                     focusLayer: "enter-password",
                     onRequestClose: cancelPassword
@@ -73,7 +73,7 @@ export default function SignInPage() {
 
             })
         return () => {
-            hideModal()
+            popModal()
         }
     }, [user, password])
 

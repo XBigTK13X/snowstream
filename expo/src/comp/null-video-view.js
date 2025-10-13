@@ -12,7 +12,7 @@ export default function NullVideoView(props) {
     const playingRef = React.useRef(props.isPlaying)
     playingRef.current = props.isPlaying
     React.useEffect(() => {
-        if (player.info.seekToSeconds && player.info.seekToSeconds != lastSeek) {
+        if (player?.info?.seekToSeconds && player?.info?.seekToSeconds != lastSeek) {
             progressRef.current = player.info.seekToSeconds
             player.action.onVideoUpdate({
                 kind: 'nullevent',
@@ -22,10 +22,10 @@ export default function NullVideoView(props) {
             })
             setLastSeek(player.info.seekToSeconds)
         }
-        if (!player.info.isReady) {
-            player.action.onVideoReady()
+        if (!player?.info?.isReady) {
+            player?.action?.onVideoReady()
         }
-    })
+    }, [player, lastSeek, progressRef])
     React.useEffect(() => {
         if (!updateInterval) {
             const progressInterval = setInterval(() => {
@@ -45,29 +45,17 @@ export default function NullVideoView(props) {
             }
         }
     }, [])
-    // See the comment in mpv-video-view for more info about this structure
+    console.log({ player })
     return (
-        <Snow.Modal
-            assignFocus={false}
-            scroll
-            onRequestClose={() => { player.action.onStopVideo() }}
-        >
-            <View style={{ width: '85%' }}>
-                <View>
-                    <Snow.Text>The video {player.info.videoUrl} is {player.info.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
-                    <Snow.Text>Here is a whole bunch of text.</Snow.Text>
-                    <Snow.Text>It makes it easier to see how the transparency controls function.</Snow.Text>
-                </View>
-                <View>
-                    <Snow.Text>{JSON.stringify(player.info, null, 4)}</Snow.Text>
-                </View>
+        <Snow.FillView style={{ width: '85%' }}>
+            <View>
+                <Snow.Text>The video {player?.info?.videoUrl} is {player?.info?.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
+                <Snow.Text>Here is a whole bunch of text.</Snow.Text>
+                <Snow.Text>It makes it easier to see how the transparency controls function.</Snow.Text>
             </View>
-            <Snow.Overlay
-                focusStart
-                focusKey="null-video"
-                focusLayer="null-video"
-                onPress={player.action.onPauseVideo}>
-            </Snow.Overlay>
-        </Snow.Modal>
+            <View>
+                <Snow.Text>{JSON.stringify(player?.info, null, 4)}</Snow.Text>
+            </View>
+        </Snow.FillView>
     )
 }

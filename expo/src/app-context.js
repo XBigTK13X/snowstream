@@ -19,7 +19,7 @@ export function useAppContext() {
 }
 
 export function AppContextProvider(props) {
-    const { SnowStyle, navPush, showModal, hideModal } = Snow.useSnowContext(props)
+    const { SnowStyle, navPush, pushModal, popModal } = Snow.useSnowContext(props)
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
     const [apiClientKey, setApiClientKey] = React.useState(1)
@@ -251,7 +251,7 @@ export function AppContextProvider(props) {
 
     React.useEffect(() => {
         if (apiError) {
-            showModal({
+            pushModal({
                 props: {
                     focusLayer: "api-error",
                     center: true
@@ -271,7 +271,7 @@ export function AppContextProvider(props) {
             })
         }
         else {
-            hideModal()
+            popModal()
         }
     }, [apiError])
 

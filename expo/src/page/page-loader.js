@@ -1,6 +1,12 @@
-import { View } from 'react-native'
 import Snow from 'expo-snowui'
-import { AppContextProvider, config, useAppContext } from 'snowstream'
+import {
+    config,
+    AppContextProvider,
+    useAppContext,
+    ExternalPlayerContextProvider,
+    InternalPlayerContextProvider,
+    PlayerContextBridge
+} from 'snowstream'
 import { routes } from '../routes'
 import { pages } from '../pages'
 import AuthPageLoader from './auth/auth-page-loader'
@@ -33,16 +39,22 @@ function PageWrapper(props) {
 
 export default function PageLoader() {
     return (
-        <Snow.App
-            DEBUG_LAYERS={config.debugSnowui}
-            snowStyle={appStyle}
-            routePaths={routes}
-            routePages={pages}
-            initialRoutePath={routes.signIn}
-        >
-            <AppContextProvider>
-                <PageWrapper />
-            </AppContextProvider >
-        </Snow.App >
+        <ExternalPlayerContextProvider>
+            <Snow.App
+                DEBUG_LAYERS={config.debugSnowui}
+                snowStyle={appStyle}
+                routePaths={routes}
+                routePages={pages}
+                initialRoutePath={routes.signIn}
+            >
+                <AppContextProvider>
+                    <InternalPlayerContextProvider>
+                        <PlayerContextBridge>
+                            <PageWrapper />
+                        </PlayerContextBridge>
+                    </InternalPlayerContextProvider>
+                </AppContextProvider >
+            </Snow.App >
+        </ExternalPlayerContextProvider>
     )
 }

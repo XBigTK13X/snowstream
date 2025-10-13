@@ -13,7 +13,7 @@ import { usePlayerContext } from '../player-context'
 import { useAppContext } from '../app-context'
 
 export default function SnowVideoPlayer(props) {
-    const { SnowStyle, getWindowHeight, getWindowWidth } = Snow.useSnowContext(props)
+    const { pushModal, popModal, enableOverlay, disableOverlay } = Snow.useLayerContext()
     const player = usePlayerContext()
     if (!player) {
         return null
@@ -45,38 +45,59 @@ export default function SnowVideoPlayer(props) {
     }, []);
 
     React.useEffect(() => {
-        showModal({
-            render: () => {
-                const VideoView = player.VideoView
-                return (
-                    <Snow.FillView style={{ backgroundColor: 'black' }} >
-                        <VideoView />
-                        {player.info.controlsVisible ? <SnowVideoControls playerKind={player.playerKind} /> : null}
-                    </Snow.FillView>
-                )
-            },
-            props: {
-                wrapper: false,
-                assignFocus: false,
-                onRequestClose: () => {
-                    player.action.onStopVideo()
+        if (player?.info?.videoUrl) {
+            pushModal({
+                props: {
+                    assignFocus: false,
+                    onRequestClose: () => {
+                        player.action.onStopVideo()
 
+                    }
+                },
+                render: () => {
+                    const VideoView = player.VideoView
+                    return <VideoView />
                 }
+            })
+            if (player.info.controlsVisible) {
+                enableOverlay({
+                    props: {
+                        focusStart,
+                        focusKey: "video-player",
+                        focusLayer: "video-player",
+                        onPress: player.action.onPauseVideo
+                    }
+                })
+            } else {
+                disableOverlay()
             }
-        })
-        enableOverlay({
-            props: {
-                focusStart,
-                focusKey: "video-player",
-                focusLayer: "video-player",
-                onPress: player.action.onPauseVideo
+
+            return () => {
+                popModal()
+                disableOverlay()
             }
-        })
-        return () => {
-            hideModal()
-            disableOverlay()
         }
-    }, [videoUrl])
+    }, [player.info.videoUrl])
+    React.useEffect(() => {
+        if (player?.info?.controlsVisible) {
+            pushModal({
+                props: {
+                    focusLayer: 'video-controls',
+                    obscure: true,
+                    onRequestClose: () => {
+                        popModal()
+                        player.action.onResumeVideo()
+                    }
+                },
+                render: () => {
+                    return <SnowVideoControls playerKind={player?.playerKind} />
+                }
+            })
+            return () => {
+                popModal()
+            }
+        }
+    }, [player.info.controlsVisible])
 
     if (!player.info.videoUrl) {
         return null
@@ -87,6 +108,6 @@ export default function SnowVideoPlayer(props) {
     }
 
     return (
-        <View />
+        <Snow.Text>Preparing the video player.</Snow.Text>
     )
 }

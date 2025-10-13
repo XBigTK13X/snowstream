@@ -10,7 +10,7 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
-    const { navPush, currentRoute, showModal, hideModal } = C.useSnowContext()
+    const { navPush, currentRoute, pushModal, popModal } = C.useSnowContext()
     const {
         apiClient,
         clientOptions,
@@ -178,7 +178,7 @@ export default function MediaTracksPage(props) {
                     </C.FillView>
                 )
             }
-            showModal({
+            pushModal({
                 props: {
                     focusLayer: "video-inspection",
                     scroll: true,
@@ -188,7 +188,7 @@ export default function MediaTracksPage(props) {
             })
         }
         return () => {
-            hideModal()
+            popModal()
         }
     }, [showInfoModal, media])
 
