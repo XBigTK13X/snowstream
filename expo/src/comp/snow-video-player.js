@@ -19,25 +19,6 @@ export default function SnowVideoPlayer(props) {
         return null
     }
     const { config } = useAppContext()
-    const VideoView = player.VideoView
-    const styles = {
-        videoOverlay: {
-            backgroundColor: 'transparent',
-            width: getWindowWidth(),
-            height: getWindowHeight(),
-        },
-        videoView: {
-            width: getWindowWidth(),
-            height: getWindowHeight(),
-            backgroundColor: SnowStyle.color.background,
-        },
-        videoControls: {
-            flex: 1
-        },
-        dark: {
-            backgroundColor: SnowStyle.color.background,
-        }
-    }
 
     if (!props.skipCleanup) {
         React.useEffect(() => {
@@ -63,6 +44,40 @@ export default function SnowVideoPlayer(props) {
         };
     }, []);
 
+    React.useEffect(() => {
+        showModal({
+            render: () => {
+                const VideoView = player.VideoView
+                return (
+                    <Snow.FillView style={{ backgroundColor: 'black' }} >
+                        <VideoView />
+                        {player.info.controlsVisible ? <SnowVideoControls playerKind={player.playerKind} /> : null}
+                    </Snow.FillView>
+                )
+            },
+            props: {
+                wrapper: false,
+                assignFocus: false,
+                onRequestClose: () => {
+                    player.action.onStopVideo()
+
+                }
+            }
+        })
+        enableOverlay({
+            props: {
+                focusStart,
+                focusKey: "video-player",
+                focusLayer: "video-player",
+                onPress: player.action.onPauseVideo
+            }
+        })
+        return () => {
+            hideModal()
+            disableOverlay()
+        }
+    }, [videoUrl])
+
     if (!player.info.videoUrl) {
         return null
     }
@@ -72,9 +87,6 @@ export default function SnowVideoPlayer(props) {
     }
 
     return (
-        <View style={styles.dark}>
-            {player.info.videoLoaded ? <VideoView /> : null}
-            {player.info.controlsVisible ? <SnowVideoControls playerKind={player.playerKind} /> : null}
-        </View >
+        <View />
     )
 }

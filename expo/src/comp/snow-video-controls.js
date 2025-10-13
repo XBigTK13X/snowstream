@@ -49,7 +49,6 @@ export default function SnowVideoControls(props) {
         })
     }
 
-    let modalContent = null
     let modalClose = null
     if (showLogs) {
         modalClose = () => { setShowLogs(false) }
@@ -79,105 +78,105 @@ export default function SnowVideoControls(props) {
             </SnowFillView>
         )
     }
-    else {
-        modalClose = player.action.onResumeVideo
-        let swapTitle = "Swap to mpv"
-        if (player.info.playerKind === 'mpv') {
-            swapTitle = 'Swap to exo'
-        }
+    let swapTitle = "Swap to mpv"
+    if (player.info.playerKind === 'mpv') {
+        swapTitle = 'Swap to exo'
+    }
 
-        let transcodeTitle = "Start Transcoding"
-        if (player.info.isTranscode) {
-            transcodeTitle = "Stop Transcoding"
-        }
+    let transcodeTitle = "Start Transcoding"
+    if (player.info.isTranscode) {
+        transcodeTitle = "Stop Transcoding"
+    }
 
-        let tabs = [
-            'Playback'
-        ]
+    let tabs = [
+        'Playback'
+    ]
 
-        if (player.info.playerKind !== 'rnv') {
-            tabs.push('Style')
-        }
+    if (player.info.playerKind !== 'rnv') {
+        tabs.push('Style')
+    }
 
-        if (player.info.mediaTracks) {
-            tabs.push('Track')
-        }
+    if (player.info.mediaTracks) {
+        tabs.push('Track')
+    }
 
-        tabs.push('Advanced')
+    tabs.push('Advanced')
 
-        let subtitleControls = null
-        if (player.info.playerKind !== 'rnv') {
-            subtitleControls = (
-                <SnowGrid itemsPerRow={4}>
-                    <SnowTextButton title="Sub Smaller" onPress={() => {
-                        player.action.setSubtitleFontSize(fontSize => { return fontSize - 4 })
-                    }} />
-                    <SnowTextButton title="Sub Bigger" onPress={() => {
-                        player.action.setSubtitleFontSize(fontSize => { return fontSize + 4 })
-                    }} />
-                    <SnowTextButton title="Sub Darker" onPress={() => {
-                        player.action.setSubtitleColor(fontColor => {
-                            let newColor = { ...fontColor }
-                            newColor.shade -= 0.15;
-                            if (newColor.shade < 0) {
-                                newColor.shade = 0.0
-                            }
-                            return newColor
-                        })
-                    }} />
-                    <SnowTextButton title="Sub Lighter" onPress={() => {
-                        player.action.setSubtitleColor(fontColor => {
-                            let newColor = { ...fontColor }
-                            newColor.shade += 0.15;
-                            if (newColor.shade > 1.0) {
-                                newColor.shade = 1.0
-                            }
-                            return newColor
-                        })
-                    }}
-                    />
-                </SnowGrid>
-            )
-        }
-        let trackControls = null
-        if (player.info.mediaTracks) {
-            trackControls = (
-                <SnowTrackSelector
-                    focusKey="track-selector"
-                    style={styles.row}
-                    showDelay={true}
-                    audioDelay={player.info.audioDelaySeconds}
-                    setAudioDelay={player.action.setAudioDelay}
-                    subtitleDelay={player.info.subtitleDelaySeconds}
-                    setSubtitleDelay={player.action.setSubtitleDelay}
-                    tracks={player.info.mediaTracks}
-                    selectTrack={player.action.onSelectTrack}
-                    audioTrack={player.info.audioTrackIndex}
-                    subtitleTrack={player.info.subtitleTrackIndex}
+    let subtitleControls = null
+    if (player.info.playerKind !== 'rnv') {
+        subtitleControls = (
+            <SnowGrid itemsPerRow={4}>
+                <SnowTextButton title="Sub Smaller" onPress={() => {
+                    player.action.setSubtitleFontSize(fontSize => { return fontSize - 4 })
+                }} />
+                <SnowTextButton title="Sub Bigger" onPress={() => {
+                    player.action.setSubtitleFontSize(fontSize => { return fontSize + 4 })
+                }} />
+                <SnowTextButton title="Sub Darker" onPress={() => {
+                    player.action.setSubtitleColor(fontColor => {
+                        let newColor = { ...fontColor }
+                        newColor.shade -= 0.15;
+                        if (newColor.shade < 0) {
+                            newColor.shade = 0.0
+                        }
+                        return newColor
+                    })
+                }} />
+                <SnowTextButton title="Sub Lighter" onPress={() => {
+                    player.action.setSubtitleColor(fontColor => {
+                        let newColor = { ...fontColor }
+                        newColor.shade += 0.15;
+                        if (newColor.shade > 1.0) {
+                            newColor.shade = 1.0
+                        }
+                        return newColor
+                    })
+                }}
                 />
-            )
+            </SnowGrid>
+        )
+    }
+    let trackControls = null
+    if (player.info.mediaTracks) {
+        trackControls = (
+            <SnowTrackSelector
+                focusKey="track-selector"
+                style={styles.row}
+                showDelay={true}
+                audioDelay={player.info.audioDelaySeconds}
+                setAudioDelay={player.action.setAudioDelay}
+                subtitleDelay={player.info.subtitleDelaySeconds}
+                setSubtitleDelay={player.action.setSubtitleDelay}
+                tracks={player.info.mediaTracks}
+                selectTrack={player.action.onSelectTrack}
+                audioTrack={player.info.audioTrackIndex}
+                subtitleTrack={player.info.subtitleTrackIndex}
+            />
+        )
+    }
+    let slider = null
+    if (player.info.durationSeconds > 0) {
+        const onPercentChange = (percent) => {
+            player.action.onProgress(null, 'manual-seek', percent);
         }
-        let slider = null
-        if (player.info.durationSeconds > 0) {
-            const onPercentChange = (percent) => {
-                player.action.onProgress(null, 'manual-seek', percent);
-            }
-            slider = (
-                <View>
-                    <SnowRangeSlider
-                        focusKey="seekbar"
-                        focusDown="control-tabs"
-                        width={750}
-                        debounce={true}
-                        percent={player.info.progressPercent ?? 0}
-                        onValueChange={onPercentChange}
-                    />
-                    <SnowText style={styles.progress}>{player.info.progressDisplay ?? ''} / {player.info.durationDisplay}</SnowText>
-                </View>
-            )
-        }
-        modalContent = (
-            <SnowFillView flexStart scroll>
+        slider = (
+            <View>
+                <SnowRangeSlider
+                    focusKey="seekbar"
+                    focusDown="control-tabs"
+                    width={750}
+                    debounce={true}
+                    percent={player.info.progressPercent ?? 0}
+                    onValueChange={onPercentChange}
+                />
+                <SnowText style={styles.progress}>{player.info.progressDisplay ?? ''} / {player.info.durationDisplay}</SnowText>
+            </View>
+        )
+    }
+
+    return (
+        (
+            <SnowFillView style={{ position: 'absolute', right: 0, left: 0, top: 0, bottom: 0 }} flexStart scroll>
                 <SnowLabel center>{player.info.videoTitle}</SnowLabel>
                 {slider}
                 <SnowTabs focusStart focusKey="control-tabs" headers={tabs}>
@@ -208,19 +207,6 @@ export default function SnowVideoControls(props) {
                     </SnowGrid>
                 </SnowTabs>
             </SnowFillView>
-        )
-    }
-
-    return (
-        (
-            <SnowModal
-                focusLayer="video-controls"
-                modalStyle={showLogs ? styles.logs : styles.prompt}
-                transparent={showLogs ? false : true}
-                onRequestClose={modalClose}
-            >
-                {modalContent}
-            </SnowModal >
         )
     )
 }
