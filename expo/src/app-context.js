@@ -260,12 +260,10 @@ export function AppContextProvider(props) {
                     <Snow.FillView >
                         <Snow.Text>Unable to communicate with Snowstream.</Snow.Text>
                         <Snow.Text>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</Snow.Text>
-                        <View>
-                            <Snow.Grid focusStart focusKey="error-buttons" itemsPerRow={2}>
-                                <Snow.TextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
-                                <Snow.TextButton title="Change Server" onPress={() => { logout(true) }} />
-                            </Snow.Grid>
-                        </View>
+                        <Snow.Grid focusStart focusKey="error-buttons" itemsPerRow={2}>
+                            <Snow.TextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
+                            <Snow.TextButton title="Change Server" onPress={() => { logout(true) }} />
+                        </Snow.Grid>
                     </Snow.FillView>
                 }
             })

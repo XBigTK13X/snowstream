@@ -29,7 +29,7 @@ export default function ShelfListPage() {
             )
         }
         return (
-            <C.View>
+            <>
                 <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Shelf" onPress={navPush(routes.adminShelfEdit, true)} />
                 {
                     destinations.length > 0 ?
@@ -39,7 +39,7 @@ export default function ShelfListPage() {
                         </>
                         : null
                 }
-            </C.View>
+            </>
         )
     }
 

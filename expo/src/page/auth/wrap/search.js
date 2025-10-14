@@ -52,7 +52,7 @@ export default function SearchPage() {
     }
 
     return (
-        <C.View>
+        <>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput
                 focusStart
@@ -62,6 +62,6 @@ export default function SearchPage() {
                 onValueChange={setQueryText}
                 onDebounce={executeQuery} />
             {resultsTabs}
-        </C.View>
+        </>
     )
 }

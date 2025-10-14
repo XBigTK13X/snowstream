@@ -29,10 +29,10 @@ export default function DisplayCleanupRuleListPage() {
             )
         }
         return (
-            <C.View>
+            <>
                 <C.SnowTextButton title="Create New Rule" onPress={navPush(routes.adminCleanupRuleEdit, true)} />
                 {rulesList}
-            </C.View>
+            </>
         )
     }
     return (

@@ -26,11 +26,11 @@ export default function GuideSourceListPage() {
             )
         }
         return (
-            <C.View>
+            <>
                 <C.SnowTextButton title="Create New Channel Guide Source" onPress={navPush(routes.adminChannelGuideSourceEdit, true)} />
                 <C.SnowText>{channelGuideSources.length} stream sources found</C.SnowText>
                 <C.SnowGrid items={channelGuideSources} renderItem={renderItem} />
-            </C.View>
+            </>
         )
     }
 

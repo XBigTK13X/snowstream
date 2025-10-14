@@ -24,7 +24,7 @@ export default function JobDetailsPage() {
     }
 
     return (
-        <C.View>
+        <>
             <C.SnowTextButton title="Back" focusStart focusKey="page-entry" onPress={navPop(true)} />
             <C.SnowLabel>Job</C.SnowLabel>
             <C.SnowText>{job.kind} is {job.status}. {job.created_at} to {job.updated_at}</C.SnowText>
@@ -34,6 +34,6 @@ export default function JobDetailsPage() {
             {job.logs.map((log, logIndex) => {
                 return <C.SnowText key={logIndex}>{log}</C.SnowText>
             })}
-        </C.View>
+        </>
     )
 }

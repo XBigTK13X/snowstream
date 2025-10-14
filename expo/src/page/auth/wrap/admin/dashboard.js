@@ -22,7 +22,7 @@ export default function AdminDashboardPage() {
         { title: 'Cleanup Rules', route: routes.adminCleanupRuleList },
     ]
     return (
-        <C.View>
+        <>
             <C.SnowGrid
                 focusStart
                 focusKey="page-entry"
@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
                 itemsPerRow={2}></C.SnowGrid>
             <C.SnowBreak />
             <C.SnowGrid focusKey="data-buttons" items={dataButtons} renderItem={renderItem} itemsPerRow={3}></C.SnowGrid>
-        </C.View>
+        </>
 
     )
 }

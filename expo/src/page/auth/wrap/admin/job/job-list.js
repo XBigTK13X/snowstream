@@ -21,7 +21,7 @@ export default function JobListPage() {
 
     if (!!jobs) {
         return (
-            <C.View>
+            <>
                 <C.SnowGrid focusKey="page-entry" focusDown="job-list" itemsPerRow={3}>
                     <C.SnowTextButton
                         title={showComplete ? 'Hide Complete' : 'Show All'}
@@ -37,12 +37,10 @@ export default function JobListPage() {
                         />
                     )
                 }} />
-            </C.View>
+            </>
         )
     }
     return (
-        <C.View >
-            <C.SnowText>Loading jobs</C.SnowText>
-        </C.View >
+        <C.SnowText>Loading jobs</C.SnowText>
     )
 }

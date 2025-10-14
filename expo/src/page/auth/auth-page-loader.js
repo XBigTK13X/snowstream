@@ -56,13 +56,13 @@ function SnowHeaderNavPage(props) {
     const [headerReady, setHeaderReady] = React.useState(false)
 
     return (
-        <View>
+        <>
             <HeaderNav
                 displayName={displayName}
                 routes={routes}
                 setHeaderReady={setHeaderReady} />
-            {headerReady ? props.children : <View />}
-        </View>
+            {headerReady ? props.children : null}
+        </>
     )
 }
 

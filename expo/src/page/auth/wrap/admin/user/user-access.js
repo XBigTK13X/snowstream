@@ -131,10 +131,10 @@ export default function UserEditPage() {
             )
         }
         shelfPicker = (
-            <C.View>
+            <>
                 <C.SnowText>Shelves</C.SnowText>
                 <C.SnowGrid short={true} items={shelves} renderItem={renderShelf} />
-            </C.View>
+            </>
         )
     }
 
@@ -161,10 +161,10 @@ export default function UserEditPage() {
             )
         }
         streamSourcePicker = (
-            <C.View>
+            <>
                 <C.SnowText>Stream Sources</C.SnowText>
                 <C.SnowGrid short={true} items={streamSources} renderItem={renderStreamSource} />
-            </C.View>
+            </>
         )
     }
 
@@ -191,15 +191,15 @@ export default function UserEditPage() {
             )
         }
         tagPicker = (
-            <C.View>
+            <>
                 <C.SnowText>Tags</C.SnowText>
                 <C.SnowGrid short={true} items={tags} renderItem={renderTag} />
-            </C.View>
+            </>
         )
     }
 
     return (
-        <C.View>
+        <>
             <C.SnowGrid itemsPerRow={2}>
                 <C.SnowTextButton title="User Details" onPress={navPush(routes.adminUserEdit, { userId: userId }, true)} />
                 <C.SnowTextButton title="User Access" onPress={navPush(routes.adminUserAccess, { userId: userId }, true)} />
@@ -210,6 +210,6 @@ export default function UserEditPage() {
             {tagPicker}
 
             <C.SnowTextButton title="Save User Access" onPress={saveUserAccess} />
-        </C.View>
+        </>
     )
 }

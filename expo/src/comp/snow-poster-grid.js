@@ -25,7 +25,7 @@ function SnowPosterGridW(props) {
         return !props.disableWatched && item.watched
     }
     return (
-        <View>
+        <>
             {props.title ?
                 <Snow.Label>
                     {props.title} ({props.items.length})
@@ -44,7 +44,7 @@ function SnowPosterGridW(props) {
                 getItemToggleStatus={getItemToggleStatus}
                 onPress={navToItem}
                 onLongPress={onLongPress} />
-        </View>
+        </>
     )
 }
 

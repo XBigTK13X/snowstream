@@ -33,7 +33,7 @@ export default function LogViewerPage() {
     ]
 
     return (
-        <C.View>
+        <>
             <C.SnowTabs focusStart focusKey="page-entry" headers={tabs}>
                 <C.SnowGrid itemsPerRow={1} items={logPaths} renderItem={(item, itemIndex) => {
                     return <C.SnowTextButton title={item} onPress={() => {
@@ -52,6 +52,6 @@ export default function LogViewerPage() {
                 }} />
             </C.SnowTabs>
             <C.SnowText>{logContent}</C.SnowText>
-        </C.View>
+        </>
     )
 }

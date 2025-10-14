@@ -103,14 +103,14 @@ export default function LandingPage(props) {
 
     if (destinations) {
         return (
-            <C.View>
+            <>
                 <C.SnowGrid
                     focusStart
                     focusKey="page-entry"
                     items={destinations}
                     itemsPerRow={3} />
                 <C.SnowText style={styles.footer} center>{`v${config.clientVersion} - built ${config.clientBuildDate}`}</C.SnowText>
-            </C.View>
+            </>
         )
     }
 

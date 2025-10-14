@@ -24,11 +24,11 @@ export default function UserListPage() {
 
         }
         return (
-            <C.View>
+            <>
                 <C.SnowTextButton title="Create New User" onPress={navPush(routes.adminUserEdit, true)} />
                 <C.SnowText>{users.length} users found</C.SnowText>
                 <C.SnowGrid items={users} renderItem={renderItem} />
-            </C.View>
+            </>
         )
     }
 

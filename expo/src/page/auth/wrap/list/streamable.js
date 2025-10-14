@@ -66,7 +66,7 @@ export default function StreamableListPage() {
 
         if (streamSource.has_guide) {
             return (
-                <C.View>
+                <>
                     {groupsButton}
                     {
                         streamableItems.map((streamable, itemIndex) => {
@@ -93,8 +93,8 @@ export default function StreamableListPage() {
                             }
                             let name = streamable.name_display ? streamable.name_display : streamable.name
                             return (
-                                <C.View key={itemIndex}>
-                                    <C.SnowGrid assignFocus="false" itemsPerRow={3}>
+                                <>
+                                    < C.SnowGrid assignFocus="false" itemsPerRow={3} >
                                         <C.SnowTextButton
                                             {...focus}
                                             title={name}
@@ -110,13 +110,13 @@ export default function StreamableListPage() {
                                         />
                                         <C.SnowText style={styles.tableColumn}>{currentProgram}</C.SnowText>
                                         <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
-                                    </C.SnowGrid>
+                                    </C.SnowGrid >
                                     <C.SnowBreak />
-                                </C.View>
+                                </>
                             )
                         })
                     }
-                </C.View>
+                </>
             )
         } else {
             const renderItem = (streamable, itemIndex) => {
@@ -139,10 +139,10 @@ export default function StreamableListPage() {
                 )
             }
             return (
-                <C.View>
+                <>
                     {groupsButton}
                     <C.SnowGrid focusStart focusKey={listFocusKey} items={streamableItems} renderItem={renderItem} />
-                </C.View>
+                </>
             )
         }
     }

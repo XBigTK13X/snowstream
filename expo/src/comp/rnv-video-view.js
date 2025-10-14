@@ -88,16 +88,14 @@ export default function RnvVideoView(props) {
     if (isWeb) {
         if (!userPlayed) {
             return (
-                <View>
-                    <Snow.TextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
-                </View>
+                <Snow.TextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
             )
         }
         if (!player.info.isTranscode && (player.info.audioTrackIndex > 0 || player.info.subtitleTrackIndex > 0)) {
-            return <View><Snow.Text>Waiting on transcode...</Snow.Text></View>
+            return <Snow.Text>Waiting on transcode...</Snow.Text>
         }
         if (requestTranscode && !player.info.isTranscode) {
-            return <View><Snow.Text>Waiting on transcode...</Snow.Text></View>
+            return <Snow.Text>Waiting on transcode...</Snow.Text>
         }
     }
 

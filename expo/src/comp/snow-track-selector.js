@@ -41,7 +41,7 @@ function TrackList(props) {
 
     }
     return (
-        <View>
+        <>
             {header}
             <Snow.Grid {...gridProps} short shrink itemsPerRow={4}>
                 {props.tracks.map((track, trackKey) => {
@@ -73,7 +73,7 @@ function TrackList(props) {
                     )
                 })}
             </Snow.Grid>
-        </View>
+        </>
     )
 }
 

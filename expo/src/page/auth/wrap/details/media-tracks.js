@@ -215,7 +215,7 @@ export default function MediaTracksPage(props) {
         let versionPicker = null
         if (media.has_versions) {
             versionPicker = (
-                <C.View>
+                <>
                     <C.SnowLabel>Version</C.SnowLabel>
                     <C.SnowDropdown
                         options={media.video_files.filter(ff => ff.version).map((ff) => {
@@ -224,13 +224,13 @@ export default function MediaTracksPage(props) {
                         onValueChange={chooseVideoFile}
                         valueIndex={videoFileIndex}
                     />
-                </C.View>
+                </>
             )
         }
         let extraPicker = null
         if (media.has_extras) {
             extraPicker = (
-                <C.View>
+                <>
                     <C.SnowLabel>Extras</C.SnowLabel>
                     <C.SnowDropdown
                         skipDefaultFocus
@@ -240,7 +240,7 @@ export default function MediaTracksPage(props) {
                         onValueChange={chooseVideoFile}
                         valueIndex={videoFileIndex}
                     />
-                </C.View>
+                </>
             )
         }
         let remoteMetadataId = ''

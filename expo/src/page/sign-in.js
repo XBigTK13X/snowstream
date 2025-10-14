@@ -53,7 +53,7 @@ export default function SignInPage() {
                 },
                 render: () => {
                     return (
-                        <C.View>
+                        <>
                             <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
                             <C.SnowInput
                                 focusStart
@@ -67,7 +67,7 @@ export default function SignInPage() {
                                 <C.SnowTextButton title="Login" onPress={login} />
                                 <C.SnowTextButton title="Cancel" onPress={cancelPassword} />
                             </C.SnowGrid>
-                        </C.View>
+                        </>
                     )
                 }
 
@@ -152,7 +152,7 @@ export default function SignInPage() {
     }
     selectServer = (
         <>
-            <C.View>
+            <>
                 <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
                 <C.SnowGrid
                     focusStart={!!users ? false : true}
@@ -163,7 +163,7 @@ export default function SignInPage() {
                     <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
                     <C.SnowTextButton title="Storm" onPress={() => { chooseServer(config.stormWebApiUrl) }} />
                 </C.SnowGrid>
-            </C.View>
+            </>
             <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
             <C.SnowInput
                 focusKey="custom-server-input"

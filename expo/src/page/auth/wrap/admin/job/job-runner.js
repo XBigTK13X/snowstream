@@ -122,7 +122,7 @@ export default function ShelfEditPage() {
     }
 
     return (
-        <C.View>
+        <>
             <C.SnowGrid
                 focusStart
                 focusKey="page-entry"
@@ -158,6 +158,6 @@ export default function ShelfEditPage() {
                 <C.SnowLabel>Extract Only</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('extractOnly')} value={form.extractOnly} />
             </C.SnowGrid>
-        </C.View>
+        </>
     )
 }

@@ -30,19 +30,17 @@ export function ContinueWatchingListPage(props) {
         })
 
         return (
-            <C.View>
-                <C.SnowTabs
-                    focusStart
-                    focusKey="page-entry"
-                    headers={tabs}>
-                    {continueWatchingList.map((kind) => {
-                        return <C.SnowPosterGrid
-                            disableWatched
-                            items={kind.items}
-                        />
-                    })}
-                </C.SnowTabs>
-            </C.View>
+            <C.SnowTabs
+                focusStart
+                focusKey="page-entry"
+                headers={tabs}>
+                {continueWatchingList.map((kind) => {
+                    return <C.SnowPosterGrid
+                        disableWatched
+                        items={kind.items}
+                    />
+                })}
+            </C.SnowTabs>
         )
     }
     return <C.SnowLabel>Loading the continue watching list. This will take a few seconds.</C.SnowLabel>

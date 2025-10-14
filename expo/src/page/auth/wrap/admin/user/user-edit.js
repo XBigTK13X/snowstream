@@ -79,7 +79,7 @@ export default function UserEditPage() {
     }
 
     return (
-        <C.View>
+        <>
             {existingUserControls}
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onValueChange={setUserUsername} value={userUsername} />
@@ -99,6 +99,6 @@ export default function UserEditPage() {
 
             <C.SnowTextButton title="Save User" onPress={saveUser} />
             {deleteButton}
-        </C.View >
+        </>
     )
 }

@@ -43,12 +43,12 @@ export default function TagEditPage() {
         return <C.Redirect href={routes.adminTagList} />
     }
     return (
-        <C.View>
+        <>
             <C.SnowLabel>Name</C.SnowLabel>
             <C.SnowInput onValueChange={setTagName} value={tagName} />
 
             <C.SnowTextButton title="Save Tag" onPress={saveTag} />
             {deleteButton}
-        </C.View >
+        </>
     )
 }

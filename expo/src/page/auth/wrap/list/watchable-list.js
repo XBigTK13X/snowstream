@@ -104,15 +104,15 @@ export function WatchableListPage(props) {
             }
         }
         return (
-            <C.View>
-                <C.View>
+            <>
+                <>
                     <C.SnowText>{pageTitle}</C.SnowText>
                     <C.SnowGrid focusKey="page-entry" focusDown="watchable-items" itemsPerRow={itemsPerRow}>
                         {buttons}
                     </C.SnowGrid>
-                </C.View>
+                </>
                 <Grid focusStart focusKey="watchable-items" items={items} />
-            </C.View>
+            </>
         )
     }
     return <C.SnowText>Loading items from shelf {currentRoute.routeParams.shelfId}.</C.SnowText>

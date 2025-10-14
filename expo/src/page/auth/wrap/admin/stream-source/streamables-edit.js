@@ -21,7 +21,7 @@ function StreamableEditRow(props) {
     }
 
     return (
-        <C.View>
+        <>
             <C.SnowGrid itemsPerRow={2}>
                 <C.SnowLabel>{props.streamable.name}</C.SnowLabel>
                 <C.SnowTextButton title="Save" onPress={() => { saveStreamable(form) }} />
@@ -35,7 +35,7 @@ function StreamableEditRow(props) {
                 <C.SnowInput onValueChange={changeForm('groupDisplay')} value={form.groupDisplay} />
             </C.SnowGrid>
             <C.SnowBreak />
-        </C.View>
+        </>
     )
 }
 
@@ -67,7 +67,7 @@ export default function StreamblesEditPage() {
     }
 
     return (
-        <C.View>
+        <>
             <C.SnowText>There are {streamSource.streamables.length} streamables.</C.SnowText>
             <C.SnowGrid focusStart focusKey="page-entry" itemsPerRow={3}>
                 <C.SnowLabel>Filter (required)</C.SnowLabel>
@@ -93,6 +93,6 @@ export default function StreamblesEditPage() {
             </C.SnowGrid>
             <C.SnowBreak />
             {streamRows}
-        </C.View >
+        </>
     )
 }
