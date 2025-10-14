@@ -1,124 +1,165 @@
 import React from 'react'
 import Snow from 'expo-snowui'
-import { useAppContext } from '../app-context'
 import { useSnapshot } from 'valtio'
+import { useAppContext } from '../app-context'
 import { playerState } from './player-state'
 import { playerActions } from './player-actions'
 
-export default function PlayerManager(props) {
-    const { apiClient, clientOptions, config, routes } = useAppContext()
-    const { addActionListener, removeActionListener, navPush, navPop, currentRoute } = Snow.useSnowContext()
-    const playerSnapshot = useSnapshot(playerState)
+export function PlayerManager(props) {
+    const {
+        addActionListener,
+        removeActionListener,
+        navPush,
+        navPop,
+        clearModals,
+        disableOverlay,
+        currentRoute
+    } = Snow.useSnowContext()
+    const {
+        apiClient,
+        clientOptions,
+        config,
+        routes
+    } = useAppContext()
+
+
+    let player = useSnapshot(playerState)
+
+    const [setup, setSetup] = React.useState(false)
 
     React.useEffect(() => {
-        playerActions.setRuntimeDeps({
-            apiClient,
-            clientOptions,
-            config,
-            routes,
-            addActionListener,
-            removeActionListener,
-            navPush,
-            navPop,
-            currentRoute,
-        })
-    }, [apiClient, clientOptions, config, routes, addActionListener, removeActionListener, navPush, navPop, currentRoute])
+        if (!setup) {
+            if (apiClient && clientOptions && config && routes && currentRoute) {
+                playerActions.setRuntimeDeps({
+                    apiClient,
+                    clientOptions,
+                    config,
+                    routes,
+                    addActionListener,
+                    removeActionListener,
+                    navPush,
+                    navPop,
+                    currentRoute,
+                    clearModals,
+                    disableOverlay
+                })
+                addActionListener('player-controls', {
+                    onRight: () => {
+                        if (player.allowShortcutsRef.current) {
+                            playerActions.onProgress(player.progressSecondsRef.current + 85, 'manual-seek')
+                        }
+                    },
+                    onLeft: () => {
+                        if (player.allowShortcutsRef.current) {
+                            playerActions.onProgress(player.progressSecondsRef.current - 7, 'manual-seek')
+                        }
+                    },
+                    onDown: () => {
+                        if (player.allowShortcutsRef.current) {
+                            playerActions.setSubtitleFontSize(player.subtitleFontSize - 4)
+                        }
+                    },
+                    onUp: () => {
+                        if (player.allowShortcutsRef.current) {
+                            const nextSubtitleColor = { ...player.subtitleColor }
+                            nextSubtitleColor.shade -= 0.15
+                            if (nextSubtitleColor.shade < 0) nextSubtitleColor.shade = 0.0
+                            playerActions.setSubtitleColor(nextSubtitleColor)
+                        }
+                    },
+                })
 
-    React.useEffect(() => {
-        addActionListener('player-controls', {
-            onRight: () => {
-                if (playerState.allowShortcutsRef.current) {
-                    playerActions.onProgress(playerState.progressSecondsRef.current + 85, 'manual-seek')
+                setSetup(true)
+                return () => {
+                    removeActionListener('player-controls')
                 }
-            },
-            onLeft: () => {
-                if (playerState.allowShortcutsRef.current) {
-                    playerActions.onProgress(playerState.progressSecondsRef.current - 7, 'manual-seek')
-                }
-            },
-            onDown: () => {
-                if (playerState.allowShortcutsRef.current) {
-                    playerActions.setSubtitleFontSize(playerState.subtitleFontSize - 4)
-                }
-            },
-            onUp: () => {
-                if (playerState.allowShortcutsRef.current) {
-                    const nextSubtitleColor = { ...playerState.subtitleColor }
-                    nextSubtitleColor.shade -= 0.15
-                    if (nextSubtitleColor.shade < 0) nextSubtitleColor.shade = 0.0
-                    playerActions.setSubtitleColor(nextSubtitleColor)
-                }
-            },
-        })
-        return () => {
-            removeActionListener('player-controls')
+            }
+        } else {
+            playerState.currentRoute = currentRoute
         }
-    }, [addActionListener, removeActionListener])
+    }, [apiClient, currentRoute])
 
     React.useEffect(() => {
-        playerState.allowShortcutsRef.current =
-            (!playerSnapshot.controlsVisible &&
-                playerSnapshot.isReady &&
-                !playerSnapshot.isTranscode &&
-                playerSnapshot.initialSeekComplete) ||
-            !playerSnapshot.initialSeekSeconds
+        player.allowShortcutsRef.current =
+            (!player.controlsVisible &&
+                player.isReady &&
+                !player.isTranscode &&
+                player.initialSeekComplete) ||
+            !player.initialSeekSeconds
+    },
+        [
+            player.controlsVisible,
+            player.isReady,
+            player.isTranscode,
+            player.initialSeekComplete,
+            player.initialSeekSeconds,
+        ]
+    )
+
+    React.useEffect(() => {
+        player.progressSecondsRef.current = player.progressSeconds ?? 0
+    }, [player.progressSeconds])
+
+    React.useEffect(() => {
+        if (setup) {
+            if (!player.videoLoading && !player.manualSeekSeconds) {
+
+                if (player.currentRoute?.routeParams?.audioTrack) {
+                    playerState.audioTrackIndex = parseInt(player.currentRoute.routeParams.audioTrack, 10)
+                }
+                if (player.currentRoute?.routeParams?.subtitleTrack) {
+                    playerState.subtitleTrackIndex = parseInt(player.currentRoute.routeParams.subtitleTrack, 10)
+                }
+                if (player.isTranscode) {
+                    if (player.setupPayload?.loadTranscode) {
+                        playerState.videoLoading = true
+                        playerActions.onAddLog({
+                            kind: 'snowstream',
+                            message: 'firing off a loadTranscode',
+                            routeParams: player.currentRoute.routeParams,
+                        })
+                        playerState
+                            .setupPayload
+                            .loadTranscode(
+                                player.apiClient,
+                                player.currentRoute.routeParams,
+                                player.clientOptions.deviceProfile,
+                                player.initialSeekSeconds
+                            )
+                            .then(playerActions.loadVideo.bind(playerActions))
+                    }
+                } else {
+                    if (player.setupPayload?.loadVideo) {
+                        playerState.videoLoading = true
+                        playerActions.onAddLog({
+                            kind: 'snowstream',
+                            message: 'firing off a loadVideo',
+                            routeParams: player.currentRoute.routeParams,
+                        })
+                        playerState
+                            .setupPayload
+                            .loadVideo(
+                                player.apiClient,
+                                player.currentRoute.routeParams,
+                                player.clientOptions.deviceProfile
+                            )
+                            .then(playerActions.loadVideo.bind(playerActions))
+                    }
+                }
+            }
+        }
     }, [
-        playerSnapshot.controlsVisible,
-        playerSnapshot.isReady,
-        playerSnapshot.isTranscode,
-        playerSnapshot.initialSeekComplete,
-        playerSnapshot.initialSeekSeconds,
+        player.videoLoading,
+        player.manualSeekSeconds,
+        player.setupPayload,
+        player.isTranscode,
+        player.apiClient,
+        player.currentRoute,
+        player.clientOptions,
+        player.initialSeekSeconds
     ])
 
-    React.useEffect(() => {
-        playerState.progressSecondsRef.current = playerSnapshot.progressSeconds ?? 0
-    }, [playerSnapshot.progressSeconds])
-
-    React.useEffect(() => {
-        if (!playerSnapshot.videoLoading && !playerSnapshot.manualSeekSeconds) {
-            playerState.videoLoading = true
-            if (playerSnapshot.currentRoute?.routeParams?.audioTrack) {
-                playerState.audioTrackIndex = parseInt(playerSnapshot.currentRoute.routeParams.audioTrack, 10)
-            }
-            if (playerSnapshot.currentRoute?.routeParams?.subtitleTrack) {
-                playerState.subtitleTrackIndex = parseInt(playerSnapshot.currentRoute.routeParams.subtitleTrack, 10)
-            }
-            if (playerSnapshot.isTranscode) {
-                if (playerState.setupPayload?.loadTranscode) {
-                    playerActions.onAddLog({
-                        kind: 'snowstream',
-                        message: 'firing off a loadTranscode',
-                        routeParams: playerSnapshot.currentRoute.routeParams,
-                    })
-                    playerState
-                        .setupPayload
-                        .loadTranscode(
-                            playerState.apiClient,
-                            playerSnapshot.currentRoute.routeParams,
-                            playerState.clientOptions.deviceProfile,
-                            playerSnapshot.initialSeekSeconds
-                        )
-                        .then(playerActions.loadVideo.bind(playerActions))
-                }
-            } else {
-                if (playerState.setupPayload?.loadVideo) {
-                    playerActions.onAddLog({
-                        kind: 'snowstream',
-                        message: 'firing off a loadVideo',
-                        routeParams: playerSnapshot.currentRoute.routeParams,
-                    })
-                    playerState
-                        .setupPayload
-                        .loadVideo(
-                            playerState.apiClient,
-                            playerSnapshot.currentRoute.routeParams,
-                            playerState.clientOptions.deviceProfile
-                        )
-                        .then(playerActions.loadVideo.bind(playerActions))
-                }
-            }
-        }
-    }, [playerSnapshot.currentRoute, playerSnapshot.manualSeekSeconds, playerSnapshot.videoLoading, playerSnapshot.initialSeekSeconds])
-
-    return props.children || null
+    return props.children
 }
+
+export default PlayerManager

@@ -10,4 +10,6 @@ config.resolver.extraNodeModules = {
   snowstream: path.resolve(__dirname, 'src'),
 };
 
-module.exports = config;
+config.resolver.unstable_conditionNames = ['browser', 'require', 'react-native'],
+
+  module.exports = config;

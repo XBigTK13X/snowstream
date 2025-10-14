@@ -11,7 +11,6 @@ class Config {
         this.debounceMilliseconds = 700
         this.progressMinDeltaSeconds = 5
 
-        this.debugSnowui = false
         this.debugVideoPlayer = false
 
         const animeUrl = "/auth/wrap/details/episode?shelfId=2&showId=54&seasonId=112&episodeId=2377&showName=Gintama&seasonOrder=2&episodeOrder=3"
@@ -23,6 +22,7 @@ class Config {
         const cartoonUrl = '/auth/wrap/details/episode?shelfId=2&showId=228&seasonId=478&episodeId=8827&showName=Aaahh%21%21%21%20Real%20Monsters&seasonOrder=1&episodeOrder=2'
 
         this.debugVideoUrl = null
+        this.debugSnowui = false
     }
 }
 

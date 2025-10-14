@@ -1,4 +1,5 @@
 import { C, useAppContext, Player } from 'snowstream'
+import SnowVideoPlayer from '../../../../comp/snow-video-player'
 
 function KeepsakeVideo(props) {
     const player = Player.useSnapshot(Player.state)
@@ -62,7 +63,7 @@ function KeepsakeVideo(props) {
         return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
     }
     return (
-        <C.SnowVideoPlayer />
+        <SnowVideoPlayer />
     )
 }
 

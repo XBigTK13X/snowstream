@@ -45,7 +45,6 @@ export default function NullVideoView() {
             }
         }
     }, [])
-    console.log({ player })
     return (
         <Snow.FillView style={{ width: '85%' }}>
             <View>

@@ -1,4 +1,5 @@
 import { C, Player } from 'snowstream'
+import SnowVideoPlayer from '../../../comp/snow-video-player'
 
 export function PlayMediaPage(props) {
     const player = Player.useSnapshot(Player.state)
@@ -17,7 +18,7 @@ export function PlayMediaPage(props) {
         return (
             <C.View>
                 <C.SnowText>Unable to play the video.</C.SnowText>
-                <C.SnowText>Error: {JSON.stringify(player.info.playbackFailed)}</C.SnowText>
+                <C.SnowText>Error: {JSON.stringify(player.playbackFailed)}</C.SnowText>
             </C.View>
         )
     }
@@ -31,7 +32,7 @@ export function PlayMediaPage(props) {
 
     return (
         // It gets cleaned up by the video player modal
-        <C.SnowVideoPlayer skipCleanup />
+        <SnowVideoPlayer skipCleanup />
     )
 }
 

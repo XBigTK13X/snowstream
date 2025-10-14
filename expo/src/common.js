@@ -49,8 +49,6 @@ import SnowPosterGrid from './comp/snow-poster-grid'
 import SnowScreencapGrid from './comp/snow-screencap-grid'
 import SnowTrackSelector from './comp/snow-track-selector'
 import SnowUpdateMediaButton from './comp/snow-update-media-button'
-import SnowVideoControls from './comp/snow-video-controls'
-import SnowVideoPlayer from './comp/snow-video-player'
 
 const isWeb = Platform.OS === 'web'
 const isAndroid = Platform.OS === 'android'
@@ -92,8 +90,6 @@ export default {
     SnowToggle,
     SnowTrackSelector,
     SnowUpdateMediaButton,
-    SnowVideoControls,
-    SnowVideoPlayer,
     SnowView,
     Text,
     TouchableOpacity,

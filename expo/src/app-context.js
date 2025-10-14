@@ -294,8 +294,7 @@ export function AppContextProvider(props) {
     }
 
     return (
-        <AppContext.Provider
-            value={appContext}>
+        <AppContext.Provider value={appContext}>
             {props.children}
         </AppContext.Provider>
     );

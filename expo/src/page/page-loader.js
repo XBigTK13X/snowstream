@@ -45,9 +45,9 @@ export default function PageLoader() {
             initialRoutePath={routes.signIn}
         >
             <AppContextProvider>
-                <Player.PlayerManager>
+                <Player.Manager>
                     <PageWrapper />
-                </Player.PlayerManager>
+                </Player.Manager>
             </AppContextProvider >
         </Snow.App >
     )

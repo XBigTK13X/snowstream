@@ -2,16 +2,18 @@ import { playerState, initialPlayerState } from './player-state'
 import util from '../util'
 
 export const playerActions = {
-    setRuntimeDeps(args) {
-        playerState.apiClient = args.apiClient
-        playerState.clientOptions = args.clientOptions
-        playerState.config = args.config
-        playerState.routes = args.routes
-        playerState.addActionListener = args.addActionListener
-        playerState.removeActionListener = args.removeActionListener
-        playerState.navPush = args.navPush
-        playerState.navPop = args.navPop
-        playerState.currentRoute = args.currentRoute
+    setRuntimeDeps(deps) {
+        playerState.apiClient = deps.apiClient
+        playerState.clientOptions = deps.clientOptions
+        playerState.config = deps.config
+        playerState.routes = deps.routes
+        playerState.addActionListener = deps.addActionListener
+        playerState.removeActionListener = deps.removeActionListener
+        playerState.navPush = deps.navPush
+        playerState.navPop = deps.navPop
+        playerState.currentRoute = deps.currentRoute
+        playerState.clearModals = deps.clearModals
+        playerState.disableOverlay = deps.disableOverlay
         if (playerState.progressSeconds == null) playerState.progressSeconds = playerState.isTranscode ? 0 : null
         if (!playerState.initialSeekComplete) playerState.initialSeekComplete = playerState.isTranscode
     },
@@ -78,8 +80,12 @@ export const playerActions = {
             playerState.setupPayload.onStopVideo()
         } else {
             if (goHome) {
+                playerState.clearModals()
+                playerState.disableOverlay()
                 if (playerState.navPush) playerState.navPush(playerState.routes.landing)
             } else {
+                playerState.clearModals()
+                playerState.disableOverlay()
                 if (playerState.navPop) playerState.navPop()
             }
         }

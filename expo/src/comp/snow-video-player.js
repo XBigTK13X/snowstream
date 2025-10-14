@@ -15,9 +15,6 @@ export default function SnowVideoPlayer(props) {
     const { pushModal, popModal, enableOverlay, disableOverlay } = Snow.useLayerContext()
     const player = Player.useSnapshot(Player.state)
 
-    if (!player) {
-        return null
-    }
     const { config } = useAppContext()
 
     if (!props.skipCleanup) {
@@ -44,8 +41,9 @@ export default function SnowVideoPlayer(props) {
         };
     }, []);
 
+    // Video contents
     React.useEffect(() => {
-        if (player?.info?.videoUrl) {
+        if (player.videoUrl && !player.controlsVisible) {
             pushModal({
                 props: {
                     assignFocus: false,
@@ -59,27 +57,25 @@ export default function SnowVideoPlayer(props) {
                     return <VideoView />
                 }
             })
-            if (player.controlsVisible) {
-                enableOverlay({
-                    props: {
-                        focusStart,
-                        focusKey: "video-player",
-                        focusLayer: "video-player",
-                        onPress: Player.action.onPauseVideo
-                    }
-                })
-            } else {
-                disableOverlay()
-            }
+            enableOverlay({
+                props: {
+                    focusStart: true,
+                    focusKey: "video-player",
+                    focusLayer: "video-player",
+                    onPress: Player.action.onPauseVideo
+                }
+            })
 
             return () => {
                 popModal()
                 disableOverlay()
             }
         }
-    }, [player.videoUrl])
+    }, [player.videoUrl, player.controlsVisible])
+
+    // Video controls
     React.useEffect(() => {
-        if (player?.info?.controlsVisible) {
+        if (player.videoUrl && player.controlsVisible) {
             pushModal({
                 props: {
                     focusLayer: 'video-controls',
@@ -90,14 +86,17 @@ export default function SnowVideoPlayer(props) {
                     }
                 },
                 render: () => {
-                    return <SnowVideoControls playerKind={player?.playerKind} />
+                    // TODO prop no longer needed
+                    return <SnowVideoControls playerKind={player.playerKind} />
                 }
             })
+            disableOverlay()
             return () => {
+                enableOverlay()
                 popModal()
             }
         }
-    }, [player.controlsVisible])
+    }, [player.controlsVisible, player.videoUrl])
 
     if (!player.videoUrl) {
         return null

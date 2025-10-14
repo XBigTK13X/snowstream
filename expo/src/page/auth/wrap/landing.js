@@ -1,4 +1,5 @@
 import { C, useAppContext } from 'snowstream'
+import Snow from 'expo-snowui'
 
 export default function LandingPage(props) {
     const { apiClient, routes, config } = useAppContext()
@@ -8,8 +9,8 @@ export default function LandingPage(props) {
 
     C.React.useEffect(() => {
         if (config.debugVideoUrl) {
-            parts = config.debugVideoUrl.split('?')
-            navPush(parts[0], C.util.queryToObject(parts[1]))
+            const parts = config.debugVideoUrl.split('?')
+            navPush(parts[0], Snow.queryToObject(parts[1]))
         }
     }, [config])
 

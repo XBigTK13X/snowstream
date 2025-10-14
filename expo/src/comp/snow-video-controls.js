@@ -38,8 +38,10 @@ export default function SnowVideoControls(props) {
     const { apiClient, currentRoute } = useAppContext()
     const player = Player.useSnapshot(Player.state)
 
+    const playerKind = player.playerKind
+
     const [showLogs, setShowLogs] = React.useState(false)
-    const [logTitle, setLogTitle] = React.useState(player.playerKind !== 'rnv' ? player.playerKind + ' Logs' : 'exo Logs')
+    const [logTitle, setLogTitle] = React.useState(playerKind !== 'rnv' ? playerKind + ' Logs' : 'exo Logs')
 
     const persistLogs = () => {
         apiClient.savePlaybackLogs(player.logs).then((response) => {
@@ -77,7 +79,7 @@ export default function SnowVideoControls(props) {
         )
     }
     let swapTitle = "Swap to mpv"
-    if (player.playerKind === 'mpv') {
+    if (playerKind === 'mpv') {
         swapTitle = 'Swap to exo'
     }
 
@@ -90,7 +92,7 @@ export default function SnowVideoControls(props) {
         'Playback'
     ]
 
-    if (player.playerKind !== 'rnv') {
+    if (playerKind !== 'rnv') {
         tabs.push('Style')
     }
 
@@ -101,7 +103,7 @@ export default function SnowVideoControls(props) {
     tabs.push('Advanced')
 
     let subtitleControls = null
-    if (player.playerKind !== 'rnv') {
+    if (playerKind !== 'rnv') {
         subtitleControls = (
             <SnowGrid itemsPerRow={4}>
                 <SnowTextButton title="Sub Smaller" onPress={() => {
@@ -190,7 +192,7 @@ export default function SnowVideoControls(props) {
                         <SnowTextButton title={swapTitle} onPress={() => {
                             let newParams = { ...currentRoute.routeParams }
                             newParams.forcePlayer = 'mpv'
-                            if (player.playerKind === 'mpv') {
+                            if (playerKind === 'mpv') {
                                 newParams.forcePlayer = 'exo'
                             }
                             newParams.seekToSeconds = player.progressSeconds
