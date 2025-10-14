@@ -1,10 +1,8 @@
 import React from 'react'
-import { View } from 'react-native'
 import Snow, {
     SnowFillView,
     SnowGrid,
     SnowLabel,
-    SnowModal,
     SnowRangeSlider,
     SnowTabs,
     SnowText,
@@ -14,7 +12,7 @@ import Snow, {
 } from 'expo-snowui'
 
 import { useAppContext } from '../app-context'
-import { usePlayerContext } from '../player-context'
+import { Player } from 'snowstream'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
@@ -38,13 +36,13 @@ export default function SnowVideoControls(props) {
         }
     }
     const { apiClient, currentRoute } = useAppContext()
-    const player = usePlayerContext()
+    const player = Player.useSnapshot(Player.state)
 
     const [showLogs, setShowLogs] = React.useState(false)
-    const [logTitle, setLogTitle] = React.useState(player.info.playerKind !== 'rnv' ? player.info.playerKind + ' Logs' : 'exo Logs')
+    const [logTitle, setLogTitle] = React.useState(player.playerKind !== 'rnv' ? player.playerKind + ' Logs' : 'exo Logs')
 
     const persistLogs = () => {
-        apiClient.savePlaybackLogs(player.info.logs).then((response) => {
+        apiClient.savePlaybackLogs(player.logs).then((response) => {
             setLogTitle(response.cache_key)
         })
     }
@@ -62,7 +60,7 @@ export default function SnowVideoControls(props) {
                         focusKey="log-entry"
                         focusDown="close-bottom"
                         itemsPerRow={1}
-                        items={player.info.logs}
+                        items={player.logs}
                         renderItem={(log) => {
                             return (
                                 <SnowView>
@@ -79,12 +77,12 @@ export default function SnowVideoControls(props) {
         )
     }
     let swapTitle = "Swap to mpv"
-    if (player.info.playerKind === 'mpv') {
+    if (player.playerKind === 'mpv') {
         swapTitle = 'Swap to exo'
     }
 
     let transcodeTitle = "Start Transcoding"
-    if (player.info.isTranscode) {
+    if (player.isTranscode) {
         transcodeTitle = "Stop Transcoding"
     }
 
@@ -92,28 +90,28 @@ export default function SnowVideoControls(props) {
         'Playback'
     ]
 
-    if (player.info.playerKind !== 'rnv') {
+    if (player.playerKind !== 'rnv') {
         tabs.push('Style')
     }
 
-    if (player.info.mediaTracks) {
+    if (player.mediaTracks) {
         tabs.push('Track')
     }
 
     tabs.push('Advanced')
 
     let subtitleControls = null
-    if (player.info.playerKind !== 'rnv') {
+    if (player.playerKind !== 'rnv') {
         subtitleControls = (
             <SnowGrid itemsPerRow={4}>
                 <SnowTextButton title="Sub Smaller" onPress={() => {
-                    player.action.setSubtitleFontSize(fontSize => { return fontSize - 4 })
+                    Player.action.setSubtitleFontSize(fontSize => { return fontSize - 4 })
                 }} />
                 <SnowTextButton title="Sub Bigger" onPress={() => {
-                    player.action.setSubtitleFontSize(fontSize => { return fontSize + 4 })
+                    Player.action.setSubtitleFontSize(fontSize => { return fontSize + 4 })
                 }} />
                 <SnowTextButton title="Sub Darker" onPress={() => {
-                    player.action.setSubtitleColor(fontColor => {
+                    Player.action.setSubtitleColor(fontColor => {
                         let newColor = { ...fontColor }
                         newColor.shade -= 0.15;
                         if (newColor.shade < 0) {
@@ -123,7 +121,7 @@ export default function SnowVideoControls(props) {
                     })
                 }} />
                 <SnowTextButton title="Sub Lighter" onPress={() => {
-                    player.action.setSubtitleColor(fontColor => {
+                    Player.action.setSubtitleColor(fontColor => {
                         let newColor = { ...fontColor }
                         newColor.shade += 0.15;
                         if (newColor.shade > 1.0) {
@@ -137,27 +135,27 @@ export default function SnowVideoControls(props) {
         )
     }
     let trackControls = null
-    if (player.info.mediaTracks) {
+    if (player.mediaTracks) {
         trackControls = (
             <SnowTrackSelector
                 focusKey="track-selector"
                 style={styles.row}
                 showDelay={true}
-                audioDelay={player.info.audioDelaySeconds}
-                setAudioDelay={player.action.setAudioDelay}
-                subtitleDelay={player.info.subtitleDelaySeconds}
-                setSubtitleDelay={player.action.setSubtitleDelay}
-                tracks={player.info.mediaTracks}
-                selectTrack={player.action.onSelectTrack}
-                audioTrack={player.info.audioTrackIndex}
-                subtitleTrack={player.info.subtitleTrackIndex}
+                audioDelay={player.audioDelaySeconds}
+                setAudioDelay={Player.action.setAudioDelay}
+                subtitleDelay={player.subtitleDelaySeconds}
+                setSubtitleDelay={Player.action.setSubtitleDelay}
+                tracks={player.mediaTracks}
+                selectTrack={Player.action.onSelectTrack}
+                audioTrack={player.audioTrackIndex}
+                subtitleTrack={player.subtitleTrackIndex}
             />
         )
     }
     let slider = null
-    if (player.info.durationSeconds > 0) {
+    if (player.durationSeconds > 0) {
         const onPercentChange = (percent) => {
-            player.action.onProgress(null, 'manual-seek', percent);
+            Player.action.onProgress(null, 'manual-seek', percent);
         }
         slider = (
             <>
@@ -166,10 +164,10 @@ export default function SnowVideoControls(props) {
                     focusDown="control-tabs"
                     width={750}
                     debounce={true}
-                    percent={player.info.progressPercent ?? 0}
+                    percent={player.progressPercent ?? 0}
                     onValueChange={onPercentChange}
                 />
-                <SnowText style={styles.progress}>{player.info.progressDisplay ?? ''} / {player.info.durationDisplay}</SnowText>
+                <SnowText style={styles.progress}>{player.progressDisplay ?? ''} / {player.durationDisplay}</SnowText>
             </>
         )
     }
@@ -177,13 +175,13 @@ export default function SnowVideoControls(props) {
     return (
         (
             <SnowFillView style={{ position: 'absolute', right: 0, left: 0, top: 0, bottom: 0 }} flexStart scroll>
-                <SnowLabel center>{player.info.videoTitle}</SnowLabel>
+                <SnowLabel center>{player.videoTitle}</SnowLabel>
                 {slider}
                 <SnowTabs focusStart focusKey="control-tabs" headers={tabs}>
                     <SnowGrid itemsPerRow={3}>
-                        <SnowTextButton title="Resume" onPress={player.action.onResumeVideo} />
-                        <SnowTextButton title="Stop" onPress={() => { player.action.onStopVideo() }} />
-                        <SnowTextButton title="Home" onPress={() => { player.action.onStopVideo(true) }} />
+                        <SnowTextButton title="Resume" onPress={Player.action.onResumeVideo} />
+                        <SnowTextButton title="Stop" onPress={() => { Player.action.onStopVideo() }} />
+                        <SnowTextButton title="Home" onPress={() => { Player.action.onStopVideo(true) }} />
                     </SnowGrid>
                     {subtitleControls}
                     {trackControls}
@@ -192,17 +190,17 @@ export default function SnowVideoControls(props) {
                         <SnowTextButton title={swapTitle} onPress={() => {
                             let newParams = { ...currentRoute.routeParams }
                             newParams.forcePlayer = 'mpv'
-                            if (player.info.playerKind === 'mpv') {
+                            if (player.playerKind === 'mpv') {
                                 newParams.forcePlayer = 'exo'
                             }
-                            newParams.seekToSeconds = player.info.progressSeconds
-                            player.action.onChangeRouteParams(newParams)
+                            newParams.seekToSeconds = player.progressSeconds
+                            Player.action.onChangeRouteParams(newParams)
                         }} />
                         <SnowTextButton title={transcodeTitle} onPress={() => {
                             let newParams = { ...currentRoute.routeParams }
-                            newParams.transcode = !player.info.isTranscode
-                            newParams.seekToSeconds = player.info.progressSeconds
-                            player.action.onChangeRouteParams(newParams)
+                            newParams.transcode = !player.isTranscode
+                            newParams.seekToSeconds = player.progressSeconds
+                            Player.action.onChangeRouteParams(newParams)
                         }} />
                     </SnowGrid>
                 </SnowTabs>

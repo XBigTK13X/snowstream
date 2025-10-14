@@ -3,10 +3,8 @@ import {
     config,
     AppContextProvider,
     useAppContext,
-    ExternalPlayerContextProvider,
-    InternalPlayerContextProvider,
-    PlayerContextBridge
 } from 'snowstream'
+import { Player } from 'snowstream'
 import { routes } from '../routes'
 import { pages } from '../pages'
 import AuthPageLoader from './auth/auth-page-loader'
@@ -39,22 +37,18 @@ function PageWrapper(props) {
 
 export default function PageLoader() {
     return (
-        <ExternalPlayerContextProvider>
-            <Snow.App
-                DEBUG_LAYERS={config.debugSnowui}
-                snowStyle={appStyle}
-                routePaths={routes}
-                routePages={pages}
-                initialRoutePath={routes.signIn}
-            >
-                <AppContextProvider>
-                    <InternalPlayerContextProvider>
-                        <PlayerContextBridge>
-                            <PageWrapper />
-                        </PlayerContextBridge>
-                    </InternalPlayerContextProvider>
-                </AppContextProvider >
-            </Snow.App >
-        </ExternalPlayerContextProvider>
+        <Snow.App
+            DEBUG_LAYERS={config.debugSnowui}
+            snowStyle={appStyle}
+            routePaths={routes}
+            routePages={pages}
+            initialRoutePath={routes.signIn}
+        >
+            <AppContextProvider>
+                <Player.PlayerManager>
+                    <PageWrapper />
+                </Player.PlayerManager>
+            </AppContextProvider >
+        </Snow.App >
     )
 }

@@ -3,17 +3,17 @@ import Snow from 'expo-snowui'
 // Don't want it being included outside of Android
 // Don't trying importing it until first render
 import { LibmpvVideo } from 'expo-libmpv'
-import { useAppContext, usePlayerContext } from 'snowstream'
+import { useAppContext, Player } from 'snowstream'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
     const { clientOptions } = useAppContext()
-    const player = usePlayerContext()
+    const player = Player.useSnapshot(Player.state)
 
     const forwardRef = React.useRef(null);
 
     React.useEffect(() => {
-        if (!player.info.isReady && forwardRef.current?.runCommand) {
+        if (!player.isReady && forwardRef.current?.runCommand) {
             if (clientOptions.useFastMpv) {
                 try {
                     forwardRef.current.runCommand(`set|hwdec|mediacodec`).catch(() => { })
@@ -36,36 +36,36 @@ export default function MpvVideoView(props) {
                     forwardRef.current.runCommand(`set|af|acompressor=ratio=4,loudnorm`).catch(() => { })
                 }
             }
-            player.action.onVideoReady()
+            Player.action.onVideoReady()
         }
     })
 
     React.useEffect(() => {
-        if (forwardRef.current?.runCommand && player.info.isReady) {
+        if (forwardRef.current?.runCommand && player.isReady) {
             forwardRef.current.runCommand(`set|sub-ass-override|force`).catch(() => { })
-            forwardRef.current.runCommand(`set|sub-font-size|${player.info.subtitleFontSize}`).catch(() => { })
+            forwardRef.current.runCommand(`set|sub-font-size|${player.subtitleFontSize}`).catch(() => { })
         }
 
-    }, [player.info.subtitleFontSize])
+    }, [player.subtitleFontSize])
 
     React.useEffect(() => {
-        if (forwardRef.current?.runCommand && player.info.isReady) {
+        if (forwardRef.current?.runCommand && player.isReady) {
             forwardRef.current.runCommand(`set|sub-ass-override|force`).catch(() => { })
-            forwardRef.current.runCommand(`set|sub-color|${player.info.subtitleColor.shade}/${player.info.subtitleColor.alpha}`).catch(() => { })
+            forwardRef.current.runCommand(`set|sub-color|${player.subtitleColor.shade}/${player.subtitleColor.alpha}`).catch(() => { })
         }
-    }, [player.info.subtitleColor])
+    }, [player.subtitleColor])
 
     React.useEffect(() => {
-        if (player.info.audioDelay !== undefined && forwardRef.current?.runCommand && player.info.isReady) {
-            forwardRef.current.runCommand(`set|audio-delay|${player.info.audioDelay}`).catch(() => { })
+        if (player.audioDelay !== undefined && forwardRef.current?.runCommand && player.isReady) {
+            forwardRef.current.runCommand(`set|audio-delay|${player.audioDelay}`).catch(() => { })
         }
-    }, [player.info.audioDelay])
+    }, [player.audioDelay])
 
     React.useEffect(() => {
-        if (player.info.subtitleDelay !== undefined && forwardRef.current?.runCommand && player.info.isReady) {
-            forwardRef.current.runCommand(`set|sub-delay|${player.info.subtitleDelay}`).catch(() => { })
+        if (player.subtitleDelay !== undefined && forwardRef.current?.runCommand && player.isReady) {
+            forwardRef.current.runCommand(`set|sub-delay|${player.subtitleDelay}`).catch(() => { })
         }
-    }, [player.info.subtitleDelay])
+    }, [player.subtitleDelay])
 
     // The Modal draws the video player above everything else in the app
     // The FillView ensures that if the surface doesn't take up the entire viewport, that the letter/pillar boxing is black
@@ -79,32 +79,32 @@ export default function MpvVideoView(props) {
             wrapper={false}
             assignFocus={false}
             onRequestClose={() => {
-                player.action.onStopVideo()
+                Player.action.onStopVideo()
             }}>
             <Snow.FillView style={{ backgroundColor: 'black' }} >
                 <LibmpvVideo
                     ref={forwardRef}
-                    playUrl={player.info.videoUrl}
-                    isPlaying={player.info.isPlaying}
+                    playUrl={player.videoUrl}
+                    isPlaying={player.isPlaying}
                     useHardwareDecoder={clientOptions.hardwareDecoder}
-                    surfaceWidth={player.info.videoWidth}
-                    surfaceHeight={player.info.videoHeight}
+                    surfaceWidth={player.videoWidth}
+                    surfaceHeight={player.videoHeight}
                     onLibmpvEvent={(libmpvEvent) => {
-                        player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
+                        Player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
                     }}
                     onLibmpvLog={(libmpvLog) => {
-                        player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
+                        Player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
                     }}
-                    selectedAudioTrack={player.info.audioTrackIndex}
-                    selectedSubtitleTrack={player.info.subtitleTrackIndex}
-                    seekToSeconds={player.info.seekToSeconds}
+                    selectedAudioTrack={player.audioTrackIndex}
+                    selectedSubtitleTrack={player.subtitleTrackIndex}
+                    seekToSeconds={player.seekToSeconds}
                 />
             </Snow.FillView>
             <Snow.Overlay
                 focusStart
                 focusKey="mpv-video"
                 focusLayer="mpv-video"
-                onPress={player.action.onPauseVideo}
+                onPress={Player.action.onPauseVideo}
             >
             </Snow.Overlay>
         </Snow.Modal >

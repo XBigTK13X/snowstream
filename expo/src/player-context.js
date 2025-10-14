@@ -14,7 +14,7 @@ export function useInternalPlayerContext() {
     return value;
 }
 
-export function InternalPlayerContextProvider(props) {
+export function PlayerContextProvider(props) {
     const {
         apiClient,
         clientOptions,
@@ -587,57 +587,12 @@ export function InternalPlayerContextProvider(props) {
     }
 
     return (
-        <InternalPlayerContext.Provider
+        <PlayerContext.Provider
             value={playerContext}>
             {props.children}
-        </InternalPlayerContext.Provider>
+        </PlayerContext.Provider>
     );
 }
 
 
-export const ExternalPlayerContext = React.createContext({});
-
-export function usePlayerContext() {
-    const value = React.useContext(ExternalPlayerContext);
-    if (!value) {
-        throw new Error('usePlayerContext must be wrapped in a <ExternalPlayerContextProvider />');
-    }
-    return value;
-}
-
-export const ExternalPlayerContextProvider = (props) => {
-    const [externalPlayerContext, setExternalPlayerContext] = React.useState({})
-    const context = {
-        ...externalPlayerContext,
-        setExternalPlayerContext
-    }
-    return (
-        <ExternalPlayerContext.Provider value={context}>
-            {props.children}
-        </ExternalPlayerContext.Provider>
-    )
-}
-
-export function PlayerContextBridge(props) {
-    const internalPlayerContext = useInternalPlayerContext()
-    const { setExternalPlayerContext } = usePlayerContext()
-    React.useEffect(() => {
-        setExternalPlayerContext({ ...internalPlayerContext })
-    }, [internalPlayerContext])
-    console.log({ internalPlayerContext })
-    return (
-        <>
-            {props.children}
-        </>
-    );
-}
-
-export function PlayerContextProvider(props) {
-    return (
-        <InternalPlayerContextProvider >
-            <PlayerContextBridge>
-                {props.children}
-            </PlayerContextBridge>
-        </InternalPlayerContextProvider >
-    )
-}
+export const PlayerContext = React.createContext({});

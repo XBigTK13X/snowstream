@@ -1,31 +1,10 @@
-import { C, useAppContext, PlayerContextProvider, usePlayerContext } from 'snowstream'
-
-function VideoPlayer() {
-    const player = usePlayerContext()
-    if (player.info.playbackFailed) {
-        return (
-            <C.FillView>
-                <C.SnowText>Unable to play the video.</C.SnowText>
-                <C.SnowText>Error: {player.info.playbackFailed.message}</C.SnowText>
-            </C.FillView>
-        )
-    }
-
-    if (!player.info.videoUrl) {
-        if (player.info.isTranscode) {
-            return <C.SnowText>Preparing a transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
-        }
-        return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
-    }
-    return (
-        <C.SnowVideoPlayer />
-    )
-}
+import { C, useAppContext, Player } from 'snowstream'
 
 function KeepsakeVideo(props) {
-    return (<PlayerContextProvider
-        forceTranscode={C.isWeb}
-        loadVideo={() => {
+    const player = Player.useSnapshot(Player.state)
+    Player.action.setup({
+        forceTranscode: C.isWeb,
+        loadVideo: () => {
             return new Promise(resolve => {
                 return resolve({
                     url: props.videoFile.network_path,
@@ -34,8 +13,8 @@ function KeepsakeVideo(props) {
                     tracks: props.videoFile.info.tracks
                 })
             })
-        }}
-        loadTranscode={(apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
+        },
+        loadTranscode: (apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
             return new Promise((resolve) => {
                 return apiClient.createVideoFileTranscodeSession(
                     props.videoFile.id,
@@ -58,15 +37,32 @@ function KeepsakeVideo(props) {
                         })
                     })
             })
-        }}
-        onComplete={() => {
+        },
+        onComplete: () => {
             return props.closeModal()
-        }}
-        onipVideo={() => {
+        },
+        onStopVideo: () => {
             return props.closeModal()
-        }}>
-        <VideoPlayer />
-    </PlayerContextProvider>
+        }
+    })
+
+    if (player.playbackFailed) {
+        return (
+            <C.FillView>
+                <C.SnowText>Unable to play the video.</C.SnowText>
+                <C.SnowText>Error: {player.playbackFailed.message}</C.SnowText>
+            </C.FillView>
+        )
+    }
+
+    if (!player.videoUrl) {
+        if (player.isTranscode) {
+            return <C.SnowText>Preparing a transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
+        }
+        return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
+    }
+    return (
+        <C.SnowVideoPlayer />
     )
 }
 

@@ -6,15 +6,15 @@ import {
     View
 } from 'react-native'
 import { useKeepAwake } from 'expo-keep-awake';
-
+import { Player } from 'snowstream'
 import util from '../util'
 import SnowVideoControls from './snow-video-controls'
-import { usePlayerContext } from '../player-context'
 import { useAppContext } from '../app-context'
 
 export default function SnowVideoPlayer(props) {
     const { pushModal, popModal, enableOverlay, disableOverlay } = Snow.useLayerContext()
-    const player = usePlayerContext()
+    const player = Player.useSnapshot(Player.state)
+
     if (!player) {
         return null
     }
@@ -23,7 +23,7 @@ export default function SnowVideoPlayer(props) {
     if (!props.skipCleanup) {
         React.useEffect(() => {
             return () => {
-                player.action.onStopVideo()
+                Player.action.onStopVideo()
             }
         }, [])
     }
@@ -35,7 +35,7 @@ export default function SnowVideoPlayer(props) {
     React.useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', appState => {
             if (appState === 'background') {
-                player.action.onStopVideo()
+                Player.action.onStopVideo()
             }
         });
 
@@ -50,7 +50,7 @@ export default function SnowVideoPlayer(props) {
                 props: {
                     assignFocus: false,
                     onRequestClose: () => {
-                        player.action.onStopVideo()
+                        Player.action.onStopVideo()
 
                     }
                 },
@@ -59,13 +59,13 @@ export default function SnowVideoPlayer(props) {
                     return <VideoView />
                 }
             })
-            if (player.info.controlsVisible) {
+            if (player.controlsVisible) {
                 enableOverlay({
                     props: {
                         focusStart,
                         focusKey: "video-player",
                         focusLayer: "video-player",
-                        onPress: player.action.onPauseVideo
+                        onPress: Player.action.onPauseVideo
                     }
                 })
             } else {
@@ -77,7 +77,7 @@ export default function SnowVideoPlayer(props) {
                 disableOverlay()
             }
         }
-    }, [player.info.videoUrl])
+    }, [player.videoUrl])
     React.useEffect(() => {
         if (player?.info?.controlsVisible) {
             pushModal({
@@ -86,7 +86,7 @@ export default function SnowVideoPlayer(props) {
                     obscure: true,
                     onRequestClose: () => {
                         popModal()
-                        player.action.onResumeVideo()
+                        Player.action.onResumeVideo()
                     }
                 },
                 render: () => {
@@ -97,14 +97,14 @@ export default function SnowVideoPlayer(props) {
                 popModal()
             }
         }
-    }, [player.info.controlsVisible])
+    }, [player.controlsVisible])
 
-    if (!player.info.videoUrl) {
+    if (!player.videoUrl) {
         return null
     }
 
     if (config.debugVideoPlayer) {
-        util.log(player.info.videoUrl)
+        util.log(player.videoUrl)
     }
 
     return (

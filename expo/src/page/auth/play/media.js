@@ -1,10 +1,10 @@
-import { C, usePlayerContext } from 'snowstream'
+import { C, Player } from 'snowstream'
 
 export function PlayMediaPage(props) {
-    const player = usePlayerContext()
+    const player = Player.useSnapshot(Player.state)
 
     C.React.useEffect(() => {
-        player.setup({
+        Player.action.setup({
             loadVideo: props.loadVideo,
             loadTranscode: props.loadTranscode,
             onComplete: props.onComplete,
@@ -13,9 +13,7 @@ export function PlayMediaPage(props) {
         })
     }, [])
 
-    console.log({ player })
-
-    if (player.info.playbackFailed) {
+    if (player.playbackFailed) {
         return (
             <C.View>
                 <C.SnowText>Unable to play the video.</C.SnowText>
@@ -24,8 +22,8 @@ export function PlayMediaPage(props) {
         )
     }
 
-    if (!player?.info?.videoUrl) {
-        if (player?.info?.isTranscode) {
+    if (!player.videoUrl) {
+        if (player.isTranscode) {
             return <C.SnowText>Preparing a transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
         }
         return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
