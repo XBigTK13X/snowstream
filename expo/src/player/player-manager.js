@@ -80,6 +80,10 @@ export function PlayerManager(props) {
     }, [apiClient, currentRoute])
 
     React.useEffect(() => {
+        playerState.clientOptions = clientOptions
+    }, [clientOptions])
+
+    React.useEffect(() => {
         player.allowShortcutsRef.current =
             (!player.controlsVisible &&
                 player.isReady &&

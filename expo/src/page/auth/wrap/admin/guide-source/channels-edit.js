@@ -2,6 +2,8 @@ import { C, useAppContext } from 'snowstream'
 
 function ChannelEditRow(props) {
     const { apiClient } = useAppContext()
+    const { pushModal, popModal, enableOverlay, disableOverlay } = C.useSnowContext()
+
     const [form, setForm] = C.React.useState({
         id: props.channel.id,
         editedId: props.channel.edited_id ?? '',
@@ -27,44 +29,56 @@ function ChannelEditRow(props) {
     const saveChannel = (payload) => {
         return apiClient.saveChannel(payload)
     }
-    if (showModal) {
-        return (
-            <C.SnowModal focusLayer="channel-list" scroll onRequestClose={() => { setShowModal(false) }}>
-                <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
-                <C.SnowTextButton title="Cancel" onPress={() => { setShowModal(false) }} />
-                <C.SnowGrid itemsPerRow={2}>
-                    <C.SnowLabel>Filter</C.SnowLabel>
-                    <C.SnowInput value={filter} onValueChange={setFilter} />
-                </C.SnowGrid>
-                <C.SnowGrid >
-                    {props.streamables.map((streamable) => {
-                        if (filter) {
-                            let isFiltered = true
-                            if (streamable.name_display && streamable.name_display.toLowerCase().includes(filter)) {
-                                isFiltered = false
-                            }
-                            if (streamable.name.toLowerCase().includes(filter)) {
-                                isFiltered = false
-                            }
-                            if (isFiltered) {
-                                return true
-                            }
-                        }
-                        return (
-                            <C.SnowTextButton
-                                title={streamable.name_display ? streamable.name_display : streamable.name}
-                                onPress={() => {
-                                    saveChannel({ ...form, streamableId: streamable.id })
-                                        .then(() => {
-                                            setShowModal(false)
-                                        })
-                                }} />
-                        )
-                    })}
-                </C.SnowGrid>
-            </C.SnowModal>
-        )
-    }
+    C.React.useEffect(() => {
+        pushModal({
+            props: {
+                focusLayer: "channel-list",
+                scroll: true,
+                onRequestClose: () => { setShowModal(false) }
+            },
+            render: () => {
+                return (
+                    <>
+                        <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
+                        <C.SnowTextButton title="Cancel" onPress={() => { setShowModal(false) }} />
+                        <C.SnowGrid itemsPerRow={2}>
+                            <C.SnowLabel>Filter</C.SnowLabel>
+                            <C.SnowInput value={filter} onValueChange={setFilter} />
+                        </C.SnowGrid>
+                        <C.SnowGrid >
+                            {props.streamables.map((streamable) => {
+                                if (filter) {
+                                    let isFiltered = true
+                                    if (streamable.name_display && streamable.name_display.toLowerCase().includes(filter)) {
+                                        isFiltered = false
+                                    }
+                                    if (streamable.name.toLowerCase().includes(filter)) {
+                                        isFiltered = false
+                                    }
+                                    if (isFiltered) {
+                                        return true
+                                    }
+                                }
+                                return (
+                                    <C.SnowTextButton
+                                        title={streamable.name_display ? streamable.name_display : streamable.name}
+                                        onPress={() => {
+                                            saveChannel({ ...form, streamableId: streamable.id })
+                                                .then(() => {
+                                                    setShowModal(false)
+                                                })
+                                        }} />
+                                )
+                            })}
+                        </C.SnowGrid>
+                    </>
+                )
+            }
+        })
+        return () => {
+            popModal()
+        }
+    }, [showModal, form, filter])
 
     let streamableName = "Streamable"
     if (props.channel.streamable) {
@@ -73,7 +87,7 @@ function ChannelEditRow(props) {
     }
 
     return (
-        <C.View>
+        <>
             <C.SnowGrid itemsPerRow={3}>
                 <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
                 <C.SnowTextButton title="Save" onPress={() => { saveChannel(form) }} />
@@ -90,7 +104,7 @@ function ChannelEditRow(props) {
                 <C.SnowInput onValueChange={changeForm('editedNumber')} value={form.editedNumber} />
             </C.SnowGrid>
             <C.SnowBreak />
-        </C.View>
+        </>
     )
 }
 
@@ -126,7 +140,7 @@ export default function ChannelEditPage() {
     }
 
     return (
-        <C.View>
+        <>
             <C.SnowText>There are {guideSource.channels.length} channels.</C.SnowText>
             <C.SnowGrid itemsPerRow={3}>
                 <C.SnowLabel>Filter (required)</C.SnowLabel>
@@ -155,6 +169,6 @@ export default function ChannelEditPage() {
             </C.SnowGrid>
             <C.SnowBreak />
             {channelRows}
-        </C.View >
+        </>
     )
 }

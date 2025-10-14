@@ -31,7 +31,7 @@ export default function SignInPage() {
                 setUsers(response)
             })
         }
-    }, [users, apiClient])
+    }, [users, apiClient, clientOptions])
 
     C.React.useEffect(() => {
         if (session) {
@@ -137,7 +137,7 @@ export default function SignInPage() {
             />
         }
         userList = (
-            <C.View>
+            <>
                 <C.SnowLabel center>Select a user to login to {apiClient.webApiUrl}.</C.SnowLabel>
                 <C.SnowGrid
                     focusStart
@@ -146,12 +146,12 @@ export default function SignInPage() {
                     items={users}
                     renderItem={renderItem}
                 />
-            </C.View>
+            </>
 
         )
     }
     selectServer = (
-        <C.View>
+        <>
             <C.View>
                 <C.SnowLabel center>Choose a server to use.</C.SnowLabel>
                 <C.SnowGrid
@@ -176,17 +176,17 @@ export default function SignInPage() {
                 title="Connect to Server"
                 onPress={applyCustomServer}
             />
-        </C.View >
+        </>
     )
 
 
 
     return (
-        <C.View>
+        <>
             {passwordForm}
             {userList}
             {selectServer}
             <C.SnowLabel>{errors ? 'Errors: ' + JSON.stringify(errors) : ""}</C.SnowLabel>
-        </C.View>
+        </>
     )
 }

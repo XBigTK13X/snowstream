@@ -1,3 +1,4 @@
+import { View } from 'react-native'
 import Snow from 'expo-snowui'
 import {
     config,
@@ -26,10 +27,10 @@ const appStyle = {
     }
 }
 
-function PageWrapper(props) {
+function PageWrapper() {
     const { CurrentPage, currentRoute } = Snow.useSnowContext()
     const { routes } = useAppContext()
-    if (currentRoute.routeKey === routes.signIn || currentRoute.routeKey === '/') {
+    if (currentRoute.routePath === routes.signIn || currentRoute.routePath === '/') {
         return <CurrentPage />
     }
     return <AuthPageLoader />
@@ -38,7 +39,7 @@ function PageWrapper(props) {
 export default function PageLoader() {
     return (
         <Snow.App
-            DEBUG_LAYERS={config.debugSnowui}
+            DEBUG_SNOW={config.debugSnowui}
             snowStyle={appStyle}
             routePaths={routes}
             routePages={pages}
@@ -46,7 +47,9 @@ export default function PageLoader() {
         >
             <AppContextProvider>
                 <Player.Manager>
-                    <PageWrapper />
+                    <View style={{ flex: 1, marginBottom: 50 }}>
+                        <PageWrapper />
+                    </View>
                 </Player.Manager>
             </AppContextProvider >
         </Snow.App >

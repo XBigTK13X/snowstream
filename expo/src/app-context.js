@@ -114,7 +114,7 @@ export function AppContextProvider(props) {
             }
             setSessionLoaded(true)
         }
-    }, [apiClient, sessionLoaded])
+    }, [apiClient, sessionLoaded, apiClientKey])
 
     React.useEffect(() => {
         if (!clientOptions) {

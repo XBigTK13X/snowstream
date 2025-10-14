@@ -67,21 +67,33 @@ function KeepsakeVideo(props) {
     )
 }
 
-function ZoomView(props) {
-    return (<C.SnowModal
-        assignFocus={false}
-        wrapper={false}
-        onRequestClose={() => { props.action }}>
-        <C.FillView style={{ backgroundColor: 'black' }}>
-            {props.children}
-        </C.FillView>
-        <C.SnowOverlay
-            focusStart
-            focusKey="zoomed-item"
-            focusLayer="zoomed-item"
-            onPress={props.action} />
-    </C.SnowModal >
-    )
+function ZoomView(zoomProps) {
+    const { pushModal, popModal, enableOverlay, disableOverlay } = C.useSnowContext()
+    C.React.useEffect(() => {
+        pushModal({
+            props: {
+                assignFocus: false,
+                wrapper: false,
+                onRequestClose: () => { zoomProps.action }
+            },
+            render: () => {
+                return zoomProps.children
+            }
+        })
+        enableOverlay({
+            props: {
+                focusStart: true,
+                focusKey: 'zoomed-item',
+                focusLayer: 'zoomed-item',
+                onPress: zoomProps.action
+            }
+        })
+        return () => {
+            popModal()
+            disableOverlay()
+        }
+    }, [])
+    return null
 }
 
 export default function KeepsakeDetailsPage(props) {
@@ -158,11 +170,10 @@ export default function KeepsakeDetailsPage(props) {
     let imageFocusKey = null
     let dirs = null
     let hasDirs = keepsake.directories && keepsake.directories.length
-    let dirsFocusKey = null
     if (hasVideos) {
         videoFocusKey = 'page-entry'
         videos = (
-            <C.View>
+            <>
                 <C.SnowLabel>Videos</C.SnowLabel>
                 <C.SnowGrid focusStart focusKey={videoFocusKey} wide={true}>
                     {keepsake.videos.map((video, videoIndex) => {
@@ -177,7 +188,7 @@ export default function KeepsakeDetailsPage(props) {
                         )
                     })}
                 </C.SnowGrid>
-            </C.View>
+            </>
         )
     }
 
@@ -192,7 +203,7 @@ export default function KeepsakeDetailsPage(props) {
         }
         focus.focusKey = imageFocusKey
         images = (
-            <C.View>
+            <>
                 <C.SnowLabel>Images</C.SnowLabel>
                 <C.SnowGrid {...focus} wide={true}>
                     {keepsake.images.map((image, imageIndex) => {
@@ -207,7 +218,7 @@ export default function KeepsakeDetailsPage(props) {
                         )
                     })}
                 </C.SnowGrid>
-            </C.View>
+            </>
         )
     }
 
@@ -226,7 +237,7 @@ export default function KeepsakeDetailsPage(props) {
             focus.focusUp = videoFocusKey
         }
         dirs = (
-            <C.View>
+            <>
                 <C.SnowLabel>Directories</C.SnowLabel>
                 <C.SnowGrid {...focus} >
                     {keepsake.directories.map((dir, dirIndex) => {
@@ -245,7 +256,7 @@ export default function KeepsakeDetailsPage(props) {
                         )
                     })}
                 </C.SnowGrid>
-            </C.View>
+            </>
         )
     }
     if (keepsake) {

@@ -1,20 +1,16 @@
 import React from 'react'
-import Snow from 'expo-snowui'
-// Don't want it being included outside of Android
-// Don't trying importing it until first render
 import { LibmpvVideo } from 'expo-libmpv'
-import { useAppContext, Player } from 'snowstream'
+import { Player } from 'snowstream'
 
 // https://mpv.io/manual/master/#property-manipulation
 export default function MpvVideoView(props) {
-    const { clientOptions } = useAppContext()
     const player = Player.useSnapshot(Player.state)
 
     const forwardRef = React.useRef(null);
 
     React.useEffect(() => {
         if (!player.isReady && forwardRef.current?.runCommand) {
-            if (clientOptions.useFastMpv) {
+            if (player.clientOptions.useFastMpv) {
                 try {
                     forwardRef.current.runCommand(`set|hwdec|mediacodec`).catch(() => { })
                     forwardRef.current.runCommand(`set|vo|gpu`).catch(() => { })
@@ -31,7 +27,7 @@ export default function MpvVideoView(props) {
                 catch { }
             }
             else {
-                if (clientOptions.audioCompression) {
+                if (player.clientOptions.audioCompression) {
                     // Loudness normalization from Snowby
                     forwardRef.current.runCommand(`set|af|acompressor=ratio=4,loudnorm`).catch(() => { })
                 }
@@ -67,46 +63,23 @@ export default function MpvVideoView(props) {
         }
     }, [player.subtitleDelay])
 
-    // The Modal draws the video player above everything else in the app
-    // The FillView ensures that if the surface doesn't take up the entire viewport, that the letter/pillar boxing is black
-    // The Video element renders to a native Surface
-    // The Overlay allows a user to tap/click select on a remote to pause
     return (
-        <Snow.Modal
-            transparent
-            statusBarTranslucent
-            navigationBarTranslucent
-            wrapper={false}
-            assignFocus={false}
-            onRequestClose={() => {
-                Player.action.onStopVideo()
-            }}>
-            <Snow.FillView style={{ backgroundColor: 'black' }} >
-                <LibmpvVideo
-                    ref={forwardRef}
-                    playUrl={player.videoUrl}
-                    isPlaying={player.isPlaying}
-                    useHardwareDecoder={clientOptions.hardwareDecoder}
-                    surfaceWidth={player.videoWidth()}
-                    surfaceHeight={player.videoHeight()}
-                    onLibmpvEvent={(libmpvEvent) => {
-                        Player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
-                    }}
-                    onLibmpvLog={(libmpvLog) => {
-                        Player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
-                    }}
-                    selectedAudioTrack={player.audioTrackIndex}
-                    selectedSubtitleTrack={player.subtitleTrackIndex}
-                    seekToSeconds={player.seekToSeconds}
-                />
-            </Snow.FillView>
-            <Snow.Overlay
-                focusStart
-                focusKey="mpv-video"
-                focusLayer="mpv-video"
-                onPress={Player.action.onPauseVideo}
-            >
-            </Snow.Overlay>
-        </Snow.Modal >
+        <LibmpvVideo
+            ref={forwardRef}
+            playUrl={player.videoUrl}
+            isPlaying={player.isPlaying}
+            useHardwareDecoder={player.clientOptions.hardwareDecoder}
+            surfaceWidth={player.videoWidth}
+            surfaceHeight={player.videoHeight}
+            onLibmpvEvent={(libmpvEvent) => {
+                Player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
+            }}
+            onLibmpvLog={(libmpvLog) => {
+                Player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
+            }}
+            selectedAudioTrack={player.audioTrackIndex}
+            selectedSubtitleTrack={player.subtitleTrackIndex}
+            seekToSeconds={player.seekToSeconds}
+        />
     )
 }

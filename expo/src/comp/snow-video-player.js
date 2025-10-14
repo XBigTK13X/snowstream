@@ -41,9 +41,9 @@ export default function SnowVideoPlayer(props) {
         };
     }, []);
 
-    // Video contents
+    // Video content / player
     React.useEffect(() => {
-        if (player.videoUrl && !player.controlsVisible) {
+        if (player.videoUrl) {
             pushModal({
                 props: {
                     assignFocus: false,
@@ -57,14 +57,16 @@ export default function SnowVideoPlayer(props) {
                     return <VideoView />
                 }
             })
-            enableOverlay({
-                props: {
-                    focusStart: true,
-                    focusKey: "video-player",
-                    focusLayer: "video-player",
-                    onPress: Player.action.onPauseVideo
-                }
-            })
+            if (!player.controlsVisible) {
+                enableOverlay({
+                    props: {
+                        focusStart: true,
+                        focusKey: "video-player",
+                        focusLayer: "video-player",
+                        onPress: Player.action.onPauseVideo
+                    }
+                })
+            }
 
             return () => {
                 popModal()
