@@ -15,8 +15,6 @@ export const initialPlayerState = {
     navPop: null,
     currentRoute: { routeParams: {} },
 
-    setupPayload: {},
-
     videoUrl: null,
     videoTitle: null,
     videoLoading: false,
@@ -72,7 +70,7 @@ export const playerState = proxy({
         const routeParams = this.currentRoute?.routeParams
         if (routeParams?.transcode === 'true') return true
         if (this.clientOptions?.alwaysTranscode) return true
-        if (this.setupPayload?.forceTranscode) return true
+        if (this.forceTranscode) return true
         return false
     },
 

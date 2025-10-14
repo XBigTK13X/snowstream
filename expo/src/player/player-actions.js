@@ -26,10 +26,6 @@ export const playerActions = {
         playerState.currentRoute = newRoute
     },
 
-    setup(payload) {
-        playerState.setupPayload = payload || {}
-    },
-
     onPauseVideo() {
         playerState.controlsVisible = true
         playerState.isPlaying = false
@@ -37,8 +33,8 @@ export const playerActions = {
 
     onPlaybackComplete() {
         this.onProgress(playerState.durationSeconds, 'playback-complete').then(() => {
-            if (playerState.setupPayload?.onComplete) {
-                playerState.setupPayload.onComplete(playerState.apiClient, playerState.routes, playerState.navPush)
+            if (playerState.onComplete) {
+                playerState.onComplete(playerState.apiClient, playerState.routes, playerState.navPush)
             } else {
                 if (playerState.navPop) playerState.navPop()
             }
@@ -51,9 +47,8 @@ export const playerActions = {
         playerState.videoLoading = false
         playerState.videoUrl = null
         playerState.transcodeOnResume = false
-        if (playerState.setupPayload?.loadTranscode) {
+        if (playerState.loadTranscode) {
             playerState
-                .setupPayload
                 .loadTranscode(
                     playerState.apiClient,
                     playerState.currentRoute.routeParams,
@@ -76,8 +71,8 @@ export const playerActions = {
         playerState.controlsVisible = false
         playerState.isPlaying = false
         if (playerState.changeRouteParamsRef.current) return
-        if (playerState.setupPayload?.onStopVideo) {
-            playerState.setupPayload.onStopVideo()
+        if (playerState.onStopVideo) {
+            playerState.onStopVideo()
         } else {
             if (goHome) {
                 playerState.clearModals()
@@ -123,17 +118,13 @@ export const playerActions = {
             if (!playerState.isTranscode) playerState.seekToSeconds = nextProgressSeconds
         }
 
-        const enoughTimeDiff =
-            playerState.progressSeconds == null
-                ? true
-                : Math.abs(nextProgressSeconds - playerState.progressSeconds) >= playerState.config.progressMinDeltaSeconds
+        const enoughTimeDiff = !playerState.progressSeconds || Math.abs(nextProgressSeconds - playerState.progressSeconds) >= playerState.config.progressMinDeltaSeconds
 
         if (source === 'manual-seek' || enoughTimeDiff) {
             playerState.progressSeconds = nextProgressSeconds
             if (playerState.durationSeconds > 0 && playerState.progressSeconds > 0) {
-                if (playerState.setupPayload?.updateProgress) {
+                if (playerState.updateProgress) {
                     playerState
-                        .setupPayload
                         .updateProgress(
                             playerState.apiClient,
                             playerState.currentRoute.routeParams,
@@ -143,8 +134,8 @@ export const playerActions = {
                         .then((isWatched) => {
                             if (isWatched && !playerState.countedWatch) {
                                 playerState.countedWatch = true
-                                if (playerState.setupPayload?.increaseWatchCount) {
-                                    return playerState.setupPayload.increaseWatchCount(playerState.apiClient, playerState.currentRoute.routeParams)
+                                if (playerState.increaseWatchCount) {
+                                    return playerState.increaseWatchCount(playerState.apiClient, playerState.currentRoute.routeParams)
                                 }
                             }
                         })
@@ -153,7 +144,7 @@ export const playerActions = {
         }
 
         if (source === 'manual-seek' && playerState.isTranscode) {
-            if (playerState.setupPayload?.loadTranscode) {
+            if (playerState.loadTranscode) {
                 playerState.manualSeekSeconds = nextProgressSeconds
                 playerState.transcodeOnResume = true
             }

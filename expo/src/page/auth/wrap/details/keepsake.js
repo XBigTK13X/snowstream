@@ -3,49 +3,54 @@ import SnowVideoPlayer from '../../../../comp/snow-video-player'
 
 function KeepsakeVideo(props) {
     const player = Player.useSnapshot(Player.state)
-    Player.action.setup({
-        forceTranscode: C.isWeb,
-        loadVideo: () => {
-            return new Promise(resolve => {
-                return resolve({
-                    url: props.videoFile.network_path,
-                    name: props.videoFile.name,
-                    durationSeconds: props.videoFile.info.duration_seconds,
-                    tracks: props.videoFile.info.tracks
+
+    C.React.useEffect(() => {
+        if (player.videoUrl) {
+            Player.state.forceTranscode = C.isWeb
+            Player.state.loadVideo = () => {
+                return new Promise(resolve => {
+                    return resolve({
+                        url: props.videoFile.network_path,
+                        name: props.videoFile.name,
+                        durationSeconds: props.videoFile.info.duration_seconds,
+                        tracks: props.videoFile.info.tracks
+                    })
                 })
-            })
-        },
-        loadTranscode: (apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
-            return new Promise((resolve) => {
-                return apiClient.createVideoFileTranscodeSession(
-                    props.videoFile.id,
-                    0,
-                    -1,
-                    deviceProfile,
-                    initialSeekSeconds ?? 0
-                )
-                    .then((transcodeSession) => {
-                        return resolve({
-                            name: props.videoFile.name,
-                            url: transcodeSession.transcode_url,
-                            durationSeconds: props.videoFile.info.duration_seconds,
-                            transcodeId: transcodeSession.transcode_session_id
+            }
+            Player.state.loadTranscode = (apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
+                return new Promise((resolve) => {
+                    return apiClient.createVideoFileTranscodeSession(
+                        props.videoFile.id,
+                        0,
+                        -1,
+                        deviceProfile,
+                        initialSeekSeconds ?? 0
+                    )
+                        .then((transcodeSession) => {
+                            return resolve({
+                                name: props.videoFile.name,
+                                url: transcodeSession.transcode_url,
+                                durationSeconds: props.videoFile.info.duration_seconds,
+                                transcodeId: transcodeSession.transcode_session_id
+                            })
                         })
-                    })
-                    .catch((err) => {
-                        return resolve({
-                            error: err
+                        .catch((err) => {
+                            return resolve({
+                                error: err
+                            })
                         })
-                    })
-            })
-        },
-        onComplete: () => {
-            return props.closeModal()
-        },
-        onStopVideo: () => {
-            return props.closeModal()
+                })
+            }
+            Player.state.onComplete = () => {
+                return props.closeModal()
+            }
+            Player.state.onStopVideo = () => {
+                return props.closeModal()
+            }
+            Player.state.updateProgress = props.updateProgress
+            Player.state.increaseWatchCount = props.increaseWatchCount
         }
-    })
+    }, [player.videoUrl, player.isTranscode])
 
     if (player.playbackFailed) {
         return (

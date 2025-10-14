@@ -115,7 +115,7 @@ export function PlayerManager(props) {
                     playerState.subtitleTrackIndex = parseInt(player.currentRoute.routeParams.subtitleTrack, 10)
                 }
                 if (player.isTranscode) {
-                    if (player.setupPayload?.loadTranscode) {
+                    if (player.loadTranscode) {
                         playerState.videoLoading = true
                         playerActions.onAddLog({
                             kind: 'snowstream',
@@ -123,7 +123,6 @@ export function PlayerManager(props) {
                             routeParams: player.currentRoute.routeParams,
                         })
                         playerState
-                            .setupPayload
                             .loadTranscode(
                                 player.apiClient,
                                 player.currentRoute.routeParams,
@@ -133,7 +132,7 @@ export function PlayerManager(props) {
                             .then(playerActions.loadVideo.bind(playerActions))
                     }
                 } else {
-                    if (player.setupPayload?.loadVideo) {
+                    if (player.loadVideo) {
                         playerState.videoLoading = true
                         playerActions.onAddLog({
                             kind: 'snowstream',
@@ -141,7 +140,6 @@ export function PlayerManager(props) {
                             routeParams: player.currentRoute.routeParams,
                         })
                         playerState
-                            .setupPayload
                             .loadVideo(
                                 player.apiClient,
                                 player.currentRoute.routeParams,
@@ -155,12 +153,13 @@ export function PlayerManager(props) {
     }, [
         player.videoLoading,
         player.manualSeekSeconds,
-        player.setupPayload,
         player.isTranscode,
         player.apiClient,
         player.currentRoute,
         player.clientOptions,
-        player.initialSeekSeconds
+        player.initialSeekSeconds,
+        player.loadVideo,
+        player.loadTranscode
     ])
 
     return props.children
