@@ -25,10 +25,8 @@ export function PlayerManager(props) {
 
     let player = useSnapshot(playerState)
 
-    const [setup, setSetup] = React.useState(false)
-
     React.useEffect(() => {
-        if (!setup) {
+        if (!player.apiClient) {
             if (apiClient && clientOptions && config && routes && currentRoute) {
                 playerActions.setRuntimeDeps({
                     apiClient,
@@ -69,7 +67,6 @@ export function PlayerManager(props) {
                     },
                 })
 
-                setSetup(true)
                 return () => {
                     removeActionListener('player-controls')
                 }
@@ -105,7 +102,7 @@ export function PlayerManager(props) {
     }, [player.progressSeconds])
 
     React.useEffect(() => {
-        if (setup) {
+        if (player.apiClient) {
             if (!player.videoLoading && !player.manualSeekSeconds) {
 
                 if (player.currentRoute?.routeParams?.audioTrack) {
