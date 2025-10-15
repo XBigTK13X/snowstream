@@ -5,19 +5,12 @@ import util from '../util'
 
 export const playerActions = {
     setRuntimeDeps(deps) {
-
-        playerState.apiClient = deps.apiClient
         playerState.clientOptions = deps.clientOptions
         playerState.config = deps.config
         playerState.routes = deps.routes
-        playerState.addActionListener = deps.addActionListener
-        playerState.removeActionListener = deps.removeActionListener
-        playerState.navPush = deps.navPush
-        playerState.navPop = deps.navPop
         playerState.routePath = deps.currentRoute.routePath
         playerState.routeParams = deps.currentRoute.routeParams
-        playerState.clearModals = deps.clearModals
-        playerState.closeOverlay = deps.closeOverlay
+
         const player = snapshot(playerState)
         if (player.progressSeconds == null) {
             playerState.progressSeconds = playerState.isTranscode ? 0 : null
@@ -25,10 +18,90 @@ export const playerActions = {
         if (!player.initialSeekComplete) {
             playerState.initialSeekComplete = playerState.isTranscode
         }
+
+        this.apiClient = deps.apiClient
+        this.navPush = deps.navPush
+        this.navPop = deps.navPop
+        this.clearModals = deps.clearModals
+        this.closeOverlay = deps.closeOverlay
     },
 
     reset() {
         Object.assign(playerState, initialPlayerState)
+    },
+
+    effectSetVideoHandlers(props) {
+        this.loadVideoHandler = props.loadVideo
+        this.loadTranscodeHandler = props.loadTranscode
+        this.onCompleteHandler = props.onComplete
+        this.updateProgressHandler = props.updateProgress
+        this.increaseWatchCountHandler = props.increaseWatchCount
+    },
+
+    effectAllowShortcuts() {
+        const player = snapshot(playerState)
+        if (!player.controlsVisible &&
+            player.isReady &&
+            !player.isTranscode &&
+            player.initialSeekComplete ||
+            !player.initialSeekSeconds
+        ) {
+            if (!player.allowShortcuts) {
+                playerState.allowShortcuts = true
+            }
+        }
+        else {
+            if (player.allowShortcuts) {
+                playerState.allowShortcuts = false
+            }
+
+        }
+    },
+
+    effectLoadVideo() {
+        const player = snapshot(playerState)
+        if (this.apiClient) {
+            if (!player.videoLoading && !player.manualSeekSeconds) {
+                if (player.routeParams?.audioTrack && playerState.audioTrackIndex !== player.routeParams?.audioTrack) {
+                    playerState.audioTrackIndex = parseInt(player.routeParams?.audioTrack, 10)
+                }
+                if (player.routeParams?.subtitleTrack && playerState.subtitleTrackIndex !== player.routeParams?.subtitleTrack) {
+                    playerState.subtitleTrackIndex = parseInt(player.routeParams?.subtitleTrack, 10)
+                }
+                if (player.isTranscode) {
+                    if (this.loadTranscodeHandler) {
+                        playerState.videoLoading = true
+                        this.onAddLog({
+                            kind: 'snowstream',
+                            message: 'firing off a loadTranscode',
+                            routeParams: player.routeParams,
+                        })
+                        this.loadTranscodeHandler(
+                            this.apiClient,
+                            player.routeParams,
+                            player.clientOptions.deviceProfile,
+                            player.initialSeekSeconds
+                        )
+                            .then(this.loadVideoHandler)
+                    }
+                } else {
+                    if (this.loadVideoHandler) {
+                        playerState.videoLoading = true
+                        this.onAddLog({
+                            kind: 'snowstream',
+                            message: 'firing off a loadVideo',
+                            routeParams: player.routeParams,
+                        })
+                        this.loadVideoHandler(
+                            this.apiClient,
+                            player.routeParams,
+                            player.clientOptions.deviceProfile
+                        )
+                            .then(this.loadVideoHandler)
+                    }
+                }
+            }
+        }
     },
 
     onPauseVideo() {
@@ -38,16 +111,16 @@ export const playerActions = {
 
     onPlaybackComplete() {
         const player = snapshot(playerState)
-        this.onProgress(playerState.durationSeconds, 'playback-complete').then(() => {
-            if (player.onComplete) {
-                playerState.onComplete(
-                    player.apiClient,
+        this.onProgress(player.durationSeconds, 'playback-complete').then(() => {
+            if (this.onComplete) {
+                this.onComplete(
+                    this.apiClient,
                     player.routes,
-                    player.navPush
+                    this.navPush
                 )
             } else {
-                if (player.navPop) {
-                    playerState.navPop()
+                if (this.navPop) {
+                    this.navPop()
                 }
             }
         })
@@ -62,7 +135,7 @@ export const playerActions = {
         playerState.transcodeOnResume = false
         if (player.loadTranscode) {
             playerState.loadTranscode(
-                player.apiClient,
+                this.apiClient,
                 player.routeParams,
                 player.clientOptions.deviceProfile,
                 player.manualSeekSeconds
@@ -94,16 +167,16 @@ export const playerActions = {
             playerState.onStopVideo()
         } else {
             if (goHome) {
-                playerState.clearModals()
-                playerState.closeOverlay()
-                if (player.navPush) {
-                    playerState.navPush(player.routes.landing)
+                this.clearModals()
+                this.closeOverlay()
+                if (this.navPush) {
+                    this.navPush(player.routes.landing)
                 }
             } else {
-                playerState.clearModals()
-                playerState.closeOverlay()
-                if (player.navPop) {
-                    playerState.navPop()
+                this.clearModals()
+                this.closeOverlay()
+                if (this.navPop) {
+                    this.navPop()
                 }
             }
         }
@@ -112,8 +185,8 @@ export const playerActions = {
     onChangeRouteParams(newParams) {
         playerState.changeRouteParams = newParams
         const player = snapshot(playerState)
-        if (player.navPush) {
-            playerState.navPush(newParams)
+        if (this.navPush) {
+            this.navPush(newParams)
         }
     },
 
@@ -147,22 +220,21 @@ export const playerActions = {
         const enoughTimeDiff = !player.progressSeconds || Math.abs(nextProgressSeconds - player.progressSeconds) >= player.config.progressMinDeltaSeconds
 
         if (source === 'manual-seek' || enoughTimeDiff) {
-            player.progressSeconds = nextProgressSeconds
+            playerState.progressSeconds = nextProgressSeconds
             if (player.durationSeconds > 0 && player.progressSeconds > 0) {
-                if (player.updateProgress) {
-                    playerState
-                        .updateProgress(
-                            player.apiClient,
-                            player.routeParams,
-                            nextProgressSeconds,
-                            player.durationSeconds
-                        )
+                if (this.updateProgressHandler) {
+                    this.updateProgressHandler(
+                        this.apiClient,
+                        player.routeParams,
+                        nextProgressSeconds,
+                        player.durationSeconds
+                    )
                         .then((isWatched) => {
                             if (isWatched && !player.countedWatch) {
                                 playerState.countedWatch = true
-                                if (player.increaseWatchCount) {
-                                    return playerState.increaseWatchCount(
-                                        player.apiClient,
+                                if (this.increaseWatchCountHandler) {
+                                    return this.increaseWatchCountHandler(
+                                        this.apiClient,
                                         player.routeParams
                                     )
                                 }
@@ -193,7 +265,7 @@ export const playerActions = {
     },
 
     onVideoProgressEvent(elapsedSeconds) {
-        const player = snapshot(playerState0)
+        const player = snapshot(playerState)
         let adjustedSeconds = elapsedSeconds
         if (player.isTranscode) {
             if (player.manualSeekSeconds == null) {
@@ -267,12 +339,12 @@ export const playerActions = {
         if (!player.isTranscode) {
             playerState.videoLoaded = false
             playerState.videoLoading = false
-            if (player.navPush) {
+            if (this.navPush) {
                 const newParams = {
                     ...playerState.routeParams,
                     transcode: true
                 }
-                playerState.navPush(newParams)
+                this.navPush(newParams)
             }
         } else {
             playerState.playbackFailed = error
@@ -311,7 +383,7 @@ export const playerActions = {
     onCloseTranscodeSession() {
         const player = snapshot(playerState)
         if (player.transcodeId) {
-            playerState.apiClient?.closeTranscodeSession(playerState.transcodeId)
+            this.apiClient.closeTranscodeSession(playerState.transcodeId)
         }
     },
 
@@ -381,4 +453,6 @@ export const playerActions = {
     setSubtitleFontSize(value) {
         playerState.subtitleFontSize = value
     },
+
+
 }

@@ -5,11 +5,9 @@ export function PlayMediaPage(props) {
     const player = Player.useSnapshot(Player.state)
 
     C.React.useEffect(() => {
-        Player.state.loadVideo = props.loadVideo
-        Player.state.loadTranscode = props.loadTranscode
-        Player.state.onComplete = props.onComplete
-        Player.state.updateProgress = props.updateProgress
-        Player.state.increaseWatchCount = props.increaseWatchCount
+        Player.action.effectSetVideoHandlers(
+            props
+        )
     }, [])
 
     if (player.playbackFailed) {

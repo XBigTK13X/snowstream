@@ -1,6 +1,7 @@
+import _ from 'lodash'
 import React from 'react'
 import Snow from 'expo-snowui'
-import { useSnapshot } from 'valtio'
+import { useSnapshot, subscribe } from 'valtio'
 import { useAppContext } from '../app-context'
 import { playerState } from './player-state'
 import { playerActions } from './player-actions'
@@ -26,6 +27,7 @@ export function PlayerManager(props) {
     let player = useSnapshot(playerState)
 
     React.useEffect(() => {
+        console.log("First effect")
         if (!player.apiClient) {
             if (apiClient && clientOptions && config && routes && currentRoute) {
                 playerActions.setRuntimeDeps({
@@ -72,96 +74,29 @@ export function PlayerManager(props) {
                 }
             }
         } else {
-            playerState.routePath = currentRoute.routePath
-            playerState.routeParams = currentRoute.routeParams
+            if (currentRoute.routePath !== playerState.routePath) {
+                playerState.routePath = currentRoute.routePath
+            }
+            if (!_.isEqual(currentRoute.routeParams, playerState.routeParams)) {
+                playerState.routeParams = currentRoute.routeParams
+            }
         }
     }, [apiClient, currentRoute])
 
     React.useEffect(() => {
+        console.log({ clientOptions })
         playerState.clientOptions = clientOptions
     }, [clientOptions])
 
     React.useEffect(() => {
-        if (!player.controlsVisible &&
-            player.isReady &&
-            !player.isTranscode &&
-            player.initialSeekComplete ||
-            !player.initialSeekSeconds) {
-            playerState.allowShortcuts = true
-        }
-        else {
-            playerState.allowShortcuts = false
-        }
-    },
-        [
-            player.controlsVisible,
-            player.isReady,
-            player.isTranscode,
-            player.initialSeekComplete,
-            player.initialSeekSeconds,
-        ]
-    )
+        const unsub = subscribe(playerState, () => {
+            console.log({ playerState3: playerState })
 
-    React.useEffect(() => {
-        console.log({
-            action: 'pm-refresh',
-            player
+            playerActions.effectLoadVideo()
+            playerActions.effectAllowShortcuts()
         })
-        if (player.apiClient) {
-            if (!player.videoLoading && !player.manualSeekSeconds) {
-                if (player.routeParams?.audioTrack) {
-                    playerState.audioTrackIndex = parseInt(player.routeParams?.audioTrack, 10)
-                }
-                if (player.routeParams?.subtitleTrack) {
-                    playerState.subtitleTrackIndex = parseInt(player.routeParams?.subtitleTrack, 10)
-                }
-                if (player.isTranscode) {
-                    if (player.loadTranscode) {
-                        playerState.videoLoading = true
-                        playerActions.onAddLog({
-                            kind: 'snowstream',
-                            message: 'firing off a loadTranscode',
-                            routeParams: player.routeParams,
-                        })
-                        playerState.loadTranscode(
-                            player.apiClient,
-                            player.routeParams,
-                            player.clientOptions.deviceProfile,
-                            player.initialSeekSeconds
-                        )
-                            .then(playerActions.loadVideo.bind(playerActions))
-                    }
-                } else {
-                    if (player.loadVideo) {
-                        playerState.videoLoading = true
-                        playerActions.onAddLog({
-                            kind: 'snowstream',
-                            message: 'firing off a loadVideo',
-                            routeParams: player.routeParams,
-                        })
-                        playerState
-                            .loadVideo(
-                                player.apiClient,
-                                player.routeParams,
-                                player.clientOptions.deviceProfile
-                            )
-                            .then(playerActions.loadVideo.bind(playerActions))
-                    }
-                }
-            }
-        }
-    }, [
-        player.videoLoading,
-        player.manualSeekSeconds,
-        player.isTranscode,
-        player.apiClient,
-        player.routePath,
-        player.routeParams,
-        player.clientOptions,
-        player.initialSeekSeconds,
-        player.loadVideo,
-        player.loadTranscode
-    ])
+        return unsub
+    }, [])
 
     return props.children
 }
