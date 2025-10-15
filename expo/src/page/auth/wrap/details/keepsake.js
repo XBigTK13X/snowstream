@@ -73,7 +73,7 @@ function KeepsakeVideo(props) {
 }
 
 function ZoomView(zoomProps) {
-    const { pushModal, popModal, enableOverlay, disableOverlay } = C.useSnowContext()
+    const { pushModal, popModal, openOverlay, closeOverlay } = C.useSnowContext()
     C.React.useEffect(() => {
         pushModal({
             props: {
@@ -85,7 +85,7 @@ function ZoomView(zoomProps) {
                 return zoomProps.children
             }
         })
-        enableOverlay({
+        openOverlay({
             props: {
                 focusStart: true,
                 focusKey: 'zoomed-item',
@@ -95,7 +95,7 @@ function ZoomView(zoomProps) {
         })
         return () => {
             popModal()
-            disableOverlay()
+            closeOverlay()
         }
     }, [])
     return null

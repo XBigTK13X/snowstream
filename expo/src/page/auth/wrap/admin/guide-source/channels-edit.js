@@ -2,7 +2,7 @@ import { C, useAppContext } from 'snowstream'
 
 function ChannelEditRow(props) {
     const { apiClient } = useAppContext()
-    const { pushModal, popModal, enableOverlay, disableOverlay } = C.useSnowContext()
+    const { pushModal, popModal, openOverlay, closeOverlay } = C.useSnowContext()
 
     const [form, setForm] = C.React.useState({
         id: props.channel.id,

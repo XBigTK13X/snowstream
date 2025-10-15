@@ -12,7 +12,7 @@ export function PlayerManager(props) {
         navPush,
         navPop,
         clearModals,
-        disableOverlay,
+        closeOverlay,
         currentRoute
     } = Snow.useSnowContext()
     const {
@@ -39,7 +39,7 @@ export function PlayerManager(props) {
                     navPop,
                     currentRoute,
                     clearModals,
-                    disableOverlay
+                    closeOverlay
                 })
                 addActionListener('player-controls', {
                     onRight: () => {

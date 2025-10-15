@@ -12,7 +12,7 @@ import SnowVideoControls from './snow-video-controls'
 import { useAppContext } from '../app-context'
 
 export default function SnowVideoPlayer(props) {
-    const { pushModal, popModal, enableOverlay, disableOverlay } = Snow.useLayerContext()
+    const { pushModal, popModal, openOverlay, closeOverlay } = Snow.useLayerContext()
     const player = Player.useSnapshot(Player.state)
 
     const { config } = useAppContext()
@@ -58,7 +58,7 @@ export default function SnowVideoPlayer(props) {
                 }
             })
             if (!player.controlsVisible) {
-                enableOverlay({
+                openOverlay({
                     props: {
                         focusStart: true,
                         focusKey: "video-player",
@@ -70,7 +70,7 @@ export default function SnowVideoPlayer(props) {
 
             return () => {
                 popModal()
-                disableOverlay()
+                closeOverlay()
             }
         }
     }, [player.videoUrl, player.controlsVisible])
@@ -92,9 +92,9 @@ export default function SnowVideoPlayer(props) {
                     return <SnowVideoControls playerKind={player.playerKind} />
                 }
             })
-            disableOverlay()
+            closeOverlay()
             return () => {
-                enableOverlay()
+                openOverlay()
                 popModal()
             }
         }

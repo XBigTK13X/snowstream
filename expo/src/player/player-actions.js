@@ -13,7 +13,7 @@ export const playerActions = {
         playerState.navPop = deps.navPop
         playerState.currentRoute = deps.currentRoute
         playerState.clearModals = deps.clearModals
-        playerState.disableOverlay = deps.disableOverlay
+        playerState.closeOverlay = deps.closeOverlay
         if (playerState.progressSeconds == null) playerState.progressSeconds = playerState.isTranscode ? 0 : null
         if (!playerState.initialSeekComplete) playerState.initialSeekComplete = playerState.isTranscode
     },
@@ -76,11 +76,11 @@ export const playerActions = {
         } else {
             if (goHome) {
                 playerState.clearModals()
-                playerState.disableOverlay()
+                playerState.closeOverlay()
                 if (playerState.navPush) playerState.navPush(playerState.routes.landing)
             } else {
                 playerState.clearModals()
-                playerState.disableOverlay()
+                playerState.closeOverlay()
                 if (playerState.navPop) playerState.navPop()
             }
         }
