@@ -20,7 +20,7 @@ export default function SessionListPage() {
                     <C.SnowGrid itemsPerRow={1}>
                         {sessions.transcodes.map((session, sessionIndex) => {
                             return (
-                                <C.SnowText key={sessionIndex}>{JSON.stringify(session)}</C.SnowText>
+                                <C.SnowText key={sessionIndex}>{C.Snow.stringifySafe(session)}</C.SnowText>
                             )
                         })}
                     </C.SnowGrid>
@@ -35,7 +35,7 @@ export default function SessionListPage() {
                     <C.SnowGrid>
                         {sessions.updaters.map((session, sessionIndex) => {
                             return (
-                                <C.SnowText key={sessionIndex}>{JSON.stringify(session)}</C.SnowText>
+                                <C.SnowText key={sessionIndex}>{C.Snow.stringifySafe(session)}</C.SnowText>
                             )
                         })}
                     </C.SnowGrid>

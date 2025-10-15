@@ -21,7 +21,7 @@ class Config {
         const h265TenBitHDR = '/auth/wrap/details/movie?shelfId=1&movieId=390'
         const cartoonUrl = '/auth/wrap/details/episode?shelfId=2&showId=228&seasonId=478&episodeId=8827&showName=Aaahh%21%21%21%20Real%20Monsters&seasonOrder=1&episodeOrder=2'
 
-        this.debugVideoUrl = false
+        this.debugVideoUrl = cartoonUrl
         this.debugSnowui = false
     }
 }

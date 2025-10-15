@@ -46,7 +46,6 @@ export default function PageLoader() {
     return (
         <Snow.App
             DEBUG_SNOW={config.debugSnowui}
-            DEBUG_FOCUS={true}
             snowStyle={appStyle}
             routePaths={routes}
             routePages={pages}

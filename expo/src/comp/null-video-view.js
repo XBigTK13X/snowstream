@@ -1,6 +1,5 @@
 import React from 'react'
 import Snow from 'expo-snowui'
-import { View } from 'react-native'
 import { Player } from 'snowstream'
 
 export default function NullVideoView() {
@@ -12,15 +11,15 @@ export default function NullVideoView() {
     const progressRef = React.useRef(0)
     const playingRef = React.useRef(player.isPlaying)
     React.useEffect(() => {
-        if (player?.info?.seekToSeconds && player?.info?.seekToSeconds != lastSeek) {
-            progressRef.current = player.info.seekToSeconds
+        if (player.seekToSeconds && player.seekToSeconds != lastSeek) {
+            progressRef.current = player.seekToSeconds
             Player.action.onVideoUpdate({
                 kind: 'nullevent',
                 nullEvent: {
                     progress: progressRef.current
                 }
             })
-            setLastSeek(player.info.seekToSeconds)
+            setLastSeek(player.seekToSeconds)
         }
         if (!player.isReady) {
             Player.action.onVideoReady()
@@ -47,10 +46,10 @@ export default function NullVideoView() {
     }, [])
     return (
         <Snow.FillView style={{ width: '85%' }}>
-            <Snow.Text>The video {player?.info?.videoUrl} is {player?.info?.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
+            <Snow.Text>The video {player.videoUrl} is {player.isPlaying ? 'playing' : 'paused'}.</Snow.Text>
             <Snow.Text>Here is a whole bunch of text.</Snow.Text>
             <Snow.Text>It makes it easier to see how the transparency controls function.</Snow.Text>
-            <Snow.Text>{JSON.stringify(player?.info, null, 4)}</Snow.Text>
+            <Snow.Text>{Snow.stringifySafe(player)}</Snow.Text>
         </Snow.FillView>
     )
 }

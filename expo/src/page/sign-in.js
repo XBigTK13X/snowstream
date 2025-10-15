@@ -186,7 +186,7 @@ export default function SignInPage() {
             {passwordForm}
             {userList}
             {selectServer}
-            <C.SnowLabel>{errors ? 'Errors: ' + JSON.stringify(errors) : ""}</C.SnowLabel>
+            <C.SnowLabel>{errors ? 'Errors: ' + C.Snow.stringifySafe(errors) : ""}</C.SnowLabel>
         </>
     )
 }

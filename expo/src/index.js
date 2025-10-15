@@ -1,4 +1,4 @@
-import { useSnapshot } from 'valtio'
+import { useSnapshot, snapshot } from 'valtio'
 
 import AppContext from './app-context'
 export { AppContextProvider, useAppContext } from './app-context'

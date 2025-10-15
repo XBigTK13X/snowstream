@@ -349,9 +349,9 @@ export default function MediaTracksPage(props) {
                 <C.SnowTarget focusKey="inspection-middle" focusDown="inspection-bottom" />
                 <C.SnowText >Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowGrid assignFocus={false} itemsPerRow={3}>
-                    <C.SnowText >Params: {JSON.stringify(currentRoute.routeParams, null, 4)}</C.SnowText>
-                    <C.SnowText >Plan: {JSON.stringify(videoFile.plan, null, 4)}</C.SnowText>
-                    <C.SnowText >Options: {JSON.stringify(clientOptions, null, 4)}</C.SnowText>
+                    <C.SnowText >Params: {C.Snow.stringifySafe(currentRoute.routeParams, null, 4)}</C.SnowText>
+                    <C.SnowText >Plan: {C.Snow.stringifySafe(videoFile.plan, null, 4)}</C.SnowText>
+                    <C.SnowText >Options: {C.Snow.stringifySafe(clientOptions, null, 4)}</C.SnowText>
                 </C.SnowGrid>
                 <C.SnowTarget focusKey="inspection-bottom" />
             </C.SnowView>

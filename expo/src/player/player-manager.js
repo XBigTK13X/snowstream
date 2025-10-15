@@ -43,22 +43,22 @@ export function PlayerManager(props) {
                 })
                 addActionListener('player-controls', {
                     onRight: () => {
-                        if (player.allowShortcutsRef.current) {
-                            playerActions.onProgress(player.progressSecondsRef.current + 85, 'manual-seek')
+                        if (player.allowShortcuts) {
+                            playerActions.onProgress(player.progressSeconds + 85, 'manual-seek')
                         }
                     },
                     onLeft: () => {
-                        if (player.allowShortcutsRef.current) {
-                            playerActions.onProgress(player.progressSecondsRef.current - 7, 'manual-seek')
+                        if (player.allowShortcuts) {
+                            playerActions.onProgress(player.progressSeconds - 7, 'manual-seek')
                         }
                     },
                     onDown: () => {
-                        if (player.allowShortcutsRef.current) {
+                        if (player.allowShortcuts) {
                             playerActions.setSubtitleFontSize(player.subtitleFontSize - 4)
                         }
                     },
                     onUp: () => {
-                        if (player.allowShortcutsRef.current) {
+                        if (player.allowShortcuts) {
                             const nextSubtitleColor = { ...player.subtitleColor }
                             nextSubtitleColor.shade -= 0.15
                             if (nextSubtitleColor.shade < 0) nextSubtitleColor.shade = 0.0
@@ -72,7 +72,8 @@ export function PlayerManager(props) {
                 }
             }
         } else {
-            playerState.currentRoute = currentRoute
+            playerState.routePath = currentRoute.routePath
+            playerState.routeParams = currentRoute.routeParams
         }
     }, [apiClient, currentRoute])
 
@@ -81,12 +82,16 @@ export function PlayerManager(props) {
     }, [clientOptions])
 
     React.useEffect(() => {
-        player.allowShortcutsRef.current =
-            (!player.controlsVisible &&
-                player.isReady &&
-                !player.isTranscode &&
-                player.initialSeekComplete) ||
-            !player.initialSeekSeconds
+        if (!player.controlsVisible &&
+            player.isReady &&
+            !player.isTranscode &&
+            player.initialSeekComplete ||
+            !player.initialSeekSeconds) {
+            playerState.allowShortcuts = true
+        }
+        else {
+            playerState.allowShortcuts = false
+        }
     },
         [
             player.controlsVisible,
@@ -98,18 +103,17 @@ export function PlayerManager(props) {
     )
 
     React.useEffect(() => {
-        player.progressSecondsRef.current = player.progressSeconds ?? 0
-    }, [player.progressSeconds])
-
-    React.useEffect(() => {
+        console.log({
+            action: 'pm-refresh',
+            player
+        })
         if (player.apiClient) {
             if (!player.videoLoading && !player.manualSeekSeconds) {
-
-                if (player.currentRoute?.routeParams?.audioTrack) {
-                    playerState.audioTrackIndex = parseInt(player.currentRoute.routeParams.audioTrack, 10)
+                if (player.routeParams?.audioTrack) {
+                    playerState.audioTrackIndex = parseInt(player.routeParams?.audioTrack, 10)
                 }
-                if (player.currentRoute?.routeParams?.subtitleTrack) {
-                    playerState.subtitleTrackIndex = parseInt(player.currentRoute.routeParams.subtitleTrack, 10)
+                if (player.routeParams?.subtitleTrack) {
+                    playerState.subtitleTrackIndex = parseInt(player.routeParams?.subtitleTrack, 10)
                 }
                 if (player.isTranscode) {
                     if (player.loadTranscode) {
@@ -117,15 +121,14 @@ export function PlayerManager(props) {
                         playerActions.onAddLog({
                             kind: 'snowstream',
                             message: 'firing off a loadTranscode',
-                            routeParams: player.currentRoute.routeParams,
+                            routeParams: player.routeParams,
                         })
-                        playerState
-                            .loadTranscode(
-                                player.apiClient,
-                                player.currentRoute.routeParams,
-                                player.clientOptions.deviceProfile,
-                                player.initialSeekSeconds
-                            )
+                        playerState.loadTranscode(
+                            player.apiClient,
+                            player.routeParams,
+                            player.clientOptions.deviceProfile,
+                            player.initialSeekSeconds
+                        )
                             .then(playerActions.loadVideo.bind(playerActions))
                     }
                 } else {
@@ -134,12 +137,12 @@ export function PlayerManager(props) {
                         playerActions.onAddLog({
                             kind: 'snowstream',
                             message: 'firing off a loadVideo',
-                            routeParams: player.currentRoute.routeParams,
+                            routeParams: player.routeParams,
                         })
                         playerState
                             .loadVideo(
                                 player.apiClient,
-                                player.currentRoute.routeParams,
+                                player.routeParams,
                                 player.clientOptions.deviceProfile
                             )
                             .then(playerActions.loadVideo.bind(playerActions))
@@ -152,7 +155,8 @@ export function PlayerManager(props) {
         player.manualSeekSeconds,
         player.isTranscode,
         player.apiClient,
-        player.currentRoute,
+        player.routePath,
+        player.routeParams,
         player.clientOptions,
         player.initialSeekSeconds,
         player.loadVideo,

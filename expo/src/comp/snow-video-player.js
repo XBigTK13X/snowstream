@@ -57,7 +57,7 @@ export default function SnowVideoPlayer(props) {
                     return <VideoView />
                 }
             })
-            if (!player.controlsVisible) {
+            if (!player.controlsVisible && player.isReady) {
                 openOverlay({
                     props: {
                         focusStart: true,
@@ -73,7 +73,7 @@ export default function SnowVideoPlayer(props) {
                 closeOverlay()
             }
         }
-    }, [player.videoUrl, player.controlsVisible])
+    }, [player.videoUrl, player.controlsVisible, player.isReady])
 
     // Video controls
     React.useEffect(() => {

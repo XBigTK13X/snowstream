@@ -16,7 +16,7 @@ export function PlayMediaPage(props) {
         return (
             <>
                 <C.SnowText>Unable to play the video.</C.SnowText>
-                <C.SnowText>Error: {JSON.stringify(player.playbackFailed)}</C.SnowText>
+                <C.SnowText>Error: {C.Snow.stringifySafe(player.playbackFailed)}</C.SnowText>
             </>
         )
     }

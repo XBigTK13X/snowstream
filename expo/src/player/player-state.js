@@ -1,7 +1,12 @@
 import { Platform } from 'react-native'
 
-import { ref, proxy } from 'valtio/vanilla'
+import { proxy } from 'valtio'
 import util from '../util'
+
+// Remember the golden rules
+// READ from snapshot
+// WRITE to proxy
+// FUNCTION calls from proxy
 
 export const initialPlayerState = {
     apiClient: null,
@@ -13,7 +18,8 @@ export const initialPlayerState = {
     removeActionListener: null,
     navPush: null,
     navPop: null,
-    currentRoute: { routeParams: {} },
+    routeParams: {},
+    routePath: null,
 
     videoUrl: null,
     videoTitle: null,
@@ -50,33 +56,44 @@ export const initialPlayerState = {
     subtitleFontSize: 42,
     subtitleTrackIndex: 0,
 
-    changeRouteParamsRef: ref({ current: null }),
-    allowShortcutsRef: ref({ current: false }),
-    progressSecondsRef: ref({ current: 0 }),
+    changeRouteParams: null,
+    allowShortcuts: false
 }
 
 export const playerState = proxy({
     ...initialPlayerState,
 
     get forceExo() {
-        const routeParams = this.currentRoute?.routeParams
-        if (routeParams?.forcePlayer === 'exo') return true
-        if (routeParams?.videoIsHdr && routeParams?.forcePlayer !== 'mpv') return true
-        if (this.clientOptions?.alwaysUsePlayer === 'exo') return true
+        if (this.routeParams?.forcePlayer === 'exo') {
+            return true
+        }
+        if (this.routeParams?.videoIsHdr && this.routeParams?.forcePlayer !== 'mpv') {
+            return true
+        }
+        if (this.clientOptions?.alwaysUsePlayer === 'exo') {
+            return true
+        }
         return false
     },
 
     get isTranscode() {
-        const routeParams = this.currentRoute?.routeParams
-        if (routeParams?.transcode === 'true') return true
-        if (this.clientOptions?.alwaysTranscode) return true
-        if (this.forceTranscode) return true
+        if (this.routeParams?.transcode === 'true' || this.routeParams?.transcode === true) {
+            return true
+        }
+        if (this.clientOptions?.alwaysTranscode) {
+            return true
+        }
+        if (this.forceTranscode) {
+            return true
+        }
         return false
     },
 
     get initialSeekSeconds() {
-        const seekParam = this.currentRoute?.routeParams?.seekToSeconds
-        if (!seekParam) return 0
+        const seekParam = this.routeParams?.seekToSeconds
+        if (!seekParam) {
+            return 0
+        }
         const parsed = parseInt(seekParam, 10)
         return Number.isFinite(parsed) ? parsed : 0
     },
@@ -102,8 +119,12 @@ export const playerState = proxy({
     },
 
     get playerKind() {
-        if (this.clientOptions?.alwaysUsePlayer === 'null') return 'null'
-        if (Platform.OS === 'web' || this.forceExo) return 'rnv'
+        if (this.clientOptions?.alwaysUsePlayer === 'null') {
+            return 'null'
+        }
+        if (Platform.OS === 'web' || this.forceExo) {
+            return 'rnv'
+        }
         return 'mpv'
     },
 
