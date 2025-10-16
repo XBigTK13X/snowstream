@@ -45,7 +45,6 @@ export default function MpvVideoView(props) {
     }, [player.subtitleFontSize])
 
     React.useEffect(() => {
-        console.log({ color: player.subtitleColor })
         if (forwardRef.current?.runCommand && player.isReady) {
             forwardRef.current.runCommand(`set|sub-ass-override|force`).catch(() => { })
             forwardRef.current.runCommand(`set|sub-color|${player.subtitleColor.shade}/${player.subtitleColor.alpha}`).catch(() => { })
