@@ -68,7 +68,6 @@ export const playerActions = {
     },
 
     reset() {
-        console.log({ videoStart: playerState.videoUrl })
         Object.assign(playerState, initialPlayerState)
         this.apiClient = playerState.apiClient
         this.navPush = playerState.navPush
@@ -80,7 +79,6 @@ export const playerActions = {
         this.routes = playerState.routes
         this.clearModals = playerState.clearModals
         this.closeOverlay = playerState.closeOverlay
-        console.log({ videoEnd: playerState.videoUrl })
     },
 
     effectSetVideoHandlers(props) {
@@ -148,7 +146,7 @@ export const playerActions = {
         playerState.isPlaying = false
     },
 
-    setShowVideoLogs(value) {
+    setVideoLogsVisible(value) {
         playerState.logsVisible = value
     },
 
@@ -448,14 +446,12 @@ export const playerActions = {
             const urlExists = await util.urlExists(response.url)
             if (urlExists) {
                 playerState.videoUrl = response.url
-                console.log({ videoUrlA: playerState.videoUrl })
             } else {
                 const safeUrl = response.url.replace(
                     /^([^:]+:\/\/[^/]+)(\/.*)?$/,
                     (full, base, rest) => base + (rest ? '/' + rest.slice(1).split('/').map(encodeURIComponent).join('/') : '')
                 )
                 playerState.videoUrl = safeUrl
-                console.log({ videoUrlA: playerState.videoUrl })
             }
         }
         if (response.name) {

@@ -135,8 +135,10 @@ export default function SnowVideoControls(props) {
                     </SnowGrid>
                     {subtitleControls}
                     {trackControls}
-                    <SnowGrid short itemsPerRow={2}>
-                        <SnowTextButton title={logTitle} onPress={() => { Player.action.setShowVideoLogs(true) }} onLongPress={persistLogs} />
+                    <SnowGrid short itemsPerRow={3}>
+                        <SnowTextButton title={logTitle} onPress={() => {
+                            Player.action.setVideoLogsVisible(true)
+                        }} onLongPress={persistLogs} />
                         <SnowTextButton title={swapTitle} onPress={() => {
                             let newParams = { ...currentRoute.routeParams }
                             newParams.forcePlayer = 'mpv'

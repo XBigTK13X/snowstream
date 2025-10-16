@@ -10,7 +10,8 @@ export const Player = {
     state: playerState,
     action: playerActions,
     Manager: PlayerManager,
-    useSnapshot
+    useSnapshot,
+    snapshot
 }
 
 import C from './common'

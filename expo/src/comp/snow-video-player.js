@@ -43,27 +43,24 @@ export default function SnowVideoPlayer(props) {
 
     // Video content / player
     React.useEffect(() => {
-        console.log({ settings: player.settingsLoaded })
         if (player.settingsLoaded && player.videoUrl) {
             pushModal({
                 props: {
                     assignFocus: false,
                     onRequestClose: () => {
-                        Player.action.onVideoModalBack()
+                        const player = Player.snapshot(Player.state)
+                        const shouldClose = !player.controlsVisible && !player.logsVisible
+                        if (shouldClose) {
+                            Player.action.onVideoModalBack()
+                        }
                     }
                 },
                 render: () => {
                     const VideoView = player.VideoView
-                    console.log({ video: player.videoWidth, video2: player.videoHeight })
                     return <VideoView />
                 }
             })
-            console.log({
-                controlsVisible: player.controlsVisible,
-                isVideoViewReady: player.isVideoViewReady
-            })
             if (!player.controlsVisible && player.isVideoViewReady) {
-                console.log("Video overlay enabled")
                 openOverlay({
                     props: {
                         focusStart: true,
@@ -77,7 +74,6 @@ export default function SnowVideoPlayer(props) {
             return () => {
                 popModal()
                 closeOverlay()
-                console.log("Video overlay disabled")
             }
         }
     }, [player.controlsVisible, player.settingsLoaded, player.videoUrl, player.isVideoViewReady])
@@ -91,8 +87,11 @@ export default function SnowVideoPlayer(props) {
                     obscure: true,
                     scroll: true,
                     onRequestClose: () => {
-                        popModal()
-                        Player.action.onResumeVideo()
+                        const player = Player.snapshot(Player.state)
+                        const shouldClose = player.controlsVisible && !player.logsVisible
+                        if (shouldClose) {
+                            Player.action.onResumeVideo()
+                        }
                     }
                 },
                 render: () => {
@@ -100,10 +99,8 @@ export default function SnowVideoPlayer(props) {
                 }
             })
             closeOverlay()
-            console.log("video controls - Overlay disabled")
             return () => {
                 openOverlay()
-                console.log("video controls - Overlay enabled")
                 popModal()
             }
         }
@@ -112,49 +109,38 @@ export default function SnowVideoPlayer(props) {
     // Video logs
     React.useEffect(() => {
         if (player.logsVisible && player.settingsLoaded && player.videoUrl) {
-            console.log("video logs - show modal")
             pushModal({
                 props: {
                     focusLayer: 'video-logs',
                     black: true,
                     scroll: true,
                     onRequestClose: () => {
-                        popModal()
+                        const player = Player.snapshot(Player.state)
+                        if (player.logsVisible) {
+                            Player.action.setVideoLogsVisible(false)
+                        }
                     }
                 },
                 render: () => {
                     return (
-                        <>
-                            <Snow.TextButton
-                                focusStart
-                                focusKey="close-top"
-                                focusDown="log-entry"
-                                title="Close Logs"
-                                onPress={() => { Player.action.setShowVideoLogs(false) }} />
-                            <Snow.Grid
-                                scroll={true}
-                                focusKey="log-entry"
-                                focusDown="close-bottom"
-                                itemsPerRow={1}
-                                items={player.logs}
-                                renderItem={(log) => {
-                                    return (
-                                        <Snow.View>
-                                            <Snow.Target />
-                                            <Snow.Text shrink>{log}</Snow.Text>
-                                        </Snow.View>
-                                    )
-                                }} />
-                            <Snow.TextButton
-                                focusKey="close-bottom"
-                                title="Close Logs"
-                                onPress={() => { Player.action.setShowVideoLogs(false) }} />
-                        </>
+                        <Snow.Grid
+                            focusStart
+                            focusKey="log-entry"
+                            itemsPerRow={1}
+                            itemsPerPage={1}
+                            items={player.logs}
+                            renderItem={(log) => {
+                                return (
+                                    <Snow.View>
+                                        <Snow.Target />
+                                        <Snow.Text shrink>{log}</Snow.Text>
+                                    </Snow.View>
+                                )
+                            }} />
                     )
                 }
             })
             return () => {
-                console.log("video logs - close modal")
                 popModal()
             }
         }
