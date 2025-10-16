@@ -1,22 +1,33 @@
 import Snow from 'expo-snowui'
+import _ from 'lodash'
 import { snapshot } from 'valtio'
 import { playerState, initialPlayerState } from './player-state'
 import util from '../util'
 
 export const playerActions = {
-    setRuntimeDeps(deps) {
-        playerState.clientOptions = deps.clientOptions
-        playerState.config = deps.config
-        playerState.routes = deps.routes
-        playerState.routePath = deps.currentRoute.routePath
-        playerState.routeParams = deps.currentRoute.routeParams
+    importContexts(deps) {
+        if (!_.isEqual(playerState.clientOptions, deps.clientOptions)) {
+            playerState.clientOptions = deps.clientOptions
+        }
+        if (!_.isEqual(playerState.config, deps.config)) {
+            playerState.config = deps.config
+        }
+        if (!_.isEqual(playerState.routes, deps.routes)) {
+            playerState.routes = deps.routes
+        }
 
         const player = snapshot(playerState)
         if (player.progressSeconds == null) {
             playerState.progressSeconds = playerState.isTranscode ? 0 : null
         }
-        if (!player.initialSeekComplete) {
-            playerState.initialSeekComplete = playerState.isTranscode
+        if (!player.initialSeekComplete && playerState.isTranscode) {
+            playerState.initialSeekComplete = true
+        }
+        if (deps.currentRoute.routePath !== playerState.routePath) {
+            playerState.routePath = deps.currentRoute.routePath
+        }
+        if (!_.isEqual(deps.currentRoute.routeParams, playerState.routeParams)) {
+            playerState.routeParams = deps.currentRoute.routeParams
         }
 
         this.apiClient = deps.apiClient
@@ -24,9 +35,22 @@ export const playerActions = {
         this.navPop = deps.navPop
         this.clearModals = deps.clearModals
         this.closeOverlay = deps.closeOverlay
+
+        const stateReady = playerState.clientOptions && playerState.config && playerState.routes && playerState.routePath && playerState.routeParams && !playerState.readyToLoad
+        const actionsReady = this.apiClient && this.navPush && this.navPop && this.clearModals && this.closeOverlay
+
+        if (stateReady && actionsReady) {
+            playerState.readyToLoad = true
+        }
+        else {
+            if (!playerState.readyToLoad) {
+                playerState.readyToLoad = false
+            }
+        }
     },
 
     reset() {
+        console.log("Reset")
         Object.assign(playerState, initialPlayerState)
     },
 
@@ -60,45 +84,48 @@ export const playerActions = {
 
     effectLoadVideo() {
         const player = snapshot(playerState)
-        if (this.apiClient) {
-            if (!player.videoLoading && !player.manualSeekSeconds) {
-                if (player.routeParams?.audioTrack && playerState.audioTrackIndex !== player.routeParams?.audioTrack) {
-                    playerState.audioTrackIndex = parseInt(player.routeParams?.audioTrack, 10)
+        if (!player.readyToLoad) {
+            return
+        }
+        if (!player.videoLoading && !player.manualSeekSeconds) {
+            if (player.routeParams?.audioTrack && playerState.audioTrackIndex !== player.routeParams?.audioTrack) {
+                playerState.audioTrackIndex = parseInt(player.routeParams?.audioTrack, 10)
+            }
+            if (player.routeParams?.subtitleTrack && playerState.subtitleTrackIndex !== player.routeParams?.subtitleTrack) {
+                playerState.subtitleTrackIndex = parseInt(player.routeParams?.subtitleTrack, 10)
+            }
+            if (player.isTranscode) {
+                if (this.loadTranscodeHandler) {
+                    playerState.videoLoading = true
+                    this.onAddLog({
+                        kind: 'snowstream',
+                        message: 'firing off a loadTranscode',
+                        routeParams: player.routeParams,
+                    })
+                    this.loadTranscodeHandler(
+                        this.apiClient,
+                        player.routeParams,
+                        player.clientOptions.deviceProfile,
+                        player.initialSeekSeconds
+                    )
+                        .then(this.parseVideoPayload.bind(this))
+                        .catch(this.onCriticalError.bind(this))
                 }
-                if (player.routeParams?.subtitleTrack && playerState.subtitleTrackIndex !== player.routeParams?.subtitleTrack) {
-                    playerState.subtitleTrackIndex = parseInt(player.routeParams?.subtitleTrack, 10)
-                }
-                if (player.isTranscode) {
-                    if (this.loadTranscodeHandler) {
-                        playerState.videoLoading = true
-                        this.onAddLog({
-                            kind: 'snowstream',
-                            message: 'firing off a loadTranscode',
-                            routeParams: player.routeParams,
-                        })
-                        this.loadTranscodeHandler(
-                            this.apiClient,
-                            player.routeParams,
-                            player.clientOptions.deviceProfile,
-                            player.initialSeekSeconds
-                        )
-                            .then(this.loadVideoHandler)
-                    }
-                } else {
-                    if (this.loadVideoHandler) {
-                        playerState.videoLoading = true
-                        this.onAddLog({
-                            kind: 'snowstream',
-                            message: 'firing off a loadVideo',
-                            routeParams: player.routeParams,
-                        })
-                        this.loadVideoHandler(
-                            this.apiClient,
-                            player.routeParams,
-                            player.clientOptions.deviceProfile
-                        )
-                            .then(this.loadVideoHandler)
-                    }
+            } else {
+                if (this.loadVideoHandler) {
+                    playerState.videoLoading = true
+                    this.onAddLog({
+                        kind: 'snowstream',
+                        message: 'firing off a loadVideo',
+                        routeParams: player.routeParams,
+                    })
+                    this.loadVideoHandler(
+                        this.apiClient,
+                        player.routeParams,
+                        player.clientOptions.deviceProfile
+                    )
+                        .then(this.parseVideoPayload.bind(this))
+                        .catch(this.onCriticalError.bind(this))
                 }
             }
         }
@@ -139,7 +166,7 @@ export const playerActions = {
                 player.routeParams,
                 player.clientOptions.deviceProfile,
                 player.manualSeekSeconds
-            ).then(this.loadVideo.bind(this))
+            ).then(this.parseVideoPayload.bind(this))
         }
     },
 
@@ -337,13 +364,16 @@ export const playerActions = {
     onCriticalError(error) {
         const player = snapshot(playerState)
         if (!player.isTranscode) {
-            playerState.videoLoaded = false
-            playerState.videoLoading = false
             if (this.navPush) {
                 const newParams = {
                     ...playerState.routeParams,
                     transcode: true
                 }
+                playerState.videoLoaded = false
+                playerState.videoLoading = false
+                playerState.forceTranscode = true
+                playerState.videoLoading = false
+                playerState.routeParams = newParams
                 this.navPush(newParams)
             }
         } else {
@@ -387,8 +417,8 @@ export const playerActions = {
         }
     },
 
-    async loadVideo(response) {
-        this.onAddLog({ kind: 'snowstream', message: 'video loaded', loadVideo: response })
+    async parseVideoPayload(response) {
+        this.onAddLog({ kind: 'snowstream', message: 'video loaded', parseVideoPayload: response })
         if (response.error) {
             return this.onCriticalError(response.error)
         }

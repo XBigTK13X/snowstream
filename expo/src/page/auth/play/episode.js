@@ -4,7 +4,6 @@ import PlayMediaPage from './media'
 
 export default function PlayEpisodePage() {
     const loadVideo = (apiClient, routeParams, deviceProfile) => {
-        console.log({ apiClient, routeParams, deviceProfile, action: 'loadVideo' })
         return apiClient.getEpisode(routeParams.episodeId, deviceProfile).then((episode) => {
             let videoFileIndex = 0
             if (routeParams.videoFileIndex) {
@@ -21,7 +20,6 @@ export default function PlayEpisodePage() {
     }
 
     const loadTranscode = (apiClient, routeParams, deviceProfile, progressSeconds) => {
-        console.log({ apiClient, routeParams, deviceProfile, progressSeconds, action: 'loadTranscode' })
         return new Promise((resolve) => {
             apiClient.getEpisode(routeParams.episodeId, deviceProfile)
                 .then((episode) => {
