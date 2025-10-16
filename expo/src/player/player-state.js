@@ -10,23 +10,28 @@ import util from '../util'
 
 export const initialPlayerState = {
     apiClient: null,
+    hasApiClient: false,
     clientOptions: null,
+    hasClientOptions: false,
     config: null,
+    hasConfig: false,
     routes: null,
-
-    addActionListener: null,
-    removeActionListener: null,
-    navPush: null,
-    navPop: null,
-    routeParams: {},
+    hasRoutes: false,
     routePath: null,
+    hasRoutePath: false,
+    routeParams: {},
+    hasRouteParams: false,
+    navPush: null,
+    hasNavPush: false,
+    navPop: null,
+    hasNavPop: false,
 
     videoUrl: null,
     videoTitle: null,
     videoLoading: false,
     videoLoaded: false,
 
-    isReady: false,
+    isVideoViewReady: false,
     isPlaying: false,
     playbackFailed: false,
     controlsVisible: false,
@@ -45,6 +50,7 @@ export const initialPlayerState = {
     manualSeekSeconds: null,
 
     logs: [],
+    logsVisible: false,
 
     mediaTracks: null,
 
@@ -56,12 +62,36 @@ export const initialPlayerState = {
     subtitleFontSize: 42,
     subtitleTrackIndex: 0,
 
-    changeRouteParams: null,
-    allowShortcuts: false
+    changeRouteParams: null
 }
 
 export const playerState = proxy({
     ...initialPlayerState,
+
+    get settingsLoaded() {
+        return !!(
+            this.hasApiClient &&
+            this.hasClientOptions &&
+            this.hasConfig &&
+            this.hasRoutes &&
+            this.hasNavPush &&
+            this.hasNavPop &&
+            this.hasRouteParams &&
+            this.hasRoutePath
+        )
+    },
+
+    get allowShortcuts() {
+        return this.isPlaying &&
+            !this.controlsVisible &&
+            !this.logsVisible &&
+            !this.isTranscode
+            &&
+            (
+                this.initialSeekComplete ||
+                !this.initialSeekSeconds
+            )
+    },
 
     get forceExo() {
         if (this.routeParams?.forcePlayer === 'exo') {

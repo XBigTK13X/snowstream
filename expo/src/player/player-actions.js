@@ -6,14 +6,56 @@ import util from '../util'
 
 export const playerActions = {
     importContexts(deps) {
+        if (!_.isEqual(this.apiClient?.authToken, deps.apiClient?.authToken)) {
+            this.apiClient = deps.apiClient
+            playerState.apiClient = deps.apiClient
+            playerState.hasApiClient = !!deps.apiClient
+        }
+
         if (!_.isEqual(playerState.clientOptions, deps.clientOptions)) {
             playerState.clientOptions = deps.clientOptions
+            playerState.hasClientOptions = !!deps.clientOptions
         }
         if (!_.isEqual(playerState.config, deps.config)) {
             playerState.config = deps.config
+            playerState.hasConfig = !!deps.config
         }
         if (!_.isEqual(playerState.routes, deps.routes)) {
             playerState.routes = deps.routes
+            playerState.hasRoutes = !!deps.routes
+        }
+
+        if (playerState.routePath !== deps.currentRoute.routePath) {
+            playerState.routePath = deps.currentRoute.routePath
+            playerState.hasRoutePath = !!deps.currentRoute.routePath
+        }
+        if (!_.isEqual(deps.currentRoute.routeParams, playerState.routeParams)) {
+            playerState.routeParams = deps.currentRoute.routeParams
+            playerState.hasRouteParams = !!deps.currentRoute.routeParams
+        }
+
+        if (!_.isEqual(this.navPush, deps.navPush)) {
+            this.navPush = deps.navPush
+            playerState.navPush = deps.navPush
+            playerState.hasNavPush = !!deps.navPush
+        }
+
+        if (!_.isEqual(this.navPop, deps.navPop)) {
+            this.navPop = deps.navPop
+            playerState.navPop = deps.navPop
+            playerState.hasNavPop = !!deps.navPop
+        }
+
+        if (!_.isEqual(this.clearModals, deps.clearModals)) {
+            this.clearModals = deps.clearModals
+            playerState.clearModals = deps.clearModals
+            playerState.hasClearModals = !!deps.clearModals
+        }
+
+        if (!_.isEqual(this.closeOverlay, deps.closeOverlay)) {
+            this.closeOverlay = deps.closeOverlay
+            playerState.closeOverlay = deps.closeOverlay
+            playerState.hasCloseOverlay = !!deps.closeOverlay
         }
 
         const player = snapshot(playerState)
@@ -23,34 +65,22 @@ export const playerActions = {
         if (!player.initialSeekComplete && playerState.isTranscode) {
             playerState.initialSeekComplete = true
         }
-        if (deps.currentRoute.routePath !== playerState.routePath) {
-            playerState.routePath = deps.currentRoute.routePath
-        }
-        if (!_.isEqual(deps.currentRoute.routeParams, playerState.routeParams)) {
-            playerState.routeParams = deps.currentRoute.routeParams
-        }
-
-        this.apiClient = deps.apiClient
-        this.navPush = deps.navPush
-        this.navPop = deps.navPop
-        this.clearModals = deps.clearModals
-        this.closeOverlay = deps.closeOverlay
-
-        const stateReady = playerState.clientOptions && playerState.config && playerState.routes && playerState.routePath && playerState.routeParams && !playerState.readyToLoad
-        const actionsReady = this.apiClient && this.navPush && this.navPop && this.clearModals && this.closeOverlay
-
-        if (stateReady && actionsReady) {
-            playerState.readyToLoad = true
-        }
-        else {
-            if (!playerState.readyToLoad) {
-                playerState.readyToLoad = false
-            }
-        }
     },
 
     reset() {
+        console.log({ videoStart: playerState.videoUrl })
         Object.assign(playerState, initialPlayerState)
+        this.apiClient = playerState.apiClient
+        this.navPush = playerState.navPush
+        this.navPop = playerState.navPop
+        this.routeParams = playerState.routeParams
+        this.routePath = playerState.routePath
+        this.clientOptions = playerState.clientOptions
+        this.config = playerState.config
+        this.routes = playerState.routes
+        this.clearModals = playerState.clearModals
+        this.closeOverlay = playerState.closeOverlay
+        console.log({ videoEnd: playerState.videoUrl })
     },
 
     effectSetVideoHandlers(props) {
@@ -61,29 +91,12 @@ export const playerActions = {
         this.increaseWatchCountHandler = props.increaseWatchCount
     },
 
-    effectAllowShortcuts() {
-        const player = snapshot(playerState)
-        if (!player.controlsVisible &&
-            player.isReady &&
-            !player.isTranscode &&
-            player.initialSeekComplete ||
-            !player.initialSeekSeconds
-        ) {
-            if (!player.allowShortcuts) {
-                playerState.allowShortcuts = true
-            }
-        }
-        else {
-            if (player.allowShortcuts) {
-                playerState.allowShortcuts = false
-            }
-
-        }
-    },
-
     effectLoadVideo() {
         const player = snapshot(playerState)
-        if (!player.readyToLoad) {
+        if (player.videoUrl) {
+            return
+        }
+        if (!player.settingsLoaded) {
             return
         }
         if (!player.videoLoading && !player.manualSeekSeconds) {
@@ -133,6 +146,10 @@ export const playerActions = {
     onPauseVideo() {
         playerState.controlsVisible = true
         playerState.isPlaying = false
+    },
+
+    setShowVideoLogs(value) {
+        playerState.logsVisible = value
     },
 
     onPlaybackComplete() {
@@ -217,7 +234,6 @@ export const playerActions = {
 
     onChangeRouteParams(newParams) {
         playerState.changeRouteParams = newParams
-        const player = snapshot(playerState)
         if (this.navPush) {
             this.navPush(newParams)
         }
@@ -225,7 +241,7 @@ export const playerActions = {
 
     onVideoReady() {
         this.onAddLog({ kind: 'snowstream', message: 'low level video player reports that it is ready to play' })
-        playerState.isReady = true
+        playerState.isVideoViewReady = true
         playerState.isPlaying = true
     },
 
@@ -432,12 +448,14 @@ export const playerActions = {
             const urlExists = await util.urlExists(response.url)
             if (urlExists) {
                 playerState.videoUrl = response.url
+                console.log({ videoUrlA: playerState.videoUrl })
             } else {
                 const safeUrl = response.url.replace(
                     /^([^:]+:\/\/[^/]+)(\/.*)?$/,
                     (full, base, rest) => base + (rest ? '/' + rest.slice(1).split('/').map(encodeURIComponent).join('/') : '')
                 )
                 playerState.videoUrl = safeUrl
+                console.log({ videoUrlA: playerState.videoUrl })
             }
         }
         if (response.name) {

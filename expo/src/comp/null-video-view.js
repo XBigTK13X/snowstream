@@ -21,7 +21,7 @@ export default function NullVideoView() {
             })
             setLastSeek(player.seekToSeconds)
         }
-        if (!player.isReady) {
+        if (!player.isVideoViewReady) {
             Player.action.onVideoReady()
         }
     }, [player, lastSeek, progressRef])

@@ -70,7 +70,7 @@ export default function RnvVideoView(props) {
     }
 
     React.useEffect(() => {
-        if (!isWeb && !player.isReady) {
+        if (!isWeb && !player.isVideoViewReady) {
             Player.action.onVideoReady()
         }
         if (isWeb && !requestTranscode) {

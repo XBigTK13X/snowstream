@@ -9,7 +9,7 @@ export default function MpvVideoView(props) {
     const forwardRef = React.useRef(null);
 
     React.useEffect(() => {
-        if (!player.isReady && forwardRef.current?.runCommand) {
+        if (!player.isVideoViewReady && forwardRef.current?.runCommand) {
             if (player.clientOptions.useFastMpv) {
                 try {
                     forwardRef.current.runCommand(`set|hwdec|mediacodec`).catch(() => { })
@@ -37,7 +37,7 @@ export default function MpvVideoView(props) {
     })
 
     React.useEffect(() => {
-        if (forwardRef.current?.runCommand && player.isReady) {
+        if (forwardRef.current?.runCommand && player.isVideoViewReady) {
             forwardRef.current.runCommand(`set|sub-ass-override|force`).catch(() => { })
             forwardRef.current.runCommand(`set|sub-font-size|${player.subtitleFontSize}`).catch(() => { })
         }
@@ -45,20 +45,20 @@ export default function MpvVideoView(props) {
     }, [player.subtitleFontSize])
 
     React.useEffect(() => {
-        if (forwardRef.current?.runCommand && player.isReady) {
+        if (forwardRef.current?.runCommand && player.isVideoViewReady) {
             forwardRef.current.runCommand(`set|sub-ass-override|force`).catch(() => { })
             forwardRef.current.runCommand(`set|sub-color|${player.subtitleColor.shade}/${player.subtitleColor.alpha}`).catch(() => { })
         }
     }, [player.subtitleColor])
 
     React.useEffect(() => {
-        if (player.audioDelay !== undefined && forwardRef.current?.runCommand && player.isReady) {
+        if (player.audioDelay !== undefined && forwardRef.current?.runCommand && player.isVideoViewReady) {
             forwardRef.current.runCommand(`set|audio-delay|${player.audioDelay}`).catch(() => { })
         }
     }, [player.audioDelay])
 
     React.useEffect(() => {
-        if (player.subtitleDelay !== undefined && forwardRef.current?.runCommand && player.isReady) {
+        if (player.subtitleDelay !== undefined && forwardRef.current?.runCommand && player.isVideoViewReady) {
             forwardRef.current.runCommand(`set|sub-delay|${player.subtitleDelay}`).catch(() => { })
         }
     }, [player.subtitleDelay])

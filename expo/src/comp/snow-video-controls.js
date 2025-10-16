@@ -18,21 +18,10 @@ import SnowTrackSelector from './snow-track-selector'
 export default function SnowVideoControls(props) {
     const { SnowStyle } = Snow.useSnowContext(props)
     const styles = {
-        background: {
-            backgroundColor: SnowStyle.color.transparentDark,
-            padding: 60
-        },
-
         progress: {
             flexBasis: '100%',
             textAlign: 'center',
             fontWeight: 'bold',
-        },
-        logs: {
-            backgroundColor: SnowStyle.color.background
-        },
-        prompt: {
-            backgroundColor: SnowStyle.color.transparentDark
         }
     }
     const { apiClient, currentRoute } = useAppContext()
@@ -49,35 +38,6 @@ export default function SnowVideoControls(props) {
         })
     }
 
-    let modalClose = null
-    if (showLogs) {
-        modalClose = () => { setShowLogs(false) }
-        modalContent = (
-            <SnowFillView>
-                <SnowGrid focusStart focusKey="close-top" focusDown="log-entry" itemsPerRow={1}>
-                    <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
-                </SnowGrid>
-                <SnowFillView scroll>
-                    <SnowGrid
-                        focusKey="log-entry"
-                        focusDown="close-bottom"
-                        itemsPerRow={1}
-                        items={player.logs}
-                        renderItem={(log) => {
-                            return (
-                                <SnowView>
-                                    <SnowText shrink>{log}</SnowText>
-                                    <SnowTarget />
-                                </SnowView>
-                            )
-                        }} />
-                </SnowFillView>
-                <SnowGrid focusKey="close-bottom" itemsPerRow={1}>
-                    <SnowTextButton title="Close Logs" onPress={() => { setShowLogs(false) }} />
-                </SnowGrid>
-            </SnowFillView>
-        )
-    }
     let swapTitle = "Swap to mpv"
     if (playerKind === 'mpv') {
         swapTitle = 'Swap to exo'
@@ -162,9 +122,11 @@ export default function SnowVideoControls(props) {
 
     return (
         (
-            <SnowFillView style={{ position: 'absolute', right: 0, left: 0, top: 0, bottom: 0 }} flexStart scroll>
-                <SnowLabel center>{player.videoTitle}</SnowLabel>
-                {slider}
+            <>
+                <>
+                    <SnowLabel center>{player.videoTitle}</SnowLabel>
+                    {slider}
+                </>
                 <SnowTabs focusStart focusKey="control-tabs" headers={tabs}>
                     <SnowGrid itemsPerRow={3}>
                         <SnowTextButton title="Resume" onPress={Player.action.onResumeVideo} />
@@ -174,7 +136,7 @@ export default function SnowVideoControls(props) {
                     {subtitleControls}
                     {trackControls}
                     <SnowGrid short itemsPerRow={2}>
-                        <SnowTextButton title={logTitle} onPress={() => { setShowLogs(true) }} onLongPress={persistLogs} />
+                        <SnowTextButton title={logTitle} onPress={() => { Player.action.setShowVideoLogs(true) }} onLongPress={persistLogs} />
                         <SnowTextButton title={swapTitle} onPress={() => {
                             let newParams = { ...currentRoute.routeParams }
                             newParams.forcePlayer = 'mpv'
@@ -192,7 +154,7 @@ export default function SnowVideoControls(props) {
                         }} />
                     </SnowGrid>
                 </SnowTabs>
-            </SnowFillView>
+            </>
         )
     )
 }

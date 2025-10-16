@@ -67,18 +67,13 @@ export function PlayerManager(props) {
             onDown: () => {
                 const handlerState = snapshot(playerState)
                 if (handlerState.allowShortcuts) {
-                    playerActions.setSubtitleFontSize(handlerState.subtitleFontSize - 4)
+                    playerActions.changeSubtitleFontSize(-1)
                 }
             },
             onUp: () => {
                 const handlerState = snapshot(playerState)
                 if (handlerState.allowShortcuts) {
-                    const nextSubtitleColor = { ...handlerState.subtitleColor }
-                    nextSubtitleColor.shade -= 0.15
-                    if (nextSubtitleColor.shade < 0) {
-                        nextSubtitleColor.shade = 0.0
-                    }
-                    playerActions.setSubtitleColor(nextSubtitleColor)
+                    playerActions.changeSubtitleColor(-1)
                 }
             },
         })
@@ -90,10 +85,7 @@ export function PlayerManager(props) {
 
     React.useEffect(() => {
         const unsubscribe = subscribe(playerState, () => {
-            if (playerState.readyToLoad) {
-                playerActions.effectLoadVideo()
-                playerActions.effectAllowShortcuts()
-            }
+            playerActions.effectLoadVideo()
         })
         return () => { unsubscribe() }
     }, [])
