@@ -107,30 +107,16 @@ export default function SnowVideoControls(props) {
         subtitleControls = (
             <SnowGrid itemsPerRow={4}>
                 <SnowTextButton title="Sub Smaller" onPress={() => {
-                    Player.action.setSubtitleFontSize(fontSize => { return fontSize - 4 })
+                    Player.action.changeSubtitleFontSize(-1)
                 }} />
                 <SnowTextButton title="Sub Bigger" onPress={() => {
-                    Player.action.setSubtitleFontSize(fontSize => { return fontSize + 4 })
+                    Player.action.changeSubtitleFontSize(1)
                 }} />
                 <SnowTextButton title="Sub Darker" onPress={() => {
-                    Player.action.setSubtitleColor(fontColor => {
-                        let newColor = { ...fontColor }
-                        newColor.shade -= 0.15;
-                        if (newColor.shade < 0) {
-                            newColor.shade = 0.0
-                        }
-                        return newColor
-                    })
+                    Player.action.changeSubtitleColor(-1)
                 }} />
                 <SnowTextButton title="Sub Lighter" onPress={() => {
-                    Player.action.setSubtitleColor(fontColor => {
-                        let newColor = { ...fontColor }
-                        newColor.shade += 0.15;
-                        if (newColor.shade > 1.0) {
-                            newColor.shade = 1.0
-                        }
-                        return newColor
-                    })
+                    Player.action.changeSubtitleColor(1)
                 }}
                 />
             </SnowGrid>

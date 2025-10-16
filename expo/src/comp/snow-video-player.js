@@ -48,8 +48,7 @@ export default function SnowVideoPlayer(props) {
                 props: {
                     assignFocus: false,
                     onRequestClose: () => {
-                        Player.action.onStopVideo()
-
+                        Player.action.onVideoModalBack()
                     }
                 },
                 render: () => {

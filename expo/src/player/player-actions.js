@@ -50,7 +50,6 @@ export const playerActions = {
     },
 
     reset() {
-        console.log("Reset")
         Object.assign(playerState, initialPlayerState)
     },
 
@@ -180,6 +179,13 @@ export const playerActions = {
         if (player.transcodeOnResume) {
             this.onTranscodeSeek()
         }
+    },
+
+    onVideoModalBack() {
+        if (playerState.controlsVisible) {
+            return
+        }
+        this.onStopVideo()
     },
 
     onStopVideo(goHome) {
@@ -472,17 +478,23 @@ export const playerActions = {
         playerState.audioDelaySeconds = value
     },
 
-    setSubtitleColor(value) {
-        playerState.subtitleColor = value
-    },
-
     setSubtitleDelaySeconds(value) {
         playerState.subtitleDelaySeconds = value
     },
 
-    setSubtitleFontSize(value) {
-        playerState.subtitleFontSize = value
+    changeSubtitleColor(direction) {
+        let newColor = { ...playerState.subtitleColor }
+        newColor.shade += direction * 0.15;
+        if (newColor.shade > 1.0) {
+            newColor.shade = 1.0
+        }
+        if (newColor.shade < 0.0) {
+            newColor.shade = 0.0
+        }
+        playerState.subtitleColor = newColor
     },
 
-
+    changeSubtitleFontSize(direction) {
+        playerState.subtitleFontSize += direction * 4
+    }
 }
