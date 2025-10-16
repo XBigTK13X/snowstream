@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React from 'react'
 import Snow from 'expo-snowui'
-import { useSnapshot, subscribe } from 'valtio'
+import { useSnapshot, subscribe, snapshot } from 'valtio'
 import { useAppContext } from '../app-context'
 import { playerState } from './player-state'
 import { playerActions } from './player-actions'
@@ -53,25 +53,31 @@ export function PlayerManager(props) {
     React.useEffect(() => {
         addActionListener('player-controls', {
             onRight: () => {
-                if (player.allowShortcuts) {
-                    playerActions.onProgress(player.progressSeconds + 85, 'manual-seek')
+                const handlerState = snapshot(playerState)
+                if (handlerState.allowShortcuts) {
+                    playerActions.onProgress(handlerState.progressSeconds + 85, 'manual-seek')
                 }
             },
             onLeft: () => {
-                if (player.allowShortcuts) {
-                    playerActions.onProgress(player.progressSeconds - 7, 'manual-seek')
+                const handlerState = snapshot(playerState)
+                if (handlerState.allowShortcuts) {
+                    playerActions.onProgress(handlerState.progressSeconds - 7, 'manual-seek')
                 }
             },
             onDown: () => {
-                if (player.allowShortcuts) {
-                    playerActions.setSubtitleFontSize(player.subtitleFontSize - 4)
+                const handlerState = snapshot(playerState)
+                if (handlerState.allowShortcuts) {
+                    playerActions.setSubtitleFontSize(handlerState.subtitleFontSize - 4)
                 }
             },
             onUp: () => {
-                if (player.allowShortcuts) {
-                    const nextSubtitleColor = { ...player.subtitleColor }
+                const handlerState = snapshot(playerState)
+                if (handlerState.allowShortcuts) {
+                    const nextSubtitleColor = { ...handlerState.subtitleColor }
                     nextSubtitleColor.shade -= 0.15
-                    if (nextSubtitleColor.shade < 0) nextSubtitleColor.shade = 0.0
+                    if (nextSubtitleColor.shade < 0) {
+                        nextSubtitleColor.shade = 0.0
+                    }
                     playerActions.setSubtitleColor(nextSubtitleColor)
                 }
             },
