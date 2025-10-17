@@ -26,6 +26,8 @@ export default function MediaTracksPage(props) {
     const [forcePlayer, setForcePlayer] = C.React.useState(null)
     const [showInfoModal, setShowInfoModal] = C.React.useState(false)
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
+    const [playParams, setPlayParams] = C.React.useState({})
+    const [resumeParams, setResumeParams] = C.React.useState({})
 
     const shelfId = currentRoute.routeParams.shelfId;
 
@@ -33,6 +35,32 @@ export default function MediaTracksPage(props) {
     if (media) {
         videoFile = media.video_files[videoFileIndex]
     }
+
+    C.React.useEffect(() => {
+        if (media) {
+            const playDestination = {
+                videoFileIndex: videoFileIndex,
+                audioTrack: audioTrack,
+                subtitleTrack: subtitleTrack,
+                shelfId: shelfId,
+                videoIsHdr: videoFile.is_hdr
+            }
+            const mediaDestination = props.getPlayParameters(currentRoute.routeParams)
+            let combinedPlayDestination = { ...playDestination, ...mediaDestination, transcode: shouldTranscode }
+            if (forcePlayer !== null) {
+                combinedPlayDestination.forcePlayer = player
+            }
+            else {
+                delete combinedPlayDestination.forcePlayer;
+            }
+            setPlayParams(combinedPlayDestination)
+            setResumeParams({
+                ...combinedPlayDestination,
+                seekToSeconds: media.in_progress.played_seconds
+            })
+
+        }
+    }, [player, forcePlayer, media, videoFileIndex, subtitleTrack, audioTrack, shelfId, shouldTranscode])
 
     C.React.useEffect(() => {
         if (!media) {
@@ -199,13 +227,7 @@ export default function MediaTracksPage(props) {
         const videoTrack = videoFile.info.tracks.video[0]
 
         const watchTitle = media.watched ? "Mark Unwatched (hold)" : "Mark Watched (hold)"
-        const playDestination = {
-            videoFileIndex: videoFileIndex,
-            audioTrack: audioTrack,
-            subtitleTrack: subtitleTrack,
-            shelfId: shelfId,
-            videoIsHdr: videoFile.is_hdr
-        }
+
         let mainFeatureButton = null
         if (media.has_extras) {
             mainFeatureButton = <C.SnowTextButton title="Main Feature" onPress={() => {
@@ -250,27 +272,24 @@ export default function MediaTracksPage(props) {
         else if (props.getRemoteMetadataId) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
-        const mediaDestination = props.getPlayParameters(currentRoute.routeParams)
-        let combinedPlayDestination = { ...playDestination, ...mediaDestination, transcode: shouldTranscode }
-        if (forcePlayer !== null) {
-            combinedPlayDestination = { ...combinedPlayDestination, forcePlayer: player }
-        }
+
+        C.Snow.prettyLog({ playParams, resumeParams })
         let playTitle = 'Play'
         let resumeControls = null
         let playFocus = true
         if (media.in_progress && media.in_progress.played_seconds) {
             playFocus = false
             playTitle = 'Play from Start'
-            const resumePlayDestination = {
-                ...combinedPlayDestination,
-                seekToSeconds: media.in_progress.played_seconds
-            }
             resumeControls = (
                 <C.SnowTextButton
+                    key={C.Snow.stringifySafe(resumeParams)}
                     focusStart
                     tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
-                    onPress={navPush(props.getPlayRoute(routes), resumePlayDestination, true)}
+                    onPress={() => {
+                        C.Snow.prettyLog({ resumeParams })
+                        navPush(props.getPlayRoute(routes), resumeParams)
+                    }}
                 />
             )
         }
@@ -398,9 +417,13 @@ export default function MediaTracksPage(props) {
                         itemsPerRow={4}>
                         {resumeControls}
                         <C.SnowTextButton
+                            key={C.Snow.stringifySafe(playParams)}
                             tall
                             title={playTitle}
-                            onPress={navPush(props.getPlayRoute(routes), combinedPlayDestination, true)}
+                            onPress={() => {
+                                navPush(props.getPlayRoute(routes), playParams)
+                            }}
+
                         />
                     </C.SnowGrid>
                 </C.SnowView>

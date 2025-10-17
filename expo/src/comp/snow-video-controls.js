@@ -1,22 +1,17 @@
 import React from 'react'
 import Snow, {
-    SnowFillView,
     SnowGrid,
     SnowLabel,
     SnowRangeSlider,
     SnowTabs,
     SnowText,
-    SnowTextButton,
-    SnowView,
-    SnowTarget
+    SnowTextButton
 } from 'expo-snowui'
 
-import { useAppContext } from '../app-context'
 import { Player } from 'snowstream'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
-    const { SnowStyle } = Snow.useSnowContext(props)
     const styles = {
         progress: {
             flexBasis: '100%',
@@ -24,16 +19,14 @@ export default function SnowVideoControls(props) {
             fontWeight: 'bold',
         }
     }
-    const { apiClient, currentRoute } = useAppContext()
     const player = Player.useSnapshot(Player.state)
 
     const playerKind = player.playerKind
 
-    const [showLogs, setShowLogs] = React.useState(false)
     const [logTitle, setLogTitle] = React.useState(playerKind !== 'rnv' ? playerKind + ' Logs' : 'exo Logs')
 
     const persistLogs = () => {
-        apiClient.savePlaybackLogs(player.logs).then((response) => {
+        Player.action.savePlaybackLogs().then((response) => {
             setLogTitle(response.cache_key)
         })
     }
@@ -139,21 +132,12 @@ export default function SnowVideoControls(props) {
                         <SnowTextButton title={logTitle} onPress={() => {
                             Player.action.setVideoLogsVisible(true)
                         }} onLongPress={persistLogs} />
-                        <SnowTextButton title={swapTitle} onPress={() => {
-                            let newParams = { ...currentRoute.routeParams }
-                            newParams.forcePlayer = 'mpv'
-                            if (playerKind === 'mpv') {
-                                newParams.forcePlayer = 'exo'
-                            }
-                            newParams.seekToSeconds = player.progressSeconds
-                            Player.action.onChangeRouteParams(newParams)
+                        {/* <SnowTextButton title={swapTitle} onPress={() => {
+                            Player.action.togglePlayerKind()
                         }} />
                         <SnowTextButton title={transcodeTitle} onPress={() => {
-                            let newParams = { ...currentRoute.routeParams }
-                            newParams.transcode = !player.isTranscode
-                            newParams.seekToSeconds = player.progressSeconds
-                            Player.action.onChangeRouteParams(newParams)
-                        }} />
+                            Player.action.toggleTranscode()
+                        }} /> */}
                     </SnowGrid>
                 </SnowTabs>
             </>

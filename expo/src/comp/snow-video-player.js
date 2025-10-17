@@ -56,7 +56,8 @@ export default function SnowVideoPlayer(props) {
                     }
                 },
                 render: () => {
-                    const VideoView = player.VideoView
+                    const playerSnapshot = Player.snapshot(Player.state)
+                    const VideoView = playerSnapshot.VideoView
                     return <VideoView />
                 }
             })

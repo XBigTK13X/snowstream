@@ -11,7 +11,6 @@ export const playerActions = {
             playerState.apiClient = deps.apiClient
             playerState.hasApiClient = !!deps.apiClient
         }
-
         if (!_.isEqual(playerState.clientOptions, deps.clientOptions)) {
             playerState.clientOptions = deps.clientOptions
             playerState.hasClientOptions = !!deps.clientOptions
@@ -24,7 +23,6 @@ export const playerActions = {
             playerState.routes = deps.routes
             playerState.hasRoutes = !!deps.routes
         }
-
         if (playerState.routePath !== deps.currentRoute.routePath) {
             playerState.routePath = deps.currentRoute.routePath
             playerState.hasRoutePath = !!deps.currentRoute.routePath
@@ -33,31 +31,26 @@ export const playerActions = {
             playerState.routeParams = deps.currentRoute.routeParams
             playerState.hasRouteParams = !!deps.currentRoute.routeParams
         }
-
         if (!_.isEqual(this.navPush, deps.navPush)) {
             this.navPush = deps.navPush
             playerState.navPush = deps.navPush
             playerState.hasNavPush = !!deps.navPush
         }
-
         if (!_.isEqual(this.navPop, deps.navPop)) {
             this.navPop = deps.navPop
             playerState.navPop = deps.navPop
             playerState.hasNavPop = !!deps.navPop
         }
-
         if (!_.isEqual(this.clearModals, deps.clearModals)) {
             this.clearModals = deps.clearModals
             playerState.clearModals = deps.clearModals
             playerState.hasClearModals = !!deps.clearModals
         }
-
         if (!_.isEqual(this.closeOverlay, deps.closeOverlay)) {
             this.closeOverlay = deps.closeOverlay
             playerState.closeOverlay = deps.closeOverlay
             playerState.hasCloseOverlay = !!deps.closeOverlay
         }
-
         const player = snapshot(playerState)
         if (player.progressSeconds == null) {
             playerState.progressSeconds = playerState.isTranscode ? 0 : null
@@ -91,10 +84,7 @@ export const playerActions = {
 
     effectLoadVideo() {
         const player = snapshot(playerState)
-        if (player.videoUrl) {
-            return
-        }
-        if (!player.settingsLoaded) {
+        if (player.videoUrl || !player.settingsLoaded) {
             return
         }
         if (!player.videoLoading && !player.manualSeekSeconds) {
@@ -148,6 +138,10 @@ export const playerActions = {
 
     setVideoLogsVisible(value) {
         playerState.logsVisible = value
+    },
+
+    savePlaybackLogs() {
+        return this.apiClient.savePlaybackLogs(playerState.logs)
     },
 
     onPlaybackComplete() {
@@ -231,9 +225,12 @@ export const playerActions = {
     },
 
     onChangeRouteParams(newParams) {
-        playerState.changeRouteParams = newParams
-        if (this.navPush) {
-            this.navPush(newParams)
+        if (playerState.routeParams) {
+            const mergedParams = { ...playerState.routeParams, ...newParams }
+            playerState.changeRouteParams = mergedParams
+            if (this.navPush) {
+                this.navPush(mergedParams)
+            }
         }
     },
 
@@ -510,5 +507,37 @@ export const playerActions = {
 
     changeSubtitleFontSize(direction) {
         playerState.subtitleFontSize += direction * 4
+    },
+
+    toggleTranscode() {
+        playerState.videoLoaded = false
+        playerState.videoLoading = false
+        playerState.isVideoViewReady = false
+        playerState.controlsVisible = false
+        playerState.isPlaying = false
+        if (playerState.playerKind === 'mpv') {
+            playerState.routeParams.transcode = true
+            this.navPush(playerState.routeParams)
+        } else {
+            playerState.routeParams.transcode = false
+            this.navPush(playerState.routeParams)
+        }
+    },
+
+    togglePlayerKind() {
+        playerState.videoLoaded = false
+        playerState.videoLoading = false
+        playerState.isVideoViewReady = false
+        playerState.controlsVisible = false
+        playerState.isPlaying = false
+        if (playerState.playerKind === 'mpv') {
+            playerState.playerKind = 'rnv'
+            playerState.routeParams.forcePlayer = 'rnv'
+            this.navPush(playerState.routeParams)
+        } else {
+            playerState.playerKind = 'mpv'
+            playerState.routeParams.forcePlayer = 'mpv'
+            this.navPush(playerState.routeParams)
+        }
     }
 }

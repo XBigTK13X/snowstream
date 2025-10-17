@@ -155,6 +155,9 @@ export const playerState = proxy({
         if (Platform.OS === 'web' || this.forceExo) {
             return 'rnv'
         }
+        if (this.routeParams.forcePlayer === 'exo') {
+            return 'rnv'
+        }
         return 'mpv'
     },
 
