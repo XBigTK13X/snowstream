@@ -138,7 +138,6 @@ export default function KeepsakeDetailsPage(props) {
             }
         })
         return () => {
-            popModal()
             closeOverlay()
         }
     }, [zoomedItem])

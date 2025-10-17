@@ -22,11 +22,21 @@ export default function SignInPage() {
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
     const [user, setUser] = C.React.useState(null)
-    const [customServer, setCustomServer] = C.React.useState('')
     const [password, setPassword] = C.React.useState("")
+    const passwordRef = C.React.useRef(password)
+    const [customServer, setCustomServer] = C.React.useState('')
+    const customServerRef = C.React.useRef(password)
 
     C.React.useEffect(() => {
-        if (!users && apiClient && clientOptions) {
+        customServerRef.current = customServer
+    }, [customServer])
+
+    C.React.useEffect(() => {
+        passwordRef.current = password
+    }, [password])
+
+    C.React.useEffect(() => {
+        if (!users?.length && apiClient && clientOptions) {
             apiClient.getUserList(clientOptions.deviceProfile).then((response) => {
                 setUsers(response)
             })
@@ -42,6 +52,21 @@ export default function SignInPage() {
     const cancelPassword = () => {
         setPassword('')
         setUser(null)
+    }
+
+    const login = () => {
+        signIn(user?.username, passwordRef.current)
+            .then((result) => {
+                if (result.failed) {
+                    setErrors("Incorrect password for this user.")
+                }
+                else {
+                    navReset()
+                }
+            })
+            .catch((err) => {
+                setErrors(err)
+            })
     }
 
     C.React.useEffect(() => {
@@ -97,20 +122,6 @@ export default function SignInPage() {
 
     }
 
-    const login = () => {
-        signIn(user?.username, password)
-            .then((result) => {
-                if (result.failed) {
-                    setErrors("Incorrect password for this user.")
-                }
-                else {
-                    navReset()
-                }
-            })
-            .catch((err) => {
-                setErrors(err)
-            })
-    }
 
     const chooseServer = (serverUrl) => {
         setUsers(null)
@@ -118,15 +129,15 @@ export default function SignInPage() {
     }
 
 
-    const applyCustomServer = () => {
+    const applyCustomServer = (target) => {
+        setWebApiUrl(target)
         setUsers(null)
-        setWebApiUrl(customServer)
     }
 
     let passwordForm = null
     let userList = null
     let selectServer = null
-    if (users) {
+    if (users?.length) {
         let renderItem = (item) => {
             if (!item.username) {
                 return null
@@ -168,13 +179,13 @@ export default function SignInPage() {
             <C.SnowInput
                 focusKey="custom-server-input"
                 focusDown="submit-custom-server"
-                onSubmit={applyCustomServer}
+                onSubmit={() => { applyCustomServer(customServerRef.current) }}
                 onValueChange={setCustomServer}
                 value={customServer} />
             <C.SnowTextButton
                 focusKey="submit-custom-server"
                 title="Connect to Server"
-                onPress={applyCustomServer}
+                onPress={() => { applyCustomServer(customServerRef.current) }}
             />
         </>
     )
