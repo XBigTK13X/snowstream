@@ -5,50 +5,50 @@ function KeepsakeVideo(props) {
     const player = Player.useSnapshot(Player.state)
 
     C.React.useEffect(() => {
-        if (player.videoUrl) {
+        if (!player.videoUrl) {
             Player.state.forceTranscode = C.isWeb
-            Player.state.loadVideo = () => {
-                return new Promise(resolve => {
-                    return resolve({
-                        url: props.videoFile.network_path,
-                        name: props.videoFile.name,
-                        durationSeconds: props.videoFile.info.duration_seconds,
-                        tracks: props.videoFile.info.tracks
+            Player.action.effectSetVideoHandlers({
+                loadVideo: () => {
+                    return new Promise(resolve => {
+                        return resolve({
+                            url: props.videoFile.network_path,
+                            name: props.videoFile.name,
+                            durationSeconds: props.videoFile.info.duration_seconds,
+                            tracks: props.videoFile.info.tracks
+                        })
                     })
-                })
-            }
-            Player.state.loadTranscode = (apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
-                return new Promise((resolve) => {
-                    return apiClient.createVideoFileTranscodeSession(
-                        props.videoFile.id,
-                        0,
-                        -1,
-                        deviceProfile,
-                        initialSeekSeconds ?? 0
-                    )
-                        .then((transcodeSession) => {
-                            return resolve({
-                                name: props.videoFile.name,
-                                url: transcodeSession.transcode_url,
-                                durationSeconds: props.videoFile.info.duration_seconds,
-                                transcodeId: transcodeSession.transcode_session_id
+                },
+                loadTranscode: (apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
+                    return new Promise((resolve) => {
+                        return apiClient.createVideoFileTranscodeSession(
+                            props.videoFile.id,
+                            0,
+                            -1,
+                            deviceProfile,
+                            initialSeekSeconds ?? 0
+                        )
+                            .then((transcodeSession) => {
+                                return resolve({
+                                    name: props.videoFile.name,
+                                    url: transcodeSession.transcode_url,
+                                    durationSeconds: props.videoFile.info.duration_seconds,
+                                    transcodeId: transcodeSession.transcode_session_id
+                                })
                             })
-                        })
-                        .catch((err) => {
-                            return resolve({
-                                error: err
+                            .catch((err) => {
+                                return resolve({
+                                    error: err
+                                })
                             })
-                        })
-                })
-            }
-            Player.state.onComplete = () => {
-                return props.closeModal()
-            }
-            Player.state.onStopVideo = () => {
-                return props.closeModal()
-            }
-            Player.state.updateProgress = props.updateProgress
-            Player.state.increaseWatchCount = props.increaseWatchCount
+                    })
+                },
+                onComplete: () => {
+                    return props.closeModal()
+                },
+                onStopVideo: () => {
+                    return props.closeModal()
+                },
+            })
         }
     }, [player.videoUrl, player.isTranscode])
 
@@ -68,41 +68,21 @@ function KeepsakeVideo(props) {
         return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
     }
     return (
-        <SnowVideoPlayer />
+        <SnowVideoPlayer onRequestCloseModal={props.closeModal} />
     )
 }
 
-function ZoomView(zoomProps) {
-    const { pushModal, popModal, openOverlay, closeOverlay } = C.useSnowContext()
-    C.React.useEffect(() => {
-        pushModal({
-            props: {
-                assignFocus: false,
-                wrapper: false,
-                onRequestClose: () => { zoomProps.action }
-            },
-            render: () => {
-                return zoomProps.children
-            }
-        })
-        openOverlay({
-            props: {
-                focusStart: true,
-                focusKey: 'zoomed-item',
-                focusLayer: 'zoomed-item',
-                onPress: zoomProps.action
-            }
-        })
-        return () => {
-            popModal()
-            closeOverlay()
-        }
-    }, [])
-    return null
-}
-
 export default function KeepsakeDetailsPage(props) {
-    const { SnowStyle, navPush, currentRoute } = C.useSnowContext(props)
+    const {
+        navPush,
+        currentRoute,
+        addBackListener,
+        removeBackListener,
+        pushModal,
+        openOverlay,
+        clearModals,
+        closeOverlay
+    } = C.useSnowContext(props)
 
 
     const { apiClient, routes } = useAppContext()
@@ -119,44 +99,70 @@ export default function KeepsakeDetailsPage(props) {
     }, [currentRoute])
 
     const styles = {
-        modal: {
-            flex: 1,
-            padding: 10,
-            backgroundColor: SnowStyle.color.background
-        },
-        zoomedImage: {
-            width: "100%",
-            height: 800,
-            justifyContent: 'center',
-        },
         webImage: {
             flex: 1
         }
     }
 
     const closeModal = () => {
+        clearModals()
+        closeOverlay()
         setZoomedItem(null)
     }
 
-    if (zoomedItem) {
-        if (zoomedItem.model_kind === 'image_file') {
-            return (
-                <ZoomView action={closeModal}>
+    C.React.useEffect(() => {
+        if (!zoomedItem || zoomedItem.model_kind !== 'image_file') {
+            return
+        }
+        pushModal({
+            props: {
+                assignFocus: false,
+                wrapper: false,
+                onRequestClose: closeModal
+            },
+            render: () => {
+                return (
                     <C.Image
                         style={styles.webImage}
                         contentFit="contain"
                         source={{ uri: zoomedItem.web_path }} />
-                </ZoomView>
-            )
+                )
+            }
+        })
+        openOverlay({
+            props: {
+                focusStart: true,
+                focusKey: 'zoomed-item',
+                focusLayer: 'zoomed-item',
+                onPress: closeModal
+            }
+        })
+        return () => {
+            popModal()
+            closeOverlay()
         }
-        return (
-            <ZoomView action={closeModal}>
+    }, [zoomedItem])
+
+    C.React.useEffect(() => {
+        if (zoomedItem && zoomedItem.model_kind === 'video_file') {
+            addBackListener('keepsake-video', () => {
+                return true
+            })
+            return () => {
+                removeBackListener('keepsake-video')
+            }
+        }
+    }, [zoomedItem])
+
+    if (zoomedItem) {
+        if (zoomedItem.model_kind === 'video_file') {
+            return (
                 <KeepsakeVideo
                     videoFile={zoomedItem}
                     closeModal={closeModal}
                 />
-            </ZoomView>
-        )
+            )
+        }
     }
 
     if (!keepsake) {

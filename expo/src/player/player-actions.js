@@ -72,14 +72,21 @@ export const playerActions = {
         this.routes = playerState.routes
         this.clearModals = playerState.clearModals
         this.closeOverlay = playerState.closeOverlay
+        this.loadVideoHandler = null
+        this.loadTranscodeHandler = null
+        this.onCompleteHandler = null
+        this.onStopVideoHandler = null
+        this.updateProgressHandler = null
+        this.increaseWatchCountHandler = null
     },
 
     effectSetVideoHandlers(props) {
-        this.loadVideoHandler = props.loadVideo
-        this.loadTranscodeHandler = props.loadTranscode
-        this.onCompleteHandler = props.onComplete
-        this.updateProgressHandler = props.updateProgress
-        this.increaseWatchCountHandler = props.increaseWatchCount
+        this.loadVideoHandler = props?.loadVideo
+        this.loadTranscodeHandler = props?.loadTranscode
+        this.onCompleteHandler = props?.onComplete
+        this.onStopVideoHandler = props?.onStopVideo
+        this.updateProgressHandler = props?.updateProgress
+        this.increaseWatchCountHandler = props?.increaseWatchCount
     },
 
     effectLoadVideo() {
@@ -205,21 +212,27 @@ export const playerActions = {
         if (player.changeRouteParams) {
             return
         }
-        if (playerState.onStopVideo) {
-            playerState.onStopVideo()
+        if (playerState.onStopVideoHandler) {
+            playerState.onStopVideoHandler()
         } else {
+            if (playerState?.routePath === playerState?.routes?.keepsakeDetails) {
+                this.reset()
+                return
+            }
             if (goHome) {
                 this.clearModals()
                 this.closeOverlay()
                 if (this.navPush) {
                     this.navPush(player.routes.landing)
                 }
+                this.reset()
             } else {
                 this.clearModals()
                 this.closeOverlay()
                 if (this.navPop) {
                     this.navPop()
                 }
+                this.reset()
             }
         }
     },

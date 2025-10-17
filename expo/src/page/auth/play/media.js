@@ -27,8 +27,7 @@ export function PlayMediaPage(props) {
     }
 
     return (
-        // It gets cleaned up by the video player modal
-        <SnowVideoPlayer skipCleanup />
+        <SnowVideoPlayer />
     )
 }
 

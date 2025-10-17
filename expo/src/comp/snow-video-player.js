@@ -17,14 +17,6 @@ export default function SnowVideoPlayer(props) {
 
     const { config } = useAppContext()
 
-    if (!props.skipCleanup) {
-        React.useEffect(() => {
-            return () => {
-                Player.action.onStopVideo()
-            }
-        }, [])
-    }
-
     if (Platform.OS !== 'web') {
         useKeepAwake();
     }
@@ -52,6 +44,9 @@ export default function SnowVideoPlayer(props) {
                         const shouldClose = !player.controlsVisible && !player.logsVisible
                         if (shouldClose) {
                             Player.action.onVideoModalBack()
+                        }
+                        if (props.onRequestCloseModal) {
+                            props.onRequestCloseModal()
                         }
                     }
                 },

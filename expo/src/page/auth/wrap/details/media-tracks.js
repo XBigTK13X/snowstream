@@ -273,7 +273,6 @@ export default function MediaTracksPage(props) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
 
-        C.Snow.prettyLog({ playParams, resumeParams })
         let playTitle = 'Play'
         let resumeControls = null
         let playFocus = true
@@ -287,7 +286,6 @@ export default function MediaTracksPage(props) {
                     tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
                     onPress={() => {
-                        C.Snow.prettyLog({ resumeParams })
                         navPush(props.getPlayRoute(routes), resumeParams)
                     }}
                 />
