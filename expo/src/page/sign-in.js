@@ -70,7 +70,7 @@ export default function SignInPage() {
     }
 
     C.React.useEffect(() => {
-        if (user?.has_password)
+        if (user?.has_password) {
             pushModal({
                 props: {
                     focusLayer: "enter-password",
@@ -97,8 +97,9 @@ export default function SignInPage() {
                 }
 
             })
-        return () => {
-            popModal()
+            return () => {
+                popModal()
+            }
         }
     }, [user, password])
 
