@@ -213,9 +213,12 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         'subtitle_index': 0
     }
     valid_ffs = ['audio','video','subtitle']
+    invalid_ffs = ['png']
     for ff in raw_ffprobe['streams']:
         try:
             if not ff['codec_type'] in valid_ffs:
+                continue
+            if ff['codec_name'] in invalid_ffs:
                 continue
             kind = ff['codec_type']
             key_pool = f'{kind}_index'

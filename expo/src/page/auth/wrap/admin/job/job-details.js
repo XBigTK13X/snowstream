@@ -18,7 +18,7 @@ export default function JobDetailsPage() {
                 }
             })
         }
-    }, [])
+    }, [job])
 
     if (!job) {
         return null
