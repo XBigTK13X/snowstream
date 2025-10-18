@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function PlaylistDetailsPage() {
-    const { currentRoute } = C.useSnowContext()
+    const { currentRoute, navPush } = C.useSnowContext()
     const { apiClient, routes } = useAppContext()
 
     const tagId = currentRoute.routeParams.tagId
@@ -17,7 +17,7 @@ export default function PlaylistDetailsPage() {
         }
     })
     if (!playlistItems) {
-        return <C.Text>Loading playlist {tagName}.</C.Text>
+        return <C.Text>Loading playlist {tagName ?? ''}.</C.Text>
     }
 
     const watchAll = () => {
@@ -25,7 +25,7 @@ export default function PlaylistDetailsPage() {
             .getPlayingQueue({ tagId })
             .then(response => {
                 navPush(routes.playingQueuePlay, {
-                    playingQueueSource: response.source
+                    playingQueueSource: response.queue.source
                 })
             })
     }
@@ -35,7 +35,7 @@ export default function PlaylistDetailsPage() {
             .getPlayingQueue({ tagId, shuffle: true })
             .then(response => {
                 navPush(routes.playingQueuePlay, {
-                    playingQueueSource: response.source
+                    playingQueueSource: response.queue.source
                 })
             })
     }

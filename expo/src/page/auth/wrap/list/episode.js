@@ -8,7 +8,7 @@ export default function EpisodeListPage() {
     const seasonId = currentRoute.routeParams.seasonId
     const seasonOrder = currentRoute.routeParams.seasonOrder
     const getPageTitle = (shelf, items) => {
-        return `Found ${items.length} episodes for ${showName} season ${seasonOrder}`
+        return `Found ${items.length} episodes for ${showName ?? ''} season ${seasonOrder ?? ''}`
     }
     const loadItems = (apiClient, shelfId, showPlaylisted) => {
         return apiClient.getEpisodeList(shelfId, seasonId)

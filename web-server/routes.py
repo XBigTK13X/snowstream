@@ -770,7 +770,7 @@ def auth_required(router):
         shuffle:bool=False,
         source:str=None
     ):
-        return db.op.get_playing_queue(
+        queue = db.op.get_playing_queue(
             ticket=auth_user.ticket,
             show_id=show_id,
             show_season_id=show_season_id,
@@ -778,6 +778,19 @@ def auth_required(router):
             shuffle=shuffle,
             source=source
         )
+        kind = 'show'
+        kind_id = show_id
+        if not kind_id:
+            kind = 'show_season'
+            kind_id = show_season_id
+        if not kind_id:
+            kind = 'playlist'
+            kind_id = tag_id
+        return {
+            'queue':queue,
+            'kind': kind,
+            'kind_id': kind_id
+        }
 
     @router.post('/playing/queue',tags=['User'])
     def update_playing_queue(

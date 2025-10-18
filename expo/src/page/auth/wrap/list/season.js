@@ -10,7 +10,7 @@ export default function SeasonListPage() {
     const showName = currentRoute.routeParams.showName
 
     const getPageTitle = (shelf, items) => {
-        return `Found ${items.length} seasons for show ${showName}`
+        return `Found ${items.length} seasons for show ${showName ?? ''}`
     }
 
     const loadItems = (apiClient, shelfId, showPlaylisted) => {

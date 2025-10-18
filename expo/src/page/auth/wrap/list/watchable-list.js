@@ -44,7 +44,7 @@ export function WatchableListPage(props) {
         const watchAll = () => {
             props.watchAll(apiClient, shelfId).then(response => {
                 navPush(routes.playingQueuePlay, {
-                    playingQueueSource: response.source
+                    playingQueueSource: response.queue.source
                 })
             })
         }
@@ -52,7 +52,7 @@ export function WatchableListPage(props) {
         const shuffleAll = () => {
             props.shuffleAll(apiClient, shelfId).then(response => {
                 navPush(routes.playingQueuePlay, {
-                    playingQueueSource: response.source
+                    playingQueueSource: response.queue.source
                 })
             })
         }
