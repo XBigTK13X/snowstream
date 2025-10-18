@@ -54,11 +54,12 @@ export default function MediaTracksPage(props) {
                 delete combinedPlayDestination.forcePlayer;
             }
             setPlayParams(combinedPlayDestination)
-            setResumeParams({
-                ...combinedPlayDestination,
-                seekToSeconds: media.in_progress.played_seconds
-            })
-
+            if (media?.in_progress?.played_seconds) {
+                setResumeParams({
+                    ...combinedPlayDestination,
+                    seekToSeconds: media.in_progress.played_seconds
+                })
+            }
         }
     }, [player, forcePlayer, media, videoFileIndex, subtitleTrack, audioTrack, shelfId, shouldTranscode])
 
@@ -276,7 +277,7 @@ export default function MediaTracksPage(props) {
         let playTitle = 'Play'
         let resumeControls = null
         let playFocus = true
-        if (media.in_progress && media.in_progress.played_seconds) {
+        if (media?.in_progress?.played_seconds) {
             playFocus = false
             playTitle = 'Play from Start'
             resumeControls = (
