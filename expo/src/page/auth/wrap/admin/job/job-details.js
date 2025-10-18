@@ -1,7 +1,8 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function JobDetailsPage() {
-    const { apiClient, navPop, currentRoute } = useAppContext()
+    const { navPop, currentRoute } = C.useSnowContext()
+    const { apiClient } = useAppContext()
     const [job, setJob] = C.React.useState(null)
     C.React.useEffect(() => {
         if (!job) {
@@ -17,7 +18,7 @@ export default function JobDetailsPage() {
                 }
             })
         }
-    })
+    }, [])
 
     if (!job) {
         return null

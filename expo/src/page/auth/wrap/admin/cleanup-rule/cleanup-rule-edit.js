@@ -10,7 +10,8 @@ const targetKinds = [
 
 
 export default function DisplayCleanupRuleEditPage() {
-    const { apiClient, routes, currentRoute } = useAppContext()
+    const { currentRoute } = C.useSnowContext()
+    const { apiClient, routes } = useAppContext()
 
     const [ruleLoaded, setRuleLoaded] = C.React.useState(false)
     const [ruleDeleteCount, setRuleDeleteCount] = C.React.useState(3)
