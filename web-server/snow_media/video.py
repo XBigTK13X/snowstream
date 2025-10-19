@@ -34,9 +34,9 @@ class MediaTrack:
                     self.bit_rate = int(mediainfo['BitRate'])
             if 'BitRate_Mode' in mediainfo:
                 self.bit_rate_kind = mediainfo['BitRate_Mode']
-            self.language = mediainfo['Language'] if 'Language' in mediainfo else None
-            self.is_default = mediainfo['Default'] == 'Yes' if 'Default' in mediainfo else False
-            self.title = f"{mediainfo['Title']}" if 'Title' in mediainfo else ''
+            self.language = mediainfo['Language'] if mediainfo and 'Language' in mediainfo else None
+            self.is_default = mediainfo['Default'] == 'Yes' if mediainfo and 'Default' in mediainfo else False
+            self.title = f"{mediainfo['Title']}" if mediainfo and 'Title' in mediainfo else ''
 
             if ffprobe['codec_type'] == 'video':
                 self.read_video(ffprobe, mediainfo)
@@ -213,7 +213,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         'subtitle_index': 0
     }
     valid_stream_kinds = ['audio','video','subtitle']
-    invalid_dispositions = ['']
+    invalid_dispositions = ['attached_pic', 'still_image', 'timed_thumbnails']
     for ff in raw_ffprobe['streams']:
         try:
             if not ff['codec_type'] in valid_stream_kinds:
@@ -296,8 +296,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
             fail_track_parse(
                 exception=e,
                 media_path=media_path,
-                ffprobe=stream['ffprobe'] if 'ffprobe' in stream else None,
-                mediainfo=stream['mediainfo'] if 'mediainfo' in stream else None
+                ffprobe=stream['ffprobe'] if stream and 'ffprobe' in stream else None,
+                mediainfo=stream['mediainfo'] if stream and 'mediainfo' in stream else None
             )
 
     for kind in ['audio','subtitle']:

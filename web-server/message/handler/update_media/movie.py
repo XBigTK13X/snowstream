@@ -46,7 +46,7 @@ class Movie(MediaUpdater):
             tagline=self.metadata['tagline'],
             plot=self.metadata['plot'],
             release_date=self.metadata['release_date'],
-            year=self.metadata['year'] if 'year' in self.metadata else None,
+            year=self.metadata['year'] if self.metadata and 'year' in self.metadata else None,
             tvdbid=self.metadata['tvdbid'],
             tmdbid=self.metadata['tmdbid'],
             tags=tags

@@ -220,7 +220,7 @@ class ThetvdbProvider(base.MediaProvider):
                 'tmdbid': None,
                 'year': int(result['year']),
                 'poster_url': result['thumbnail'],
-                'overview': result['overview'] if 'overview' in result else None
+                'overview': result['overview'] if result and 'overview' in result else None
             })
         db.op.upsert_cached_text(key=cache_key, data=json.dumps(results))
         return results
@@ -230,7 +230,7 @@ class ThetvdbProvider(base.MediaProvider):
             'tagline': None,
             'plot': None,
             'release_date': None,
-            'year': int(metadata['year']) if 'year' in metadata else None,
+            'year': int(metadata['year']) if metadata and 'year' in metadata else None,
             'tvdbid': int(metadata['id']),
             'tmdbid': None,
             'name': metadata['name']
@@ -248,14 +248,14 @@ class ThetvdbProvider(base.MediaProvider):
     def to_snowstream_episodes(self, metadata:list[dict]):
         first = metadata[0]
         result = {
-            'overview': first['overview'] if 'overview' in first else None,
+            'overview': first['overview'] if first and 'overview' in first else None,
             'tvdbid': int(first['id']),
             'tmdbid': None,
             'episode': int(first['number']),
             'season': int(first['seasonNumber']),
             'name': first['name'],
-            'year': int(first['year']) if 'year' in first else None,
-            'aired': first['aired'] if 'aired' in first else None
+            'year': int(first['year']) if first and 'year' in first else None,
+            'aired': first['aired'] if first and 'aired' in first else None
         }
         if len(metadata) > 1:
             result['overview'] = ' '.join([f"[Episode {xx['number']}] {xx['overview']}" for xx in metadata])
@@ -280,7 +280,7 @@ class ThetvdbProvider(base.MediaProvider):
             'tvdbid': int(metadata['id']),
             'tmdbid': None,
             'release_date': metadata['firstAired'],
-            'year': int(metadata['year']) if 'year' in metadata else None,
+            'year': int(metadata['year']) if metadata and 'year' in metadata else None,
             'name': None
         }
 
