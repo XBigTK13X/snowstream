@@ -212,14 +212,24 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         'video_index': 0,
         'subtitle_index': 0
     }
-    valid_ffs = ['audio','video','subtitle']
-    invalid_ffs = ['png']
+    valid_stream_kinds = ['audio','video','subtitle']
+    invalid_dispositions = ['']
     for ff in raw_ffprobe['streams']:
         try:
-            if not ff['codec_type'] in valid_ffs:
+            if not ff['codec_type'] in valid_stream_kinds:
                 continue
-            if ff['codec_name'] in invalid_ffs:
+            # Without this disposition check, ffmpeg picks up embedded images as video streams
+            # That causes a stream mismatch from what mediainfo detects
+            valid_disposition = True
+            for invalid_disposition in invalid_dispositions:
+                if 'disposition' in ff and \
+                    invalid_disposition in ff['disposition'] and \
+                        ff['disposition'][invalid_disposition] == 1:
+                    valid_disposition = False
+                    break
+            if not valid_disposition:
                 continue
+
             kind = ff['codec_type']
             key_pool = f'{kind}_index'
             stream_key = f'{kind}-{ff_index[key_pool]}'
