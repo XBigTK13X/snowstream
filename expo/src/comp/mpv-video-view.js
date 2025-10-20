@@ -21,7 +21,7 @@ export default function MpvVideoView(props) {
                     forwardRef.current.runCommand(`set|interpolation|no`).catch(() => { })
                     forwardRef.current.runCommand(`set|video-sync|display-resample`).catch(() => { })
                     forwardRef.current.runCommand(`set|opengl-es|yes`).catch(() => { })
-                    forwardRef.current.runCommand(`set|audio-buffer|0.2`).catch(() => { })
+                    forwardRef.current.runCommand(`set|audio-buffer|2.0`).catch(() => { })
                     forwardRef.current.runCommand(`set|cache|yes`).catch(() => { })
                 }
                 catch { }
