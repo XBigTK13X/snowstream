@@ -7,7 +7,7 @@ import Snow, {
     SnowText,
     SnowTextButton
 } from 'expo-snowui'
-
+import { View } from 'react-native'
 import { Player } from 'snowstream'
 import SnowTrackSelector from './snow-track-selector'
 
@@ -17,6 +17,9 @@ export default function SnowVideoControls(props) {
             flexBasis: '100%',
             textAlign: 'center',
             fontWeight: 'bold',
+        },
+        player: {
+            padding: 30
         }
     }
     const player = Player.useSnapshot(Player.state)
@@ -115,7 +118,7 @@ export default function SnowVideoControls(props) {
 
     return (
         (
-            <>
+            <View style={styles.player}>
                 <>
                     <SnowLabel center>{player.videoTitle}</SnowLabel>
                     {slider}
@@ -140,7 +143,7 @@ export default function SnowVideoControls(props) {
                         }} /> */}
                     </SnowGrid>
                 </SnowTabs>
-            </>
+            </View>
         )
     )
 }

@@ -58,7 +58,7 @@ export default function StreamableListPage() {
         if (streamSource.has_groups) {
             listFocusKey = 'streamable-list'
             groupsButton = (
-                <C.SnowGrid itemsPerRow={3}>
+                <C.SnowGrid key="group-grid" itemsPerRow={3}>
                     <C.SnowTextButton focusKey="page-entry" focusDown="streamable-list" title="Groups" onPress={() => { setStreamableItems(null) }} />
                 </C.SnowGrid>
             )
@@ -93,8 +93,8 @@ export default function StreamableListPage() {
                             }
                             let name = streamable.name_display ? streamable.name_display : streamable.name
                             return (
-                                <>
-                                    < C.SnowGrid assignFocus="false" itemsPerRow={3} >
+                                <C.View key={streamable.id}>
+                                    < C.SnowGrid key="streamable-grid" assignFocus="false" itemsPerRow={3} >
                                         <C.SnowTextButton
                                             {...focus}
                                             title={name}
@@ -112,7 +112,7 @@ export default function StreamableListPage() {
                                         <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
                                     </C.SnowGrid >
                                     <C.SnowBreak />
-                                </>
+                                </C.View>
                             )
                         })
                     }
@@ -141,7 +141,7 @@ export default function StreamableListPage() {
             return (
                 <>
                     {groupsButton}
-                    <C.SnowGrid focusStart focusKey={listFocusKey} items={streamableItems} renderItem={renderItem} />
+                    <C.SnowGrid key="streamable-grid-with-group" focusStart focusKey={listFocusKey} items={streamableItems} renderItem={renderItem} />
                 </>
             )
         }
