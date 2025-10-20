@@ -23,6 +23,7 @@ export default function MpvVideoView(props) {
                     forwardRef.current.runCommand(`set|opengl-es|yes`).catch(() => { })
                     forwardRef.current.runCommand(`set|audio-buffer|2.0`).catch(() => { })
                     forwardRef.current.runCommand(`set|cache|yes`).catch(() => { })
+                    forwardRef.current.runCommand(`set|del-af|@`).catch(() => { })
                 }
                 catch { }
             }
@@ -30,6 +31,9 @@ export default function MpvVideoView(props) {
                 if (player.clientOptions.audioCompression) {
                     // Loudness normalization from Snowby
                     forwardRef.current.runCommand(`set|af|acompressor=ratio=4,loudnorm`).catch(() => { })
+                }
+                else {
+                    forwardRef.current.runCommand(`set|del-af|@`).catch(() => { })
                 }
             }
             Player.action.onVideoReady()
