@@ -65,9 +65,9 @@ class ShowEpisode(MediaUpdater):
         if self.local_nfo_dict and 'tag' in self.local_nfo_dict:
             tags = [xx for xx in self.local_nfo_dict['tag'] if ':' in xx]
         info = self.metadata
-        if 'tmdbid' in self.local_nfo_dict and not info['tmdbid']:
+        if 'tmdbid' in self.local_nfo_dict and (not info or not info['tmdbid']):
             info['tmdbid'] = self.local_nfo_dict['tmdbid']
-        if 'tvdbid' in self.local_nfo_dict and not info['tvdbid']:
+        if 'tvdbid' in self.local_nfo_dict and (not info or not info['tvdbid']):
             info['tvdbid'] = self.local_nfo_dict['tvdbid']
         self.new_nfo_xml = self.nfo.show_episode_to_xml(
             season=info['season'],

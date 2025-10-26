@@ -97,18 +97,20 @@ class MediaTrack:
                 return 2040
             if 'sdh' in low_title:
                 return 2060
-            if self.is_forced or self.is_default:
-                return 2070
             if self.is_captioned:
                 return 2080
             if 'convert' in low_title:
                 return 2015
             if 'clean' in low_title:
                 return 2030
+            if self.is_default:
+                return 2010
+            if self.is_forced:
+                return 2007
             return 2100
         if self.language == None:
             if self.is_forced:
-                return 2020
+                return 2005
             return 2050
         return 0
 

@@ -67,6 +67,7 @@ export default function MediaTracksPage(props) {
         if (!media) {
             props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
                 setMedia(response)
+                chooseVideoFile(videoFileIndex, response)
                 let plan = response.video_files[videoFileIndex].plan
                 if (plan) {
                     if (plan.player) {
@@ -114,13 +115,16 @@ export default function MediaTracksPage(props) {
         }
     }
 
-    const chooseVideoFile = (fileIndex) => {
-        setVideoFileIndex(fileIndex)
-        if (media.video_files[fileIndex].info.tracks.audio.length) {
-            setAudioTrack(media.video_files[fileIndex].info.tracks.audio[0].audio_index)
+    const chooseVideoFile = (fileIndex, target) => {
+        if (!target) {
+            target = media
         }
-        if (media.video_files[fileIndex].info.tracks.subtitle.length) {
-            setSubtitleTrack(media.video_files[fileIndex].info.tracks.subtitle[0].subtitle_index)
+        setVideoFileIndex(fileIndex)
+        if (target.video_files[fileIndex].info.tracks.audio.length) {
+            setAudioTrack(target.video_files[fileIndex].info.tracks.audio[0].audio_index)
+        }
+        if (target.video_files[fileIndex].info.tracks.subtitle.length) {
+            setSubtitleTrack(target.video_files[fileIndex].info.tracks.subtitle[0].subtitle_index)
         }
     }
 
@@ -352,9 +356,6 @@ export default function MediaTracksPage(props) {
                         title="Create Job"
                         jobDetails={{
                             metadataId: remoteMetadataId,
-                            updateImages: true,
-                            updateMetadata: true,
-                            updateVideos: false,
                             ...props.getJobTarget(currentRoute.routeParams)
                         }} /> : null}
                 </C.SnowGrid>

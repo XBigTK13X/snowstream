@@ -247,6 +247,8 @@ class ThetvdbProvider(base.MediaProvider):
 
     def to_snowstream_episodes(self, metadata:list[dict]):
         first = metadata[0]
+        if not first:
+            return None
         result = {
             'overview': first['overview'] if first and 'overview' in first else None,
             'tvdbid': int(first['id']),

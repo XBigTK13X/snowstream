@@ -18,6 +18,7 @@ def get_show_season_by_id(ticket:dbi.dm.Ticket,season_id:int):
         query = (
             db.query(dbi.dm.ShowSeason)
             .filter(dbi.dm.ShowSeason.id == season_id)
+            .options(dbi.orm.joinedload(dbi.dm.ShowSeason.image_files))
             .options(dbi.orm.joinedload(dbi.dm.ShowSeason.metadata_files))
         )
         if ticket.has_tag_restrictions():
