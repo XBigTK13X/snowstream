@@ -9,7 +9,10 @@ export default function MpvVideoView(props) {
     const forwardRef = React.useRef(null);
 
     React.useEffect(() => {
-        if (!player.isVideoViewReady && forwardRef.current?.runCommand) {
+        if (!player || !player.clientOptions) {
+            return
+        }
+        if (!player.isVideoViewReady && forwardRef?.current?.runCommand) {
             if (player.clientOptions.useFastMpv) {
                 try {
                     forwardRef.current.runCommand(`set|hwdec|mediacodec`).catch(() => { })
@@ -66,6 +69,10 @@ export default function MpvVideoView(props) {
             forwardRef.current.runCommand(`set|sub-delay|${player.subtitleDelay}`).catch(() => { })
         }
     }, [player.subtitleDelay])
+
+    if (!player || !player.clientOptions) {
+        return null
+    }
 
     return (
         <LibmpvVideo

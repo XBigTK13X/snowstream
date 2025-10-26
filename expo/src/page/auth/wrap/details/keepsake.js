@@ -1,83 +1,9 @@
-import { C, useAppContext, Player } from 'snowstream'
-import SnowVideoPlayer from '../../../../comp/snow-video-player'
-
-function KeepsakeVideo(props) {
-    const player = Player.useSnapshot(Player.state)
-
-    C.React.useEffect(() => {
-        if (!player.videoUrl) {
-            Player.state.forceTranscode = C.isWeb
-            Player.action.effectSetVideoHandlers({
-                loadVideo: () => {
-                    return new Promise(resolve => {
-                        return resolve({
-                            url: props.videoFile.network_path,
-                            name: props.videoFile.name,
-                            durationSeconds: props.videoFile.info.duration_seconds,
-                            tracks: props.videoFile.info.tracks
-                        })
-                    })
-                },
-                loadTranscode: (apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
-                    return new Promise((resolve) => {
-                        return apiClient.createVideoFileTranscodeSession(
-                            props.videoFile.id,
-                            0,
-                            -1,
-                            deviceProfile,
-                            initialSeekSeconds ?? 0
-                        )
-                            .then((transcodeSession) => {
-                                return resolve({
-                                    name: props.videoFile.name,
-                                    url: transcodeSession.transcode_url,
-                                    durationSeconds: props.videoFile.info.duration_seconds,
-                                    transcodeId: transcodeSession.transcode_session_id
-                                })
-                            })
-                            .catch((err) => {
-                                return resolve({
-                                    error: err
-                                })
-                            })
-                    })
-                },
-                onComplete: () => {
-                    return props.closeModal()
-                },
-                onStopVideo: () => {
-                    return props.closeModal()
-                },
-            })
-        }
-    }, [player.videoUrl, player.isTranscode])
-
-    if (player.playbackFailed) {
-        return (
-            <C.FillView>
-                <C.SnowText>Unable to play the video.</C.SnowText>
-                <C.SnowText>Error: {player.playbackFailed.message}</C.SnowText>
-            </C.FillView>
-        )
-    }
-
-    if (!player.videoUrl) {
-        if (player.isTranscode) {
-            return <C.SnowText>Preparing a transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
-        }
-        return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
-    }
-    return (
-        <SnowVideoPlayer onRequestCloseModal={props.closeModal} />
-    )
-}
+import { C, useAppContext } from 'snowstream'
 
 export default function KeepsakeDetailsPage(props) {
     const {
         navPush,
         currentRoute,
-        addBackListener,
-        removeBackListener,
         pushModal,
         openOverlay,
         clearModals,
@@ -142,27 +68,6 @@ export default function KeepsakeDetailsPage(props) {
         }
     }, [zoomedItem])
 
-    C.React.useEffect(() => {
-        if (zoomedItem && zoomedItem.model_kind === 'video_file') {
-            addBackListener('keepsake-video', () => {
-                return true
-            })
-            return () => {
-                removeBackListener('keepsake-video')
-            }
-        }
-    }, [zoomedItem])
-
-    if (zoomedItem) {
-        if (zoomedItem.model_kind === 'video_file') {
-            return (
-                <KeepsakeVideo
-                    videoFile={zoomedItem}
-                    closeModal={closeModal}
-                />
-            )
-        }
-    }
 
     if (!keepsake) {
         let subdir = ''
@@ -193,7 +98,16 @@ export default function KeepsakeDetailsPage(props) {
                                 key={videoIndex}
                                 title={video.name}
                                 imageUrl={video.thumbnail_web_path}
-                                onPress={() => { setZoomedItem(video) }}
+                                onPress={navPush(
+                                    routes.keepsakePlay,
+                                    {
+                                        videoFileId: video.id,
+                                        videoUrl: video.network_path,
+                                        videoName: video.name,
+                                        videoDurationSeconds: video.info.duration_seconds,
+                                    },
+                                    true
+                                )}
                             />
                         )
                     })}
@@ -256,12 +170,16 @@ export default function KeepsakeDetailsPage(props) {
                                 tall
                                 title={dir.display}
                                 key={dirIndex}
-                                onPress={navPush(routes.keepsakeDetails, {
-                                    shelfId: currentRoute.routeParams.shelfId,
-                                    subdirectory: dir.path,
-                                    subdirectory64: C.Snow.toBase64(dir.path),
-                                    seekToSeconds: 0
-                                }, true)}
+                                onPress={navPush(
+                                    routes.keepsakeDetails,
+                                    {
+                                        shelfId: currentRoute.routeParams.shelfId,
+                                        subdirectory: dir.path,
+                                        subdirectory64: C.Snow.toBase64(dir.path),
+                                        seekToSeconds: 0
+                                    },
+                                    true,
+                                    false)}
                             />
                         )
                     })}

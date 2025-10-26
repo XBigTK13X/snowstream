@@ -8,6 +8,7 @@ import EpisodeDetailsPage from './page/auth/wrap/details/episode'
 import EpisodeListPage from './page/auth/wrap/list/episode'
 import EpisodePlayPage from './page/auth/play/episode'
 import KeepsakeDetailsPage from './page/auth/wrap/details/keepsake'
+import KeepsakePlayPage from './page/auth/play/keepsake'
 import MovieDetailsPage from './page/auth/wrap/details/movie'
 import MovieListPage from './page/auth/wrap/list/movie'
 import MoviePlayPage from './page/auth/play/movie'
@@ -48,23 +49,25 @@ export var pages = {
     [routes.landing]: LandingPage,
     [routes.info]: InfoPage,
 
+    [routes.episodePlay]: EpisodePlayPage,
+    [routes.keepsakePlay]: KeepsakePlayPage,
+    [routes.moviePlay]: MoviePlayPage,
+    [routes.playingQueuePlay]: PlayingQueuePlayPage,
+    [routes.streamablePlay]: StreamablePlayPage,
+
     [routes.continueWatching]: ContinueWatchingPage,
     [routes.episodeDetails]: EpisodeDetailsPage,
     [routes.episodeList]: EpisodeListPage,
-    [routes.episodePlay]: EpisodePlayPage,
     [routes.keepsakeDetails]: KeepsakeDetailsPage,
     [routes.movieDetails]: MovieDetailsPage,
     [routes.movieList]: MovieListPage,
-    [routes.moviePlay]: MoviePlayPage,
     [routes.options]: OptionsPage,
-    [routes.playingQueuePlay]: PlayingQueuePlayPage,
     [routes.playlistDetails]: PlaylistDetailsPage,
     [routes.playlistList]: PlaylistListPage,
     [routes.search]: SearchPage,
     [routes.seasonList]: SeasonListPage,
     [routes.showList]: ShowListPage,
     [routes.streamableList]: StreamableListPage,
-    [routes.streamablePlay]: StreamablePlayPage,
 
     [routes.adminDashboard]: DashboardPage,
     [routes.adminCleanupRuleEdit]: CleanupRuleEditPage,
