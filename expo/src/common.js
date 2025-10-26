@@ -2,7 +2,6 @@ import React from 'react'
 
 import {
     AppState,
-    findNodeHandle,
     Linking,
     Platform,
     ScrollView,
@@ -45,17 +44,16 @@ import Snow, {
     useSnowContext
 } from 'expo-snowui'
 
+import SnowCreateJobButton from './comp/snow-create-job-button'
 import SnowPosterGrid from './comp/snow-poster-grid'
 import SnowScreencapGrid from './comp/snow-screencap-grid'
 import SnowTrackSelector from './comp/snow-track-selector'
-import SnowUpdateMediaButton from './comp/snow-update-media-button'
 
-const isWeb = Platform.OS === 'web'
 const isAndroid = Platform.OS === 'android'
 const isTV = Platform.isTV
+const isWeb = Platform.OS === 'web'
 
 export default {
-    findNodeHandle,
     isAndroid,
     isTV,
     isWeb,
@@ -72,6 +70,7 @@ export default {
     ScrollView,
     Snow,
     SnowBreak,
+    SnowCreateJobButton,
     SnowDropdown,
     SnowGrid,
     SnowHeader,
@@ -89,7 +88,6 @@ export default {
     SnowTextButton,
     SnowToggle,
     SnowTrackSelector,
-    SnowUpdateMediaButton,
     SnowView,
     Text,
     TouchableOpacity,

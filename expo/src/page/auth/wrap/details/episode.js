@@ -57,15 +57,7 @@ export default function EpisodeDetailsPage() {
                     episodeOrder: routeParams.episodeOrder
                 }
             }}
-            getScanDetails={(routeParams) => {
-                return {
-                    targetKind: 'episode',
-                    targetId: routeParams.episodeId,
-                    seasonOrder: routeParams.seasonOrder,
-                    episodeOrder: routeParams.episodeOrder
-                }
-            }}
-            getUpdateMediaJobDetails={(routeParams) => {
+            getJobTarget={(routeParams) => {
                 return {
                     targetKind: 'episode',
                     targetId: routeParams.episodeId,

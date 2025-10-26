@@ -21,13 +21,7 @@ export default function MovieDetailsPage() {
                 movieId: routeParams.movieId
             }
         }}
-        getScanDetails={(routeParams) => {
-            return {
-                targetKind: 'movie',
-                targetId: routeParams.movieId
-            }
-        }}
-        getUpdateMediaJobDetails={(routeParams) => {
+        getJobTarget={(routeParams) => {
             return {
                 targetKind: 'movie',
                 targetId: routeParams.movieId

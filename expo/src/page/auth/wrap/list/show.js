@@ -7,18 +7,18 @@ export default function ShowListPage() {
     const toggleShowPlaylisted = (routes, navPush, shelfId, showPlaylisted) => {
         return navPush({ shelfId: shelfId, showPlaylisted })
     }
-    const scanContentsJob = (apiClient, shelfId) => {
-        return apiClient.createJobShelvesScan({
+    const getJobTarget = (shelfId) => {
+        return {
             targetKind: 'shelf',
             targetId: shelfId
-        })
+        }
     }
     return (
         <WatchableListPage
             kind="Shelf"
             loadItems={loadItems}
             toggleShowPlaylisted={toggleShowPlaylisted}
-            scanContentsJob={scanContentsJob}
+            getJobTarget={getJobTarget}
         />
     )
 }

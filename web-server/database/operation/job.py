@@ -15,7 +15,7 @@ def create_job(kind: str, input:dict=None):
     return db_job
 
 
-def get_job_list(show_complete:bool=True,limit:int=50):
+def get_job_list(show_complete:bool=True,limit:int=1000):
     with dbi.session() as db:
         return (
             db.query(dbi.dm.Job)

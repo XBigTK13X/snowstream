@@ -11,18 +11,18 @@ export default function MovieListPage() {
         return navPush({ shelfId: shelfId, showPlaylisted })
     }
 
-    const scanContentsJob = (apiClient, shelfId) => {
-        return apiClient.createJobShelvesScan({
+    const getJobTarget = (shelfId) => {
+        return {
             targetKind: 'shelf',
             targetId: shelfId
-        })
+        }
     }
     return (
         <WatchableListPage
             kind="Shelf"
             loadItems={loadItems}
             toggleShowPlaylisted={toggleShowPlaylisted}
-            scanContentsJob={scanContentsJob}
+            getJobTarget={getJobTarget}
         />
     )
 }

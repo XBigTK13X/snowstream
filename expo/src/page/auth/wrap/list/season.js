@@ -17,16 +17,11 @@ export default function SeasonListPage() {
         return apiClient.getSeasonList(showId)
     }
 
-    const scanContentsJob = (apiClient, shelfId) => {
-        return apiClient.createJobShelvesScan({
+    const getJobTarget = () => {
+        return {
             targetKind: 'show',
             targetId: showId
-        })
-    }
-    const updateMediaJob = (apiClient, details) => {
-        details.targetKind = 'show'
-        details.targetId = showId
-        apiClient.createJobUpdateMediaFiles(details)
+        }
     }
 
     const watchAll = (apiClient, shelfId) => {
@@ -37,19 +32,21 @@ export default function SeasonListPage() {
         return apiClient.getPlayingQueue({ shelfId, showId, shuffle: true })
     }
 
+    const getRemoteId = (item) => {
+        if (!item) {
+            return null
+        }
+
+        return item.show.remote_metadata_id
+    }
+
     return (
         <WatchableListPage
-            getRemoteId={(item) => {
-                if (!item) {
-                    return null
-                }
-                return item.show.remote_metadata_id
-            }}
+            getRemoteId={getRemoteId}
             kind="Show"
             getPageTitle={getPageTitle}
             loadItems={loadItems}
-            scanContentsJob={scanContentsJob}
-            updateMediaJob={updateMediaJob}
+            getJobTarget={getJobTarget}
             watchAll={watchAll}
             shuffleAll={shuffleAll}
         />

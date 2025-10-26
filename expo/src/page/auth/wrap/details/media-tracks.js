@@ -347,6 +347,16 @@ export default function MediaTracksPage(props) {
                         title="Inspection"
                         onPress={showInfo}
                     />
+                    {isAdmin ? <C.SnowCreateJobButton
+                        tall
+                        title="Create Job"
+                        jobDetails={{
+                            metadataId: remoteMetadataId,
+                            updateImages: true,
+                            updateMetadata: true,
+                            updateVideos: false,
+                            ...props.getJobTarget(currentRoute.routeParams)
+                        }} /> : null}
                 </C.SnowGrid>
                 <C.SnowGrid assignFocus={false} itemsPerRow={2}>
                     <C.SnowView>
@@ -374,34 +384,6 @@ export default function MediaTracksPage(props) {
                 <C.SnowTarget focusKey="inspection-bottom" />
             </C.SnowView>
         )
-        let adminTab = null
-        if (isAdmin) {
-            tabs.push('Admin')
-            adminTab = (
-                <C.SnowView>
-                    <C.SnowGrid itemsPerRow={2}>
-                        <C.SnowTextButton
-                            title={`Rescan ${props.mediaKind}`}
-                            tall
-                            onPress={() => {
-                                const scanDetails = props.getScanDetails(currentRoute.routeParams)
-                                return apiClient.createJobShelvesScan(scanDetails).then(() => {
-                                    let readDetails = { ...scanDetails, ...{ updateVideos: true, updateMetadata: true } }
-                                    return apiClient.createJobReadMediaFiles(readDetails)
-                                })
-                            }} />
-                        <C.SnowUpdateMediaButton
-                            tall
-                            remoteId={remoteMetadataId}
-                            kind={props.mediaKind}
-                            updateMediaJob={(promptDetails) => {
-                                const mediaDetails = props.getUpdateMediaJobDetails(currentRoute.routeParams)
-                                return apiClient.createJobUpdateMediaFiles({ ...promptDetails, ...mediaDetails })
-                            }} />
-                    </C.SnowGrid>
-                </C.SnowView>
-            )
-        }
 
         return (
             <C.SnowView>
@@ -431,7 +413,6 @@ export default function MediaTracksPage(props) {
                         {controlTab}
                         {trackTab}
                         {infoTab}
-                        {adminTab}
                     </C.SnowTabs >
                 </C.SnowView>
             </C.SnowView>

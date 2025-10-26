@@ -8,7 +8,7 @@ export default function JobListPage() {
 
     C.React.useEffect(() => {
         if (!jobs) {
-            apiClient.getJobList(showComplete, 100).then((response) => {
+            apiClient.getJobList(showComplete, 1000).then((response) => {
                 setJobs(response)
             })
         }

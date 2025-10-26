@@ -35,7 +35,7 @@ export function WatchableListPage(props) {
         }
     }, [shelf, currentRoute])
 
-    if (shelf && items !== null) {
+    if (shelf && items?.length) {
         let pageTitle = `Found ${items.length} items from shelf ${shelf.name}.`
         if (props.getPageTitle) {
             pageTitle = props.getPageTitle(shelf, items)
@@ -86,22 +86,13 @@ export function WatchableListPage(props) {
         }
         if (isAdmin) {
             buttons.push((
-                <C.SnowTextButton title={`Scan ${props.kind}`} onPress={() => {
-                    props.scanContentsJob(apiClient, shelfId)
-                }} />
+                <C.SnowCreateJobButton
+                    title="Create Job"
+                    jobDetails={{
+                        metadataId: remoteId,
+                        ...props.getJobTarget(shelfId)
+                    }} />
             ))
-            if (props.updateMediaJob) {
-                buttons.push((
-                    <C.SnowUpdateMediaButton
-                        kind={props.kind}
-                        remoteId={remoteId}
-                        updateMediaJob={(details) => {
-                            details.shelfId = shelfId
-                            return props.updateMediaJob(apiClient, details)
-                        }}
-                    />
-                ))
-            }
         }
         return (
             <>
@@ -115,7 +106,7 @@ export function WatchableListPage(props) {
             </>
         )
     }
-    return <C.SnowText>Loading items from shelf {currentRoute.routeParams.shelfId}.</C.SnowText>
+    return <C.SnowText>Loading items from shelf {shelfId}.</C.SnowText>
 }
 
 export default WatchableListPage
