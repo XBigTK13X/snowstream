@@ -11,7 +11,10 @@ export default function MovieDetailsPage() {
             return apiClient.toggleMovieWatchStatus(routeParams.movieId)
         }}
         gotoShelf={(routes, navPush, routeParams) => {
-            return navPush(routes.movieList, { shelfId: routeParams.shelfId }, true)
+            return navPush({
+                path: routes.movieList,
+                params: { shelfId: routeParams.shelfId }
+            })
         }}
         getPlayRoute={(routes) => {
             return routes.moviePlay

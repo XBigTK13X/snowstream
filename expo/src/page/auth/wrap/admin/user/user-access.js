@@ -201,8 +201,14 @@ export default function UserEditPage() {
     return (
         <>
             <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="User Details" onPress={navPush(routes.adminUserEdit, { userId: userId }, true)} />
-                <C.SnowTextButton title="User Access" onPress={navPush(routes.adminUserAccess, { userId: userId }, true)} />
+                <C.SnowTextButton title="User Details" onPress={navPush({
+                    path: routes.adminUserEdit,
+                    params: { userId: userId }
+                })} />
+                <C.SnowTextButton title="User Access" onPress={navPush({
+                    path: routes.adminUserAccess,
+                    params: { userId: userId }
+                })} />
             </C.SnowGrid>
 
             {shelfPicker}

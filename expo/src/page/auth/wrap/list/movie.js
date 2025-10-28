@@ -8,7 +8,7 @@ export default function MovieListPage() {
     }
 
     const toggleShowPlaylisted = (routes, navPush, shelfId, showPlaylisted) => {
-        return navPush({ shelfId: shelfId, showPlaylisted })
+        return navPush({ params: { shelfId: shelfId, showPlaylisted, func: false } })
     }
 
     const getJobTarget = (shelfId) => {

@@ -1,12 +1,11 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function StreamableListPage() {
-    const { navPush, currentRoute } = C.useSnowContext()
+    const { navPush, navPop, currentRoute } = C.useSnowContext()
     const { apiClient, routes } = useAppContext()
     const { SnowStyle } = C.useSnowContext()
 
     const [streamSource, setStreamSource] = C.React.useState(null)
-    const [streamableGroups, setStreamableGroups] = C.React.useState(null)
     const [streamableItems, setStreamableItems] = C.React.useState(null)
 
     const styles = {
@@ -17,38 +16,43 @@ export default function StreamableListPage() {
     }
 
     C.React.useEffect(() => {
-        if (!streamSource) {
+        if (!streamSource && currentRoute?.routeParams?.streamSourceId) {
             apiClient.getStreamSource(currentRoute.routeParams.streamSourceId).then((response) => {
-                if (response) {
-                    if (response.has_groups) {
-                        setStreamableGroups(response.groups)
-                    }
-                    else {
-                        setStreamableItems(response.streamables)
-                    }
-                }
                 setStreamSource(response)
             })
         }
-    }, [streamSource])
-
-
-    if (streamSource && streamableGroups && !streamableItems) {
-        const chooseGroup = (group) => {
-            setStreamableItems(streamSource.grouped_streamables[group])
+        if (streamSource) {
+            if (streamSource?.has_groups) {
+                if (currentRoute?.routeParams?.group) {
+                    setStreamableItems(streamSource.grouped_streamables[currentRoute?.routeParams?.group])
+                } else {
+                    setStreamableItems(null)
+                }
+            } else {
+                setStreamableItems(response.streamables)
+            }
         }
+    }, [streamSource, currentRoute])
+
+    if (streamSource?.has_groups && !streamableItems) {
         const renderItem = (group, itemIndex) => {
             return (
                 <C.SnowTextButton
                     tall
                     key={itemIndex}
                     title={group}
-                    onPress={() => { chooseGroup(group) }}
+                    onPress={navPush({
+                        params: {
+                            group,
+                            streamSourceId: currentRoute?.routeParams?.streamSourceId
+                        },
+                        replace: false
+                    })}
                 />
             )
         }
         return (
-            <C.SnowGrid focusStart focusKey="page-entry" items={streamableGroups} renderItem={renderItem} />
+            <C.SnowGrid focusStart focusKey="page-entry" items={streamSource.groups} renderItem={renderItem} />
         )
     }
 
@@ -59,7 +63,7 @@ export default function StreamableListPage() {
             listFocusKey = 'streamable-list'
             groupsButton = (
                 <C.SnowGrid key="group-grid" itemsPerRow={3}>
-                    <C.SnowTextButton focusKey="page-entry" focusDown="streamable-list" title="Groups" onPress={() => { setStreamableItems(null) }} />
+                    <C.SnowTextButton focusKey="page-entry" focusDown="streamable-list" title="Groups" onPress={navPop} />
                 </C.SnowGrid>
             )
         }
@@ -98,15 +102,21 @@ export default function StreamableListPage() {
                                         <C.SnowTextButton
                                             {...focus}
                                             title={name}
-                                            onPress={navPush(routes.streamablePlay, {
-                                                streamSourceId: streamSource.id,
-                                                streamableId: streamable.id,
-                                            }, true)}
-                                            onLongPress={navPush(routes.streamablePlay, {
-                                                streamSourceId: streamSource.id,
-                                                streamableId: streamable.id,
-                                                forcePlayer: 'exo'
-                                            }, true)}
+                                            onPress={navPush({
+                                                path: routes.streamablePlay,
+                                                params: {
+                                                    streamSourceId: streamSource.id,
+                                                    streamableId: streamable.id,
+                                                }
+                                            })}
+                                            onLongPress={navPush({
+                                                path: routes.streamablePlay,
+                                                params: {
+                                                    streamSourceId: streamSource.id,
+                                                    streamableId: streamable.id,
+                                                    forcePlayer: 'exo'
+                                                }
+                                            })}
                                         />
                                         <C.SnowText style={styles.tableColumn}>{currentProgram}</C.SnowText>
                                         <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
@@ -126,15 +136,21 @@ export default function StreamableListPage() {
                         tall
                         key={streamable.id}
                         title={name}
-                        onPress={navPush(routes.streamablePlay, {
-                            streamSourceId: streamSource.id,
-                            streamableId: streamable.id,
-                        }, true)}
-                        onLongPress={navPush(routes.streamablePlay, {
-                            streamSourceId: streamSource.id,
-                            streamableId: streamable.id,
-                            forcePlayer: 'exo'
-                        }, true)}
+                        onPress={navPush({
+                            path: routes.streamablePlay,
+                            params: {
+                                streamSourceId: streamSource.id,
+                                streamableId: streamable.id,
+                            }
+                        })}
+                        onLongPress={navPush({
+                            path: routes.streamablePlay,
+                            params: {
+                                streamSourceId: streamSource.id,
+                                streamableId: streamable.id,
+                                forcePlayer: 'exo'
+                            }
+                        })}
                     />
                 )
             }

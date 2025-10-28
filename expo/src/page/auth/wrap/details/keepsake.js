@@ -98,16 +98,15 @@ export default function KeepsakeDetailsPage(props) {
                                 key={videoIndex}
                                 title={video.name}
                                 imageUrl={video.thumbnail_web_path}
-                                onPress={navPush(
-                                    routes.keepsakePlay,
-                                    {
+                                onPress={navPush({
+                                    path: routes.keepsakePlay,
+                                    params: {
                                         videoFileId: video.id,
                                         videoUrl: video.network_path,
                                         videoName: video.name,
                                         videoDurationSeconds: video.info.duration_seconds,
-                                    },
-                                    true
-                                )}
+                                    }
+                                })}
                             />
                         )
                     })}
@@ -170,16 +169,16 @@ export default function KeepsakeDetailsPage(props) {
                                 tall
                                 title={dir.display}
                                 key={dirIndex}
-                                onPress={navPush(
-                                    routes.keepsakeDetails,
-                                    {
+                                onPress={navPush({
+                                    path: routes.keepsakeDetails,
+                                    params: {
                                         shelfId: currentRoute.routeParams.shelfId,
                                         subdirectory: dir.path,
                                         subdirectory64: C.Snow.toBase64(dir.path),
                                         seekToSeconds: 0
                                     },
-                                    true,
-                                    false)}
+                                    replace: false
+                                })}
                             />
                         )
                     })}

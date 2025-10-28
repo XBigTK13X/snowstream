@@ -223,7 +223,7 @@ export const playerActions = {
                 this.clearModals()
                 this.closeOverlay()
                 if (this.navPush) {
-                    this.navPush(player.routes.landing)
+                    this.navPush({ path: player.routes.landing, func: false })
                 }
                 this.reset()
             } else {
@@ -242,7 +242,7 @@ export const playerActions = {
             const mergedParams = { ...playerState.routeParams, ...newParams }
             playerState.changeRouteParams = mergedParams
             if (this.navPush) {
-                this.navPush(mergedParams)
+                this.navPush({ params: mergedParams, func: false })
             }
         }
     },
@@ -404,7 +404,7 @@ export const playerActions = {
                 playerState.forceTranscode = true
                 playerState.videoLoading = false
                 playerState.routeParams = newParams
-                this.navPush(newParams)
+                this.navPush({ params: newParams, func: false })
             }
         } else {
             playerState.playbackFailed = error
@@ -530,10 +530,10 @@ export const playerActions = {
         playerState.isPlaying = false
         if (playerState.playerKind === 'mpv') {
             playerState.routeParams.transcode = true
-            this.navPush(playerState.routeParams)
+            this.navPush({ params: playerState.routeParams, func: false })
         } else {
             playerState.routeParams.transcode = false
-            this.navPush(playerState.routeParams)
+            this.navPush({ params: playerState.routeParams, func: false })
         }
     },
 
@@ -546,11 +546,11 @@ export const playerActions = {
         if (playerState.playerKind === 'mpv') {
             playerState.playerKind = 'rnv'
             playerState.routeParams.forcePlayer = 'rnv'
-            this.navPush(playerState.routeParams)
+            this.navPush({ params: playerState.routeParams, func: false })
         } else {
             playerState.playerKind = 'mpv'
             playerState.routeParams.forcePlayer = 'mpv'
-            this.navPush(playerState.routeParams)
+            this.navPush({ params: playerState.routeParams, func: false })
         }
     }
 }

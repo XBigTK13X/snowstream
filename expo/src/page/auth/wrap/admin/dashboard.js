@@ -5,7 +5,7 @@ export default function AdminDashboardPage() {
     const { navPush } = C.useSnowContext()
 
     const renderItem = (item) => {
-        return <C.SnowTextButton title={item.title} onPress={navPush(item.route, true)} />
+        return <C.SnowTextButton title={item.title} onPress={navPush({ path: item.route })} />
     }
     const actionButtons = [
         { title: 'Run Job', route: routes.adminJobRunner },

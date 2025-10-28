@@ -17,13 +17,16 @@ export default function TagListPage() {
             return (
                 <C.SnowTextButton
                     title={item.name}
-                    onPress={navPush(routes.adminTagEdit, { tagId: item.id }, true)}
+                    onPress={navPush({
+                        path: routes.adminTagEdit,
+                        params: { tagId: item.id }
+                    })}
                 />
             )
         }
         return (
             <>
-                <C.SnowTextButton title="Create New Tag" onPress={navPush(routes.adminTagEdit, true)} />
+                <C.SnowTextButton title="Create New Tag" onPress={navPush({ path: routes.adminTagEdit })} />
                 <C.SnowText>{tags.length} tags found</C.SnowText>
                 <C.SnowGrid items={tags} renderItem={renderItem} />
             </>

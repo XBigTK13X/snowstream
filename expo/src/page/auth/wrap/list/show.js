@@ -5,7 +5,7 @@ export default function ShowListPage() {
         return apiClient.getShowList(shelfId, showPlaylisted)
     }
     const toggleShowPlaylisted = (routes, navPush, shelfId, showPlaylisted) => {
-        return navPush({ shelfId: shelfId, showPlaylisted })
+        return navPush({ params: { shelfId: shelfId, showPlaylisted }, func: false })
     }
     const getJobTarget = (shelfId) => {
         return {

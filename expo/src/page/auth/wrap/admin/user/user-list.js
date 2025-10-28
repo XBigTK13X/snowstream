@@ -18,14 +18,17 @@ export default function UserListPage() {
             return (
                 <C.SnowTextButton
                     title={user.username || user.display_name}
-                    onPress={navPush(routes.adminUserEdit, { userId: user.id }, true)}
+                    onPress={navPush({
+                        path: routes.adminUserEdit,
+                        params: { userId: user.id }
+                    })}
                 />
             )
 
         }
         return (
             <>
-                <C.SnowTextButton title="Create New User" onPress={navPush(routes.adminUserEdit, true)} />
+                <C.SnowTextButton title="Create New User" onPress={navPush({ path: routes.adminUserEdit })} />
                 <C.SnowText>{users.length} users found</C.SnowText>
                 <C.SnowGrid items={users} renderItem={renderItem} />
             </>

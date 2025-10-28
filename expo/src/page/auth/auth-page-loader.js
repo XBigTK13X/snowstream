@@ -34,17 +34,17 @@ function HeaderNav(props) {
                 focusDown="page-entry">
                 <SnowTextButton
                     title="Home"
-                    onPress={navPush(routes.landing, true)}
+                    onPress={navPush({ path: routes.landing })}
                 />
                 <SnowTextButton title="Sign Out" onPress={signOut} />
                 {isAdmin ? <SnowTextButton
                     title="Admin"
-                    onPress={navPush(routes.adminDashboard, true)} />
+                    onPress={navPush({ path: routes.adminDashboard })} />
                     : null}
                 <SnowTextButton
                     title={`${displayName}`}
-                    onPress={navPush(routes.info, true)}
-                    onLongPress={navPush(routes.options, true)} />
+                    onPress={navPush({ path: routes.info })}
+                    onLongPress={navPush({ path: routes.options })} />
             </SnowGrid>
             <SnowBreak />
         </View >
@@ -75,12 +75,12 @@ export default function AuthPageLoader(props) {
         if (!hasAuth) {
             if (currentRoute.routePath.includes('/auth/') && sessionLoaded && !session) {
                 setHasAuth(true)
-                navPush(routes.signIn)
+                navPush({ path: routes.signIn, func: false })
             }
 
             if (currentRoute.routePath.includes('/admin/') && sessionLoaded && !isAdmin) {
                 setHasAuth(true)
-                navPush(routes.landing)
+                navPush({ path: routes.landing, func: false })
             }
         }
     }, [hasAuth, session, sessionLoaded, isAdmin, currentRoute])

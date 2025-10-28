@@ -43,42 +43,62 @@ export function AppContextProvider(props) {
                 item = itemArg
             }
             if (item.model_kind === 'movie') {
-                navPush(routes.movieDetails, {
-                    shelfId: item.shelf.id,
-                    movieId: item.id
+                navPush({
+                    path: routes.movieDetails,
+                    params: {
+                        shelfId: item.shelf.id,
+                        movieId: item.id
+                    },
+                    func: false
                 })
             }
             else if (item.model_kind === 'show') {
-                navPush(routes.seasonList, {
-                    shelfId: item.shelf.id,
-                    showId: item.id,
-                    showName: item.name
+                navPush({
+                    path: routes.seasonList,
+                    params: {
+                        shelfId: item.shelf.id,
+                        showId: item.id,
+                        showName: item.name
+                    },
+                    func: false
                 })
             }
             else if (item.model_kind === 'show_season') {
-                navPush(routes.episodeList, {
-                    shelfId: item.show.shelf.id,
-                    showId: item.show.id,
-                    seasonId: item.id,
-                    showName: item.show.name,
-                    seasonOrder: item.season_order_counter
+                navPush({
+                    path: routes.episodeList,
+                    params: {
+                        shelfId: item.show.shelf.id,
+                        showId: item.show.id,
+                        seasonId: item.id,
+                        showName: item.show.name,
+                        seasonOrder: item.season_order_counter
+                    },
+                    func: false
                 })
             }
             else if (item.model_kind === 'show_episode') {
-                navPush(routes.episodeDetails, {
-                    shelfId: item.season.show.shelf.id,
-                    showId: item.season.show.id,
-                    seasonId: item.season.id,
-                    episodeId: item.id,
-                    showName: item.season.show.name,
-                    seasonOrder: item.season.season_order_counter,
-                    episodeOrder: item.episode_order_counter
+                navPush({
+                    path: routes.episodeDetails,
+                    params: {
+                        shelfId: item.season.show.shelf.id,
+                        showId: item.season.show.id,
+                        seasonId: item.season.id,
+                        episodeId: item.id,
+                        showName: item.season.show.name,
+                        seasonOrder: item.season.season_order_counter,
+                        episodeOrder: item.episode_order_counter
+                    },
+                    func: false
                 })
             }
             else if (item.model_kind === 'playlist') {
-                navPush(routes.playlistDetails, {
-                    tagId: item.id,
-                    tagName: item.name
+                navPush({
+                    path: routes.playlistDetails,
+                    params: {
+                        tagId: item.id,
+                        tagName: item.name
+                    },
+                    func: false
                 })
             }
             else {

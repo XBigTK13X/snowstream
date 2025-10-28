@@ -45,7 +45,7 @@ export default function SignInPage() {
 
     C.React.useEffect(() => {
         if (session) {
-            navPush(routes.landing)
+            navPush({ path: routes.landing, func: false })
         }
     }, [session])
 

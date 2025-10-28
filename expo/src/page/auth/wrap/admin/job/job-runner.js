@@ -63,7 +63,7 @@ export default function ShelfEditPage() {
         if (formRef.current.updateVideos !== '') {
             params.updateVideos = formRef.current.updateVideos
         }
-        navPush(params)
+        navPush({ params, func: false })
         let details = {
             episodeOrder: formRef.current.episodeOrder,
             extractOnly: formRef.current.extractOnly,
@@ -102,8 +102,12 @@ export default function ShelfEditPage() {
             onPress={() => {
                 createJob(item.apiCall).then(job => {
                     if (item.name !== 'Delete Cached Text') {
-                        navPush(routes.adminJobDetails, {
-                            jobId: job.id
+                        navPush({
+                            path: routes.adminJobDetails,
+                            params: {
+                                jobId: job.id
+                            },
+                            func: false
                         })
                     }
                 })

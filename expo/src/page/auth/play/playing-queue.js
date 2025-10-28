@@ -50,20 +50,32 @@ export default function PlayPlayingQueuePage() {
     const onComplete = (apiClient, routes, navPush) => {
         return apiClient.updatePlayingQueue(playingQueue.queue.source, playingQueue.queue.progress + 1)
             .then(() => {
-                navPush({ playingQueueSource: playingQueue.queue.source })
+                navPush({ params: { playingQueueSource: playingQueue.queue.source } })
             })
     }
 
     const onStopVideo = (apiClient, routes, navPush) => {
         if (playingQueueRef?.current) {
             if (playingQueueRef?.current.kind === 'playlist') {
-                navPush(routes.playlistDetails, { tagId: playingQueueRef?.current?.kind_id })
+                navPush({
+                    path: routes.playlistDetails,
+                    params: { tagId: playingQueueRef?.current?.kind_id },
+                    func: false
+                })
             }
             if (playingQueueRef?.current.kind === 'show') {
-                navPush(routes.seasonList, { showId: playingQueueRef?.current?.kind_id })
+                navPush({
+                    path: routes.seasonList,
+                    params: { showId: playingQueueRef?.current?.kind_id },
+                    func: false
+                })
             }
             if (playingQueueRef?.current.kind === 'show_season') {
-                navPush(routes.episodeList, { seasonId: playingQueueRef?.current?.kind_id })
+                navPush({
+                    path: routes.episodeList,
+                    params: { seasonId: playingQueueRef?.current?.kind_id },
+                    func: false
+                })
             }
         }
     }

@@ -39,9 +39,9 @@ export default function LandingPage(props) {
     }
 
     let destinations = [
-        <C.SnowTextButton title="Continue" onPress={navPush(routes.continueWatching, true)} />,
-        <C.SnowTextButton title="Search" onPress={navPush(routes.search, true)} />,
-        <C.SnowTextButton title="Playlists" onPress={navPush(routes.playlistList, true)} />
+        <C.SnowTextButton title="Continue" onPress={navPush({ path: routes.continueWatching })} />,
+        <C.SnowTextButton title="Search" onPress={navPush({ path: routes.search })} />,
+        <C.SnowTextButton title="Playlists" onPress={navPush({ path: routes.playlistList })} />
     ]
 
     if (shelves) {
@@ -50,7 +50,7 @@ export default function LandingPage(props) {
                 return (
                     <C.SnowTextButton
                         title={shelf.name}
-                        onPress={navPush(routes.movieList, { shelfId: shelf.id }, true)}
+                        onPress={navPush({ path: routes.movieList, params: { shelfId: shelf.id } })}
                         onLongPress={() => {
                             apiClient.toggleMovieShelfWatchStatus(shelf.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
@@ -65,7 +65,7 @@ export default function LandingPage(props) {
                     <C.SnowTextButton
                         title={shelf.name}
                         onPress={
-                            navPush(routes.showList, { shelfId: shelf.id }, true)
+                            navPush({ path: routes.showList, params: { shelfId: shelf.id } })
                         }
                         onLongPress={() => {
                             apiClient.toggleShowShelfWatchStatus(shelf.id).then((watched) => {
@@ -81,7 +81,10 @@ export default function LandingPage(props) {
                 return (
                     <C.SnowTextButton
                         title={shelf.name}
-                        onPress={navPush(routes.keepsakeDetails, { shelfId: shelf.id, seekToSeconds: 0 }, true)}
+                        onPress={navPush({
+                            path: routes.keepsakeDetails,
+                            params: { shelfId: shelf.id, seekToSeconds: 0 }
+                        })}
                     />
                 )
             }
@@ -94,9 +97,10 @@ export default function LandingPage(props) {
         destinations = destinations.concat(streamSources.map((streamSource) => {
             return (<C.SnowTextButton
                 title={streamSource.name}
-                onPress={navPush(routes.streamableList, {
-                    streamSourceId: streamSource.id
-                }, true)}
+                onPress={navPush({
+                    path: routes.streamableList,
+                    params: { streamSourceId: streamSource.id }
+                })}
             />)
         }))
     }

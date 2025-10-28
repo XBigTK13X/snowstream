@@ -52,6 +52,7 @@ class TubeArchivist(StreamSourceImporter):
         for xx in self.stream_source.streamables:
             dedupe[xx.url] = True
         new_count = 0
+        db.op.delete_streamables_by_stream_source(stream_source_id=self.stream_source.id)
         for entry in ta_videos:
             web_path = entry['media_url']
             web_path = web_path.replace('/youtube',self.stream_source.username)

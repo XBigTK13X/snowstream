@@ -33,7 +33,10 @@ export default function JobListPage() {
                     return (
                         <C.SnowTextButton
                             title={title}
-                            onPress={navPush(routes.adminJobDetails, { jobId: job.id }, true)}
+                            onPress={navPush({
+                                path: routes.adminJobDetails,
+                                params: { jobId: job.id }
+                            })}
                         />
                     )
                 }} />

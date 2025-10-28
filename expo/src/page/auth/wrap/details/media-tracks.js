@@ -291,7 +291,11 @@ export default function MediaTracksPage(props) {
                     tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
                     onPress={() => {
-                        navPush(props.getPlayRoute(routes), resumeParams)
+                        navPush({
+                            path: props.getPlayRoute(routes),
+                            params: resumeParams,
+                            func: false
+                        })
                     }}
                 />
             )
@@ -403,7 +407,11 @@ export default function MediaTracksPage(props) {
                             tall
                             title={playTitle}
                             onPress={() => {
-                                navPush(props.getPlayRoute(routes), playParams)
+                                navPush({
+                                    path: props.getPlayRoute(routes),
+                                    params: playParams,
+                                    func: false
+                                })
                             }}
 
                         />

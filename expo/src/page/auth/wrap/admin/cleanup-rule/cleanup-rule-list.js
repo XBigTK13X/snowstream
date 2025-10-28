@@ -22,7 +22,10 @@ export default function DisplayCleanupRuleListPage() {
                     return (
                         <C.SnowTextButton
                             title={title}
-                            onPress={navPush(routes.adminCleanupRuleEdit, { ruleId: rule.id }, true)}
+                            onPress={navPush({
+                                path: routes.adminCleanupRuleEdit,
+                                params: { ruleId: rule.id }
+                            })}
                         />
                     )
                 }} />
@@ -30,7 +33,7 @@ export default function DisplayCleanupRuleListPage() {
         }
         return (
             <>
-                <C.SnowTextButton title="Create New Rule" onPress={navPush(routes.adminCleanupRuleEdit, true)} />
+                <C.SnowTextButton title="Create New Rule" onPress={navPush({ path: routes.adminCleanupRuleEdit })} />
                 {rulesList}
             </>
         )

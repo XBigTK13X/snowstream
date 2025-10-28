@@ -24,13 +24,16 @@ export default function ShelfListPage() {
             return (
                 <C.SnowTextButton
                     title={destination.name}
-                    onPress={navPush(routes.adminShelfEdit, { shelfId: destination.id }, true)}
+                    onPress={navPush({
+                        path: routes.adminShelfEdit,
+                        params: { shelfId: destination.id }
+                    })}
                 />
             )
         }
         return (
             <>
-                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Shelf" onPress={navPush(routes.adminShelfEdit, true)} />
+                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Shelf" onPress={navPush({ path: routes.adminShelfEdit })} />
                 {
                     destinations.length > 0 ?
                         <>

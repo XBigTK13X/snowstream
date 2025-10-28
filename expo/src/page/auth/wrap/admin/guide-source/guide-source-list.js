@@ -19,15 +19,18 @@ export default function GuideSourceListPage() {
             return (
                 <C.SnowTextButton
                     title={guideSource.name}
-                    onPress={navPush(routes.adminChannelGuideSourceEdit, {
-                        guideSourceId: guideSource.id,
-                    }, true)}
+                    onPress={navPush({
+                        path: routes.adminChannelGuideSourceEdit,
+                        params: {
+                            guideSourceId: guideSource.id,
+                        }
+                    })}
                 />
             )
         }
         return (
             <>
-                <C.SnowTextButton title="Create New Channel Guide Source" onPress={navPush(routes.adminChannelGuideSourceEdit, true)} />
+                <C.SnowTextButton title="Create New Channel Guide Source" onPress={navPush({ path: routes.adminChannelGuideSourceEdit })} />
                 <C.SnowText>{channelGuideSources.length} stream sources found</C.SnowText>
                 <C.SnowGrid items={channelGuideSources} renderItem={renderItem} />
             </>

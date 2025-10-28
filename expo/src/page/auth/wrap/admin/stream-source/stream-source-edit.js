@@ -68,7 +68,10 @@ export default function StreamSourceEditPage() {
             {streamSourceId ? (
                 <C.SnowTextButton
                     title="Streamables"
-                    onPress={navPush(routes.adminStreamablesEdit, { streamSourceId: currentRoute.routeParams.streamSourceId }, true)} />
+                    onPress={navPush({
+                        path: routes.adminStreamablesEdit,
+                        params: { streamSourceId: currentRoute.routeParams.streamSourceId }
+                    })} />
             ) : null}
             {streamSourceId ? <C.SnowTextButton title={`Delete (${streamSourceDeleteCount})`} onPress={deleteStreamSource} /> : null}
 

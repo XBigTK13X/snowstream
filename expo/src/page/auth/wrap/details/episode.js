@@ -20,7 +20,10 @@ export default function EpisodeDetailsPage() {
                 return apiClient.toggleEpisodeWatchStatus(routeParams.episodeId)
             }}
             gotoShelf={(routes, navPush, routeParams) => {
-                return navPush(routes.showList, { shelfId: routeParams.shelfId }, true)
+                return navPush({
+                    path: routes.showList,
+                    params: { shelfId: routeParams.shelfId }
+                })
             }}
             getNavButtons={(routes, navPush, routeParams) => {
                 const episodeListPayload = {
@@ -37,10 +40,10 @@ export default function EpisodeDetailsPage() {
                 }
                 return [
                     <C.SnowTextButton tall key="show" title={routeParams.showName}
-                        onPress={navPush(routes.seasonList, seasonListPayload, true)}
+                        onPress={navPush({ path: routes.seasonList, params: seasonListPayload })}
                     />,
                     <C.SnowTextButton tall key="season" title={`Season ${routeParams.seasonOrder} `}
-                        onPress={navPush(routes.episodeList, episodeListPayload, true)}
+                        onPress={navPush({ path: routes.episodeList, params: episodeListPayload })}
                     />
                 ]
             }}

@@ -15,11 +15,10 @@ export function SnowCreateJobButtonW(props) {
             {...readFocusProps(props)}
             tall={props.tall}
             title={props.title}
-            onPress={navPush(
-                routes.adminJobRunner,
-                jobDetails,
-                true
-            )}
+            onPress={navPush({
+                path: routes.adminJobRunner,
+                params: jobDetails
+            })}
         />
     )
 }

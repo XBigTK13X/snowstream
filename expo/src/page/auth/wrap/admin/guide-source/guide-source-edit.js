@@ -76,7 +76,10 @@ export default function EpisodeGuideEditPage() {
     if (currentRoute.routeParams.guideSourceId) {
         existingButtons = (
             <C.SnowGrid itemsPerRow={2}>
-                <C.SnowTextButton title="Channels" onPress={navPush(routes.adminChannelsEdit, { guideSourceId: currentRoute.routeParams.guideSourceId }, true)} />
+                <C.SnowTextButton title="Channels" onPress={navPush({
+                    path: routes.adminChannelsEdit,
+                    params: { guideSourceId: currentRoute.routeParams.guideSourceId }
+                })} />
                 <C.SnowTextButton title={`Delete (${deleteCount})`} onPress={deleteGuideSource} />
             </C.SnowGrid>
         )

@@ -43,16 +43,24 @@ export function WatchableListPage(props) {
 
         const watchAll = () => {
             props.watchAll(apiClient, shelfId).then(response => {
-                navPush(routes.playingQueuePlay, {
-                    playingQueueSource: response.queue.source
+                navPush({
+                    path: routes.playingQueuePlay,
+                    params: {
+                        playingQueueSource: response.queue.source
+                    },
+                    func: false
                 })
             })
         }
 
         const shuffleAll = () => {
             props.shuffleAll(apiClient, shelfId).then(response => {
-                navPush(routes.playingQueuePlay, {
-                    playingQueueSource: response.queue.source
+                navPush({
+                    path: routes.playingQueuePlay,
+                    params: {
+                        playingQueueSource: response.queue.source
+                    },
+                    func: false
                 })
             })
         }

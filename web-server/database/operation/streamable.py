@@ -64,3 +64,15 @@ def get_streamable_by_id(streamable_id: int):
             .filter(dbi.dm.Streamable.id == streamable_id)
             .first()
         )
+
+def delete_streamables_by_stream_source(stream_source_id:int):
+    if not stream_source_id:
+        return False
+    with dbi.session() as db:
+        (
+            db.query(dbi.dm.Streamable)
+            .filter(dbi.dm.Streamable.stream_source_id == stream_source_id)
+            .delete()
+        )
+        db.commit()
+        return True

@@ -24,8 +24,12 @@ export default function PlaylistDetailsPage() {
         return apiClient
             .getPlayingQueue({ tagId })
             .then(response => {
-                navPush(routes.playingQueuePlay, {
-                    playingQueueSource: response.queue.source
+                navPush({
+                    path: routes.playingQueuePlay,
+                    params: {
+                        playingQueueSource: response.queue.source
+                    },
+                    func: false
                 })
             })
     }
@@ -34,8 +38,12 @@ export default function PlaylistDetailsPage() {
         return apiClient
             .getPlayingQueue({ tagId, shuffle: true })
             .then(response => {
-                navPush(routes.playingQueuePlay, {
-                    playingQueueSource: response.queue.source
+                navPush({
+                    path: routes.playingQueuePlay,
+                    params: {
+                        playingQueueSource: response.queue.source
+                    },
+                    func: false
                 })
             })
     }

@@ -31,15 +31,21 @@ export default function SearchPage() {
                             return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
                                 return (
                                     <C.SnowTextButton title={item.name}
-                                        onPress={navPush(routes.streamablePlay, {
-                                            streamSourceId: item.stream_source.id,
-                                            streamableId: item.id,
-                                        }, true)}
-                                        onLongPress={navPush(routes.streamablePlay, {
-                                            streamSourceId: item.stream_source.id,
-                                            streamableId: item.id,
-                                            forcePlayer: 'exo'
-                                        }, true)}
+                                        onPress={navPush({
+                                            path: routes.streamablePlay,
+                                            params: {
+                                                streamSourceId: item.stream_source.id,
+                                                streamableId: item.id
+                                            }
+                                        })}
+                                        onLongPress={navPush({
+                                            path: routes.streamablePlay,
+                                            params: {
+                                                streamSourceId: item.stream_source.id,
+                                                streamableId: item.id,
+                                                forcePlayer: 'exo'
+                                            }
+                                        })}
                                     />
                                 )
                             }} />
