@@ -81,7 +81,7 @@ export function PlayerManager(props) {
         return () => {
             removeActionListener('player-controls')
         }
-    }, [player.videoLoaded])
+    }, [])
 
     React.useEffect(() => {
         const unsubscribe = subscribe(playerState, () => {
