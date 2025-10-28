@@ -29,7 +29,7 @@ export default function StreamableListPage() {
                     setStreamableItems(null)
                 }
             } else {
-                setStreamableItems(response.streamables)
+                setStreamableItems(streamSource.streamables)
             }
         }
     }, [streamSource, currentRoute])
