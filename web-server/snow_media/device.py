@@ -57,6 +57,7 @@ device_list = [
         'h265_eight': 'hard',
         'h265_ten': 'hard',
         'h264_eight': 'hard',
+        'av1': 'transcode',
         'transcode_bit_rate': '15M'
     }),
     DeviceProfile({
