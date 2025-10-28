@@ -6,7 +6,8 @@ export default function SignInPage() {
         navReset,
         navPush,
         pushModal,
-        popModal
+        popModal,
+        clearFocusLayers
     } = C.useSnowContext()
     const {
         sessionLoaded,
@@ -61,6 +62,7 @@ export default function SignInPage() {
                     setErrors("Incorrect password for this user.")
                 }
                 else {
+                    clearFocusLayers()
                     navReset()
                 }
             })
@@ -114,6 +116,7 @@ export default function SignInPage() {
         else {
             signIn(user.username, 'SNOWSTREAM_EMPTY')
                 .then(() => {
+                    clearFocusLayers()
                     navReset()
                 })
                 .catch((err) => {
