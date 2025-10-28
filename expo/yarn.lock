@@ -2520,10 +2520,10 @@ expo-server@^1.0.2:
   resolved "https://registry.yarnpkg.com/expo-server/-/expo-server-1.0.2.tgz#673280d5528a77938374f35fc2a16bf5a917f328"
   integrity sha512-QlQLjFuwgCiBc+Qq0IyBBHiZK1RS0NJSsKVB5iECMJrR04q7PhkaF7dON0fhvo00COy4fT9rJ5brrJDpFro/gA==
 
-expo-snowui@1.5.24:
-  version "1.5.24"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.5.24.tgz#6f7e3c5b33421e572ea61111e3c5638dbdded363"
-  integrity sha512-KDeZ4Gxd3dlDUI6qUYom6sA+ZReCoq6VKxziUdq5ZnACoUX15FRbo7+waxa7+DlpS7VWQW68hbjjgtnsTKWrdA==
+expo-snowui@1.5.25:
+  version "1.5.25"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.5.25.tgz#4578855b9e05c07d544a884df87d60f3e4580396"
+  integrity sha512-/W2TRjpzSq6abuoJlJ4qgyoX8gwSY4yPxRbvwiorZs6Y6sYFteQwxJiiWiYY92rBiy7T4Lj2ZXQYXYEhZ+oHjA==
   dependencies:
     expo "^54.0.13"
     expo-image "^3.0.9"

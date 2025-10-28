@@ -5,13 +5,19 @@ export default function SearchPage() {
     const { navPush } = C.useSnowContext()
 
     const [queryText, setQueryText] = C.React.useState('')
+    const queryTextRef = C.React.useRef(queryText)
     const [searchResults, setSearchResults] = C.React.useState(null)
     const [resultKey, setResultKey] = C.React.useState(null)
 
-    const executeQuery = () => {
-        apiClient.search(queryText).then(response => {
-            setSearchResults(response)
-            setResultKey(`query-${queryText}`)
+    const executeQuery = (input) => {
+        let query = input ?? queryText
+        setQueryText(query)
+        queryTextRef.current = query
+        apiClient.search(query).then(response => {
+            if (queryTextRef.current === query) {
+                setSearchResults(response)
+                setResultKey(`query-${query}`)
+            }
         })
     }
 
@@ -66,6 +72,7 @@ export default function SearchPage() {
                 focusDown="search-results"
                 value={queryText}
                 onValueChange={setQueryText}
+                onSubmit={executeQuery}
                 onDebounce={executeQuery} />
             {resultsTabs}
         </>

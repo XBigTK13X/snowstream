@@ -4,7 +4,7 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "1.3.1"
+        self.server_version = "1.3.3"
         self.server_build_date = "October 28, 2025"
         self.server_build_dev_number = 1
         self.app_data_dir = '.snowstream/'
@@ -96,10 +96,8 @@ config.refresh_app_data_dirs()
 
 if config.is_deployed_environment:
     config.tail_log_paths = [
-        '/app/logs/web-server-out.log',
-        '/app/logs/web-server-err.log',
-        '/app/logs/worker-out.log',
-        '/app/logs/worker-err.log'
+        '/app/logs/web-server.log',
+        '/app/logs/worker.log',
     ]
 
 if not os.path.exists(config.thumbnail_dir):
