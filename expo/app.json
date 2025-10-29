@@ -20,6 +20,14 @@
           },
           "ios": {}
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://bugsink.9914.us",
+          "project": "snowstream",
+          "organization": "Arctic"
+        }
       ]
     ],
     "splash": {

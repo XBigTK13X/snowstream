@@ -18,8 +18,7 @@ import { useKeepAwake } from 'expo-keep-awake';
 
 import { useDebouncedCallback } from 'use-debounce';
 
-// https://www.npmjs.com/package/react-native-tvos
-// TVFocusGuideView docs
+import * as Sentry from "@sentry/react-native";
 
 import util from './util'
 
@@ -68,6 +67,7 @@ export default {
     Platform,
     React,
     ScrollView,
+    Sentry,
     Snow,
     SnowBreak,
     SnowCreateJobButton,

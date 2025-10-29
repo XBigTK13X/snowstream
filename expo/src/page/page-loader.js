@@ -1,5 +1,7 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, Text, Button } from 'react-native'
+import * as Sentry from "@sentry/react-native";
+import * as Updates from 'expo-updates'
 import Snow from 'expo-snowui'
 import {
     config,
@@ -42,22 +44,39 @@ function PageWrapper() {
     return <AuthPageLoader />
 }
 
+function CrashScreen(props) {
+    const reload = () => {
+        Updates.reloadAsync()
+    }
+    return (
+        <View style={{ flex: 1, backgroundColor: 'black', color: 'white' }}>
+            <Text>snowstream crashed due to an unhandled error.</Text>
+            <Text>The problem has been logged.</Text>
+            <Button title="Reload" onPress={reload} />
+        </View>
+    )
+}
+
 export default function PageLoader() {
     return (
-        <Snow.App
-            DEBUG_SNOW={config.debugSnowui}
-            snowStyle={appStyle}
-            routePaths={routes}
-            routePages={pages}
-            initialRoutePath={routes.signIn}
-        >
-            <AppContextProvider>
-                <Player.Manager>
-                    <View style={{ flex: 1, marginBottom: 50 }}>
-                        <PageWrapper />
-                    </View>
-                </Player.Manager>
-            </AppContextProvider >
-        </Snow.App >
+        <Sentry.ErrorBoundary
+            fallback={<CrashScreen />}
+            onError={(e) => Sentry.captureException(e)}>
+            <Snow.App
+                DEBUG_SNOW={config.debugSnowui}
+                snowStyle={appStyle}
+                routePaths={routes}
+                routePages={pages}
+                initialRoutePath={routes.signIn}
+            >
+                <AppContextProvider>
+                    <Player.Manager>
+                        <View style={{ flex: 1, marginBottom: 50 }}>
+                            <PageWrapper />
+                        </View>
+                    </Player.Manager>
+                </AppContextProvider >
+            </Snow.App >
+        </Sentry.ErrorBoundary>
     )
 }
