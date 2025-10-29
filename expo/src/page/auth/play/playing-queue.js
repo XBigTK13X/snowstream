@@ -1,4 +1,4 @@
-import { C } from 'snowstream'
+import { C, Player } from 'snowstream'
 
 import PlayMediaPage from './media'
 
@@ -7,9 +7,7 @@ export default function PlayPlayingQueuePage() {
     const playingQueueRef = C.React.useRef(playingQueue)
 
     C.React.useEffect(() => {
-        if (playingQueue) {
-            playingQueueRef.current = playingQueue
-        }
+        playingQueueRef.current = playingQueue
     }, [playingQueue])
 
     const loadVideo = (apiClient, routeParams, deviceProfile) => {
@@ -52,45 +50,47 @@ export default function PlayPlayingQueuePage() {
     }
 
     const onComplete = (apiClient, routes, navPush) => {
-        console.log({ action: 'onComplete', ref: playingQueueRef.current })
+        const queue = playingQueueRef?.current
         return apiClient.updatePlayingQueue(
-            playingQueueRef.current.queue.source,
-            playingQueueRef.current.queue.progress + 1
+            queue.queue.source,
+            queue.queue.progress + 1
         )
             .then(() => {
-                navPush({
-                    path: routes.playingQueuePlay,
-                    params: {
-                        playingQueueSource: playingQueueRef.current.queue.source,
-                        queueIndex: playingQueueRef.current.queue.progress
-                    },
-                    func: false,
-                    replace: false
+                Player.action.reset().then(() => {
+                    navPush({
+                        path: routes.playingQueuePlay,
+                        params: {
+                            playingQueueSource: queue.queue.source,
+                            queueIndex: queue.queue.progress
+                        },
+                        func: false,
+                        replace: false
+                    })
                 })
             })
     }
 
     const onStopVideo = (apiClient, routes, navPush) => {
-        console.log({ action: 'onStop', ref: playingQueueRef.current })
-        if (playingQueueRef?.current) {
-            if (playingQueueRef?.current.kind === 'playlist') {
+        const queue = playingQueueRef?.current
+        if (queue) {
+            if (queue.kind === 'playlist') {
                 navPush({
                     path: routes.playlistDetails,
-                    params: { tagId: playingQueueRef?.current?.kind_id },
+                    params: { tagId: queue.kind_id },
                     func: false
                 })
             }
-            if (playingQueueRef?.current.kind === 'show') {
+            if (queue.kind === 'show') {
                 navPush({
                     path: routes.seasonList,
-                    params: { showId: playingQueueRef?.current?.kind_id },
+                    params: { showId: queue.kind_id },
                     func: false
                 })
             }
-            if (playingQueueRef?.current.kind === 'show_season') {
+            if (queue.kind === 'show_season') {
                 navPush({
                     path: routes.episodeList,
-                    params: { seasonId: playingQueueRef?.current?.kind_id },
+                    params: { seasonId: queue.kind_id },
                     func: false
                 })
             }

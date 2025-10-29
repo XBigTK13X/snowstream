@@ -76,22 +76,25 @@ class PlayerActions {
     }
 
     reset = () => {
-        Object.assign(playerState, initialPlayerState)
-        this.apiClient = playerState.apiClient
-        this.navPush = playerState.navPush
-        this.navPop = playerState.navPop
-        this.routeParams = playerState.routeParams
-        this.routePath = playerState.routePath
-        this.clientOptions = playerState.clientOptions
-        this.config = playerState.config
-        this.clearModals = playerState.clearModals
-        this.closeOverlay = playerState.closeOverlay
-        this.loadVideoHandler = null
-        this.loadTranscodeHandler = null
-        this.onCompleteHandler = null
-        this.onStopVideoHandler = null
-        this.updateProgressHandler = null
-        this.increaseWatchCountHandler = null
+        return new Promise(resolve => {
+            Object.assign(playerState, initialPlayerState)
+            this.apiClient = playerState.apiClient
+            this.navPush = playerState.navPush
+            this.navPop = playerState.navPop
+            this.routeParams = playerState.routeParams
+            this.routePath = playerState.routePath
+            this.clientOptions = playerState.clientOptions
+            this.config = playerState.config
+            this.clearModals = playerState.clearModals
+            this.closeOverlay = playerState.closeOverlay
+            this.loadVideoHandler = null
+            this.loadTranscodeHandler = null
+            this.onCompleteHandler = null
+            this.onStopVideoHandler = null
+            this.updateProgressHandler = null
+            this.increaseWatchCountHandler = null
+            resolve()
+        })
     }
 
     effectSetVideoHandlers = (props) => {
@@ -321,13 +324,17 @@ class PlayerActions {
             } else {
                 this.onAddLog(eventInfo)
             }
-            if (eventInfo?.data?.event === 'onEnd') this.onPlaybackComplete()
+            if (eventInfo?.data?.event === 'onEnd') {
+                this.onPlaybackComplete()
+            }
         } else if (eventInfo?.kind === 'mpvevent') {
             const mpvEvent = eventInfo.libmpvEvent
             if (mpvEvent?.property) {
                 if (mpvEvent.property === 'time-pos') this.onVideoProgressEvent(mpvEvent.value)
                 else if (!['demuxer-cache-time', 'track-list'].includes(mpvEvent.property)) this.onAddLog(eventInfo)
-                if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) this.onPlaybackComplete()
+                if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
+                    this.onPlaybackComplete()
+                }
             }
         } else if (eventInfo?.kind === 'nullevent') {
             const nullEvent = eventInfo.nullEvent
