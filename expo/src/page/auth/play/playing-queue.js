@@ -5,9 +5,13 @@ import PlayMediaPage from './media'
 export default function PlayPlayingQueuePage() {
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
     const playingQueueRef = C.React.useRef(playingQueue)
+
     C.React.useEffect(() => {
-        playingQueueRef.current = playingQueue
+        if (playingQueue) {
+            playingQueueRef.current = playingQueue
+        }
     }, [playingQueue])
+
     const loadVideo = (apiClient, routeParams, deviceProfile) => {
         return apiClient.getPlayingQueue({
             source: routeParams.playingQueueSource
@@ -48,13 +52,26 @@ export default function PlayPlayingQueuePage() {
     }
 
     const onComplete = (apiClient, routes, navPush) => {
-        return apiClient.updatePlayingQueue(playingQueue.queue.source, playingQueue.queue.progress + 1)
+        console.log({ action: 'onComplete', ref: playingQueueRef.current })
+        return apiClient.updatePlayingQueue(
+            playingQueueRef.current.queue.source,
+            playingQueueRef.current.queue.progress + 1
+        )
             .then(() => {
-                navPush({ params: { playingQueueSource: playingQueue.queue.source } })
+                navPush({
+                    path: routes.playingQueuePlay,
+                    params: {
+                        playingQueueSource: playingQueueRef.current.queue.source,
+                        queueIndex: playingQueueRef.current.queue.progress
+                    },
+                    func: false,
+                    replace: false
+                })
             })
     }
 
     const onStopVideo = (apiClient, routes, navPush) => {
+        console.log({ action: 'onStop', ref: playingQueueRef.current })
         if (playingQueueRef?.current) {
             if (playingQueueRef?.current.kind === 'playlist') {
                 navPush({

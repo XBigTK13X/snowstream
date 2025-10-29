@@ -61,7 +61,13 @@ export default function PageLoader() {
     return (
         <Sentry.ErrorBoundary
             fallback={<CrashScreen />}
-            onError={(e) => Sentry.captureException(e)}>
+            onError={(error, componentStack) => {
+                console.error('Unhandled error:', error)
+                if (componentStack) {
+                    console.error('Component stack:', componentStack)
+                }
+                Sentry.captureException(error)
+            }}>
             <Snow.App
                 DEBUG_SNOW={config.debugSnowui}
                 snowStyle={appStyle}

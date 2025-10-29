@@ -778,14 +778,22 @@ def auth_required(router):
             shuffle=shuffle,
             source=source
         )
-        kind = 'show'
-        kind_id = show_id
-        if not kind_id:
+        kind = None
+        kind_id = None
+        if show_id:
+            kind_id = show_id
+            kind = 'show'
+        if show_season_id:
             kind = 'show_season'
             kind_id = show_season_id
-        if not kind_id:
+        if tag_id:
             kind = 'playlist'
             kind_id = tag_id
+        if not kind and source:
+            scrub = source.replace('-shuffle','')
+            parts = scrub.split('-')
+            kind = parts[0]
+            kind_id = int(parts[1])
         return {
             'queue':queue,
             'kind': kind,

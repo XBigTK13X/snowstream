@@ -19,6 +19,14 @@ export function SnowScreencapGridW(props) {
     const getItemToggleStatus = (item) => {
         return !props.disableWatched && item.watched
     }
+
+    let scaleProps = {}
+    scaleProps.itemsPerRow = 5
+    if (SnowStyle.isPortrait) {
+        scaleProps.itemsPerRow = 2
+        scaleProps.itemsPerPage = 10
+    }
+
     return (
         <Snow.FillView>
             {props.title ?
@@ -28,8 +36,8 @@ export function SnowScreencapGridW(props) {
                 : null}
             <Snow.ImageGrid
                 {...readFocusProps(props)}
+                {...scaleProps}
                 snowStyle={props.snowStyle}
-                itemsPerRow={SnowStyle.isWeb ? 4 : 5}
                 items={props.items}
                 wideImage={true}
                 longPressToggle={true}

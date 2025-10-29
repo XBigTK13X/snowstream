@@ -89,15 +89,17 @@ export default function AuthPageLoader(props) {
         return null
     }
 
+    const pageKey = `${currentRoute.routePath}-${Snow.stringifySafe(currentRoute.routeParams)}`
+
     const hasHeader = currentRoute.routePath.includes('/wrap/')
     if (hasHeader) {
         return (
             <SnowHeaderNavPage>
-                <CurrentPage />
+                <CurrentPage key={pageKey} />
             </SnowHeaderNavPage>
         )
     }
     return (
-        <CurrentPage />
+        <CurrentPage key={pageKey} />
     )
 }

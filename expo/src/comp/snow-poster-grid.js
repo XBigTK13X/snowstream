@@ -24,6 +24,14 @@ function SnowPosterGridW(props) {
     const getItemToggleStatus = (item) => {
         return !props.disableWatched && item.watched
     }
+
+    let scaleProps = {}
+    scaleProps.itemsPerRow = 5
+    if (SnowStyle.isPortrait) {
+        scaleProps.itemsPerRow = 2
+        scaleProps.itemsPerPage = 10
+    }
+
     return (
         <>
             {props.title ?
@@ -33,7 +41,7 @@ function SnowPosterGridW(props) {
                 : null}
             <Snow.ImageGrid
                 {...readFocusProps(props)}
-                itemsPerRow={SnowStyle.isWeb ? 4 : 5}
+                {...scaleProps}
                 snowStyle={props.snowStyle}
                 items={props.items}
                 wideImage={false}

@@ -12,7 +12,7 @@
         "expo-libmpv": "^0.3.1",
         "expo-linking": "8.0.8",
         "expo-secure-store": "15.0.7",
-        "expo-snowui": "1.5.25",
+        "expo-snowui": "1.5.26",
         "expo-splash-screen": "31.0.10",
         "expo-updates": "^29.0.12",
         "react": "19.1.0",

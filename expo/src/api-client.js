@@ -22,97 +22,12 @@ export class ApiClient {
         this.hasAdmin = details.isAdmin
         this.onApiError = details.onApiError
         this.apiErrorSent = false
-        let self = this
         this.createClient(details)
-
-        this.get = async (url, params) => {
-            let queryParams = null
-            if (params) {
-                queryParams = { params: params }
-            }
-            return this.httpClient
-                .get(url, queryParams)
-                .then((response) => {
-                    return response.data
-                })
-                .catch((err) => {
-                    this.handleError(err)
-                })
-        }
-
-        this.post = async (url, payload) => {
-            return this.httpClient
-                .post(url, payload)
-                .then((response) => {
-                    return response.data
-                })
-                .catch((err) => {
-                    this.handleError(err)
-                })
-        }
-
-        this.delete = async (url) => {
-            return this.httpClient
-                .delete(url)
-                .then((response) => {
-                    return response.data
-                })
-                .catch((err) => {
-                    this.handleError(err)
-                })
-        }
-
-        // Only functions that get passed around as higher order functions need to be bound
-        this.login = this.login.bind(this)
-
-        // An example of this is the job runner
-        this.closeAllTranscodeSessions = this.closeAllTranscodeSessions.bind(this)
-        this.createJobCleanFileRecords = this.createJobCleanFileRecords.bind(this)
-        this.createJobDeleteMediaRecords = this.createJobDeleteMediaRecords.bind(this)
-        this.createJobIdentifyUnknownMedia = this.createJobIdentifyUnknownMedia.bind(this)
-        this.createJobReadMediaFiles = this.createJobReadMediaFiles.bind(this)
-        this.createJobSanitizeFileProperties = this.createJobSanitizeFileProperties.bind(this)
-        this.createJobShelvesScan = this.createJobShelvesScan.bind(this)
-        this.createJobChannelGuideRefresh = this.createJobChannelGuideRefresh.bind(this)
-        this.createJobStreamSourcesRefresh = this.createJobStreamSourcesRefresh.bind(this)
-        this.createJobUpdateMediaFiles = this.createJobUpdateMediaFiles.bind(this)
-        this.createScopedJob = this.createScopedJob.bind(this)
-        this.deleteAllCachedText = this.deleteAllCachedText.bind(this)
-
-        // Another example is the watched status setters used by onLongPress event handlers
-        this.toggleItemWatched = this.toggleItemWatched.bind(this)
-        this.setItemUnwatched = this.setItemUnwatched.bind(this)
-        this.setItemWatched = this.setItemWatched.bind(this)
-        this.toggleEpisodeWatchStatus = this.toggleEpisodeWatchStatus.bind(this)
-        this.toggleMovieShelfWatchStatus = this.toggleMovieShelfWatchStatus.bind(this)
-        this.toggleMovieWatchStatus = this.toggleMovieWatchStatus.bind(this)
-        this.toggleSeasonWatchStatus = this.toggleSeasonWatchStatus.bind(this)
-        this.toggleShowShelfWatchStatus = this.toggleShowShelfWatchStatus.bind(this)
-        this.toggleShowWatchStatus = this.toggleShowWatchStatus.bind(this)
-
-        this.createVideoFileTranscodeSession = this.createVideoFileTranscodeSession.bind(this)
-        this.createStreamableTranscodeSession = this.createStreamableTranscodeSession.bind(this)
-
-        this.handleError = (err) => {
-            util.log(err)
-            if (err) {
-                if (err.response && err.response.status === 401) {
-                    details.onLogout()
-                }
-                if (err.code && err.code === 'ERR_NETWORK') {
-                    if (!self.apiErrorSent) {
-                        self.onApiError(err)
-                    }
-                    self.apiErrorSent = true
-                }
-            }
-        }
     }
 
-    createClient(details) {
+    createClient = (details) => {
         this.baseURL = details.webApiUrl + '/api'
         this.authToken = details.authToken
-
         if (this.authToken) {
             this.httpClient = axios.create({
                 baseURL: this.baseURL,
@@ -127,14 +42,65 @@ export class ApiClient {
         }
     }
 
-    isAuthenticated() {
+    handleError = (err) => {
+        util.log(err)
+        if (err) {
+            if (err.response && err.response.status === 401) {
+                this.onLogout?.()
+            }
+            if (err.code && err.code === 'ERR_NETWORK') {
+                if (!this.apiErrorSent) {
+                    this.onApiError(err)
+                }
+                this.apiErrorSent = true
+            }
+        }
+    }
+
+    get = async (url, params) => {
+        let queryParams = null
+        if (params) {
+            queryParams = { params: params }
+        }
+        return this.httpClient
+            .get(url, queryParams)
+            .then((response) => {
+                return response.data
+            })
+            .catch((err) => {
+                this.handleError(err)
+            })
+    }
+
+    post = async (url, payload) => {
+        return this.httpClient
+            .post(url, payload)
+            .then((response) => {
+                return response.data
+            })
+            .catch((err) => {
+                this.handleError(err)
+            })
+    }
+
+    delete = async (url) => {
+        return this.httpClient
+            .delete(url)
+            .then((response) => {
+                return response.data
+            })
+            .catch((err) => {
+                this.handleError(err)
+            })
+    }
+
+    isAuthenticated = () => {
         return this.authToken !== null
     }
 
-    login(payload) {
-        let self = this
+    login = (payload) => {
         return new Promise(resolve => {
-            return self.httpClient
+            return this.httpClient
                 .postForm('/login', {
                     username: payload.username,
                     password: payload.password,
@@ -143,16 +109,16 @@ export class ApiClient {
                 })
                 .then((data) => {
                     if (data && data.data && data.data.access_token) {
-                        self.authToken = data.data.access_token
-                        self.permissions = data.data.permissions
-                        self.hasAdmin = self.permissions.includes('admin')
-                        self.createClient({ webApiUrl: self.webApiUrl, authToken: self.authToken })
-                        self.displayName = data.data.display_name
+                        this.authToken = data.data.access_token
+                        this.permissions = data.data.permissions
+                        this.hasAdmin = this.permissions.includes('admin')
+                        this.createClient({ webApiUrl: this.webApiUrl, authToken: this.authToken })
+                        this.displayName = data.data.display_name
                     }
                     return resolve({
-                        authToken: self.authToken,
-                        isAdmin: self.hasAdmin,
-                        displayName: self.displayName
+                        authToken: this.authToken,
+                        isAdmin: this.hasAdmin,
+                        displayName: this.displayName
                     })
                 })
                 .catch((err) => {
@@ -161,11 +127,11 @@ export class ApiClient {
         })
     }
 
-    heartbeat() {
+    heartbeat = () => {
         return this.get('/heartbeat')
     }
 
-    createScopedJob(name, details) {
+    createScopedJob = (name, details) => {
         let payload = { name }
         if (details) {
             payload.input = {}
@@ -178,43 +144,17 @@ export class ApiClient {
         return this.post('/job', payload)
     }
 
-    createJobStreamSourcesRefresh(details) {
-        return this.createScopedJob('stream_sources_refresh', details)
-    }
+    createJobStreamSourcesRefresh = (details) => { return this.createScopedJob('stream_sources_refresh', details) }
+    createJobChannelGuideRefresh = (details) => { return this.createScopedJob('channel_guide_refresh', details) }
+    createJobShelvesScan = (details) => { return this.createScopedJob('scan_shelves_content', details) }
+    createJobReadMediaFiles = (details) => { return this.createScopedJob('read_media_files', details) }
+    createJobUpdateMediaFiles = (details) => { return this.createScopedJob('update_media_files', details) }
+    createJobIdentifyUnknownMedia = (details) => { return this.createScopedJob('identify_unknown_media', details) }
+    createJobCleanFileRecords = (details) => { return this.createScopedJob('clean_file_records', details) }
+    createJobDeleteMediaRecords = (details) => { return this.createScopedJob('delete_media_records', details) }
+    createJobSanitizeFileProperties = (details) => { return this.createScopedJob('sanitize_file_properties', details) }
 
-    createJobChannelGuideRefresh(details) {
-        return this.createScopedJob('channel_guide_refresh', details)
-    }
-
-    createJobShelvesScan(details) {
-        return this.createScopedJob('scan_shelves_content', details)
-    }
-
-    createJobReadMediaFiles(details) {
-        return this.createScopedJob('read_media_files', details)
-    }
-
-    createJobUpdateMediaFiles(details) {
-        return this.createScopedJob('update_media_files', details)
-    }
-
-    createJobIdentifyUnknownMedia(details) {
-        return this.createScopedJob('identify_unknown_media', details)
-    }
-
-    createJobCleanFileRecords(details) {
-        return this.createScopedJob('clean_file_records', details)
-    }
-
-    createJobDeleteMediaRecords(details) {
-        return this.createScopedJob('delete_media_records', details)
-    }
-
-    createJobSanitizeFileProperties(details) {
-        return this.createScopedJob('sanitize_file_properties', details)
-    }
-
-    getJobList(showComplete, limit) {
+    getJobList = (showComplete, limit) => {
         let query = `/job/list?show_complete=${showComplete}`
         if (limit) {
             query += `&limit=${limit}`
@@ -222,22 +162,22 @@ export class ApiClient {
         return this.get(query)
     }
 
-    getJob(jobId) {
+    getJob = (jobId) => {
         return this.get(`/job?job_id=${jobId}`)
     }
 
-    getLogPaths() {
+    getLogPaths = () => {
         return this.get('/log/list')
     }
 
-    getLog(logIndex, logPath) {
+    getLog = (logIndex, logPath) => {
         if (logIndex !== undefined && logIndex !== null) {
             return this.get(`/log?log_index=${logIndex}`)
         }
         return this.get(`/log?transcode_log_path=${logPath}`)
     }
 
-    createStreamSource(payload) {
+    createStreamSource = (payload) => {
         return this.post('/stream/source', {
             url: payload.url,
             username: payload.username,
@@ -247,15 +187,15 @@ export class ApiClient {
         })
     }
 
-    getStreamSourceList() {
+    getStreamSourceList = () => {
         return this.get(`/stream/source/list`)
     }
 
-    getStreamSource(streamSourceId) {
+    getStreamSource = (streamSourceId) => {
         return this.get('/stream/source', { stream_source_id: streamSourceId })
     }
 
-    saveStreamSource(payload) {
+    saveStreamSource = (payload) => {
         return this.post('/stream/source', {
             id: payload.id,
             name: payload.name,
@@ -266,11 +206,11 @@ export class ApiClient {
         })
     }
 
-    deleteStreamSource(stream_source_id) {
+    deleteStreamSource = (stream_source_id) => {
         return this.delete(`/stream/source/${stream_source_id}`)
     }
 
-    saveStreamable(payload) {
+    saveStreamable = (payload) => {
         return this.post('/streamable', {
             id: payload.id,
             name_display: payload.nameDisplay,
@@ -278,15 +218,15 @@ export class ApiClient {
         })
     }
 
-    getChannelGuideSourceList() {
+    getChannelGuideSourceList = () => {
         return this.get('/channel/guide/source/list')
     }
 
-    getChannelGuideSource(guideSourceId) {
+    getChannelGuideSource = (guideSourceId) => {
         return this.get(`/channel/guide/source?channel_guide_source_id=${guideSourceId}`)
     }
 
-    saveChannelGuideSource(payload) {
+    saveChannelGuideSource = (payload) => {
         return this.post('/channel/guide/source', {
             id: payload.id,
             name: payload.name,
@@ -297,7 +237,7 @@ export class ApiClient {
         })
     }
 
-    saveChannel(payload) {
+    saveChannel = (payload) => {
         if (payload.editedNumber === '') {
             payload.editedNumber = null
         }
@@ -310,19 +250,19 @@ export class ApiClient {
         })
     }
 
-    deleteChannelGuideSource(channel_guide_source_id) {
+    deleteChannelGuideSource = (channel_guide_source_id) => {
         return this.delete(`/channel/guide/source/${channel_guide_source_id}`)
     }
 
-    getStreamable(streamableId) {
+    getStreamable = (streamableId) => {
         return this.get('/streamable', { streamable_id: streamableId })
     }
 
-    getStreamableList() {
+    getStreamableList = () => {
         return this.get('/streamable/list')
     }
 
-    saveShelf(payload) {
+    saveShelf = (payload) => {
         return this.post('/shelf', {
             name: payload.name,
             kind: payload.kind,
@@ -332,51 +272,51 @@ export class ApiClient {
         })
     }
 
-    deleteShelf(shelfId) {
+    deleteShelf = (shelfId) => {
         return this.delete(`/shelf/${shelfId}`)
     }
 
-    getShelfList() {
+    getShelfList = () => {
         return this.get('/shelf/list')
     }
 
-    getShelf(shelfId) {
+    getShelf = (shelfId) => {
         return this.get('/shelf', { shelf_id: shelfId })
     }
 
-    getMovieList(shelfId, showPlaylisted) {
+    getMovieList = (shelfId, showPlaylisted) => {
         return this.get('/movie/list', { shelf_id: shelfId, show_playlisted: showPlaylisted })
     }
 
-    getMovie(movieId, deviceProfile) {
+    getMovie = (movieId, deviceProfile) => {
         return this.get(`/movie?movie_id=${movieId}&device_profile=${deviceProfile}`)
     }
 
-    getShowList(shelfId, showPlaylisted) {
+    getShowList = (shelfId, showPlaylisted) => {
         return this.get('/show/list', { shelf_id: shelfId, show_playlisted: showPlaylisted })
     }
 
-    getSeasonList(showId) {
+    getSeasonList = (showId) => {
         return this.get('/show/season/list', { show_id: showId })
     }
 
-    getEpisodeList(shelfId, seasonId) {
+    getEpisodeList = (shelfId, seasonId) => {
         return this.get('/show/season/episode/list', { shelf_id: shelfId, show_season_id: seasonId })
     }
 
-    getEpisode(episodeId, deviceProfile) {
+    getEpisode = (episodeId, deviceProfile) => {
         return this.get(`/show/season/episode?episode_id=${episodeId}&device_profile=${deviceProfile}`)
     }
 
-    getUserList(deviceProfile) {
+    getUserList = (deviceProfile) => {
         return this.get(`/user/list?device_profile=${deviceProfile}`)
     }
 
-    getUser(userId) {
+    getUser = (userId) => {
         return this.get('/user', { user_id: userId })
     }
 
-    saveUser(details) {
+    saveUser = (details) => {
         let payload = {
             id: details.id,
             username: details.username,
@@ -391,11 +331,11 @@ export class ApiClient {
         return this.post('/user', payload)
     }
 
-    deleteUser(userId) {
+    deleteUser = (userId) => {
         return this.delete(`/user/${userId}`)
     }
 
-    saveUserAccess(payload) {
+    saveUserAccess = (payload) => {
         return this.post('/user/access', {
             user_id: payload.userId,
             tag_ids: payload.tagIds,
@@ -404,30 +344,30 @@ export class ApiClient {
         })
     }
 
-    getTag(tagId) {
+    getTag = (tagId) => {
         return this.get('/tag', { tag_id: tagId })
     }
 
-    getTagList() {
+    getTagList = () => {
         return this.get('/tag/list')
     }
 
-    saveTag(payload) {
+    saveTag = (payload) => {
         return this.post('/tag', {
             id: payload.id,
             name: payload.name
         })
     }
 
-    deleteTag(tagId) {
+    deleteTag = (tagId) => {
         return this.delete(`/tag/${tagId}`)
     }
 
-    getDeviceProfileList() {
+    getDeviceProfileList = () => {
         return this.get('/device/profile/list')
     }
 
-    createVideoFileTranscodeSession(videoFileId, audioTrackIndex, subtitleTrackIndex, deviceProfile, seekToSeconds) {
+    createVideoFileTranscodeSession = (videoFileId, audioTrackIndex, subtitleTrackIndex, deviceProfile, seekToSeconds) => {
         let requestUrl = `/transcode/session?video_file_id=${videoFileId}&device_profile=${deviceProfile}`
         if (audioTrackIndex !== -1) {
             requestUrl += `&audio_track_index=${audioTrackIndex}`
@@ -441,7 +381,7 @@ export class ApiClient {
         return this.post(requestUrl)
     }
 
-    createStreamableTranscodeSession(streamableId, deviceProfile, seekToSeconds) {
+    createStreamableTranscodeSession = (streamableId, deviceProfile, seekToSeconds) => {
         let requestUrl = `/transcode/session?streamable_id=${streamableId}&device_profile=${deviceProfile}`
         if (seekToSeconds) {
             requestUrl += `&seek_to_seconds=${Math.floor(seekToSeconds)}`
@@ -449,43 +389,43 @@ export class ApiClient {
         return this.post(requestUrl)
     }
 
-    closeTranscodeSession(transcodeId) {
+    closeTranscodeSession = (transcodeId) => {
         return this.delete(`/transcode/session?transcode_session_id=${transcodeId}`)
     }
 
-    closeAllTranscodeSessions(transcodeId) {
+    closeAllTranscodeSessions = () => {
         return this.delete(`/transcode/session`)
     }
 
-    setShelfWatchStatus(shelfId, watched) {
+    setShelfWatchStatus = (shelfId, watched) => {
         return this.post('/watch/status', { shelf_id: shelfId, status: watched })
     }
 
-    toggleMovieShelfWatchStatus(shelfId) {
+    toggleMovieShelfWatchStatus = (shelfId) => {
         return this.post(`/shelf/watched/toggle?movie_shelf_id=${shelfId}`)
     }
 
-    toggleShowShelfWatchStatus(shelfId) {
+    toggleShowShelfWatchStatus = (shelfId) => {
         return this.post(`/shelf/watched/toggle?show_shelf_id=${shelfId}`)
     }
 
-    toggleMovieWatchStatus(movieId) {
+    toggleMovieWatchStatus = (movieId) => {
         return this.post(`/movie/watched/toggle?movie_id=${movieId}`)
     }
 
-    toggleShowWatchStatus(showId) {
+    toggleShowWatchStatus = (showId) => {
         return this.post(`/show/watched/toggle?show_id=${showId}`)
     }
 
-    toggleSeasonWatchStatus(seasonId) {
+    toggleSeasonWatchStatus = (seasonId) => {
         return this.post(`/show/season/watched/toggle?season_id=${seasonId}`)
     }
 
-    toggleEpisodeWatchStatus(episodeId) {
+    toggleEpisodeWatchStatus = (episodeId) => {
         return this.post(`/show/season/episode/watched/toggle?episode_id=${episodeId}`)
     }
 
-    setEpisodeWatchProgress(episodeId, playedSeconds, durationSeconds) {
+    setEpisodeWatchProgress = (episodeId, playedSeconds, durationSeconds) => {
         return this.post(`/show/season/episode/progress`, {
             show_episode_id: episodeId,
             played_seconds: playedSeconds,
@@ -493,7 +433,7 @@ export class ApiClient {
         })
     }
 
-    setMovieWatchProgress(movieId, playedSeconds, durationSeconds) {
+    setMovieWatchProgress = (movieId, playedSeconds, durationSeconds) => {
         return this.post(`/movie/progress`, {
             movie_id: movieId,
             played_seconds: playedSeconds,
@@ -501,23 +441,23 @@ export class ApiClient {
         })
     }
 
-    getContinueWatchingList() {
+    getContinueWatchingList = () => {
         return this.get('/continue/watching')
     }
 
-    search(query) {
+    search = (query) => {
         return this.get('/search', { query })
     }
 
-    getPlaylistList() {
+    getPlaylistList = () => {
         return this.get('/playlist/list')
     }
 
-    getPlaylist(tagId) {
+    getPlaylist = (tagId) => {
         return this.get('/playlist', { tag_id: tagId })
     }
 
-    getPlayingQueue(details) {
+    getPlayingQueue = (details) => {
         if (details.showId) {
             return this.get(`/playing/queue?shelf_id=${details.shelfId}&show_id=${details.showId}&shuffle=${!!details.shuffle}`)
         }
@@ -536,19 +476,19 @@ export class ApiClient {
         }
     }
 
-    updatePlayingQueue(source, progress) {
+    updatePlayingQueue = (source, progress) => {
         return this.post(`/playing/queue?source=${source}&progress=${progress}`)
     }
 
-    increaseShowEpisodeWatchCount(episodeId) {
+    increaseShowEpisodeWatchCount = (episodeId) => {
         return this.post(`/show/season/episode/watch_count?show_episode_id=${episodeId}`)
     }
 
-    increaseMovieWatchCount(movieId) {
+    increaseMovieWatchCount = (movieId) => {
         return this.post(`/movie/watch_count?movie_id=${movieId}`)
     }
 
-    getKeepsake(shelfId, subdirectory64) {
+    getKeepsake = (shelfId, subdirectory64) => {
         let url = `/keepsake?shelf_id=${shelfId}`
         if (subdirectory64) {
             url += `&subdirectory64=${subdirectory64}`
@@ -556,11 +496,11 @@ export class ApiClient {
         return this.get(url)
     }
 
-    getSessionList() {
+    getSessionList = () => {
         return this.get('/session/list')
     }
 
-    toggleItemWatched(item) {
+    toggleItemWatched = (item) => {
         if (item.model_kind === 'movie') {
             return this.toggleMovieWatchStatus(item.id)
         }
@@ -575,7 +515,7 @@ export class ApiClient {
         }
     }
 
-    setItemWatchedStatus(item, isWatched) {
+    setItemWatchedStatus = (item, isWatched) => {
         if (item.model_kind === 'movie') {
             return this.post(`/movie/watched?movie_id=${item.id}&is_watched=${isWatched}`)
         }
@@ -590,31 +530,31 @@ export class ApiClient {
         }
     }
 
-    setItemWatched(item) {
+    setItemWatched = (item) => {
         return this.setItemWatchedStatus(item, true)
     }
 
-    setItemUnwatched(item) {
+    setItemUnwatched = (item) => {
         return this.setItemWatchedStatus(item, false)
     }
 
-    savePlaybackLogs(logs) {
+    savePlaybackLogs = (logs) => {
         return this.post('/log/playback', { logs })
     }
 
-    deleteAllCachedText() {
+    deleteAllCachedText = () => {
         return this.delete('/cached/text')
     }
 
-    getDisplayCleanupRuleList() {
+    getDisplayCleanupRuleList = () => {
         return this.get('/display-cleanup-rule/list')
     }
 
-    getDisplayCleanupRule(ruleId) {
+    getDisplayCleanupRule = (ruleId) => {
         return this.get(`/display-cleanup-rule?rule_id=${ruleId}`)
     }
 
-    saveDisplayCleanupRule(rule) {
+    saveDisplayCleanupRule = (rule) => {
         return this.post('/display-cleanup-rule', {
             id: rule.id,
             rule_kind: rule.ruleKind,
@@ -625,11 +565,11 @@ export class ApiClient {
         })
     }
 
-    deleteDisplayCleanupRule(ruleId) {
+    deleteDisplayCleanupRule = (ruleId) => {
         return this.delete(`/display-cleanup-rule?rule_id=${ruleId}`)
     }
 
-    debug() {
+    debug = () => {
         util.log({ baseURL: this.baseURL, authToken: this.authToken })
     }
 }
