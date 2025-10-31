@@ -201,6 +201,9 @@ class PlayerActions {
 
         const player = snapshot(playerState)
 
+        this.clearModals?.()
+        this.closeOverlay?.()
+
         if (goHome && this.navPush) {
             this.navPush({ path: player.routes.landing, func: false })
             return
@@ -215,9 +218,6 @@ class PlayerActions {
             this.reset()
             return
         }
-
-        this.clearModals?.()
-        this.closeOverlay?.()
 
         if (this.navPop) {
             this.navPop()
@@ -409,6 +409,12 @@ class PlayerActions {
         if (response.transcodeId) {
             this.onCloseTranscodeSession()
             playerState.transcodeId = response.transcodeId
+        }
+        if (response.audio_index) {
+            playerState.audioTrackIndex = response.audio_index
+        }
+        if (response.subtitle_index) {
+            playerState.subtitleTrackIndex = response.subtitle_index
         }
         playerState.videoLoaded = true
     }

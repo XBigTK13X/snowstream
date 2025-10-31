@@ -147,6 +147,8 @@ export default function SnowVideoPlayer(props) {
     }
 
     return (
-        <Snow.Text>Preparing the video player.</Snow.Text>
+        <Snow.FillView>
+            <Snow.Header center>Preparing the video.</Snow.Header>
+        </Snow.FillView>
     )
 }
