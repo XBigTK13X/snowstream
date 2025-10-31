@@ -436,8 +436,8 @@ class PlayerActions {
         playerState.subtitleColor = newColor
     }
 
-    changeSubtitleFontSize = (direction) => {
-        playerState.subtitleFontSize += direction * 4
+    changeSubtitleFontScale = (direction) => {
+        playerState.subtitleFontScale += direction * 0.1
     }
 
     toggleTranscode = () => {

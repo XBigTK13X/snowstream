@@ -59,7 +59,7 @@ export const initialPlayerState = {
 
     subtitleColor: { shade: 1.0, alpha: 1.0 },
     subtitleDelaySeconds: 0,
-    subtitleFontSize: 42,
+    subtitleFontScale: 1.0,
     subtitleTrackIndex: 0,
 
     changeRouteParams: null

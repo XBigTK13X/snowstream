@@ -67,7 +67,7 @@ export function PlayerManager(props) {
             onDown: () => {
                 const handlerState = snapshot(playerState)
                 if (handlerState.allowShortcuts) {
-                    playerActions.changeSubtitleFontSize(-1)
+                    playerActions.changeSubtitleFontScale(-1)
                 }
             },
             onUp: () => {

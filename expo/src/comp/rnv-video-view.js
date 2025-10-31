@@ -5,8 +5,6 @@ import { Player } from 'snowstream'
 import Video from 'react-native-video';
 import { ViewType } from 'react-native-video'
 
-
-
 const isWeb = Platform.OS === 'web'
 
 const bufferConfig = {
@@ -29,6 +27,9 @@ export default function RnvVideoView(props) {
     const videoRef = React.useRef(null);
     const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
+
+    // ExoPlayer default
+    const fontSize = getWindowHeight() * 0.0533
 
     const styles = {
         wrapper: {
@@ -136,7 +137,7 @@ export default function RnvVideoView(props) {
             selectedAudioTrack={{ type: 'index', value: player.audioTrackIndex }}
             selectedTextTrack={{ type: 'index', value: player.audioTrackIndex }}
             subtitleStyle={{
-                fontSize: player.subtitleFontSize * .6,
+                fontSize: player.subtitleFontScale * fontSize,
                 color: `rgba(${shade}, ${shade}, ${shade}})`,
                 textShadowColor: 'rgba(0, 0, 0)',
                 textShadowOffset: { width: 1, height: 1 },

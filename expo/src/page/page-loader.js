@@ -1,7 +1,6 @@
 import React from 'react'
 import { View, Text, Button } from 'react-native'
 import * as Sentry from "@sentry/react-native";
-import * as Updates from 'expo-updates'
 import Snow from 'expo-snowui'
 import {
     config,
@@ -45,22 +44,25 @@ function PageWrapper() {
 }
 
 function CrashScreen(props) {
-    const reload = () => {
-        Updates.reloadAsync()
-    }
     return (
-        <View style={{ flex: 1, backgroundColor: 'black', color: 'white' }}>
-            <Text>snowstream crashed due to an unhandled error.</Text>
-            <Text>The problem has been logged.</Text>
-            <Button title="Reload" onPress={reload} />
+        <View style={{ alignItems: 'center', justifyContent: 'center', padding: 60, backgroundColor: 'black', color: 'white' }}>
+            <Text style={{ fontSize: 40, margin: 20, color: 'white' }}>snowstream crashed due to an unhandled error.</Text>
+            <Text style={{ fontSize: 40, margin: 20, color: 'white' }}>The problem has been logged.</Text>
+            <View style={{ width: 400, margin: 20 }}>
+                <Button title="Reload" onPress={props.reloadApp} />
+            </View>
         </View>
     )
 }
 
 export default function PageLoader() {
+    const [appKey, setAppKey] = React.useState(1)
+    const reloadApp = () => {
+        setAppKey(prev => { return prev + 1 })
+    }
     return (
         <Sentry.ErrorBoundary
-            fallback={<CrashScreen />}
+            fallback={<CrashScreen reloadApp={reloadApp} />}
             onError={(error, componentStack) => {
                 console.error('Unhandled error:', error)
                 if (componentStack) {
@@ -69,6 +71,7 @@ export default function PageLoader() {
                 Sentry.captureException(error)
             }}>
             <Snow.App
+                key={appKey}
                 DEBUG_SNOW={config.debugSnowui}
                 snowStyle={appStyle}
                 routePaths={routes}

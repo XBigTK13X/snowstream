@@ -1,8 +1,9 @@
 import React from 'react'
-import { LibmpvVideo } from 'expo-libmpv'
+import Libmpv from 'expo-libmpv';
 import { Player } from 'snowstream'
 
 // https://mpv.io/manual/master/#property-manipulation
+
 export default function MpvVideoView(props) {
     const player = Player.useSnapshot(Player.state)
 
@@ -45,11 +46,10 @@ export default function MpvVideoView(props) {
 
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && player.isVideoViewReady) {
-            forwardRef.current.runCommand(`set|sub-ass-override|force`).catch(() => { })
-            forwardRef.current.runCommand(`set|sub-font-size|${player.subtitleFontSize}`).catch(() => { })
+            forwardRef.current.runCommand(`set|sub-scale|${player.subtitleFontScale}`).catch(() => { })
         }
 
-    }, [player.subtitleFontSize])
+    }, [player.subtitleFontScale])
 
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && player.isVideoViewReady) {
@@ -70,24 +70,28 @@ export default function MpvVideoView(props) {
         }
     }, [player.subtitleDelay])
 
+    const eventHandler = React.useCallback((libmpvEvent) => {
+        Player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
+    }, [])
+
+    const logHandler = React.useCallback((libmpvLog) => {
+        Player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
+    }, [])
+
     if (!player || !player.clientOptions) {
         return null
     }
 
     return (
-        <LibmpvVideo
+        <Libmpv.View
             ref={forwardRef}
             playUrl={player.videoUrl}
             isPlaying={player.isPlaying}
             useHardwareDecoder={player.clientOptions?.hardwareDecoder}
             surfaceWidth={player.videoWidth}
             surfaceHeight={player.videoHeight}
-            onLibmpvEvent={(libmpvEvent) => {
-                Player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
-            }}
-            onLibmpvLog={(libmpvLog) => {
-                Player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
-            }}
+            onLibmpvEvent={eventHandler}
+            onLibmpvLog={logHandler}
             selectedAudioTrack={player.audioTrackIndex}
             selectedSubtitleTrack={player.subtitleTrackIndex}
             seekToSeconds={player.seekToSeconds}
