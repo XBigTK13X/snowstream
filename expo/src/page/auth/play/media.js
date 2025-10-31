@@ -12,18 +12,28 @@ export function PlayMediaPage(props) {
 
     if (player.playbackFailed) {
         return (
-            <>
-                <C.SnowText>Unable to play the video.</C.SnowText>
+            <C.FillView>
+                <C.SnowHeader center>Unable to play the video.</C.SnowHeader>
                 <C.SnowText>Error: {C.Snow.stringifySafe(player.playbackFailed)}</C.SnowText>
-            </>
+            </C.FillView>
         )
     }
 
     if (!player.videoUrl) {
         if (player.isTranscode) {
-            return <C.SnowText>Preparing a transcode. This can take quite a while to load if subtitles are enabled.</C.SnowText>
+            return (
+                <C.FillView>
+                    <C.SnowHeader style={{ flex: 1 }} center>Preparing a transcode.</C.SnowHeader>
+                    <C.SnowLabel style={{ flex: 1 }} center>This can take a while to load.</C.SnowLabel>
+                </C.FillView>
+            )
         }
-        return <C.SnowText>Loading video. This should only take a moment.</C.SnowText>
+        return (
+            <C.FillView>
+                <C.SnowHeader style={{ flex: 1 }} center>Getting the video.</C.SnowHeader>
+                <C.SnowLabel style={{ flex: 1 }} center>This should only take a moment.</C.SnowLabel>
+            </C.FillView>
+        )
     }
 
     return (

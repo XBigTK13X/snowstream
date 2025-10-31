@@ -61,8 +61,6 @@ export const initialPlayerState = {
     subtitleDelaySeconds: 0,
     subtitleFontScale: 1.0,
     subtitleTrackIndex: 0,
-
-    changeRouteParams: null
 }
 
 export const playerState = proxy({

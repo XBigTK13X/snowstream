@@ -1,8 +1,9 @@
-import { C, Player } from 'snowstream'
+import { C, Player, useAppContext } from 'snowstream'
 
 import PlayMediaPage from './media'
 
 export default function PlayPlayingQueuePage() {
+    const { navToItem } = useAppContext()
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
     const playingQueueRef = C.React.useRef(playingQueue)
 
@@ -72,28 +73,8 @@ export default function PlayPlayingQueuePage() {
 
     const onStopVideo = (apiClient, routes, navPush) => {
         const queue = playingQueueRef?.current
-        if (queue) {
-            if (queue.kind === 'playlist') {
-                navPush({
-                    path: routes.playlistDetails,
-                    params: { tagId: queue.kind_id },
-                    func: false
-                })
-            }
-            if (queue.kind === 'show') {
-                navPush({
-                    path: routes.seasonList,
-                    params: { showId: queue.kind_id },
-                    func: false
-                })
-            }
-            if (queue.kind === 'show_season') {
-                navPush({
-                    path: routes.episodeList,
-                    params: { seasonId: queue.kind_id },
-                    func: false
-                })
-            }
+        if (queue?.item) {
+            navToItem(queue.item)
         }
     }
 

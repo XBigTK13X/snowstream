@@ -780,24 +780,39 @@ def auth_required(router):
         )
         kind = None
         kind_id = None
+        item = None
         if show_id:
             kind_id = show_id
             kind = 'show'
+            item = db.op.get_show_by_id(ticket=auth_user.ticket,show_id=show_id)
         if show_season_id:
             kind = 'show_season'
             kind_id = show_season_id
+            item = db.op.get_show_season_by_id(ticket=auth_user.ticket,season_id=show_season_id)
         if tag_id:
             kind = 'playlist'
             kind_id = tag_id
+            item = db.op.get_tag_by_id(tag_id=kind_id)
+            item.model_kind = 'playlist'
         if not kind and source:
             scrub = source.replace('-shuffle','')
             parts = scrub.split('-')
             kind = parts[0]
             kind_id = int(parts[1])
+            if kind == 'show':
+                item = db.op.get_show_by_id(ticket=auth_user.ticket,show_id=kind_id)
+            if kind == 'show_season':
+                item = db.op.get_show_season_by_id(ticket=auth_user.ticket,season_id=kind_id)
+            if kind == 'tag':
+                kind = 'playlist'
+                item = db.op.get_tag_by_id(tag_id=kind_id)
+                item.model_kind = 'playlist'
+
         return {
             'queue':queue,
             'kind': kind,
-            'kind_id': kind_id
+            'kind_id': kind_id,
+            'item': item
         }
 
     @router.post('/playing/queue',tags=['User'])

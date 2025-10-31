@@ -198,8 +198,14 @@ class PlayerActions {
         this.onCloseTranscodeSession()
         playerState.controlsVisible = false
         playerState.isPlaying = false
+
         const player = snapshot(playerState)
-        if (player.changeRouteParams) return
+
+        if (goHome && this.navPush) {
+            this.navPush({ path: player.routes.landing, func: false })
+            return
+        }
+
         if (this.onStopVideoHandler) {
             this.onStopVideoHandler(this.apiClient, player.routes, this.navPush)
             return
@@ -212,19 +218,11 @@ class PlayerActions {
 
         this.clearModals?.()
         this.closeOverlay?.()
-        if (goHome && this.navPush) {
-            this.navPush({ path: player.routes.landing, func: false })
-        } else if (this.navPop) {
+
+        if (this.navPop) {
             this.navPop()
         }
         this.reset()
-    }
-
-    onChangeRouteParams = (newParams) => {
-        if (!playerState.routeParams) return
-        const mergedParams = { ...playerState.routeParams, ...newParams }
-        playerState.changeRouteParams = mergedParams
-        this.navPush?.({ params: mergedParams, func: false })
     }
 
     onVideoReady = () => {
