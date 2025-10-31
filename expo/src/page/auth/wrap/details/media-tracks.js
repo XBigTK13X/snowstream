@@ -1,4 +1,4 @@
-import { C, useAppContext } from 'snowstream'
+import { C, useAppContext, Player } from 'snowstream'
 
 const styles = {
     image: {
@@ -35,6 +35,10 @@ export default function MediaTracksPage(props) {
     if (media) {
         videoFile = media.video_files[videoFileIndex]
     }
+
+    C.React.useEffect(() => {
+        Player.action.reset()
+    }, [])
 
     C.React.useEffect(() => {
         if (media) {

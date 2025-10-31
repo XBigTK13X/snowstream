@@ -2,6 +2,8 @@ import _ from 'lodash'
 import React from 'react'
 import Snow from 'expo-snowui'
 import { subscribe, snapshot } from 'valtio'
+import { useToast } from 'expo-toast';
+
 import { useAppContext } from '../app-context'
 import { playerState } from './player-state'
 import { playerActions } from './player-actions'
@@ -22,6 +24,8 @@ export function PlayerManager(props) {
         config,
         routes
     } = useAppContext()
+
+    const toast = useToast();
 
     React.useEffect(() => {
         playerActions.importContexts({
@@ -47,6 +51,13 @@ export function PlayerManager(props) {
         routes,
     ])
 
+    const warn = () => {
+        toast.show('Remote shortcut buttons disabled during transcode.', {
+            duration: 1000,
+            position: 'bottom',
+        });
+    }
+
     React.useEffect(() => {
         addActionListener('player-controls', {
             onRight: () => {
@@ -55,7 +66,7 @@ export function PlayerManager(props) {
                     playerActions.onProgress(handlerState.progressSeconds + 85, 'manual-seek')
                 }
                 if (handlerState.isTranscode) {
-
+                    warn()
                 }
             },
             onLeft: () => {
@@ -64,7 +75,7 @@ export function PlayerManager(props) {
                     playerActions.onProgress(handlerState.progressSeconds - 7, 'manual-seek')
                 }
                 if (handlerState.isTranscode) {
-
+                    warn()
                 }
             },
             onDown: () => {
@@ -73,7 +84,7 @@ export function PlayerManager(props) {
                     playerActions.changeSubtitleFontScale(-1)
                 }
                 if (handlerState.isTranscode) {
-
+                    warn()
                 }
             },
             onUp: () => {
@@ -82,7 +93,7 @@ export function PlayerManager(props) {
                     playerActions.changeSubtitleColor(-1)
                 }
                 if (handlerState.isTranscode) {
-
+                    warn()
                 }
             },
         })

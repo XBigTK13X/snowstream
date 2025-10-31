@@ -1,4 +1,4 @@
-import { C, useAppContext } from 'snowstream'
+import { C, useAppContext, Player } from 'snowstream'
 
 export default function KeepsakeDetailsPage(props) {
     const {
@@ -14,6 +14,10 @@ export default function KeepsakeDetailsPage(props) {
     const { apiClient, routes } = useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
+
+    C.React.useEffect(() => {
+        Player.action.reset()
+    }, [])
 
     C.React.useEffect(() => {
         apiClient.getKeepsake(

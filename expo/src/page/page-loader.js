@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, Button } from 'react-native'
 import * as Sentry from "@sentry/react-native";
+import { ToastProvider } from 'expo-toast';
 import Snow from 'expo-snowui'
 import {
     config,
@@ -65,22 +66,24 @@ export default function PageLoader() {
                 }
                 Sentry.captureException(error)
             }}>
-            <Snow.App
-                key={appKey}
-                DEBUG_SNOW={config.debugSnowui}
-                snowStyle={appStyle}
-                routePaths={routes}
-                routePages={pages}
-                initialRoutePath={routes.signIn}
-            >
-                <AppContextProvider>
-                    <Player.Manager>
-                        <View style={{ flex: 1, marginBottom: 50 }}>
-                            <PageWrapper />
-                        </View>
-                    </Player.Manager>
-                </AppContextProvider >
-            </Snow.App >
+            <ToastProvider>
+                <Snow.App
+                    key={appKey}
+                    DEBUG_SNOW={config.debugSnowui}
+                    snowStyle={appStyle}
+                    routePaths={routes}
+                    routePages={pages}
+                    initialRoutePath={routes.signIn}
+                >
+                    <AppContextProvider>
+                        <Player.Manager>
+                            <View style={{ flex: 1, marginBottom: 50 }}>
+                                <PageWrapper />
+                            </View>
+                        </Player.Manager>
+                    </AppContextProvider >
+                </Snow.App >
+            </ToastProvider>
         </Sentry.ErrorBoundary>
     )
 }

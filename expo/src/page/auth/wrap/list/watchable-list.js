@@ -1,4 +1,4 @@
-import { C, useAppContext } from 'snowstream'
+import { C, useAppContext, Player } from 'snowstream'
 
 export function WatchableListPage(props) {
     const { navPush, currentRoute } = C.useSnowContext()
@@ -42,27 +42,35 @@ export function WatchableListPage(props) {
         }
 
         const watchAll = () => {
-            props.watchAll(apiClient, shelfId).then(response => {
-                navPush({
-                    path: routes.playingQueuePlay,
-                    params: {
-                        playingQueueSource: response.queue.source
-                    },
-                    func: false
+            Player.action.reset()
+                .then(() => {
+                    return props.watchAll(apiClient, shelfId)
                 })
-            })
+                .then((response) => {
+                    navPush({
+                        path: routes.playingQueuePlay,
+                        params: {
+                            playingQueueSource: response.queue.source
+                        },
+                        func: false
+                    })
+                })
         }
 
         const shuffleAll = () => {
-            props.shuffleAll(apiClient, shelfId).then(response => {
-                navPush({
-                    path: routes.playingQueuePlay,
-                    params: {
-                        playingQueueSource: response.queue.source
-                    },
-                    func: false
+            Player.action.reset()
+                .then(() => {
+                    return props.shuffleAll(apiClient, shelfId)
+                }).then((response) => {
+
+                    navPush({
+                        path: routes.playingQueuePlay,
+                        params: {
+                            playingQueueSource: response.queue.source
+                        },
+                        func: false
+                    })
                 })
-            })
         }
 
         let Grid = C.SnowPosterGrid
