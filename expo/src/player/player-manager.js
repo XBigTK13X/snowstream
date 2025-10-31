@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React from 'react'
 import Snow from 'expo-snowui'
-import { useSnapshot, subscribe, snapshot } from 'valtio'
+import { subscribe, snapshot } from 'valtio'
 import { useAppContext } from '../app-context'
 import { playerState } from './player-state'
 import { playerActions } from './player-actions'
@@ -22,9 +22,6 @@ export function PlayerManager(props) {
         config,
         routes
     } = useAppContext()
-
-
-    let player = useSnapshot(playerState)
 
     React.useEffect(() => {
         playerActions.importContexts({
@@ -57,11 +54,17 @@ export function PlayerManager(props) {
                 if (handlerState.allowShortcuts) {
                     playerActions.onProgress(handlerState.progressSeconds + 85, 'manual-seek')
                 }
+                if (handlerState.isTranscode) {
+
+                }
             },
             onLeft: () => {
                 const handlerState = snapshot(playerState)
                 if (handlerState.allowShortcuts) {
                     playerActions.onProgress(handlerState.progressSeconds - 7, 'manual-seek')
+                }
+                if (handlerState.isTranscode) {
+
                 }
             },
             onDown: () => {
@@ -69,11 +72,17 @@ export function PlayerManager(props) {
                 if (handlerState.allowShortcuts) {
                     playerActions.changeSubtitleFontScale(-1)
                 }
+                if (handlerState.isTranscode) {
+
+                }
             },
             onUp: () => {
                 const handlerState = snapshot(playerState)
                 if (handlerState.allowShortcuts) {
                     playerActions.changeSubtitleColor(-1)
+                }
+                if (handlerState.isTranscode) {
+
                 }
             },
         })

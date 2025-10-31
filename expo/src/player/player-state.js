@@ -19,7 +19,6 @@ export const initialPlayerState = {
     hasRoutes: false,
     routePath: null,
     hasRoutePath: false,
-    routeParams: {},
     hasRouteParams: false,
     navPush: null,
     hasNavPush: false,
@@ -48,8 +47,6 @@ export const initialPlayerState = {
     durationSeconds: 0.0,
     seekToSeconds: 1,
     manualSeekSeconds: null,
-
-    logs: [],
     logsVisible: false,
 
     mediaTracks: null,
@@ -57,7 +54,6 @@ export const initialPlayerState = {
     audioDelaySeconds: 0,
     audioTrackIndex: 0,
 
-    subtitleColor: { shade: 1.0, alpha: 1.0 },
     subtitleDelaySeconds: 0,
     subtitleFontScale: 1.0,
     subtitleTrackIndex: 0,
@@ -65,6 +61,9 @@ export const initialPlayerState = {
 
 export const playerState = proxy({
     ...initialPlayerState,
+    logs: [],
+    routeParams: {},
+    subtitleColor: { shade: 1.0, alpha: 1.0 },
 
     get settingsLoaded() {
         return !!(

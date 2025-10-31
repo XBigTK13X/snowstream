@@ -29,7 +29,7 @@ export default function RnvVideoView(props) {
     const [requestTranscode, setRequestTranscode] = React.useState(false)
 
     // ExoPlayer default
-    const fontSize = getWindowHeight() * 0.0533
+    const fontSize = getWindowHeight() * 0.033
 
     const styles = {
         wrapper: {

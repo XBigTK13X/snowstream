@@ -60,16 +60,14 @@ export default function PlayPlayingQueuePage() {
             queue.queue.progress + 1
         )
             .then(() => {
-                Player.action.reset().then(() => {
-                    navPush({
-                        path: routes.playingQueuePlay,
-                        params: {
-                            playingQueueSource: queue.queue.source,
-                            queueIndex: queue.queue.progress
-                        },
-                        func: false,
-                        replace: false
-                    })
+                navPush({
+                    path: routes.playingQueuePlay,
+                    params: {
+                        playingQueueSource: queue.queue.source,
+                        queueIndex: queue.queue.progress
+                    },
+                    func: false,
+                    replace: false
                 })
             })
     }

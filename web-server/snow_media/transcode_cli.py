@@ -86,7 +86,7 @@ def build_command(
         command.append(video_encode)
         found_match = True
     if not found_match:
-        raise Exception(f"Unable to handle transcode video codec {encode_video_codec} for dialect {config.transcode_dialect} for {device_profile}")
+        raise Exception(f"Unable to handle transcode video codec {encode_video_codec} for dialect {config.transcode_dialect} on device {device_profile}")
 
     complex_filters = []
     if plan.video_filter_kind:

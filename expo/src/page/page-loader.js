@@ -32,11 +32,6 @@ const appStyle = {
 function PageWrapper() {
     const { CurrentPage, currentRoute } = Snow.useSnowContext()
     const { routes } = useAppContext()
-    React.useEffect(() => {
-        if (!currentRoute.routePath.includes('/play/')) {
-            Player.action.reset()
-        }
-    }, [currentRoute.routePath])
     if (currentRoute.routePath === routes.signIn || currentRoute.routePath === '/') {
         return <CurrentPage />
     }

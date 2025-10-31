@@ -78,6 +78,9 @@ class PlayerActions {
     reset = () => {
         return new Promise(resolve => {
             Object.assign(playerState, initialPlayerState)
+            playerState.logs = []
+            playerState.routeParams = {}
+            playerState.subtitleColor = { shade: 1.0, alpha: 1.0 }
             this.apiClient = playerState.apiClient
             this.navPush = playerState.navPush
             this.navPop = playerState.navPop
@@ -150,16 +153,6 @@ class PlayerActions {
         return this.apiClient.savePlaybackLogs(playerState.logs)
     }
 
-    onPlaybackComplete = async () => {
-        const player = snapshot(playerState)
-        await this.onProgress(player.durationSeconds, 'playback-complete')
-        if (this.onCompleteHandler) {
-            this.onCompleteHandler(this.apiClient, player.routes, this.navPush)
-        } else if (this.navPop) {
-            this.navPop()
-        }
-    }
-
     onTranscodeSeek = () => {
         const player = snapshot(playerState)
         this.onAddLog({ kind: 'snowstream', message: `transcode triggered seek to ${player.manualSeekSeconds} seconds` })
@@ -194,35 +187,46 @@ class PlayerActions {
         this.onStopVideo()
     }
 
+    onPlaybackComplete = () => {
+        const player = snapshot(playerState)
+        this.onProgress(player.durationSeconds, 'playback-complete')
+            .then(() => {
+                if (this.onCompleteHandler) {
+                    return this.onCompleteHandler(this.apiClient, player.routes, this.navPush)
+                } else if (this.navPop) {
+                    return this.navPop()
+                }
+            })
+            .then(() => {
+                this.reset()
+            })
+
+    }
+
     onStopVideo = (goHome) => {
         this.onCloseTranscodeSession()
         playerState.controlsVisible = false
         playerState.isPlaying = false
-
-        const player = snapshot(playerState)
-
         this.clearModals?.()
         this.closeOverlay?.()
 
+        const player = snapshot(playerState)
+
         if (goHome && this.navPush) {
             this.navPush({ path: player.routes.landing, func: false })
+            this.reset()
             return
         }
 
         if (this.onStopVideoHandler) {
             this.onStopVideoHandler(this.apiClient, player.routes, this.navPush)
-            return
-        }
-
-        if (playerState?.routePath === playerState?.routes?.keepsakeDetails) {
             this.reset()
-            return
+        } else {
+            if (this.navPop) {
+                this.navPop()
+                this.reset()
+            }
         }
-
-        if (this.navPop) {
-            this.navPop()
-        }
-        this.reset()
     }
 
     onVideoReady = () => {
