@@ -1,5 +1,4 @@
 import { C, Player, useAppContext } from 'snowstream'
-
 import PlayMediaPage from './media'
 
 export default function PlayPlayingQueuePage() {
@@ -22,6 +21,14 @@ export default function PlayPlayingQueuePage() {
                 return apiClient.getMovie(entry.id, deviceProfile).then((movieResponse) => {
                     const videoFile = movieResponse.video_files[routeParams.videoFileIndex ?? 0]
                     const name = `Queue [${queueResponse.queue.progress + 1}/${queueResponse.queue.length}] - ${movieResponse.name}`
+                    Player.action.onSelectTrack({
+                        kind: 'audio',
+                        audio_index: videoFile?.info?.tracks?.audio.at(0)?.audio_index ?? -1
+                    })
+                    Player.action.onSelectTrack({
+                        kind: 'subtitle',
+                        subtitle_index: videoFile?.info?.tracks?.subtitle.at(0)?.subtitle_index ?? -1
+                    })
                     return {
                         url: videoFile.network_path,
                         name: name,
@@ -35,6 +42,14 @@ export default function PlayPlayingQueuePage() {
                     let name = `${episodeResponse.season.show.name} - ${C.util.formatEpisodeTitle(episodeResponse)}`
                     name = `Queue [${queueResponse.queue.progress + 1}/${queueResponse.queue.length}] - ${name}`
                     const videoFile = episodeResponse.video_files[routeParams.videoFileIndex ?? 0]
+                    Player.action.onSelectTrack({
+                        kind: 'audio',
+                        audio_index: videoFile?.info?.tracks?.audio.at(0)?.audio_index ?? -1
+                    })
+                    Player.action.onSelectTrack({
+                        kind: 'subtitle',
+                        subtitle_index: videoFile?.info?.tracks?.subtitle.at(0)?.subtitle_index ?? -1
+                    })
                     return {
                         url: videoFile.network_path,
                         name: name,

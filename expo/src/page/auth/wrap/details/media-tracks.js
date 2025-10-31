@@ -98,6 +98,7 @@ export default function MediaTracksPage(props) {
                 setMedia(response)
             })
     }
+
     const selectTrack = (track) => {
         if (track.kind === 'audio') {
             if (audioTrack == track.audio_index) {
