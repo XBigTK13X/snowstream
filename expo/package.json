@@ -1,20 +1,20 @@
 {
     "name": "snowstream",
-    "version": "1.3.8",
+    "version": "1.3.9",
     "dependencies": {
-        "@sentry/react-native": "^7.4.0",
+        "@sentry/react-native": "7.4.0",
         "axios": "1.12.2",
-        "expo": "^54.0.13",
-        "expo-build-properties": "^1.0.9",
-        "expo-constants": "^18.0.9",
-        "expo-image": "^3.0.9",
+        "expo": "54.0.21",
+        "expo-build-properties": "1.0.9",
+        "expo-constants": "18.0.9",
+        "expo-image": "^3.0.10",
         "expo-keep-awake": "15.0.7",
-        "expo-libmpv": "0.3.3",
+        "expo-libmpv": "^0.3.5",
         "expo-linking": "8.0.8",
         "expo-secure-store": "15.0.7",
-        "expo-snowui": "^1.5.27",
+        "expo-snowui": "^1.5.28",
         "expo-splash-screen": "31.0.10",
-        "expo-toast": "^1.0.3",
+        "expo-toast": "1.0.3",
         "react": "19.1.0",
         "react-dom": "19.1.0",
         "react-native": "npm:react-native-tvos@0.81.4-0",
@@ -24,7 +24,7 @@
         "react-native-video": "6.17.0",
         "react-native-web": "0.21.1",
         "use-debounce": "10.0.6",
-        "valtio": "^2.1.8"
+        "valtio": "2.1.8"
     },
     "devDependencies": {
         "@babel/core": "7.28.4",

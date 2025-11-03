@@ -1,5 +1,5 @@
 import React from 'react'
-import Libmpv from 'expo-libmpv';
+import LibmpvView from 'expo-libmpv';
 import { Player } from 'snowstream'
 
 // https://mpv.io/manual/master/#property-manipulation
@@ -83,7 +83,7 @@ export default function MpvVideoView(props) {
     }
 
     return (
-        <Libmpv.View
+        <LibmpvView
             ref={forwardRef}
             playUrl={player.videoUrl}
             isPlaying={player.isPlaying}
