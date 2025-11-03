@@ -49,6 +49,7 @@ def sql_row_to_api_result(
     episode.season.model_kind = 'show_season'
     episode.season.id = row.season_id
     episode.season.season_order_counter = row.season_order
+    episode.season.directory = row.season_directory
 
     episode.season.show = dbi.dm.Stub()
     episode.season.show.model_kind = 'show'
@@ -60,6 +61,8 @@ def sql_row_to_api_result(
     episode.season.show.shelf.model_kind = 'shelf'
     episode.season.show.shelf.id = row.shelf_id
     episode.season.show.shelf.name = row.shelf_name
+    episode.season.show.shelf.local_path = row.shelf_local_path
+    episode.season.show.shelf.kind = row.shelf_kind
 
     episode.image_files = []
     episode.video_files = []
@@ -220,6 +223,7 @@ def get_show_episode_list(
 
         season.id as season_id,
         season.season_order_counter as season_order,
+        season.directory as season_directory,
 
         show.id as show_id,
         show.name as show_name,
@@ -227,6 +231,8 @@ def get_show_episode_list(
 
         shelf.id as shelf_id,
         shelf.name as shelf_name,
+        shelf.local_path as shelf_local_path,
+        shelf.kind as shelf_kind,
 
         {"""
         array_remove(array_agg(episode_image.id),NULL) as image_id_list,
