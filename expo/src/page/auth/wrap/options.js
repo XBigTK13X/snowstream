@@ -182,6 +182,7 @@ export default function OptionsPage() {
                     onValueChange={chooseAudioCompression}
                     valueIndex={form.audioCompression === true ? 1 : 0} />
                 <C.SnowDropdown
+                    title="Fast Config (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseUseMpvFast}
                     valueIndex={form.useMpvFast === true ? 1 : 0} />
