@@ -23,7 +23,6 @@ export default function MpvVideoView(props) {
                     forwardRef.current.runCommand(`set|scale|bilinear`).catch(() => { })
                     forwardRef.current.runCommand(`set|dscale|bilinear`).catch(() => { })
                     forwardRef.current.runCommand(`set|interpolation|no`).catch(() => { })
-                    forwardRef.current.runCommand(`set|video-sync|display-resample`).catch(() => { })
                     forwardRef.current.runCommand(`set|opengl-es|yes`).catch(() => { })
                     forwardRef.current.runCommand(`set|audio-buffer|2.0`).catch(() => { })
                     forwardRef.current.runCommand(`set|cache|yes`).catch(() => { })
@@ -43,6 +42,12 @@ export default function MpvVideoView(props) {
             Player.action.onVideoReady()
         }
     })
+
+    React.useEffect(() => {
+        if (player?.clientOptions?.forceDisplayFps && player?.isVideoViewReady) {
+            forwardRef.current.runCommand(`set|display-fps|60`).catch(() => { })
+        }
+    }, [player.clientOptions, player.isVideoViewReady])
 
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && player.isVideoViewReady) {

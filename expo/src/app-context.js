@@ -174,6 +174,9 @@ export function AppContextProvider(props) {
             if (!storedOptions.hasOwnProperty('useMpvFast')) {
                 storedOptions.useMpvFast = false
             }
+            if (!storedOptions.hasOwnProperty('forceDisplayFps')) {
+                storedOptions.forceDisplayFps = false
+            }
             setClientOptions(storedOptions)
         }
     }, [clientOptions])

@@ -29,10 +29,11 @@ export default function OptionsPage() {
         deviceProfileIndex: null,
         deviceId: clientOptions?.deviceId ?? '',
         resolutionIndex: storedResolutionIndex,
-        audioCompression: clientOptions?.audioCompression ?? '',
-        hardwareDecoder: clientOptions?.hardwareDecoder ?? '',
         alwaysTranscode: clientOptions?.alwaysTranscode ?? '',
         alwaysUsePlayer: clientOptions?.alwaysUsePlayer ?? '',
+        audioCompression: clientOptions?.audioCompression ?? '',
+        forceDisplayFps: clientOptions?.forceDisplayFps ?? '',
+        hardwareDecoder: clientOptions?.hardwareDecoder ?? '',
         useMpvFast: clientOptions?.useMpvFast ?? '',
     })
     const formRef = C.React.useRef(form)
@@ -91,7 +92,9 @@ export default function OptionsPage() {
         setForm(prev => ({ ...prev, useMpvFast: selection === 0 ? false : true }))
     }
 
-
+    const chooseForceDisplayFps = (selection) => {
+        setForm(prev => ({ ...prev, forceDisplayFps: selection === 0 ? false : true }))
+    }
 
     const saveForm = () => {
         let payload = { ...formRef.current }
@@ -108,16 +111,14 @@ export default function OptionsPage() {
 
     return (
         <C.FillView>
+            <C.SnowLabel center>Device ID</C.SnowLabel>
             <C.SnowGrid
                 focusStart
                 focusKey="page-entry"
                 focusDown="device-profile"
                 itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={saveForm} />
-                <C.SnowView>
-                    <C.SnowInput value={form.deviceId} onValueChange={(val) => { setForm(prev => ({ ...prev, deviceId: val })) }} />
-                    <C.SnowLabel center>Device ID</C.SnowLabel>
-                </C.SnowView>
+                <C.SnowInput value={form.deviceId} onValueChange={(val) => { setForm(prev => ({ ...prev, deviceId: val })) }} />
                 <C.SnowTextButton
                     title="Download Latest"
                     onPress={() => {
@@ -129,58 +130,67 @@ export default function OptionsPage() {
                     }}
                 />
             </C.SnowGrid>
+
             <C.SnowBreak />
+
             <C.SnowDropdown
                 focusKey="device-profile"
-                focusDown="video-resolution"
+                focusDown="player-choice"
                 title="Device Profile"
                 options={deviceProfiles}
                 onValueChange={chooseDeviceProfile}
                 valueIndex={form.deviceProfileIndex} />
-            <C.SnowDropdown
-                focusKey="video-resolution"
-                focusDown="player-choice"
-                title="Video Resolution"
-                options={resolutions}
-                onValueChange={chooseResolution}
-                valueIndex={form.resolutionIndex} />
+
             <C.SnowDropdown
                 focusKey="player-choice"
-                focusDown="always-transcode"
-                title="Always Use Player"
+                focusDown="player-settings"
+                title="Force Player"
                 options={players}
                 onValueChange={chooseAlwaysUsePlayer}
                 valueIndex={players.indexOf(form.alwaysUsePlayer)} />
-            <C.SnowGrid assignFocus={false} itemsPerRow={2}>
+
+            <C.SnowLabel center>Player Settings</C.SnowLabel>
+
+            <C.SnowTabs
+                focusKey="player-settings"
+                headers={[
+                    'Transcode',
+                    'FPS',
+                    'Hardware',
+                    'Audio',
+                    'Fast',
+                    '4K'
+                ]}>
                 <C.SnowDropdown
-                    focusKey="always-transcode"
-                    focusRight="audio-compression"
-                    focusDown="hardware-decoder"
                     title="Always Transcode"
                     options={['No', 'Yes']}
                     onValueChange={chooseAlwaysTranscode}
                     valueIndex={form.alwaysTranscode === true ? 1 : 0} />
                 <C.SnowDropdown
-                    focusKey="audio-compression"
-                    focusDown="fast-mpv"
-                    title="Audio Compression (mpv)"
+                    title="Force 60 FPS"
                     options={['No', 'Yes']}
-                    onValueChange={chooseAudioCompression}
-                    valueIndex={form.audioCompression === true ? 1 : 0} />
+                    onValueChange={chooseForceDisplayFps}
+                    valueIndex={form.forceDisplayFps === true ? 1 : 0} />
                 <C.SnowDropdown
-                    focusKey="hardware-decoder"
-                    focusRight="fast-mpv"
                     title="Hardware Decoder (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseHardwareDecoder}
                     valueIndex={form.hardwareDecoder === true ? 1 : 0} />
                 <C.SnowDropdown
-                    focusKey="fast-mpv"
-                    title="Fast Config (mpv)"
+                    title="Audio Compression (mpv)"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseAudioCompression}
+                    valueIndex={form.audioCompression === true ? 1 : 0} />
+                <C.SnowDropdown
                     options={['No', 'Yes']}
                     onValueChange={chooseUseMpvFast}
                     valueIndex={form.useMpvFast === true ? 1 : 0} />
-            </C.SnowGrid>
+                <C.SnowDropdown
+                    title="Video Resolution"
+                    options={resolutions}
+                    onValueChange={chooseResolution}
+                    valueIndex={form.resolutionIndex} />
+            </C.SnowTabs>
         </C.FillView>
 
     )
