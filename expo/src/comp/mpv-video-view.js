@@ -45,6 +45,8 @@ export default function MpvVideoView(props) {
 
     React.useEffect(() => {
         if (player?.clientOptions?.forceDisplayFps && player?.isVideoViewReady) {
+            forwardRef.current.runCommand(`set|video-sync|display-resample`).catch(() => { })
+            forwardRef.current.runCommand(`set|interpolation|no`).catch(() => { })
             forwardRef.current.runCommand(`set|display-fps|60`).catch(() => { })
         }
     }, [player.clientOptions, player.isVideoViewReady])

@@ -63,7 +63,10 @@ export default function StreamableListPage() {
             listFocusKey = 'streamable-list'
             groupsButton = (
                 <C.SnowGrid key="group-grid" itemsPerRow={3}>
-                    <C.SnowTextButton focusKey="page-entry" focusDown="streamable-list" title="Groups" onPress={navPop} />
+                    <C.SnowTextButton
+                        focusKey="page-entry"
+                        focusDown="streamable-list"
+                        title="Groups" onPress={navPop} />
                 </C.SnowGrid>
             )
         }
