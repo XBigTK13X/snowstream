@@ -23,8 +23,18 @@ export { default as Util } from './util'
 import { config } from './settings'
 export { config } from './settings'
 
+export const Asset = {
+    image: {
+        missing: {
+            poster: require('./image/asset/missing-poster.jpg'),
+            screencap: require('./image/asset/missing-screencap.jpg'),
+        }
+    }
+}
+
 export default {
     AppContext,
+    Asset,
     C,
     Util,
     config,

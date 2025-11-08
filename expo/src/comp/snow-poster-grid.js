@@ -1,6 +1,6 @@
 import React from 'react'
-import { View } from 'react-native'
 import Snow from 'expo-snowui'
+import { Asset } from 'snowstream'
 import { useAppContext } from '../app-context'
 
 
@@ -17,6 +17,9 @@ function SnowPosterGridW(props) {
             thumbnailUrl = item.thumbnail_url
         }
         return thumbnailUrl
+    }
+    const getItemImageFallback = () => {
+        return Asset.image.missing.poster
     }
     const onLongPress = (item) => {
         apiClient.toggleItemWatched(item)
@@ -49,6 +52,7 @@ function SnowPosterGridW(props) {
                 disableToggle={props.disableWatched}
                 getItemName={(item) => { return item.name }}
                 getItemImageUrl={getImageUrl}
+                getItemImageFallback={getItemImageFallback}
                 getItemToggleStatus={getItemToggleStatus}
                 onPress={navToItem}
                 onLongPress={onLongPress} />

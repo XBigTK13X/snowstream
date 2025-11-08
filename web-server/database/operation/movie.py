@@ -280,7 +280,7 @@ def get_movie_list(
                 load_files=load_files,
                 watch_group=watch_group
             )
-            if not model.has_images:
+            if load_files and not model.has_images and not search_query:
                 continue
             if not ticket.is_allowed(tag_ids=model.tag_ids):
                 continue

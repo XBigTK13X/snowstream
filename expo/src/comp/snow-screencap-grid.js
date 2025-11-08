@@ -1,5 +1,6 @@
 import React from 'react'
 import Snow from 'expo-snowui'
+import { Asset } from 'snowstream'
 import { useAppContext } from '../app-context'
 
 export function SnowScreencapGridW(props) {
@@ -11,7 +12,13 @@ export function SnowScreencapGridW(props) {
         if (item.screencap_image) {
             thumbnailUrl = item.screencap_image.thumbnail_web_path
         }
+        if (!thumbnailUrl) {
+            return Asset.image.missing.screencap
+        }
         return thumbnailUrl
+    }
+    const getItemImageFallback = () => {
+        return Asset.image.missing.screencap
     }
     const onLongPress = (item) => {
         apiClient.toggleItemWatched(item)
@@ -44,6 +51,7 @@ export function SnowScreencapGridW(props) {
                 disableToggle={props.disableWatched}
                 getItemName={(item) => { return item.name }}
                 getItemImageUrl={getImageUrl}
+                getItemImageFallback={getItemImageFallback}
                 getItemToggleStatus={getItemToggleStatus}
                 onPress={navToItem}
                 onLongPress={onLongPress} />

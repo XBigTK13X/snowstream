@@ -68,3 +68,9 @@ def test_file_in_the_folder():
     assert video_info != None
     assert video_info['movie_name'] == "The Parent Trap"
     assert video_info['movie_year'] == '1998'
+
+def test_movie_not_detected():
+    video_file_path = '/mnt/m-media/movie/barbie/Barbie - Star Light Adventure (2016)/Barbie - Star Light Adventure (2016) Remux-1080p.mkv'
+    video_info = movies.parse_movie_info(video_file_path)
+    assert video_info != None
+    assert video_info['movie_name'] == 'Barbie - Star Light Adventure'
