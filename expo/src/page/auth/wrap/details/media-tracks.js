@@ -238,43 +238,6 @@ export default function MediaTracksPage(props) {
 
         const watchTitle = media.watched ? "Mark Unwatched (hold)" : "Mark Watched (hold)"
 
-        let mainFeatureButton = null
-        if (media.has_extras) {
-            mainFeatureButton = <C.SnowTextButton title="Main Feature" onPress={() => {
-                chooseVideoFile(media.main_feature_index)
-            }} />
-        }
-        let versionPicker = null
-        if (media.has_versions) {
-            versionPicker = (
-                <>
-                    <C.SnowLabel>Version</C.SnowLabel>
-                    <C.SnowDropdown
-                        options={media.video_files.filter(ff => ff.version).map((ff) => {
-                            return ff.version
-                        })}
-                        onValueChange={chooseVideoFile}
-                        valueIndex={videoFileIndex}
-                    />
-                </>
-            )
-        }
-        let extraPicker = null
-        if (media.has_extras) {
-            extraPicker = (
-                <>
-                    <C.SnowLabel>Extras</C.SnowLabel>
-                    <C.SnowDropdown
-                        skipDefaultFocus
-                        options={media.video_files.filter(ff => ff.is_extra).map((ff) => {
-                            return { name: ff.name, index: ff.file_index }
-                        })}
-                        onValueChange={chooseVideoFile}
-                        valueIndex={videoFileIndex}
-                    />
-                </>
-            )
-        }
         let remoteMetadataId = ''
         if (media.remote_metadata_id) {
             remoteMetadataId = media.remote_metadata_id
@@ -305,10 +268,8 @@ export default function MediaTracksPage(props) {
                 />
             )
         }
-        const tabs = [
-            'Control',
-            'Track',
-            'Info'
+        let tabs = [
+            'Control'
         ]
         let playerDisplay = `[mpv] / exo`
         if (player === 'exo') {
@@ -321,7 +282,6 @@ export default function MediaTracksPage(props) {
         const controlTab = (
             <C.SnowView>
                 <C.SnowGrid focusDown="player" itemsPerRow={4}>
-                    {mainFeatureButton}
                     <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, navPush, currentRoute.routeParams)} />
                     {props.getNavButtons ? props.getNavButtons(routes, navPush, currentRoute.routeParams).map((button) => { return button }) : null}
                 </C.SnowGrid>
@@ -340,10 +300,47 @@ export default function MediaTracksPage(props) {
                 </C.SnowGrid>
             </C.SnowView>
         )
+
+        let versionTab = null
+        if (media.has_versions) {
+            tabs.push('Version')
+            versionTab = (
+                <C.SnowView>
+                    <C.SnowDropdown
+                        options={media.video_files.filter(ff => ff.version).map((ff) => {
+                            return { name: ff.version, index: ff.file_index }
+                        })}
+                        onValueChange={chooseVideoFile}
+                        valueIndex={videoFileIndex}
+                    />
+                </C.SnowView>
+            )
+        }
+
+        let fileTab = null
+        if (media.has_extras) {
+            tabs.push('Video')
+            fileTab = (
+                <C.SnowView>
+                    <C.SnowTextButton focusDown="video-picker" title="Main Feature" onPress={() => {
+                        chooseVideoFile(media.main_feature_index)
+                    }} />
+                    <C.SnowDropdown
+                        skipDefaultFocus
+                        focusKey="video-picker"
+                        options={media.video_files.filter(ff => ff.is_extra).map((ff) => {
+                            return { name: ff.name, index: ff.file_index }
+                        })}
+                        onValueChange={chooseVideoFile}
+                        valueIndex={videoFileIndex}
+                    />
+                </C.SnowView>
+            )
+        }
+
+        tabs.push('Track')
         const trackTab = (
             <C.SnowView>
-                {versionPicker}
-                {extraPicker}
                 <C.SnowTrackSelector
                     tracks={videoFile.info.tracks}
                     selectTrack={selectTrack}
@@ -352,6 +349,7 @@ export default function MediaTracksPage(props) {
                 />
             </C.SnowView>
         )
+        tabs.push('Info')
         const infoTab = (
             <C.SnowView>
                 <C.SnowGrid focusKey="inspection-top" focusDown="inspection-middle" itemsPerRow={3}>
@@ -425,6 +423,8 @@ export default function MediaTracksPage(props) {
                 <C.SnowView>
                     <C.SnowTabs focusKey="media-tabs" headers={tabs}>
                         {controlTab}
+                        {versionTab}
+                        {fileTab}
                         {trackTab}
                         {infoTab}
                     </C.SnowTabs >
