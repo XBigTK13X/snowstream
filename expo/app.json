@@ -41,7 +41,8 @@
     "android": {
       "package": "com.simplepathstudios.snowstream",
       "edgeToEdgeEnabled": true,
-      "backgroundColor": "#000000"
+      "backgroundColor": "#000000",
+      "versionCode": 1
     },
     "ios": {
       "bundleIdentifier": "com.simplepathstudios.snowstream"
