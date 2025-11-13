@@ -7,10 +7,15 @@ def parse(input, key):
     value = input[key] if key in input else None
     if value == None:
         return None
-    if isinstance(value,str) and value.isnumeric():
-        if '.' in value:
-            return float(value)
-        return int(value)
+    if isinstance(value,str):
+        if value.isnumeric():
+            if '.' in value:
+                return float(value)
+            return int(value)
+        if value.lower() == 'true':
+            return True
+        if value.lower() == 'false':
+            return False
     return value
 
 class JobMediaScope:

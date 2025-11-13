@@ -1,3 +1,4 @@
+import pprint
 import sys
 import logging
 from settings import config
@@ -28,5 +29,7 @@ sys.excepthook = handle_exception
 logging.getLogger("pika").setLevel(logging.ERROR)
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 logging.getLogger("watchfiles.main").setLevel(logging.ERROR)
+
+logging.pretty = pprint.pprint
 
 log = logging

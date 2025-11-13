@@ -10,6 +10,8 @@ IMAGE_KINDS = {
 
 SPONGEBOB = 75886
 
+MONSTER_MEAT = 455754
+
 # To run use
 # `python -m bin.dev.tvdbapi`
 
@@ -71,4 +73,14 @@ def test_get_alt_order_episodes():
     log.info("default order episode s2e2")
     log.pretty(episode,indent=4)
 
-test_get_alt_order_episodes()
+def test_get_episode_images():
+    global MONSTER_MEAT
+    provider = ThetvdbProvider()
+
+    episode = provider.get_episode_info(show_metadata_id=MONSTER_MEAT,season_order=1,episode_order=1)
+    log.pretty(episode,indent=4)
+
+    images = provider.get_episode_images(show_metadata_id=MONSTER_MEAT,season_order=1,episode_order=1)
+    log.pretty(images,indent=4)
+
+test_get_episode_images()
