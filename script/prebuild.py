@@ -9,6 +9,17 @@ with open('expo/android/build.gradle','r',encoding="utf-8") as read_handle:
         if all_found and 'mavenCentral' in line:
             line += '    maven { url "/home/kretst/maven-repo" }\n'
             all_found = False
+        if 'dependencies' in line:
+            line = '''
+  ext {
+    ndkVersion = "29.0.14206865"
+    buildToolsVersion = "36.1.0"
+    targetSdkVersion = 36
+    compileSdkVersion = 36
+    minSdkVersion = 26
+  }
+  dependencies {
+'''
         gradle_body += line
 
 with open('expo/android/build.gradle', 'w', encoding="utf-8") as write_handle:
@@ -34,9 +45,6 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 '''
         if 'hermesCommand' in line and not '//' in line:
             line = '    hermesCommand = "/home/kretst/bin/hermes/hermesc"\n'
-
-        if 'minSdkVersion' in line:
-            line = '        minSdkVersion 26\n'
 
         if 'signingConfigs' in line and not keys_written:
             writing_keys = True

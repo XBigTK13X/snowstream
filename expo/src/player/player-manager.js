@@ -66,7 +66,7 @@ export function PlayerManager(props) {
                     playerActions.onProgress(handlerState.progressSeconds + 85, 'manual-seek')
                 }
                 if (handlerState.isTranscode) {
-                    warn()
+                    //warn()
                 }
             },
             onLeft: () => {
@@ -75,7 +75,7 @@ export function PlayerManager(props) {
                     playerActions.onProgress(handlerState.progressSeconds - 7, 'manual-seek')
                 }
                 if (handlerState.isTranscode) {
-                    warn()
+                    //warn()
                 }
             },
             onDown: () => {
@@ -84,7 +84,7 @@ export function PlayerManager(props) {
                     playerActions.changeSubtitleFontScale(-1)
                 }
                 if (handlerState.isTranscode) {
-                    warn()
+                    //warn()
                 }
             },
             onUp: () => {
@@ -93,7 +93,7 @@ export function PlayerManager(props) {
                     playerActions.changeSubtitleColor(-1)
                 }
                 if (handlerState.isTranscode) {
-                    warn()
+                    //warn()
                 }
             },
         })
