@@ -66,6 +66,16 @@ def get_movie_by_directory(directory:str):
     with dbi.session() as db:
         return db.query(dbi.dm.Movie).filter(dbi.dm.Movie.directory == directory).first()
 
+def get_movie_list_by_directory(directory:str):
+    with dbi.session() as db:
+        return (
+            db.query(dbi.dm.Movie)
+            .filter(dbi.dm.Movie.directory.ilike(f'%{directory}%'))
+            .options(dbi.orm.joinedload(dbi.dm.Movie.metadata_files))
+            .options(dbi.orm.joinedload(dbi.dm.Movie.tags))
+            .all()
+        )
+
 def get_movie_list_by_tag_id(ticket:dbi.dm.Ticket, tag_id):
     with dbi.session() as db:
         if not ticket.is_allowed(tag_id):

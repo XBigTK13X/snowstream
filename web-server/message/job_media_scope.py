@@ -70,6 +70,8 @@ class JobMediaScope:
     def is_orphan(self):
         return self.target_kind == 'orphan'
 
+    def is_tag(self):
+        return self.target_kind == 'tag'
 
     def get_movie_media_provider(self):
         if not self.metadata_source or 'themoviedb' in self.metadata_source:

@@ -82,6 +82,7 @@ export default function ShelfEditPage() {
     }
 
     const buttons = [
+        { name: 'Apply Directory Tag', apiCall: apiClient.createJobApplyDirectoryTag },
         { name: 'Clean File Records', apiCall: apiClient.createJobCleanFileRecords },
         { name: 'Close Transcode Sessions', apiCall: apiClient.closeAllTranscodeSessions },
         { name: 'Delete Cached Text', apiCall: apiClient.deleteAllCachedText },

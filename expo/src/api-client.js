@@ -144,15 +144,16 @@ export class ApiClient {
         return this.post('/job', payload)
     }
 
-    createJobStreamSourcesRefresh = (details) => { return this.createScopedJob('stream_sources_refresh', details) }
+    createJobApplyDirectoryTag = (details) => { return this.createScopedJob('apply_directory_tag', details) }
     createJobChannelGuideRefresh = (details) => { return this.createScopedJob('channel_guide_refresh', details) }
-    createJobShelvesScan = (details) => { return this.createScopedJob('scan_shelves_content', details) }
-    createJobReadMediaFiles = (details) => { return this.createScopedJob('read_media_files', details) }
-    createJobUpdateMediaFiles = (details) => { return this.createScopedJob('update_media_files', details) }
-    createJobIdentifyUnknownMedia = (details) => { return this.createScopedJob('identify_unknown_media', details) }
     createJobCleanFileRecords = (details) => { return this.createScopedJob('clean_file_records', details) }
     createJobDeleteMediaRecords = (details) => { return this.createScopedJob('delete_media_records', details) }
+    createJobIdentifyUnknownMedia = (details) => { return this.createScopedJob('identify_unknown_media', details) }
+    createJobReadMediaFiles = (details) => { return this.createScopedJob('read_media_files', details) }
     createJobSanitizeFileProperties = (details) => { return this.createScopedJob('sanitize_file_properties', details) }
+    createJobShelvesScan = (details) => { return this.createScopedJob('scan_shelves_content', details) }
+    createJobStreamSourcesRefresh = (details) => { return this.createScopedJob('stream_sources_refresh', details) }
+    createJobUpdateMediaFiles = (details) => { return this.createScopedJob('update_media_files', details) }
 
     getJobList = (showComplete, limit) => {
         let query = `/job/list?show_complete=${showComplete}`

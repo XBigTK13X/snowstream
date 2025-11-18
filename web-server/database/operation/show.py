@@ -51,6 +51,16 @@ def get_show_by_directory(directory:str):
     with dbi.session() as db:
         return db.query(dbi.dm.Show).filter(dbi.dm.Show.directory == directory).first()
 
+def get_show_list_by_directory(directory:str):
+    with dbi.session() as db:
+        return (
+            db.query(dbi.dm.Show)
+            .filter(dbi.dm.Show.directory.ilike(f'%{directory}%'))
+            .options(dbi.orm.joinedload(dbi.dm.Show.metadata_files))
+            .options(dbi.orm.joinedload(dbi.dm.Show.tags))
+            .all()
+        )
+
 def add_show_to_shelf(show_id: int, shelf_id: int):
     with dbi.session() as db:
         dbm = dbi.dm.ShowShelf()

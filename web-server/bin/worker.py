@@ -7,11 +7,13 @@ from db import db
 max_failures = config.rabbit_max_failures
 delay_seconds = config.rabbit_delay_seconds
 
-
 import traceback
 
 import json
 import message.read
+from message.job_media_scope import JobMediaScope
+
+import message.handler.apply_directory_tag
 import message.handler.channel_guide_refresh
 import message.handler.clean_file_records
 import message.handler.delete_media_records
@@ -22,9 +24,8 @@ import message.handler.scan_shelves_content
 import message.handler.stream_sources_refresh
 import message.handler.update_media_files
 
-from message.job_media_scope import JobMediaScope
-
 handlers = {
+    'apply_directory_tag': message.handler.apply_directory_tag,
     'channel_guide_refresh': message.handler.channel_guide_refresh,
     'clean_file_records': message.handler.clean_file_records,
     'delete_media_records': message.handler.delete_media_records,

@@ -1,9 +1,14 @@
 from database.operation.db_internal import dbi
 import api_models as am
 
-def create_tag(tag: am.Tag):
+def create_tag(tag: am.Tag=None, name: str=None):
     with dbi.session() as db:
-        dbm = dbi.dm.Tag(**tag.model_dump())
+        dbm = None
+        if tag:
+            dbm = dbi.dm.Tag(**tag.model_dump())
+        elif name:
+            dbm = dbi.dm.Tag()
+            dbm.name = name
         db.add(dbm)
         db.commit()
         db.refresh(dbm)
@@ -17,14 +22,17 @@ def get_tag_by_name(tag_name:str):
     with dbi.session() as db:
         return db.query(dbi.dm.Tag).filter(dbi.dm.Tag.name == tag_name).first()
 
-def upsert_tag(tag: am.Tag):
+def upsert_tag(tag: am.Tag=None, name: str=None):
     existing = None
-    if tag.id:
-        existing = get_tag_by_id(tag.id)
-    elif tag.name:
-        existing = get_tag_by_name(tag.name)
+    if tag:
+        if tag.id:
+            existing = get_tag_by_id(tag.id)
+        elif tag.name:
+            existing = get_tag_by_name(tag.name)
+    elif name:
+        existing = get_tag_by_name(name)
     if not existing:
-        return create_tag(tag)
+        return create_tag(tag=tag,name=name)
     with dbi.session() as db:
         existing = db.query(dbi.dm.Tag).filter(dbi.dm.Tag.id == existing.id).update(tag.model_dump())
         db.commit()
