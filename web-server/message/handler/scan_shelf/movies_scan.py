@@ -144,6 +144,8 @@ class MoviesScanHandler(ShelfScanner):
                     name=info["movie_name"], release_year=info["movie_year"], directory=info['directory']
                 )
                 db.op.add_movie_to_shelf(shelf_id=self.shelf.id, movie_id=movie.id)
+            if movie.directory != info['directory']:
+                db.op.update_movie_directory(movie_id=movie.id,directory=info['directory'])
             self.batch_lookup[movie_slug] = movie
         movie = self.batch_lookup[movie_slug]
         if not movie.remote_metadata_id and self.scope.metadata_id:

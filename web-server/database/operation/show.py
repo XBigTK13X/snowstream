@@ -26,6 +26,13 @@ def update_show_remote_metadata_id(show_id:int, remote_metadata_id:int, remote_m
         db.commit()
         return show
 
+def update_show_directory(show_id:int, directory):
+    with dbi.session() as db:
+        show = db.query(dbi.dm.Show).filter(dbi.dm.Show.id == show_id).first()
+        show.directory = directory
+        db.commit()
+        return show
+
 def get_show_by_name(name: str):
     with dbi.session() as db:
         return db.query(dbi.dm.Show).filter(dbi.dm.Show.name == name).first()

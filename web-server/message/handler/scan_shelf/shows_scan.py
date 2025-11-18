@@ -187,6 +187,8 @@ class ShowsScanHandler(ShelfScanner):
                     name=info["show_name"], directory=info["directory"]
                 )
                 db.op.add_show_to_shelf(shelf_id=self.shelf.id, show_id=show.id)
+            if show.directory != info['directory']:
+                db.op.update_show_directory(show_id=show.id, directory=info['directory'])
             self.batch_lookup[show_slug] = {"show_id": show.id}
             if not show.remote_metadata_id and self.scope.metadata_id:
                 db.op.update_show_remote_metadata_id(show_id=show.id, remote_metadata_id=self.scope.metadata_id)

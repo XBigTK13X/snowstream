@@ -19,6 +19,13 @@ def update_movie_remote_metadata_id(movie_id:int, remote_metadata_id:int, remote
         db.commit()
         return movie
 
+def update_movie_directory(movie_id:int, directory:str):
+    with dbi.session() as db:
+        movie = db.query(dbi.dm.Movie).filter(dbi.dm.Movie.id == movie_id).first()
+        movie.directory = directory
+        db.commit()
+        return movie
+
 def add_movie_to_shelf(movie_id: int, shelf_id: int):
     with dbi.session() as db:
         dbm = dbi.dm.MovieShelf()
