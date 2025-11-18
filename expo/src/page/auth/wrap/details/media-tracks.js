@@ -28,6 +28,7 @@ export default function MediaTracksPage(props) {
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
     const [playParams, setPlayParams] = C.React.useState({})
     const [resumeParams, setResumeParams] = C.React.useState({})
+    const [loadError, setLoadError] = C.React.useState(null)
 
     const shelfId = currentRoute.routeParams.shelfId;
 
@@ -70,24 +71,28 @@ export default function MediaTracksPage(props) {
     C.React.useEffect(() => {
         if (!media) {
             props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
-                setMedia(response)
-                chooseVideoFile(videoFileIndex, response)
-                let plan = response.video_files[videoFileIndex].plan
-                if (plan) {
-                    if (plan.player) {
-                        setPlayer(plan.player)
-                        setForcePlayer(plan.player)
-                    }
-                    else {
-                        setPlayer('mpv')
-                    }
-                    if (plan.video_requires_transcode) {
-                        setShouldTranscode(true)
-                    } else {
-                        if (plan.audio_requires_transcode[audioTrack]) {
+                if (response?.video_files) {
+                    setMedia(response)
+                    chooseVideoFile(videoFileIndex, response)
+                    let plan = response.video_files[videoFileIndex].plan
+                    if (plan) {
+                        if (plan.player) {
+                            setPlayer(plan.player)
+                            setForcePlayer(plan.player)
+                        }
+                        else {
+                            setPlayer('mpv')
+                        }
+                        if (plan.video_requires_transcode) {
                             setShouldTranscode(true)
+                        } else {
+                            if (plan.audio_requires_transcode[audioTrack]) {
+                                setShouldTranscode(true)
+                            }
                         }
                     }
+                } else {
+                    setLoadError(true)
                 }
             })
         }
@@ -230,9 +235,13 @@ export default function MediaTracksPage(props) {
         }
     }, [showInfoModal, media])
 
+    if (loadError) {
+        return <C.SnowHeader center>Unable to load video files for this content.</C.SnowHeader>
+    }
+
     if (media) {
         if (!videoFile) {
-            return <SnowText>No video file found for this selection.</SnowText>
+            return <C.SnowText>No video file found for this selection.</C.SnowText>
         }
         const videoTrack = videoFile.info.tracks.video[0]
 

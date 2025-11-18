@@ -31,25 +31,22 @@ def add_movie_to_shelf(movie_id: int, shelf_id: int):
 
 def get_movie_by_id(ticket:dbi.dm.Ticket,movie_id: int):
     with dbi.session() as db:
-        query = (
+        movie = (
             db.query(dbi.dm.Movie)
             .filter(dbi.dm.Movie.id == movie_id)
             .options(dbi.orm.joinedload(dbi.dm.Movie.shelf))
+            .options(dbi.orm.joinedload(dbi.dm.Movie.tags))
             .options(dbi.orm.joinedload(dbi.dm.Movie.video_files))
             .options(dbi.orm.joinedload(dbi.dm.Movie.image_files))
             .options(dbi.orm.joinedload(dbi.dm.Movie.metadata_files))
-            .options(dbi.orm.joinedload(dbi.dm.Movie.shelf))
             .options(dbi.orm.joinedload(dbi.dm.Movie.watch_count))
             .options(dbi.orm.joinedload(dbi.dm.Movie.in_progress))
+            .first()
         )
 
-        movie = query.first()
-        if not movie:
+        if not movie or not ticket.is_allowed(shelf_id=movie.shelf.id) or not ticket.is_allowed(tag_provider=movie.get_tag_ids):
             return None
-        if not ticket.is_allowed(shelf_id=movie.shelf.id):
-            return None
-        if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
-            return None
+
         movie = dbi.dm.set_primary_images(movie)
         if not movie.watch_count:
             movie.watch_count = dbi.dm.WatchCount()
@@ -71,9 +68,11 @@ def get_movie_by_directory(directory:str):
 
 def get_movie_list_by_tag_id(ticket:dbi.dm.Ticket, tag_id):
     with dbi.session() as db:
+        if not ticket.is_allowed(tag_id):
+            return None
         movies = (
             db.query(dbi.dm.Movie)
-            .join(dbi.dm.MovieShelf)
+            .filter(dbi.dm.Movie.tags.any(id=tag_id))
             .options(dbi.orm.joinedload(dbi.dm.Movie.shelf))
             .options(dbi.orm.joinedload(dbi.dm.Movie.tags))
             .options(dbi.orm.joinedload(dbi.dm.Movie.watch_count))
@@ -84,9 +83,8 @@ def get_movie_list_by_tag_id(ticket:dbi.dm.Ticket, tag_id):
         for movie in movies:
             if not ticket.is_allowed(tag_provider=movie.get_tag_ids):
                 continue
-            if tag_id in movie.get_tag_ids():
-                movie = dbi.dm.set_primary_images(movie)
-                results.append(movie)
+            movie = dbi.dm.set_primary_images(movie)
+            results.append(movie)
         return results
 
 def sql_row_to_api_result(row,load_files,watch_group):

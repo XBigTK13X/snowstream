@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Button } from 'react-native'
+import { View, Text, Button, Platform } from 'react-native'
 import * as Sentry from "@sentry/react-native";
 import { ToastProvider } from 'expo-toast';
 import Snow from 'expo-snowui'
@@ -70,6 +70,7 @@ export default function PageLoader() {
                 <Snow.App
                     key={appKey}
                     DEBUG_SNOW={config.debugSnowui}
+                    ENABLE_FOCUS={Platform.OS !== 'web'}
                     snowStyle={appStyle}
                     routePaths={routes}
                     routePages={pages}

@@ -42,8 +42,7 @@ def get_movie_playlist_list(ticket:dbi.dm.Ticket,found_tags:dict):
                 from movie_tag as movie_tag_a
                     join movie_tag as movie_tag_b on movie_tag_a.movie_id = movie_tag_b.movie_id
                 where
-                    movie_tag_a.tag_id != movie_tag_b.tag_id
-                    and movie_tag_b.tag_id in ({ticket.tag_csv()})
+                    movie_tag_b.tag_id in ({ticket.tag_csv()})
                 group by
                     movie_tag_a.movie_id
             )

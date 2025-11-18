@@ -65,6 +65,7 @@ def get_show_list_by_tag_id(ticket:dbi.dm.Ticket, tag_id:int):
     with dbi.session() as db:
         shows = (
             db.query(dbi.dm.Show)
+            .filter(dbi.dm.Show.tags.any(id=tag_id))
             .options(dbi.orm.joinedload(dbi.dm.Show.shelf))
             .options(dbi.orm.joinedload(dbi.dm.Show.tags))
             .options(dbi.orm.joinedload(dbi.dm.Show.metadata_files))

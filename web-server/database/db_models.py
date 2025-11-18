@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import DateTime, Column, Integer
 from sqlalchemy.sql import func
 from typing import List
+from log import log
 
 # Reminder -> back_populates is necessary to avoid a bunch of warnings and subtle bugs
 BaseModel = declarative_base()
