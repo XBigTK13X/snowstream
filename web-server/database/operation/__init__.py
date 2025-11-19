@@ -19,6 +19,7 @@ from database.operation.show_season import *
 from database.operation.stream_source import *
 from database.operation.streamable import *
 from database.operation.tag import *
+from database.operation.tag_rule import *
 from database.operation.transcode_session import *
 from database.operation.user import *
 from database.operation.video_file import *

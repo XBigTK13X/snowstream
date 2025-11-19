@@ -42,6 +42,8 @@ export var routes = {
     adminStreamSourceList: '/auth/wrap/admin/stream-source/stream-source-list',
     adminTagEdit: '/auth/wrap/admin/tag/tag-edit',
     adminTagList: '/auth/wrap/admin/tag/tag-list',
+    adminTagRuleEdit: '/auth/wrap/admin/tag-rule/tag-rule-edit',
+    adminTagRuleList: '/auth/wrap/admin/tag-rule/tag-rule-list',
     adminUserAccess: '/auth/wrap/admin/user/user-access',
     adminUserEdit: '/auth/wrap/admin/user/user-edit',
     adminUserList: '/auth/wrap/admin/user/user-list',

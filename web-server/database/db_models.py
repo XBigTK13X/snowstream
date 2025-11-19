@@ -250,6 +250,7 @@ class Tag(BaseModel):
     show_episodes: orm.Mapped[List["ShowEpisode"]] = orm.relationship(secondary="show_episode_tag",back_populates="tags")
     stream_sources: orm.Mapped[List["StreamSource"]] = orm.relationship(secondary="stream_source_tag",back_populates="tags")
     streamables: orm.Mapped[List["Streamable"]] = orm.relationship(secondary="streamable_tag",back_populates="tags")
+    rules: orm.Mapped[List["TagRule"]] = orm.relationship(back_populates="tag")
 
 class ImageFile(BaseModel):
     @orm.reconstructor
@@ -665,6 +666,16 @@ class DisplayCleanupRule(BaseModel):
     priority = sa.Column(sa.Integer)
     needle = sa.Column(sa.Text)
     replacement = sa.Column(sa.Text)
+
+class TagRule(BaseModel):
+    __tablename__ = 'tag_rule'
+    tag_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("tag.id"))
+    tag: orm.Mapped["Tag"] = orm.relationship(back_populates="rules")
+    rule_kind = sa.Column(sa.Text)
+    target_kind = sa.Column(sa.Text)
+    priority = sa.Column(sa.Integer)
+    trigger_kind = sa.Column(sa.Text)
+    trigger_target = sa.Column(sa.Text)
 
 # For whatever reason, aliased cannot be called until after ALL models are defined
 # Otherwise you get a bunch of "model cannot map X to Y" errors

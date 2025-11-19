@@ -834,7 +834,7 @@ def auth_required(router):
         return True
 
     @router.post('/display-cleanup-rule', tags=['Admin'])
-    def save_dipslay_cleanup_rule(
+    def save_display_cleanup_rule(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         rule: am.DisplayCleanupRule
     ):
@@ -875,13 +875,68 @@ def auth_required(router):
             return False
         return db.op.delete_display_cleanup_rule(rule_id=rule_id)
 
-    @router.get('/display-cleanup-rule/list', tags=['Admin'])
-    def get_display_cleanup_rule_list(
+    @router.get('/tag-rule/list', tags=['Admin'])
+    def get_tag_rule_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         if not auth_user.is_admin():
             return None
-        return db.op.get_display_cleanup_rule_list()
+        return db.op.get_tag_rule_list()
+
+    @router.post('/tag-rule', tags=['Admin'])
+    def save_tag_rule(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        rule: am.TagRule
+    ):
+        if not auth_user.is_admin():
+            return False
+
+        tag = db.op.get_tag_by_name(rule.tag_name)
+
+        if rule.id != None:
+            return db.op.update_tag_rule(
+                tag_id=tag.id,
+                rule_id=rule.id,
+                priority=rule.priority,
+                rule_kind=rule.rule_kind,
+                target_kind=rule.target_kind,
+                trigger_kind=rule.trigger_kind,
+                trigger_target=rule.trigger_target
+            )
+        return db.op.create_tag_rule(
+            tag_id=tag.id,
+            priority=rule.priority,
+            rule_kind=rule.rule_kind,
+            target_kind=rule.target_kind,
+            trigger_kind=rule.trigger_kind,
+            trigger_target=rule.trigger_target
+        )
+
+    @router.get('/tag-rule', tags=['Admin'])
+    def get_tag_rule(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        rule_id:int
+    ):
+        if not auth_user.is_admin():
+            return False
+        return db.op.get_tag_rule(rule_id=rule_id)
+
+    @router.delete('/tag-rule', tags=['Admin'])
+    def delete_tag_rule(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        rule_id:int
+    ):
+        if not auth_user.is_admin():
+            return False
+        return db.op.delete_tag_rule(rule_id=rule_id)
+
+    @router.get('/tag-rule/list', tags=['Admin'])
+    def get_tag_rule_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
+    ):
+        if not auth_user.is_admin():
+            return None
+        return db.op.get_tag_rule_list()
 
     @router.post('/hotfix', tags=['Admin'])
     def deployment_hotfix(

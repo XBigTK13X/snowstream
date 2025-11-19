@@ -40,6 +40,8 @@ import StreamSourceEditPage from './page/auth/wrap/admin/stream-source/stream-so
 import StreamSourceListPage from './page/auth/wrap/admin/stream-source/stream-source-list'
 import TagEditPage from './page/auth/wrap/admin/tag/tag-edit'
 import TagListPage from './page/auth/wrap/admin/tag/tag-list'
+import TagRuleEditPage from './page/auth/wrap/admin/tag-rule/tag-rule-edit'
+import TagRuleListPage from './page/auth/wrap/admin/tag-rule/tag-rule-list'
 import UserAccessPage from './page/auth/wrap/admin/user/user-access'
 import UserEditPage from './page/auth/wrap/admin/user/user-edit'
 import UserListPage from './page/auth/wrap/admin/user/user-list'
@@ -87,6 +89,8 @@ export var pages = {
     [routes.adminStreamSourceList]: StreamSourceListPage,
     [routes.adminTagEdit]: TagEditPage,
     [routes.adminTagList]: TagListPage,
+    [routes.adminTagRuleEdit]: TagRuleEditPage,
+    [routes.adminTagRuleList]: TagRuleListPage,
     [routes.adminUserAccess]: UserAccessPage,
     [routes.adminUserEdit]: UserEditPage,
     [routes.adminUserList]: UserListPage,

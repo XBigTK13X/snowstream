@@ -1,20 +1,20 @@
 import { C, useAppContext } from 'snowstream'
 
-export default function DisplayCleanupRuleListPage() {
+export default function TagRuleListPage() {
     const { apiClient, routes } = useAppContext()
     const { navPush } = C.useSnowContext()
     const [rules, setRules] = C.React.useState(null)
 
     C.React.useEffect(() => {
         if (!rules) {
-            apiClient.getDisplayCleanupRuleList().then((response) => {
+            apiClient.getTagRuleList().then((response) => {
                 setRules(response)
             })
         }
     })
 
     if (!!rules) {
-        let rulesList = <C.SnowText>No display cleanup rules found</C.SnowText>
+        let rulesList = <C.SnowText>No tag rules found</C.SnowText>
         if (rules.length) {
             rulesList = (
                 <C.SnowGrid shouldFocus itemsPerRow={1} items={rules} renderItem={(rule) => {
@@ -23,7 +23,7 @@ export default function DisplayCleanupRuleListPage() {
                         <C.SnowTextButton
                             title={title}
                             onPress={navPush({
-                                path: routes.adminCleanupRuleEdit,
+                                path: routes.adminTagRuleEdit,
                                 params: { ruleId: rule.id }
                             })}
                         />
@@ -33,7 +33,7 @@ export default function DisplayCleanupRuleListPage() {
         }
         return (
             <>
-                <C.SnowTextButton title="Create New Rule" onPress={navPush({ path: routes.adminCleanupRuleEdit })} />
+                <C.SnowTextButton title="Create New Rule" onPress={navPush({ path: routes.adminTagRuleEdit })} />
                 {rulesList}
             </>
         )

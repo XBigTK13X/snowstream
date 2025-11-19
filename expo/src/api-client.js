@@ -570,6 +570,31 @@ export class ApiClient {
         return this.delete(`/display-cleanup-rule?rule_id=${ruleId}`)
     }
 
+    getTagRuleList = () => {
+        return this.get('/tag-rule/list')
+    }
+
+    getTagRule = (ruleId) => {
+        return this.get(`/tag-rule?rule_id=${ruleId}`)
+    }
+
+    saveTagRule = (rule) => {
+        return this.post('/tag-rule', {
+            id: rule.id,
+            tag_name: rule.tagName,
+            rule_kind: rule.ruleKind,
+            target_kind: rule.targetKind,
+            priority: rule.priority !== '' ? parseInt(rule.priority, 10) : null,
+            trigger_kind: rule.triggerKind,
+            trigger_target: rule.triggerTarget
+        })
+    }
+
+    deleteTagRule = (ruleId) => {
+        return this.delete(`/tag-rule?rule_id=${ruleId}`)
+    }
+
+
     debug = () => {
         util.log({ baseURL: this.baseURL, authToken: this.authToken })
     }

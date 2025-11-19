@@ -19,6 +19,7 @@ export default function AdminDashboardPage() {
         { title: 'Channel Guides', route: routes.adminChannelGuideSourceList },
         { title: 'Users', route: routes.adminUserList },
         { title: 'Tags', route: routes.adminTagList },
+        { title: 'Tag Rules', route: routes.adminTagRuleList },
         { title: 'Cleanup Rules', route: routes.adminCleanupRuleList },
     ]
     return (

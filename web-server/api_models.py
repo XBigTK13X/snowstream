@@ -163,3 +163,12 @@ class DisplayCleanupRule(BaseModel):
     target_kind: str | None = None
     rule_kind: str | None = None
     priority: int | None = None
+
+class TagRule(BaseModel):
+    tag_name: str | None = None
+    trigger_kind: str
+    trigger_target: str
+    id: int | None = None
+    target_kind: str | None = None
+    rule_kind: str | None = None
+    priority: int | None = None
