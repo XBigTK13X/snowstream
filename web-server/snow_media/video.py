@@ -57,6 +57,8 @@ class MediaTrack:
         self.is_hdr = 'HDR_Format' in mediainfo
         if self.is_hdr:
             self.hdr_format = mediainfo['HDR_Format']
+        self.hdr_compatibility = None
+        if 'HDR_Format_Compatibility' in mediainfo:
             self.hdr_compatibility = mediainfo['HDR_Format_Compatibility']
         if 'BitDepth' in mediainfo:
             self.bit_depth = mediainfo['BitDepth']

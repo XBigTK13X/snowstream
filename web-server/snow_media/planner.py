@@ -37,13 +37,14 @@ def create_plan(device_profile:str, snowstream_info:dict):
                 plan.transcode_container = device.transcode.hdr_container
                 plan.player = 'exo'
                 plan.reasons.append('mpv cannot passthrough HDR')
-            if 'hdr_compatibility' in video_track:
+            hdr_kind = None
+            if 'hdr_compatibility' in video_track and video_track['hdr_compatibility']:
                 hdr_kind = video_track['hdr_compatibility'].lower()
                 if '10+' in hdr_kind and not device.video.hdr.ten_plus:
                     plan.video_filter_kind = snow_media.filter_kind.hdr_ten_plus_to_hdr_ten
                     plan.video_requires_transcode = True
                     plan.reasons.append('Device does not support HDR10+ video')
-            elif 'hdr_format' in video_track:
+            if not hdr_kind and 'hdr_format' in video_track and video_track['hdr_format']:
                 hdr_kind = video_track['hdr_format'].lower()
                 if 'dolby vision' in hdr_kind and not device.video.hdr.dolby_vision:
                     plan.video_filter_kind = snow_media.filter_kind.dolby_vision_to_hdr_ten
