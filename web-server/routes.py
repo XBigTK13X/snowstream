@@ -65,6 +65,8 @@ def auth_required(router):
         if not auth_user.ticket.is_allowed(stream_source_id=stream_source_id):
             return None
         stream_source = db.op.get_stream_source_by_id(ticket=auth_user.ticket,stream_source_id=stream_source_id)
+        if not stream_source:
+            return None
         stream_source.grouped_streamables = {}
         stream_source.groups = []
         stream_source.has_guide = False

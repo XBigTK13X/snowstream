@@ -18,21 +18,13 @@ def get_stream_source_list(
         )
         if ticket.has_stream_source_restrictions():
             query = query.filter(dbi.dm.StreamSource.id.in_(ticket.stream_source_ids))
-        if ticket.has_tag_restrictions():
-            query = query.options(dbi.orm.joinedload(dbi.dm.StreamSource.tags))
         if streamables:
             query = query.options(
                 dbi.orm.joinedload(dbi.dm.StreamSource.streamables)
                 .joinedload(dbi.dm.Streamable.channel)
                 .joinedload(dbi.dm.Channel.programs)
             )
-        stream_sources = query.all()
-        results = []
-        for stream_source in stream_sources:
-            if not ticket.is_allowed(tag_provider=stream_source.get_tag_ids):
-                continue
-            results.append(stream_source)
-        return results
+        return query.all()
 
 def get_stream_source_by_id(ticket:dbi.dm.Ticket,stream_source_id: int):
     with dbi.session() as db:
@@ -51,10 +43,15 @@ def get_stream_source_by_id(ticket:dbi.dm.Ticket,stream_source_id: int):
             .filter(dbi.dm.StreamSource.id == stream_source_id)
             .first()
         )
-        if not ticket.is_allowed(tag_provider=stream_source.get_tag_ids):
+        if not ticket.is_allowed(stream_source_id=stream_source_id):
             return None
+        filtered = []
+        for streamable in stream_source.streamables:
+            if ticket.is_allowed(tag_provider=streamable.get_tag_ids):
+                filtered.append(streamable)
         if stream_source.kind != 'TubeArchivist':
-            stream_source.streamables = sorted(stream_source.streamables,key=lambda xx:xx.name)
+            filtered = sorted(filtered,key=lambda xx:xx.name)
+        stream_source.streamables = filtered
         return stream_source
 
 def get_stream_source_by_url(url: str):

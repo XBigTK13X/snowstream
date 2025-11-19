@@ -577,7 +577,7 @@ class Streamable(BaseModel):
     channel: orm.Mapped["Channel"] = orm.relationship(secondary="streamable_channel",back_populates="streamable",overlaps="streamable_channel")
     tags: orm.Mapped[List["Tag"]] = orm.relationship(secondary="streamable_tag",back_populates="streamables")
 
-    def _ids(self):
+    def get_tag_ids(self):
         return [xx.id for xx in self.tags]
 
 class StreamableTag(BaseModel):
