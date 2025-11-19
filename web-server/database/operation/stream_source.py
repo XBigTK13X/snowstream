@@ -43,6 +43,10 @@ def get_stream_source_by_id(ticket:dbi.dm.Ticket,stream_source_id: int):
                 .joinedload(dbi.dm.Streamable.channel)
                 .joinedload(dbi.dm.Channel.programs)
             )
+            .options(
+                dbi.orm.joinedload(dbi.dm.StreamSource.streamables)
+                .joinedload(dbi.dm.Streamable.tags)
+            )
             .options(dbi.orm.joinedload(dbi.dm.StreamSource.tags))
             .filter(dbi.dm.StreamSource.id == stream_source_id)
             .first()

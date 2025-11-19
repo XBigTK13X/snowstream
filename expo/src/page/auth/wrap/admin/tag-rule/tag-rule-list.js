@@ -18,7 +18,7 @@ export default function TagRuleListPage() {
         if (rules.length) {
             rulesList = (
                 <C.SnowGrid shouldFocus itemsPerRow={1} items={rules} renderItem={(rule) => {
-                    let title = `${rule.needle} -> ${rule.replacement}`
+                    let title = `${rule.target_kind} -> ${rule.trigger_kind} == ${rule.trigger_target} -> ${rule.tag.name}`
                     return (
                         <C.SnowTextButton
                             title={title}

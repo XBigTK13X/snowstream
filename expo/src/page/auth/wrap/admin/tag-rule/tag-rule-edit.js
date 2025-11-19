@@ -39,7 +39,7 @@ export default function TagRuleEditPage() {
                         ruleKind: rule.rule_kind,
                         priority: rule.priority ?? '',
                         triggerTarget: rule.trigger_target,
-                        triggerKind: rule.triggerKind
+                        triggerKind: rule.trigger_kind
                     })
                     setRuleLoaded(true)
                 })
@@ -70,20 +70,6 @@ export default function TagRuleEditPage() {
     }
     return (
         <C.FillView >
-            <C.SnowLabel>Trigger Kind</C.SnowLabel>
-            <C.SnowInput onValueChange={(val) => {
-                setRuleForm((prev) => {
-                    return { ...prev, triggerKind: val }
-                })
-            }} value={ruleForm.triggerKind} />
-
-            <C.SnowLabel>Trigger Target</C.SnowLabel>
-            <C.SnowInput onValueChange={(val) => {
-                setRuleForm((prev) => {
-                    return { ...prev, triggerTarget: val }
-                })
-            }} value={ruleForm.triggerTarget} />
-
             <C.SnowLabel>Tag Name</C.SnowLabel>
             <C.SnowInput onValueChange={(val) => {
                 setRuleForm((prev) => {
@@ -108,6 +94,19 @@ export default function TagRuleEditPage() {
                 }}
                 valueIndex={targetKinds.indexOf(ruleForm.targetKind)}
             />
+            <C.SnowLabel>Trigger Kind</C.SnowLabel>
+            <C.SnowInput onValueChange={(val) => {
+                setRuleForm((prev) => {
+                    return { ...prev, triggerKind: val }
+                })
+            }} value={ruleForm.triggerKind} />
+
+            <C.SnowLabel>Trigger Target</C.SnowLabel>
+            <C.SnowInput onValueChange={(val) => {
+                setRuleForm((prev) => {
+                    return { ...prev, triggerTarget: val }
+                })
+            }} value={ruleForm.triggerTarget} />
 
             <C.SnowLabel>Priority</C.SnowLabel>
             <C.SnowInput onValueChange={(val) => {

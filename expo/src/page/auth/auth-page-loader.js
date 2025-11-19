@@ -38,7 +38,7 @@ function HeaderNav(props) {
                 />
                 <SnowTextButton title="Sign Out" onPress={signOut} />
                 {isAdmin ? <SnowTextButton
-                    title="Admin"
+                    title="Dashboard"
                     onPress={navPush({ path: routes.adminDashboard })} />
                     : null}
                 <SnowTextButton

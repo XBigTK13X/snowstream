@@ -41,7 +41,7 @@ function PageWrapper() {
 
 function CrashScreen(props) {
     return (
-        <View style={{ alignItems: 'center', justifyContent: 'center', padding: 60, backgroundColor: 'black', color: 'white' }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 60, backgroundColor: 'black', color: 'white' }}>
             <Text style={{ fontSize: 40, margin: 20, color: 'white' }}>snowstream crashed due to an unhandled error.</Text>
             <Text style={{ fontSize: 40, margin: 20, color: 'white' }}>The problem has been logged.</Text>
             <View style={{ width: 400, margin: 20 }}>

@@ -49,6 +49,14 @@ def get_cached_text_list(search_query:str):
             .all()
         )
 
+def delete_cached_text_by_key(key:str):
+    if not key:
+        return False
+    with dbi.session() as db:
+        db.query(dbi.dm.CachedText).filter(dbi.dm.CachedText.key == key).delete()
+        db.commit()
+        return True
+
 def delete_all_cached_text():
     with dbi.session() as db:
         db.execute(dbi.sql_text('truncate cached_text;'))
