@@ -47,11 +47,13 @@ def generate_streamable_m3u(job_id:int):
 def handle(scope):
     ticket=db.Ticket(ignore_watch_group=True)
     db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a stream_sources_refresh job")
+
     stream_sources = None
     if scope.is_stream_source():
         stream_sources = [db.op.get_stream_source_by_id(ticket=db.Ticket(),stream_source_id=scope.target_id)]
     else:
         stream_sources = db.op.get_stream_source_list(ticket=db.Ticket(),streamables=True)
+
     refresh_results = {}
     for stream_source in stream_sources:
         db.op.update_job(job_id=scope.job_id, message="Refreshing stream source " + stream_source.kind)
@@ -72,7 +74,6 @@ def handle(scope):
         streamables = db.op.get_streamable_list(ticket,stream_source_id=scope.target_id)
     else:
         streamables = db.op.get_streamable_list(ticket)
-
 
     cleanup_rules = db.op.get_display_cleanup_rule_list()
     tag_rules = db.op.get_tag_rule_list()

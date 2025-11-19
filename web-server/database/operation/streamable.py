@@ -1,7 +1,10 @@
 from database.operation.db_internal import dbi
 
-def create_streamable(stream_source_id: int, url: str, name: str, group: str=None):
+def upsert_streamable(stream_source_id: int, url: str, name: str, group: str=None):
     with dbi.session() as db:
+        existing = db.query(dbi.dm.Streamable).filter(dbi.dm.Streamable.url == url).first()
+        if existing:
+            return None
         dbm = dbi.dm.Streamable()
         dbm.name = name
         dbm.url = url
@@ -54,11 +57,14 @@ def get_streamable_list(ticket:dbi.dm.Ticket,stream_source_id:int=None,search_qu
                 dbi.dm.Streamable.group.ilike(f"%{search_query}%"),
                 dbi.dm.Streamable.group_display.ilike(f"%{search_query}%"),
             ))
+        results = query.all()
         if ticket.has_tag_restrictions():
-            pass
-        if ticket.has_stream_source_restrictions():
-            pass
-        return query.all()
+            filtered = []
+            for result in results:
+                if ticket.is_allowed(stream_source_id=result.stream_source_id) and ticket.is_allowed(tag_provider=result.get_tag_ids):
+                    filtered.append(result)
+            return filtered
+        return results
 
 def get_streamable_by_id(streamable_id: int):
     with dbi.session() as db:

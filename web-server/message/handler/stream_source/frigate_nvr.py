@@ -51,7 +51,7 @@ class FrigateNvr(StreamSourceImporter):
             if not any(
                 x.url == camera_stream["url"] for x in self.stream_source.streamables
             ):
-                db.op.create_streamable(
+                db.op.upsert_streamable(
                     stream_source_id=self.stream_source.id,
                     url=camera_stream["url"],
                     name=camera_stream["name"],

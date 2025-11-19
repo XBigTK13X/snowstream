@@ -877,13 +877,13 @@ def auth_required(router):
             return False
         return db.op.delete_display_cleanup_rule(rule_id=rule_id)
 
-    @router.get('/tag-rule/list', tags=['Admin'])
-    def get_tag_rule_list(
+    @router.get('/display-cleanup-rule/list', tags=['Admin'])
+    def get_display_cleanup_rule_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])]
     ):
         if not auth_user.is_admin():
             return None
-        return db.op.get_tag_rule_list()
+        return db.op.get_display_cleanup_rule_list()
 
     @router.post('/tag-rule', tags=['Admin'])
     def save_tag_rule(

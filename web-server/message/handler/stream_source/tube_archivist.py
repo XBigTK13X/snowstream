@@ -25,14 +25,16 @@ class TubeArchivist(StreamSourceImporter):
         initial_response = requests.get(videos_url, headers=headers)
         initial_info = initial_response.json()
 
-        videos = initial_info['data']
+        last_page = 50
         if 'paginate' in initial_info:
             if initial_info['paginate']['last_page'] > 0:
-                for ii in range(1,initial_info['paginate']['last_page']+1):
-                    page_url = f'{videos_url}&page={ii}'
-                    page_response = requests.get(page_url, headers=headers)
-                    page_info = page_response.json()
-                    videos.extend(page_info['data'])
+                last_page = initial_info['paginate']['last_page']
+        videos = initial_info['data']
+        for ii in range(2,last_page + 1):
+            page_url = f'{videos_url}&page={ii}'
+            page_response = requests.get(page_url, headers=headers)
+            page_info = page_response.json()
+            videos.extend(page_info['data'])
 
         self.cached_data = db.op.upsert_cached_text(
             key=self.cache_key, data=json.dumps(videos)
@@ -41,26 +43,19 @@ class TubeArchivist(StreamSourceImporter):
 
     def parse_watchable_urls(self):
         ta_videos = json.loads(self.cached_data)
-        ta_videos = ta_videos
-        dedupe = {}
-        for xx in self.stream_source.streamables:
-            dedupe[xx.url] = True
         new_count = 0
         for entry in ta_videos:
             web_path = entry['media_url']
             web_path = web_path.replace('/youtube',self.stream_source.username)
-            if web_path in dedupe:
-                continue
             title = entry['title']
             group = entry['channel']['channel_name']
-            db.op.create_streamable(
+            db.op.upsert_streamable(
                 stream_source_id=self.stream_source.id,
                 url=web_path,
                 name=title,
                 group=group
             )
             new_count += 1
-            dedupe[web_path] = True
         if new_count > 0:
             db.op.update_job(job_id=self.scope.job_id, message=f"Found {new_count} new streams")
         return True

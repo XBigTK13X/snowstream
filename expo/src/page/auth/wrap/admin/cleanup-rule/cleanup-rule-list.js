@@ -40,7 +40,7 @@ export default function DisplayCleanupRuleListPage() {
     }
     return (
         <C.View >
-            <C.SnowText>Loading jobs</C.SnowText>
+            <C.SnowText>Loading cleanup rules</C.SnowText>
         </C.View >
     )
 }
