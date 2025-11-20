@@ -83,10 +83,8 @@ def get_movie_list_by_directory(directory:str):
             .all()
         )
 
-def get_movie_list_by_tag_id(ticket:dbi.dm.Ticket, tag_id):
+def get_movie_list_by_tag_id(ticket:dbi.dm.Ticket, tag_id:int):
     with dbi.session() as db:
-        if not ticket.is_allowed(tag_id):
-            return None
         movies = (
             db.query(dbi.dm.Movie)
             .filter(dbi.dm.Movie.tags.any(id=tag_id))
