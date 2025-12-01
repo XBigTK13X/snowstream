@@ -1,5 +1,6 @@
 import axios from 'axios'
 import util from './util'
+import Snow from 'expo-snowui'
 
 const JOB_PROPERTIES = [
     ['targetKind', 'target_kind'],
@@ -21,6 +22,7 @@ export class ApiClient {
         this.webApiUrl = details.webApiUrl
         this.hasAdmin = details.isAdmin
         this.onApiError = details.onApiError
+        this.onLogout = details.onLogout
         this.apiErrorSent = false
         this.createClient(details)
     }
@@ -48,6 +50,13 @@ export class ApiClient {
             if (err.response && err.response.status === 401) {
                 this.onLogout?.()
             }
+            try {
+                let stringed = Snow.stringifySafe(err)
+                if (stringed?.includes('401')) {
+                    this.onLogout?.()
+                }
+            }
+            catch (swallow) { }
             if (err?.code === 'ERR_NETWORK') {
                 if (!this.apiErrorSent) {
                     this.onApiError(err)

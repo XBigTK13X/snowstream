@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { snapshot } from 'valtio'
 import { playerState, initialPlayerState } from './player-state'
 import util from '../util'
+import CONST from '../constant'
 
 class PlayerActions {
     constructor() {
@@ -409,7 +410,17 @@ class PlayerActions {
         }
         if (response.name) playerState.videoTitle = response.name
         if (response.durationSeconds) playerState.durationSeconds = response.durationSeconds
-        if (response.tracks) playerState.mediaTracks = response.tracks
+        if (response.tracks) {
+            playerState.mediaTracks = response.tracks
+            if (response?.tracks?.video) {
+                playerState.videoWidth = response?.tracks?.video[0]?.resolution_width
+                playerState.videoHeight = response?.tracks?.vide[0]?.resolution_height
+            } else {
+                playerState.videoWidth = CONST.resolution.fullHd.width
+                playerState.videoHeight = CONST.resolution.fullHd.height
+            }
+        }
+
         if (response.transcodeId) {
             this.onCloseTranscodeSession()
             playerState.transcodeId = response.transcodeId

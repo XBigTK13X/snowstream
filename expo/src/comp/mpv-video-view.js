@@ -1,6 +1,7 @@
 import React from 'react'
 import LibmpvView from 'expo-libmpv';
 import { Player } from 'snowstream'
+import CONST from '../constant'
 
 // https://mpv.io/manual/master/#property-manipulation
 
@@ -24,8 +25,6 @@ export default function MpvVideoView(props) {
             Player.action.onVideoReady()
         }
     })
-
-    //TODO Read video FPS and resolution, pass into the view
 
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && player.isVideoViewReady) {
@@ -65,14 +64,25 @@ export default function MpvVideoView(props) {
         return null
     }
 
+    let videoWidth = CONST.resolution.fullHd.width
+    let videoHeight = CONST.resolution.fullHd.height
+    if (player.clientOptions?.resolutionKind === '2160p') {
+        videoWidth = CONST.resolution.ultraHd.width
+        videoHeight = CONST.resolution.ultraHd.height
+    }
+    if (player.clientOptions?.resolutionKind === 'Video File') {
+        videoWidth = player.videoWidth
+        videoHeight = player.videoHeight
+    }
+
     return (
         <LibmpvView
             ref={forwardRef}
             playUrl={player.videoUrl}
             isPlaying={player.isPlaying}
             useHardwareDecoder={player.clientOptions?.hardwareDecoder}
-            surfaceWidth={player.videoWidth}
-            surfaceHeight={player.videoHeight}
+            surfaceWidth={videoWidth}
+            surfaceHeight={videoHeight}
             onLibmpvEvent={eventHandler}
             onLibmpvLog={logHandler}
             selectedAudioTrack={player.audioTrackIndex}

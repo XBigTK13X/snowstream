@@ -139,7 +139,7 @@ export default function OptionsPage() {
                     onValueChange={chooseAudioCompression}
                     valueIndex={form.audioCompression === true ? 1 : 0} />
                 <C.SnowDropdown
-                    title="Video Resolution"
+                    title="Video Resolution (mpv)"
                     options={resolutions}
                     onValueChange={chooseResolution}
                     valueIndex={resolutions.indexOf(form.resolutionKind)} />

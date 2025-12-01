@@ -3,6 +3,7 @@ import Snow from 'expo-snowui'
 import { View } from 'react-native';
 import uuid from 'react-native-uuid';
 
+import CONST from './constant'
 import util from './util'
 import { config } from './settings'
 import { routes } from './routes'
@@ -112,16 +113,107 @@ export function AppContextProvider(props) {
         return func()
     }
 
+    const onApiError = (err) => {
+        if (!apiError) {
+            setApiError(err)
+        }
+    }
 
+    const setWebApiUrl = (webApiUrl) => {
+        return Snow.saveData(CONST.storageKey.webApiUrl, webApiUrl)
+            .then(() => {
+                setApiClient(null)
+                setApiClientKey((prev) => { return prev + 1 })
+            })
+    }
+
+    const login = (username, password) => {
+        return new Promise(resolve => {
+            if (!apiClient) {
+                return resolve({ loading: true })
+            }
+            apiClient.login({
+                username: username,
+                password: password,
+                deviceId: clientOptions.deviceId,
+                deviceProfile: clientOptions.deviceProfile
+            })
+                .then(loginResponse => {
+                    if (loginResponse && loginResponse.failed) {
+                        resolve(loginResponse)
+                    } else {
+                        setDisplayName(loginResponse.displayName)
+                        setSession(loginResponse.authToken)
+                        setIsAdmin(loginResponse.isAdmin)
+                        Snow.saveData(CONST.storageKey.displayName, loginResponse.displayName)
+                            .then(() => {
+                                return Snow.saveData(CONST.storageKey.session, loginResponse.authToken);
+                            }).then(() => {
+                                return Snow.saveData(CONST.storageKey.isAdmin, loginResponse.isAdmin)
+                            }).then(() => {
+                                return resolve({ token: loginResponse.authToken })
+                            })
+                    }
+                })
+                .catch((err) => {
+                    util.log({ err })
+                    apiClient.debug()
+                    return resolve({ failed: err })
+                })
+        })
+    }
+
+    const logout = (removeApiUrl) => {
+        setSession(null)
+        setDisplayName(null)
+        setIsAdmin(false)
+        setClientOptions(null)
+        return Snow.saveData(CONST.storageKey.session, null)
+            .then(() => {
+                return Snow.saveData(CONST.storageKey.displayName, null)
+            }).then(() => {
+                return Snow.saveData(CONST.storageKey.isAdmin, null)
+            }).then(() => {
+                return new Promise(resolve => {
+                    if (removeApiUrl) {
+                        return Snow.saveData(CONST.storageKey.webApiUrl, null).then(() => {
+                            setApiClient(null)
+                            return resolve()
+                        })
+                    }
+                    return resolve()
+                })
+            })
+            .then(() => {
+                clearFocusLayers()
+                return navReset()
+            })
+    }
+
+    const changeClientOptions = (options) => {
+        let shouldLogout = false;
+        if (clientOptions.deviceId !== options.deviceId) {
+            shouldLogout = true;
+        }
+        let stored = options
+        if (options) {
+            stored = JSON.stringify(options)
+        }
+        Snow.saveData(CONST.storageKey.clientOptions, stored)
+        setClientOptions(options)
+        if (shouldLogout) {
+            logout();
+        }
+    }
 
     React.useEffect(() => {
         if (!apiClient) {
-            const storedSession = Snow.loadData('session')
+            const storedSession = Snow.loadData(CONST.storageKey.session)
             setSession(storedSession)
-            const storedAdmin = Snow.loadData('isAdmin')
+            const storedAdmin = Snow.loadData(CONST.storageKey.isAdmin)
             setIsAdmin(storedAdmin)
-            setDisplayName(Snow.loadData('displayName'))
-            const storedWebApiUrl = Snow.loadData('webApiUrl')
+            setDisplayName(Snow.loadData(CONST.storageKey.displayName))
+            const storedWebApiUrl = Snow.loadData(CONST.storageKey.webApiUrl)
             setIsLoading(false)
             if (storedWebApiUrl) {
                 setApiClient(new ApiClient({
@@ -139,7 +231,7 @@ export function AppContextProvider(props) {
 
     React.useEffect(() => {
         if (!clientOptions) {
-            let storedOptions = Snow.loadData('clientOptions')
+            let storedOptions = Snow.loadData(CONST.storageKey.clientOptions)
             if (storedOptions) {
                 storedOptions = JSON.parse(storedOptions)
             }
@@ -171,99 +263,6 @@ export function AppContextProvider(props) {
             setClientOptions(storedOptions)
         }
     }, [clientOptions])
-
-    const onApiError = (err) => {
-        if (!apiError) {
-            setApiError(err)
-        }
-    }
-
-    const setWebApiUrl = (webApiUrl) => {
-        return Snow.saveData('webApiUrl', webApiUrl)
-            .then(() => {
-                setApiClient(null)
-                setApiClientKey((prev) => { return prev + 1 })
-            })
-    }
-
-    const login = (username, password) => {
-        return new Promise(resolve => {
-            if (!apiClient) {
-                return resolve({ loading: true })
-            }
-            apiClient.login({
-                username: username,
-                password: password,
-                deviceId: clientOptions.deviceId,
-                deviceProfile: clientOptions.deviceProfile
-            })
-                .then(loginResponse => {
-                    if (loginResponse && loginResponse.failed) {
-                        resolve(loginResponse)
-                    } else {
-                        setDisplayName(loginResponse.displayName)
-                        setSession(loginResponse.authToken)
-                        setIsAdmin(loginResponse.isAdmin)
-                        Snow.saveData('displayName', loginResponse.displayName)
-                            .then(() => {
-                                return Snow.saveData('session', loginResponse.authToken);
-                            }).then(() => {
-                                return Snow.saveData('isAdmin', loginResponse.isAdmin)
-                            }).then(() => {
-                                return resolve({ token: loginResponse.authToken })
-                            })
-                    }
-                })
-                .catch((err) => {
-                    util.log({ err })
-                    apiClient.debug()
-                    return resolve({ failed: err })
-                })
-        })
-    }
-
-    const logout = (removeApiUrl) => {
-        setSession(null)
-        setDisplayName(null)
-        setIsAdmin(false)
-        setClientOptions(null)
-        return Snow.saveData('session', null)
-            .then(() => {
-                return Snow.saveData('displayName', null)
-            }).then(() => {
-                return Snow.saveData('isAdmin', null)
-            }).then(() => {
-                return new Promise(resolve => {
-                    if (removeApiUrl) {
-                        return Snow.saveData('webApiUrl', null).then(() => {
-                            setApiClient(null)
-                            return resolve()
-                        })
-                    }
-                    return resolve()
-                })
-            })
-            .then(() => {
-                clearFocusLayers()
-                return navReset()
-            })
-    }
-
-    const changeClientOptions = (options) => {
-        let shouldLogout = false;
-        if (clientOptions.deviceId !== options.deviceId) {
-            shouldLogout = true;
-        }
-        let stored = options
-        if (options) {
-            stored = JSON.stringify(options)
-        }
-        Snow.saveData('clientOptions', stored)
-        setClientOptions(options)
-        if (shouldLogout) {
-            logout();
-        }
-    }
 
     React.useEffect(() => {
         if (apiError) {

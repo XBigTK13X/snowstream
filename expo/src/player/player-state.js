@@ -1,5 +1,6 @@
 import { Platform } from 'react-native'
 
+import CONST from '../constant'
 import { proxy } from 'valtio'
 import util from '../util'
 
@@ -29,6 +30,8 @@ export const initialPlayerState = {
     videoTitle: null,
     videoLoading: false,
     videoLoaded: false,
+    videoWidth: CONST.resolution.fullHd.width,
+    videoHeight: CONST.resolution.fullHd.height,
 
     isVideoViewReady: false,
     isPlaying: false,
@@ -166,13 +169,5 @@ export const playerState = proxy({
             return require('../comp/rnv-video-view').default
         }
         return require('../comp/mpv-video-view').default
-    },
-
-    get videoHeight() {
-        return this.clientOptions?.resolutionHeight
-    },
-
-    get videoWidth() {
-        return this.clientOptions?.resolutionWidth
-    },
+    }
 })
