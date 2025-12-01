@@ -12,9 +12,6 @@ export function SnowScreencapGridW(props) {
         if (item.screencap_image) {
             thumbnailUrl = item.screencap_image.thumbnail_web_path
         }
-        if (!thumbnailUrl) {
-            return Asset.image.missing.screencap
-        }
         return thumbnailUrl
     }
     const getItemImageFallback = () => {
