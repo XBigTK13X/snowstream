@@ -147,11 +147,8 @@ export function AppContextProvider(props) {
                 storedOptions = {
                 }
             }
-            if (!storedOptions.hasOwnProperty('resolutionWidth')) {
-                storedOptions.resolutionWidth = SnowStyle.surface.uhd.width
-            }
-            if (!storedOptions.hasOwnProperty('resolutionHeight')) {
-                storedOptions.resolutionHeight = SnowStyle.surface.uhd.height
+            if (!storedOptions.hasOwnProperty('resolutionKind')) {
+                storedOptions.resolutionKind = '1080p'
             }
             if (!storedOptions.hasOwnProperty('deviceId')) {
                 storedOptions.deviceId = uuid.v4()
@@ -163,19 +160,13 @@ export function AppContextProvider(props) {
                 storedOptions.audioCompression = false
             }
             if (!storedOptions.hasOwnProperty('hardwareDecoder')) {
-                storedOptions.hardwareDecoder = false
+                storedOptions.hardwareDecoder = true
             }
             if (!storedOptions.hasOwnProperty('deviceProfile')) {
-                storedOptions.deviceProfile = 'CCwGTV4K'
+                storedOptions.deviceProfile = 'Google Streamer'
             }
             if (!storedOptions.hasOwnProperty('alwaysUsePlayer')) {
                 storedOptions.alwaysUsePlayer = 'all'
-            }
-            if (!storedOptions.hasOwnProperty('useMpvFast')) {
-                storedOptions.useMpvFast = false
-            }
-            if (!storedOptions.hasOwnProperty('forceDisplayFps')) {
-                storedOptions.forceDisplayFps = false
             }
             setClientOptions(storedOptions)
         }

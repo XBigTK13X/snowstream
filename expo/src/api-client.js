@@ -48,7 +48,7 @@ export class ApiClient {
             if (err.response && err.response.status === 401) {
                 this.onLogout?.()
             }
-            if (err.code && err.code === 'ERR_NETWORK') {
+            if (err?.code === 'ERR_NETWORK') {
                 if (!this.apiErrorSent) {
                     this.onApiError(err)
                 }

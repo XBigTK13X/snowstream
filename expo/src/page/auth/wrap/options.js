@@ -8,33 +8,24 @@ const players = [
 ]
 
 const resolutions = [
-    '4K Ultra HD',
-    '1080 Full HD'
+    'Video File',
+    '2160p',
+    '1080p'
 ]
 
 export default function OptionsPage() {
-    const { SnowStyle } = C.useSnowContext()
     const { apiClient, clientOptions, changeClientOptions } = useAppContext()
-
-    let storedResolutionIndex = 0
-    if (clientOptions) {
-        if (clientOptions.resolutionHeight !== 2160) {
-            storedResolutionIndex = 1
-        }
-    }
 
     const [deviceProfiles, setDeviceProfiles] = C.React.useState(null)
 
     const [form, setForm] = C.React.useState({
-        deviceProfileIndex: null,
+        deviceProfile: clientOptions?.deviceProfile,
         deviceId: clientOptions?.deviceId ?? '',
-        resolutionIndex: storedResolutionIndex,
+        resolutionKind: clientOptions?.resolutionKind,
         alwaysTranscode: clientOptions?.alwaysTranscode ?? '',
         alwaysUsePlayer: clientOptions?.alwaysUsePlayer ?? '',
         audioCompression: clientOptions?.audioCompression ?? '',
-        forceDisplayFps: clientOptions?.forceDisplayFps ?? '',
         hardwareDecoder: clientOptions?.hardwareDecoder ?? '',
-        useMpvFast: clientOptions?.useMpvFast ?? '',
     })
     const formRef = C.React.useRef(form)
 
@@ -46,15 +37,15 @@ export default function OptionsPage() {
         if (!deviceProfiles) {
             apiClient.getDeviceProfileList().then((response) => {
                 const profiles = response.devices
-                let storedDeviceProfile = 0
-                if (clientOptions) {
-                    if (clientOptions.deviceProfile && clientOptions.deviceProfile !== profiles[0]) {
-                        storedDeviceProfile = profiles.indexOf(clientOptions.deviceProfile)
-                    }
-                }
                 setDeviceProfiles(profiles)
+                let currentProfile = null
+                if (profiles.includes(clientOptions?.deviceProfile)) {
+                    currentProfile = clientOptions?.deviceProfile
+                } else {
+                    currentProfile = profiles[0]
+                }
                 setForm((prev) => {
-                    return { ...prev, deviceProfileIndex: storedDeviceProfile }
+                    return { ...prev, deviceProfile: currentProfile }
                 })
             })
         }
@@ -65,11 +56,11 @@ export default function OptionsPage() {
     }
 
     const chooseResolution = (selection) => {
-        setForm(prev => ({ ...prev, resolutionIndex: selection }))
+        setForm(prev => ({ ...prev, resolutionKind: resolutions[selection] }))
     }
 
     const chooseDeviceProfile = (selection) => {
-        setForm(prev => ({ ...prev, deviceProfileIndex: selection }))
+        setForm(prev => ({ ...prev, deviceProfile: deviceProfiles[selection] }))
     }
 
     const chooseAlwaysUsePlayer = (selection) => {
@@ -88,25 +79,8 @@ export default function OptionsPage() {
         setForm(prev => ({ ...prev, alwaysTranscode: selection === 0 ? false : true }))
     }
 
-    const chooseUseMpvFast = (selection) => {
-        setForm(prev => ({ ...prev, useMpvFast: selection === 0 ? false : true }))
-    }
-
-    const chooseForceDisplayFps = (selection) => {
-        setForm(prev => ({ ...prev, forceDisplayFps: selection === 0 ? false : true }))
-    }
-
     const saveForm = () => {
-        let payload = { ...formRef.current }
-        payload.deviceProfile = deviceProfiles[payload.deviceProfileIndex]
-        if (payload.resolutionIndex === 0) {
-            payload.resolutionHeight = SnowStyle.surface.uhd.height
-            payload.resolutionWidth = SnowStyle.surface.uhd.width
-        } else {
-            payload.resolutionHeight = SnowStyle.surface.fhd.height
-            payload.resolutionWidth = SnowStyle.surface.fhd.width
-        }
-        changeClientOptions(payload)
+        changeClientOptions(formRef.current)
     }
 
     return (
@@ -139,7 +113,7 @@ export default function OptionsPage() {
                 title="Device Profile"
                 options={deviceProfiles}
                 onValueChange={chooseDeviceProfile}
-                valueIndex={form.deviceProfileIndex} />
+                valueIndex={deviceProfiles.indexOf(form.deviceProfile)} />
 
             <C.SnowDropdown
                 focusKey="player-choice"
@@ -154,43 +128,33 @@ export default function OptionsPage() {
             <C.SnowTabs
                 focusKey="player-settings"
                 headers={[
-                    'Transcode',
-                    'FPS',
-                    'Hardware',
                     'Audio',
-                    'Fast',
-                    '4K'
+                    'Resolution',
+                    'Transcode',
+                    'Hardware',
                 ]}>
-                <C.SnowDropdown
-                    title="Always Transcode"
-                    options={['No', 'Yes']}
-                    onValueChange={chooseAlwaysTranscode}
-                    valueIndex={form.alwaysTranscode === true ? 1 : 0} />
-                <C.SnowDropdown
-                    title="Force 60 FPS"
-                    options={['No', 'Yes']}
-                    onValueChange={chooseForceDisplayFps}
-                    valueIndex={form.forceDisplayFps === true ? 1 : 0} />
-                <C.SnowDropdown
-                    title="Hardware Decoder (mpv)"
-                    options={['No', 'Yes']}
-                    onValueChange={chooseHardwareDecoder}
-                    valueIndex={form.hardwareDecoder === true ? 1 : 0} />
                 <C.SnowDropdown
                     title="Audio Compression (mpv)"
                     options={['No', 'Yes']}
                     onValueChange={chooseAudioCompression}
                     valueIndex={form.audioCompression === true ? 1 : 0} />
                 <C.SnowDropdown
-                    title="Fast Config (mpv)"
-                    options={['No', 'Yes']}
-                    onValueChange={chooseUseMpvFast}
-                    valueIndex={form.useMpvFast === true ? 1 : 0} />
-                <C.SnowDropdown
                     title="Video Resolution"
                     options={resolutions}
                     onValueChange={chooseResolution}
-                    valueIndex={form.resolutionIndex} />
+                    valueIndex={resolutions.indexOf(form.resolutionKind)} />
+                <C.SnowDropdown
+                    title="Always Transcode"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseAlwaysTranscode}
+                    valueIndex={form.alwaysTranscode === true ? 1 : 0} />
+                <C.SnowDropdown
+                    title="Hardware Decoder (mpv)"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseHardwareDecoder}
+                    valueIndex={form.hardwareDecoder === true ? 1 : 0} />
+
+
             </C.SnowTabs>
         </C.FillView>
 

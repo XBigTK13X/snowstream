@@ -48,16 +48,16 @@ class DeviceProfile:
 
 device_list = [
     DeviceProfile({
-        'name': 'CCwGTV4K',
+        'name': 'Google Streamer',
         'hdr': 'hard',
         'hdr_ten': 'hard',
         'hdr_ten_plus': 'hard',
-        'hdr_hlg': 'hard',
         'dolby_vision': 'hard',
-        'h265_eight': 'hard',
-        'h265_ten': 'hard',
         'h264_eight': 'hard',
-        'av1': 'transcode',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'vp9': 'hard',
+        'av1': 'hard',
         'transcode_bit_rate': '15M'
     }),
     DeviceProfile({
@@ -76,17 +76,17 @@ device_list = [
         'dolby_hd': 'hard',
         'require_password': False
     }),
-    DeviceProfile({
-        'name': 'Google Streamer',
+        DeviceProfile({
+        'name': 'CCwGTV4K',
         'hdr': 'hard',
         'hdr_ten': 'hard',
         'hdr_ten_plus': 'hard',
+        'hdr_hlg': 'hard',
         'dolby_vision': 'hard',
+        'h265_eight': 'hard',
+        'h265_ten': 'hard',
         'h264_eight': 'hard',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
-        'vp9': 'hard',
-        'av1': 'hard',
+        'av1': 'transcode',
         'transcode_bit_rate': '15M'
     }),
     DeviceProfile({
