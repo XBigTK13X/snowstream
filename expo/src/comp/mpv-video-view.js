@@ -14,42 +14,18 @@ export default function MpvVideoView(props) {
             return
         }
         if (!player.isVideoViewReady && forwardRef?.current?.runCommand) {
-            if (player.clientOptions.useFastMpv) {
-                try {
-                    forwardRef.current.runCommand(`set|hwdec|mediacodec`).catch(() => { })
-                    forwardRef.current.runCommand(`set|vo|gpu`).catch(() => { })
-                    forwardRef.current.runCommand(`set|profile|fast`).catch(() => { })
-                    forwardRef.current.runCommand(`set|gpu-context|android`).catch(() => { })
-                    forwardRef.current.runCommand(`set|scale|bilinear`).catch(() => { })
-                    forwardRef.current.runCommand(`set|dscale|bilinear`).catch(() => { })
-                    forwardRef.current.runCommand(`set|interpolation|no`).catch(() => { })
-                    forwardRef.current.runCommand(`set|opengl-es|yes`).catch(() => { })
-                    forwardRef.current.runCommand(`set|audio-buffer|2.0`).catch(() => { })
-                    forwardRef.current.runCommand(`set|cache|yes`).catch(() => { })
-                    forwardRef.current.runCommand(`set|del-af|@`).catch(() => { })
-                }
-                catch { }
+            if (player.clientOptions.audioCompression) {
+                // Loudness normalization from Snowby
+                forwardRef.current.runCommand(`set|af|acompressor=ratio=4,loudnorm`).catch(() => { })
             }
             else {
-                if (player.clientOptions.audioCompression) {
-                    // Loudness normalization from Snowby
-                    forwardRef.current.runCommand(`set|af|acompressor=ratio=4,loudnorm`).catch(() => { })
-                }
-                else {
-                    forwardRef.current.runCommand(`set|del-af|@`).catch(() => { })
-                }
+                forwardRef.current.runCommand(`set|del-af|@`).catch(() => { })
             }
             Player.action.onVideoReady()
         }
     })
 
-    React.useEffect(() => {
-        if (player?.clientOptions?.forceDisplayFps && player?.isVideoViewReady) {
-            forwardRef.current.runCommand(`set|video-sync|display-resample`).catch(() => { })
-            forwardRef.current.runCommand(`set|interpolation|no`).catch(() => { })
-            forwardRef.current.runCommand(`set|display-fps|60`).catch(() => { })
-        }
-    }, [player.clientOptions, player.isVideoViewReady])
+    //TODO Read video FPS and resolution, pass into the view
 
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && player.isVideoViewReady) {
