@@ -8,7 +8,7 @@ import Snow, {
     SnowTextButton
 } from 'expo-snowui'
 import { View } from 'react-native'
-import { Player } from 'snowstream'
+import Player from 'snowstream-player'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {

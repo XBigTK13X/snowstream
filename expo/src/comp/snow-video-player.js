@@ -6,7 +6,7 @@ import {
     View
 } from 'react-native'
 import { useKeepAwake } from 'expo-keep-awake';
-import { Player } from 'snowstream'
+import Player from 'snowstream-player'
 import util from '../util'
 import SnowVideoControls from './snow-video-controls'
 import { useAppContext } from '../app-context'

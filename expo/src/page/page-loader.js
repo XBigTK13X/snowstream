@@ -8,7 +8,7 @@ import {
     AppContextProvider,
     useAppContext,
 } from 'snowstream'
-import { Player } from 'snowstream'
+import Player from 'snowstream-player'
 import { routes } from '../routes'
 import { pages } from '../pages'
 import AuthPageLoader from './auth/auth-page-loader'

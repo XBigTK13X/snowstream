@@ -1,8 +1,8 @@
 import { Platform } from 'react-native'
 
-import CONST from '../constant'
 import { proxy } from 'valtio'
 import util from '../util'
+import CONST from '../constant'
 
 // Remember the golden rules
 // READ from snapshot

@@ -1,18 +1,5 @@
-import { useSnapshot, snapshot } from 'valtio'
-
 import AppContext from './app-context'
 export { AppContextProvider, useAppContext } from './app-context'
-
-import { playerState } from './player/player-state'
-import { playerActions } from './player/player-actions'
-import PlayerManager from './player/player-manager'
-export const Player = {
-    state: playerState,
-    action: playerActions,
-    Manager: PlayerManager,
-    useSnapshot,
-    snapshot
-}
 
 import C from './common'
 export { default as C } from './common'
@@ -31,6 +18,5 @@ export default {
     Asset,
     C,
     Util,
-    config,
-    Player
+    config
 }

@@ -1,4 +1,5 @@
-import { C, useAppContext, Player } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
+import Player from 'snowstream-player'
 
 export default function KeepsakeDetailsPage(props) {
     const {

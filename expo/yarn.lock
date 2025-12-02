@@ -2657,10 +2657,10 @@ expo-keep-awake@15.0.7, expo-keep-awake@~15.0.7:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-15.0.7.tgz#4eada556e1cca6c9c2e5aa39478fd01816cd0bc9"
   integrity sha512-CgBNcWVPnrIVII5G54QDqoE125l+zmqR4HR8q+MQaCfHet+dYpS5vX5zii/RMayzGN4jPgA4XYIQ28ePKFjHoA==
 
-expo-libmpv@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/expo-libmpv/-/expo-libmpv-0.4.0.tgz#11114d550f62efc17a76efe1d78b8b3612f5dbff"
-  integrity sha512-uxYHmJ9jiCug4JvrJikJOsR347V/MaM5Ni6mWYVrE0bfFrzpCHPrWGvvJvIQ2AvD7DGaAonNJtD1Qke+Fw+xkw==
+expo-libmpv@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/expo-libmpv/-/expo-libmpv-0.4.4.tgz#6e88384f6bd3d32e0172202cc2e72ad8429463c1"
+  integrity sha512-+7LnSzPKrGCxAr5c8ycsA8qjCsTJaGN+gRhzCDK4DbNv9vu7lBjYKG6aE4WJqBWjZGTq8lWl+IAekVuSyZabCA==
   dependencies:
     expo-build-properties "1.0.9"
 

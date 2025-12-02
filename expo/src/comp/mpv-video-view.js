@@ -1,6 +1,6 @@
 import React from 'react'
 import LibmpvView from 'expo-libmpv';
-import { Player } from 'snowstream'
+import Player from 'snowstream-player'
 import CONST from '../constant'
 
 // https://mpv.io/manual/master/#property-manipulation
@@ -52,13 +52,13 @@ export default function MpvVideoView(props) {
         }
     }, [player.subtitleDelay])
 
-    const eventHandler = React.useCallback((libmpvEvent) => {
+    const eventHandler = (libmpvEvent) => {
         Player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })
-    }, [])
+    }
 
-    const logHandler = React.useCallback((libmpvLog) => {
+    const logHandler = (libmpvLog) => {
         Player.action.onVideoUpdate({ kind: 'mpvlog', libmpvLog })
-    }, [])
+    }
 
     if (!player || !player.clientOptions) {
         return null
@@ -74,10 +74,15 @@ export default function MpvVideoView(props) {
         videoWidth = player.videoWidth
         videoHeight = player.videoHeight
     }
+    let videoOutput = 'gpu'
+    if (player.clientOptions?.deviceProfile === 'NVIDIA Shield') {
+        videoOutput = 'gpu-next'
+    }
 
     return (
         <LibmpvView
             ref={forwardRef}
+            videoOutput={videoOutput}
             playUrl={player.videoUrl}
             isPlaying={player.isPlaying}
             useHardwareDecoder={player.clientOptions?.hardwareDecoder}

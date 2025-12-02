@@ -1,6 +1,6 @@
 {
     "name": "snowstream",
-    "version": "1.4.3",
+    "version": "1.4.6",
     "dependencies": {
         "@sentry/react-native": "7.4.0",
         "axios": "1.12.2",
@@ -9,7 +9,7 @@
         "expo-constants": "18.0.9",
         "expo-image": "^3.0.10",
         "expo-keep-awake": "15.0.7",
-        "expo-libmpv": "^0.4.0",
+        "expo-libmpv": "^0.4.4",
         "expo-linking": "8.0.8",
         "expo-secure-store": "15.0.7",
         "expo-snowui": "^1.6.0",

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Platform } from 'react-native'
 import Snow from 'expo-snowui'
-import { Player } from 'snowstream'
+import Player from 'snowstream-player'
 import Video from 'react-native-video';
 import { ViewType } from 'react-native-video'
 

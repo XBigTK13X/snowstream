@@ -8,6 +8,7 @@ const config = getSentryExpoConfig(__dirname);
 config.resolver.extraNodeModules = {
   ...config.resolver.extraNodeModules,
   snowstream: path.resolve(__dirname, 'src'),
+  "snowstream-player": path.resolve(__dirname, 'src/player'),
 };
 
 config.resolver.unstable_conditionNames = ['browser', 'require', 'react-native']

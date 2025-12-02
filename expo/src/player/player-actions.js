@@ -67,11 +67,11 @@ class PlayerActions {
             playerState.hasCloseOverlay = !!deps.closeOverlay
         }
 
-        const player = snapshot(playerState)
-        if (player.progressSeconds == null) {
+
+        if (playerState.progressSeconds == null) {
             playerState.progressSeconds = playerState.isTranscode ? 0 : null
         }
-        if (!player.initialSeekComplete && playerState.isTranscode) {
+        if (!playerState.initialSeekComplete && playerState.isTranscode) {
             playerState.initialSeekComplete = true
         }
     }
@@ -111,30 +111,30 @@ class PlayerActions {
     }
 
     effectLoadVideo = () => {
-        const player = snapshot(playerState)
-        if (player.videoUrl || !player.settingsLoaded) return
-        if (player.videoLoading || player.manualSeekSeconds) return
 
-        if (player.routeParams?.audioTrack && playerState.audioTrackIndex !== player.routeParams?.audioTrack) {
-            playerState.audioTrackIndex = parseInt(player.routeParams?.audioTrack, 10)
+        if (playerState.videoUrl || !playerState.settingsLoaded) return
+        if (playerState.videoLoading || playerState.manualSeekSeconds) return
+
+        if (playerState.routeParams?.audioTrack && playerState.audioTrackIndex !== playerState.routeParams?.audioTrack) {
+            playerState.audioTrackIndex = parseInt(playerState.routeParams?.audioTrack, 10)
         }
-        if (player.routeParams?.subtitleTrack && playerState.subtitleTrackIndex !== player.routeParams?.subtitleTrack) {
-            playerState.subtitleTrackIndex = parseInt(player.routeParams?.subtitleTrack, 10)
+        if (playerState.routeParams?.subtitleTrack && playerState.subtitleTrackIndex !== playerState.routeParams?.subtitleTrack) {
+            playerState.subtitleTrackIndex = parseInt(playerState.routeParams?.subtitleTrack, 10)
         }
 
-        const loadHandler = player.isTranscode ? this.loadTranscodeHandler : this.loadVideoHandler
+        const loadHandler = playerState.isTranscode ? this.loadTranscodeHandler : this.loadVideoHandler
         if (!loadHandler) return
 
         playerState.videoLoading = true
         this.onAddLog({
             kind: 'snowstream',
-            message: player.isTranscode ? 'firing off a loadTranscode' : 'firing off a loadVideo',
-            routeParams: player.routeParams,
+            message: playerState.isTranscode ? 'firing off a loadTranscode' : 'firing off a loadVideo',
+            routeParams: playerState.routeParams,
         })
 
-        const args = player.isTranscode
-            ? [this.apiClient, player.routeParams, player.clientOptions.deviceProfile, player.initialSeekSeconds]
-            : [this.apiClient, player.routeParams, player.clientOptions.deviceProfile]
+        const args = playerState.isTranscode
+            ? [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile, playerState.initialSeekSeconds]
+            : [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile]
 
         loadHandler(...args)
             .then(this.parseVideoPayload)
@@ -155,18 +155,17 @@ class PlayerActions {
     }
 
     onTranscodeSeek = () => {
-        const player = snapshot(playerState)
-        this.onAddLog({ kind: 'snowstream', message: `transcode triggered seek to ${player.manualSeekSeconds} seconds` })
+        this.onAddLog({ kind: 'snowstream', message: `transcode triggered seek to ${playerState.manualSeekSeconds} seconds` })
         playerState.videoLoaded = false
         playerState.videoLoading = false
         playerState.videoUrl = null
         playerState.transcodeOnResume = false
-        if (player.loadTranscode) {
+        if (playerState.loadTranscode) {
             playerState.loadTranscode(
                 this.apiClient,
-                player.routeParams,
-                player.clientOptions.deviceProfile,
-                player.manualSeekSeconds
+                playerState.routeParams,
+                playerState.clientOptions.deviceProfile,
+                playerState.manualSeekSeconds
             ).then(this.parseVideoPayload)
         }
     }
@@ -174,11 +173,11 @@ class PlayerActions {
     onResumeVideo = () => {
         playerState.controlsVisible = false
         playerState.isPlaying = true
-        const player = snapshot(playerState)
-        if (player.completeOnResume) {
+
+        if (playerState.completeOnResume) {
             this.onPlaybackComplete()
         }
-        if (player.transcodeOnResume) {
+        if (playerState.transcodeOnResume) {
             this.onTranscodeSeek()
         }
     }
@@ -189,11 +188,11 @@ class PlayerActions {
     }
 
     onPlaybackComplete = () => {
-        const player = snapshot(playerState)
-        this.onProgress(player.durationSeconds, 'playback-complete')
+
+        this.onProgress(playerState.durationSeconds, 'playback-complete')
             .then(() => {
                 if (this.onCompleteHandler) {
-                    return this.onCompleteHandler(this.apiClient, player.routes, this.navPush)
+                    return this.onCompleteHandler(this.apiClient, playerState.routes, this.navPush)
                 } else if (this.navPop) {
                     return this.navPop()
                 }
@@ -211,16 +210,16 @@ class PlayerActions {
         this.clearModals?.()
         this.closeOverlay?.()
 
-        const player = snapshot(playerState)
+
 
         if (goHome && this.navPush) {
-            this.navPush({ path: player.routes.landing, func: false })
+            this.navPush({ path: playerState.routes.landing, func: false })
             this.reset()
             return
         }
 
         if (this.onStopVideoHandler) {
-            this.onStopVideoHandler(this.apiClient, player.routes, this.navPush)
+            this.onStopVideoHandler(this.apiClient, playerState.routes, this.navPush)
             this.reset()
         } else {
             if (this.navPop) {
@@ -241,79 +240,87 @@ class PlayerActions {
     }
 
     onProgress = async (nextProgressSeconds, source, nextProgressPercent) => {
-        const player = snapshot(playerState)
-        if (!player.videoLoaded) return
+
+        //console.log({
+        //    nextProgressSeconds,
+        //    source,
+        //    nextProgressPercent,
+        //    loaded: playerState.videoLoaded,
+        //    transcode: playerState.isTranscode,
+        //    duration: playerState.durationSeconds,
+        //    progress: playerState.progressSeconds
+        //})
+
+        if (!playerState.videoLoaded) return
 
         if (source === 'manual-seek') {
             if (nextProgressSeconds == null && nextProgressPercent != null) {
-                nextProgressSeconds = nextProgressPercent * player.durationSeconds
+                nextProgressSeconds = nextProgressPercent * playerState.durationSeconds
             }
             if (nextProgressSeconds < 0) nextProgressSeconds = 0
-            if (player.durationSeconds && nextProgressSeconds > player.durationSeconds) {
-                nextProgressSeconds = player.durationSeconds
+            if (playerState.durationSeconds && nextProgressSeconds > playerState.durationSeconds) {
+                nextProgressSeconds = playerState.durationSeconds
             }
             playerState.completeOnResume = nextProgressPercent >= 1.0
-            if (!player.isTranscode) playerState.seekToSeconds = nextProgressSeconds
+            if (!playerState.isTranscode) playerState.seekToSeconds = nextProgressSeconds
         }
 
         const enoughTimeDiff =
-            !player.progressSeconds ||
-            Math.abs(nextProgressSeconds - player.progressSeconds) >= player.config.progressMinDeltaSeconds
+            !playerState.progressSeconds ||
+            Math.abs(nextProgressSeconds - playerState.progressSeconds) >= playerState.config.progressMinDeltaSeconds
 
         if (source === 'manual-seek' || enoughTimeDiff) {
             playerState.progressSeconds = nextProgressSeconds
-            if (player.durationSeconds > 0 && player.progressSeconds > 0) {
+            if (playerState.durationSeconds > 0 && playerState.progressSeconds > 0) {
                 if (this.updateProgressHandler) {
                     const isWatched = await this.updateProgressHandler(
                         this.apiClient,
-                        player.routeParams,
+                        playerState.routeParams,
                         nextProgressSeconds,
-                        player.durationSeconds
+                        playerState.durationSeconds
                     )
-                    if (isWatched && !player.countedWatch && this.increaseWatchCountHandler) {
+                    if (isWatched && !playerState.countedWatch && this.increaseWatchCountHandler) {
                         playerState.countedWatch = true
-                        await this.increaseWatchCountHandler(this.apiClient, player.routeParams)
+                        await this.increaseWatchCountHandler(this.apiClient, playerState.routeParams)
                     }
                 }
             }
         }
 
-        if (source === 'manual-seek' && player.isTranscode && player.loadTranscode) {
+        if (source === 'manual-seek' && playerState.isTranscode && playerState.loadTranscode) {
             playerState.manualSeekSeconds = nextProgressSeconds
             playerState.transcodeOnResume = true
         }
     }
 
     performInitialSeek = () => {
-        const player = snapshot(playerState)
-        if (!player.initialSeekComplete && player.initialSeekSeconds) {
+        if (!playerState.initialSeekComplete && playerState.initialSeekSeconds) {
             this.onAddLog({ kind: 'snowstream', message: 'perform initial seek' })
-            playerState.seekToSeconds = player.initialSeekSeconds
-            playerState.progressSeconds = player.initialSeekSeconds
+            playerState.seekToSeconds = playerState.initialSeekSeconds
+            playerState.progressSeconds = playerState.initialSeekSeconds
             playerState.initialSeekComplete = true
         }
     }
 
     onVideoProgressEvent = (elapsedSeconds) => {
-        const player = snapshot(playerState)
+
         let adjustedSeconds = elapsedSeconds
-        if (player.isTranscode) {
-            adjustedSeconds += player.manualSeekSeconds == null
-                ? player.initialSeekSeconds
-                : player.manualSeekSeconds
+        if (playerState.isTranscode) {
+            adjustedSeconds += playerState.manualSeekSeconds == null
+                ? playerState.initialSeekSeconds
+                : playerState.manualSeekSeconds
         }
         this.onProgress(adjustedSeconds, 'player-event')
     }
 
     onVideoUpdate = (eventInfo) => {
-        const player = snapshot(playerState)
-        if (player.config?.debugVideoPlayer) util.log({ eventInfo })
+        if (playerState.config?.debugVideoPlayer) util.log({ eventInfo })
 
-        if (!player.isTranscode) {
-            if (player.playerKind === 'mpv' && eventInfo?.libmpvLog?.text?.includes('Starting playback')) {
+        if (!playerState.isTranscode) {
+            if (playerState.playerKind === 'mpv' && eventInfo?.libmpvLog?.text?.includes('Starting playback')) {
                 this.performInitialSeek()
             } else if (
-                player.playerKind === 'rnv' &&
+                playerState.playerKind === 'rnv' &&
                 eventInfo?.kind === 'rnvevent' &&
                 eventInfo?.data?.event === 'onReadyForDisplay'
             ) {
@@ -333,8 +340,12 @@ class PlayerActions {
         } else if (eventInfo?.kind === 'mpvevent') {
             const mpvEvent = eventInfo.libmpvEvent
             if (mpvEvent?.property) {
-                if (mpvEvent.property === 'time-pos') this.onVideoProgressEvent(mpvEvent.value)
-                else if (!['demuxer-cache-time', 'track-list'].includes(mpvEvent.property)) this.onAddLog(eventInfo)
+                if (mpvEvent.property === 'time-pos') {
+                    this.onVideoProgressEvent(Math.floor(mpvEvent.value))
+                }
+                else if (!['demuxer-cache-time', 'track-list'].includes(mpvEvent.property)) {
+                    this.onAddLog(eventInfo)
+                }
                 if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
                     this.onPlaybackComplete()
                 }
@@ -349,8 +360,12 @@ class PlayerActions {
     }
 
     onCriticalError = (error) => {
-        const player = snapshot(playerState)
-        if (!player.isTranscode && this.navPush) {
+        // This is some unknown noise from the latest mpv
+        // Should probably figure out the root cause
+        if (error?.includes("convert undefined")) {
+            return
+        }
+        if (!playerState.isTranscode && this.navPush) {
             const newParams = { ...playerState.routeParams, transcode: true }
             playerState.videoLoaded = false
             playerState.videoLoading = false
@@ -390,11 +405,12 @@ class PlayerActions {
     }
 
     onCloseTranscodeSession = () => {
-        const player = snapshot(playerState)
-        if (player.transcodeId) this.apiClient.closeTranscodeSession(playerState.transcodeId)
+
+        if (playerState.transcodeId) this.apiClient.closeTranscodeSession(playerState.transcodeId)
     }
 
     parseVideoPayload = async (response) => {
+        playerState.videoLoaded = true
         this.onAddLog({ kind: 'snowstream', message: 'video loaded', parseVideoPayload: response })
         if (response.error) return this.onCriticalError(response.error)
 
@@ -431,17 +447,17 @@ class PlayerActions {
         if (response.subtitle_index) {
             playerState.subtitleTrackIndex = response.subtitle_index
         }
-        playerState.videoLoaded = true
+
     }
 
     onSelectTrack = (track) => {
-        const player = snapshot(playerState)
+
         if (track.kind === 'audio') {
             playerState.audioTrackIndex =
-                player.audioTrackIndex === track.audio_index ? -1 : track.audio_index
+                playerState.audioTrackIndex === track.audio_index ? -1 : track.audio_index
         } else if (track.kind === 'subtitle') {
             playerState.subtitleTrackIndex =
-                player.subtitleTrackIndex === track.subtitle_index ? -1 : track.subtitle_index
+                playerState.subtitleTrackIndex === track.subtitle_index ? -1 : track.subtitle_index
         }
     }
 
@@ -459,6 +475,8 @@ class PlayerActions {
         playerState.subtitleFontScale += direction * 0.1
     }
 
+    // This was used from the player controls before the valtio rewrite
+    // It stopped working and I shut it off to fix layer
     toggleTranscode = () => {
         playerState.videoLoaded = false
         playerState.videoLoading = false
@@ -469,6 +487,8 @@ class PlayerActions {
         this.navPush?.({ params: playerState.routeParams, func: false })
     }
 
+    // This was used from the player controls before the valtio rewrite
+    // It stopped working and I shut it off to fix layer
     togglePlayerKind = () => {
         playerState.videoLoaded = false
         playerState.videoLoading = false

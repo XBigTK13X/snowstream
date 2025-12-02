@@ -111,7 +111,7 @@ device_list = [
     })
 ]
 
-default_device = 'CCwGTV4K'
+default_device = 'Google Streamer'
 device_lookup = {}
 for device in device_list:
     device_lookup[device.name] = device

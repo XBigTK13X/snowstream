@@ -1,6 +1,6 @@
 import React from 'react'
 import Snow from 'expo-snowui'
-import { Player } from 'snowstream'
+import Player from 'snowstream-player'
 
 export default function NullVideoView() {
     const player = Player.useSnapshot(Player.state)
