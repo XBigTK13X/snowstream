@@ -112,8 +112,12 @@ class PlayerActions {
 
     effectLoadVideo = () => {
 
-        if (playerState.videoUrl || !playerState.settingsLoaded) return
-        if (playerState.videoLoading || playerState.manualSeekSeconds) return
+        if (playerState.videoUrl || !playerState.settingsLoaded) {
+            return
+        }
+        if (playerState.videoLoading || playerState.manualSeekSeconds) {
+            return
+        }
 
         if (playerState.routeParams?.audioTrack && playerState.audioTrackIndex !== playerState.routeParams?.audioTrack) {
             playerState.audioTrackIndex = parseInt(playerState.routeParams?.audioTrack, 10)
@@ -123,7 +127,9 @@ class PlayerActions {
         }
 
         const loadHandler = playerState.isTranscode ? this.loadTranscodeHandler : this.loadVideoHandler
-        if (!loadHandler) return
+        if (!loadHandler) {
+            return
+        }
 
         playerState.videoLoading = true
         this.onAddLog({
@@ -240,17 +246,6 @@ class PlayerActions {
     }
 
     onProgress = async (nextProgressSeconds, source, nextProgressPercent) => {
-
-        //console.log({
-        //    nextProgressSeconds,
-        //    source,
-        //    nextProgressPercent,
-        //    loaded: playerState.videoLoaded,
-        //    transcode: playerState.isTranscode,
-        //    duration: playerState.durationSeconds,
-        //    progress: playerState.progressSeconds
-        //})
-
         if (!playerState.videoLoaded) return
 
         if (source === 'manual-seek') {
@@ -317,7 +312,7 @@ class PlayerActions {
         if (playerState.config?.debugVideoPlayer) util.log({ eventInfo })
 
         if (!playerState.isTranscode) {
-            if (playerState.playerKind === 'mpv' && eventInfo?.libmpvLog?.text?.includes('Starting playback')) {
+            if (playerState.playerKind === 'mpv' && eventInfo?.libmpvEvent?.eventKind === 'PLAYBACK_RESTART') {
                 this.performInitialSeek()
             } else if (
                 playerState.playerKind === 'rnv' &&
@@ -405,14 +400,21 @@ class PlayerActions {
     }
 
     onCloseTranscodeSession = () => {
-
-        if (playerState.transcodeId) this.apiClient.closeTranscodeSession(playerState.transcodeId)
+        if (playerState.transcodeId) {
+            this.apiClient.closeTranscodeSession(playerState.transcodeId)
+        }
     }
 
     parseVideoPayload = async (response) => {
         playerState.videoLoaded = true
-        this.onAddLog({ kind: 'snowstream', message: 'video loaded', parseVideoPayload: response })
-        if (response.error) return this.onCriticalError(response.error)
+        this.onAddLog({
+            kind: 'snowstream',
+            message: 'video loaded',
+            parseVideoPayload: response
+        })
+        if (response.error) {
+            return this.onCriticalError(response.error)
+        }
 
         if (response.url) {
             const urlExists = await util.urlExists(response.url)
@@ -424,8 +426,12 @@ class PlayerActions {
                         base + (rest ? '/' + rest.slice(1).split('/').map(encodeURIComponent).join('/') : '')
                 )
         }
-        if (response.name) playerState.videoTitle = response.name
-        if (response.durationSeconds) playerState.durationSeconds = response.durationSeconds
+        if (response.name) {
+            playerState.videoTitle = response.name
+        }
+        if (response.durationSeconds) {
+            playerState.durationSeconds = response.durationSeconds
+        }
         if (response.tracks) {
             playerState.mediaTracks = response.tracks
             if (response?.tracks?.video) {
@@ -448,21 +454,27 @@ class PlayerActions {
             playerState.subtitleTrackIndex = response.subtitle_index
         }
 
+        if (response.plan) {
+            playerState.playbackPlan = response.plan
+        }
+
     }
 
     onSelectTrack = (track) => {
-
         if (track.kind === 'audio') {
-            playerState.audioTrackIndex =
-                playerState.audioTrackIndex === track.audio_index ? -1 : track.audio_index
+            playerState.audioTrackIndex = playerState.audioTrackIndex === track.audio_index ? -1 : track.audio_index
         } else if (track.kind === 'subtitle') {
-            playerState.subtitleTrackIndex =
-                playerState.subtitleTrackIndex === track.subtitle_index ? -1 : track.subtitle_index
+            playerState.subtitleTrackIndex = playerState.subtitleTrackIndex === track.subtitle_index ? -1 : track.subtitle_index
         }
     }
 
-    setAudioDelaySeconds = (value) => { playerState.audioDelaySeconds = value }
-    setSubtitleDelaySeconds = (value) => { playerState.subtitleDelaySeconds = value }
+    setAudioDelaySeconds = (value) => {
+        playerState.audioDelaySeconds = value
+    }
+
+    setSubtitleDelaySeconds = (value) => {
+        playerState.subtitleDelaySeconds = value
+    }
 
     changeSubtitleColor = (direction) => {
         const newColor = { ...playerState.subtitleColor }
@@ -476,7 +488,7 @@ class PlayerActions {
     }
 
     // This was used from the player controls before the valtio rewrite
-    // It stopped working and I shut it off to fix layer
+    // It stopped working and I shut it off to fix later
     toggleTranscode = () => {
         playerState.videoLoaded = false
         playerState.videoLoading = false
@@ -488,7 +500,7 @@ class PlayerActions {
     }
 
     // This was used from the player controls before the valtio rewrite
-    // It stopped working and I shut it off to fix layer
+    // It stopped working and I shut it off to fix later
     togglePlayerKind = () => {
         playerState.videoLoaded = false
         playerState.videoLoading = false

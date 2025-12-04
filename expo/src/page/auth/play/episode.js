@@ -14,7 +14,8 @@ export default function PlayEpisodePage() {
                 url: videoFile.network_path,
                 name: `${episode.season.show.name} - ${C.util.formatEpisodeTitle(episode)}`,
                 durationSeconds: videoFile.info.duration_seconds,
-                tracks: videoFile.info.tracks
+                tracks: videoFile.info.tracks,
+                plan: videoFile.plan
             }
         })
     }

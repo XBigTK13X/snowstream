@@ -53,6 +53,7 @@ export const initialPlayerState = {
     logsVisible: false,
 
     mediaTracks: null,
+    playbackPlan: {},
 
     audioDelaySeconds: 0,
     audioTrackIndex: 0,
@@ -66,6 +67,7 @@ export const playerState = proxy({
     ...initialPlayerState,
     logs: [],
     routeParams: {},
+    playbackPlan: {},
     subtitleColor: { shade: 1.0, alpha: 1.0 },
 
     get settingsLoaded() {

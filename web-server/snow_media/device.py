@@ -46,6 +46,11 @@ class DeviceProfile:
         self.audio.dolby.atmos = config.get('dolby_atmos')
         self.audio.dolby.hd = config.get('dolby_hd')
 
+        self.mpv = Stub()
+        self.mpv.video_output = config.get('mpv_video_output','gpu')
+        self.mpv.decoding_mode = config.get('mpv_decoding_mode','mediacodec-copy')
+        self.mpv.accelerated_codecs = config.get('mpv_accelerated_codecs','h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1')
+
 device_list = [
     DeviceProfile({
         'name': 'Google Streamer',
@@ -58,7 +63,7 @@ device_list = [
         'h264_ten': 'hard',
         'vp9': 'hard',
         'av1': 'hard',
-        'transcode_bit_rate': '15M'
+        'transcode_bit_rate': '15M',
     }),
     DeviceProfile({
         'name': 'NVIDIA Shield',
@@ -69,12 +74,15 @@ device_list = [
         'h264_ten': 'soft',
         'h265_eight': 'hard',
         'h265_ten': 'hard',
+        'av1': 'soft',
         'vp9': 'hard',
         'dts_x': 'hard',
         'dts_hd': 'hard',
         'dolby_atmos': 'hard',
         'dolby_hd': 'hard',
-        'require_password': False
+        'require_password': False,
+        'mpv_video_output': 'gpu-next',
+        'mpv_accelerated_codecs': 'h264,hevc,mpeg4,mpeg2video,vp8,vp9'
     }),
         DeviceProfile({
         'name': 'CCwGTV4K',
@@ -87,7 +95,8 @@ device_list = [
         'h265_ten': 'hard',
         'h264_eight': 'hard',
         'av1': 'transcode',
-        'transcode_bit_rate': '15M'
+        'transcode_bit_rate': '15M',
+        'mpv_accelerated_codecs': 'h264,hevc,mpeg4,mpeg2video,vp8,vp9'
     }),
     DeviceProfile({
         'force_player': 'exo',

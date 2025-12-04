@@ -1,6 +1,6 @@
 import PlayMediaPage from './media'
 
-export default function PlayStreamablePage() {
+export default function PlayKeepsakePage() {
     const loadVideo = (apiClient, routeParams) => {
         return new Promise((resolve) => {
             return resolve({

@@ -1,5 +1,5 @@
 import React from 'react'
-import LibmpvView from 'expo-libmpv';
+import LibmpvView, { DEFAULT_ACCELERATED_CODECS } from 'expo-libmpv';
 import Player from 'snowstream-player'
 import CONST from '../constant'
 
@@ -74,15 +74,25 @@ export default function MpvVideoView(props) {
         videoWidth = player.videoWidth
         videoHeight = player.videoHeight
     }
-    let videoOutput = 'gpu'
-    if (player.clientOptions?.deviceProfile === 'NVIDIA Shield') {
-        videoOutput = 'gpu-next'
+    let videoOutput = player.playbackPlan?.mpv_video_output
+    if (!videoOutput) {
+        videoOutput = 'gpu'
+    }
+    let decodingMode = player.playbackPlan?.mpv_decoding_mode
+    if (!decodingMode) {
+        decodingMode = 'mediacodec-copy'
+    }
+    let acceleratedCodecs = player.playbackPlan?.mpv_accelerated_codecs
+    if (!acceleratedCodecs) {
+        acceleratedCodecs = 'h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1'
     }
 
     return (
         <LibmpvView
             ref={forwardRef}
             videoOutput={videoOutput}
+            decodingMode={decodingMode}
+            acceleratedCodecs={acceleratedCodecs}
             playUrl={player.videoUrl}
             isPlaying={player.isPlaying}
             useHardwareDecoder={player.clientOptions?.hardwareDecoder}

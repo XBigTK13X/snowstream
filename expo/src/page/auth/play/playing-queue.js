@@ -27,7 +27,8 @@ export default function PlayPlayingQueuePage() {
                         durationSeconds: videoFile.info.duration_seconds,
                         tracks: videoFile.info.tracks,
                         audio_index: videoFile?.info?.tracks?.audio.at(0)?.audio_index ?? -1,
-                        subtitle_index: videoFile?.info?.tracks?.subtitle.at(0)?.subtitle_index ?? -1
+                        subtitle_index: videoFile?.info?.tracks?.subtitle.at(0)?.subtitle_index ?? -1,
+                        plan: videoFile.plan
                     }
                 })
             }
@@ -42,7 +43,8 @@ export default function PlayPlayingQueuePage() {
                         durationSeconds: videoFile.info.duration_seconds,
                         tracks: videoFile.info.tracks,
                         audio_index: videoFile?.info?.tracks?.audio.at(0)?.audio_index ?? -1,
-                        subtitle_index: videoFile?.info?.tracks?.subtitle.at(0)?.subtitle_index ?? -1
+                        subtitle_index: videoFile?.info?.tracks?.subtitle.at(0)?.subtitle_index ?? -1,
+                        plan: videoFile.plan
                     }
                 })
             }

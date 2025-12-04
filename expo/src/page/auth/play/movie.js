@@ -12,7 +12,8 @@ export default function PlayMoviePage() {
                 url: videoFile.network_path,
                 name: movie.name,
                 durationSeconds: videoFile.info.duration_seconds,
-                tracks: videoFile.info.tracks
+                tracks: videoFile.info.tracks,
+                plan: videoFile.plan
             }
         })
     }

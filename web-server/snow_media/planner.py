@@ -7,6 +7,9 @@ import snow_media
 class PlaybackPlan:
     def __init__(self):
         self.player = 'mpv'
+        self.mpv_video_output = None
+        self.mpv_decoding_mode = None
+        self.mpv_accelerated_codecs = None
         self.transcode_container = None
         self.transcode_video_codec = None
         self.transcode_audio_codec = None
@@ -14,29 +17,38 @@ class PlaybackPlan:
         self.video_filter_kind = None
         self.video_requires_transcode = False
         self.audio_requires_transcode = {}
-        self.hardware_acceleration = None
         self.reasons = []
 
 
 def create_plan(device_profile:str, snowstream_info:dict):
     device = snow_media.device.get_device(device_profile)
     plan = PlaybackPlan()
+
     plan.transcode_container = device.transcode.container
     plan.transcode_audio_codec = device.transcode.audio_codec
     plan.transcode_video_codec = device.transcode.video_codec
+
+    plan.mpv_video_output = device.mpv.video_output
+    plan.mpv_decoding_mode = device.mpv.decoding_mode
+    plan.mpv_accelerated_codecs = device.mpv.accelerated_codecs
+
     if device.force_player:
         plan.player = device.force_player
+
     if device.transcode.bit_rate:
         plan.transcode_bit_rate = device.transcode.bit_rate
+
     if snowstream_info and 'tracks' in snowstream_info:
+        # Video plans
         if 'video' in snowstream_info['tracks']:
             video_track = snowstream_info['tracks']['video'][0]
+
             # HDR plans
-            # TODO if soft codec supported, then disable hardware acceleration
             if 'hdr_format' in video_track:
                 plan.transcode_container = device.transcode.hdr_container
                 plan.player = 'exo'
                 plan.reasons.append('mpv cannot passthrough HDR')
+
             hdr_kind = None
             if 'hdr_compatibility' in video_track and video_track['hdr_compatibility']:
                 hdr_kind = video_track['hdr_compatibility'].lower()
@@ -51,11 +63,19 @@ def create_plan(device_profile:str, snowstream_info:dict):
                     plan.video_requires_transcode = True
                     plan.reasons.append('Device does not support Dolby Vision video')
 
-            # Codec compatibility plans
-            if device.video.av1 == 'transcode' and 'av1' in video_track['format'].lower():
-                plan.video_requires_transcode = True
+            # Video codec compatibility plans
+            if 'av1' in video_track['format'].lower():
                 plan.reasons.append('Device does not support AV1 codec')
+                if device.video.av1 == 'transcode':
+                    plan.video_requires_transcode = True
+                if device.video.av1 == 'soft':
+                    plan.mpv_decoding_mode = 'no'
 
+            if device.video.h264.ten == 'soft' and 'avc' in video_track['format'].lower() and '10' in video_track['bit_depth']:
+                plan.mpv_decoding_mode = 'no'
+                plan.reasons.append('Device cannot hardware accelerate h264 10 bit')
+
+        # Audio plans
         if 'audio' in snowstream_info['tracks']:
             for audio_track in snowstream_info['tracks']['audio']:
                 if 'codec' in audio_track:
@@ -64,5 +84,5 @@ def create_plan(device_profile:str, snowstream_info:dict):
                         plan.reasons.append('Device does not support TrueHD audio')
 
         if not plan.reasons:
-            plan.reasons.append('No plan needed. Device can play the media directly or via transcode fallback')
+            plan.reasons.append('No plan needed. Device can play the media or fallback to transcode')
     return plan
