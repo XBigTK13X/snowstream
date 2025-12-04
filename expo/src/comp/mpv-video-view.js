@@ -95,7 +95,6 @@ export default function MpvVideoView(props) {
             acceleratedCodecs={acceleratedCodecs}
             playUrl={player.videoUrl}
             isPlaying={player.isPlaying}
-            useHardwareDecoder={player.clientOptions?.hardwareDecoder}
             surfaceWidth={videoWidth}
             surfaceHeight={videoHeight}
             onLibmpvEvent={eventHandler}

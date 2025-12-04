@@ -34,15 +34,18 @@ function HeaderNav(props) {
                 focusDown="page-entry">
                 <SnowTextButton
                     title="Home"
+                    short
                     onPress={navPush({ path: routes.landing })}
                 />
-                <SnowTextButton title="Sign Out" onPress={signOut} />
+                <SnowTextButton title="Sign Out" short onPress={signOut} />
                 {isAdmin ? <SnowTextButton
                     title="Dashboard"
+                    short
                     onPress={navPush({ path: routes.adminDashboard })} />
                     : null}
                 <SnowTextButton
                     title={`${displayName}`}
+                    short
                     onPress={navPush({ path: routes.info })}
                     onLongPress={navPush({ path: routes.options })} />
             </SnowGrid>

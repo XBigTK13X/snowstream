@@ -25,7 +25,6 @@ export default function OptionsPage() {
         alwaysTranscode: clientOptions?.alwaysTranscode ?? '',
         alwaysUsePlayer: clientOptions?.alwaysUsePlayer ?? '',
         audioCompression: clientOptions?.audioCompression ?? '',
-        hardwareDecoder: clientOptions?.hardwareDecoder ?? '',
     })
     const formRef = C.React.useRef(form)
 
@@ -69,10 +68,6 @@ export default function OptionsPage() {
 
     const chooseAudioCompression = (selection) => {
         setForm(prev => ({ ...prev, audioCompression: selection === 0 ? false : true }))
-    }
-
-    const chooseHardwareDecoder = (selection) => {
-        setForm(prev => ({ ...prev, hardwareDecoder: selection === 0 ? false : true }))
     }
 
     const chooseAlwaysTranscode = (selection) => {
@@ -130,8 +125,7 @@ export default function OptionsPage() {
                 headers={[
                     'Audio',
                     'Resolution',
-                    'Transcode',
-                    'Hardware',
+                    'Transcode'
                 ]}>
                 <C.SnowDropdown
                     title="Audio Compression (mpv)"
@@ -148,11 +142,6 @@ export default function OptionsPage() {
                     options={['No', 'Yes']}
                     onValueChange={chooseAlwaysTranscode}
                     valueIndex={form.alwaysTranscode === true ? 1 : 0} />
-                <C.SnowDropdown
-                    title="Hardware Decoder (mpv)"
-                    options={['No', 'Yes']}
-                    onValueChange={chooseHardwareDecoder}
-                    valueIndex={form.hardwareDecoder === true ? 1 : 0} />
 
 
             </C.SnowTabs>

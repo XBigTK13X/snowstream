@@ -358,6 +358,8 @@ def get_show_episode_list(
                 continue
             if not model.name or 'TBA' in model.name:
                 model.name = dbi.util.get_episode_slug(model)
+            else:
+                model.name = f'{dbi.util.get_episode_slug(model)} - {model.name}'
             results.append(model)
         if first_result == True:
             return results[0]

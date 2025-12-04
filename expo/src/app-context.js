@@ -251,9 +251,6 @@ export function AppContextProvider(props) {
             if (!storedOptions.hasOwnProperty('audioCompression')) {
                 storedOptions.audioCompression = false
             }
-            if (!storedOptions.hasOwnProperty('hardwareDecoder')) {
-                storedOptions.hardwareDecoder = true
-            }
             if (!storedOptions.hasOwnProperty('deviceProfile')) {
                 storedOptions.deviceProfile = 'Google Streamer'
             }

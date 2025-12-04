@@ -2507,9 +2507,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.5.263:
-  version "1.5.264"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.264.tgz#38d2262e290bf5b424ba1488e072c7b0163400be"
-  integrity sha512-1tEf0nLgltC3iy9wtlYDlQDc5Rg9lEKVjEmIHJ21rI9OcqkvD45K1oyNIRA4rR1z3LgJ7KeGzEBojVcV6m4qjA==
+  version "1.5.265"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.265.tgz#ccea47940ee09d864f22fc7aadb2e992056ea0a5"
+  integrity sha512-B7IkLR1/AE+9jR2LtVF/1/6PFhY5TlnEHnlrKmGk7PvkJibg5jr+mLXLLzq3QYl6PA1T/vLDthQPqIPAlS/PPA==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -2713,10 +2713,10 @@ expo-server@^1.0.3:
   resolved "https://registry.yarnpkg.com/expo-server/-/expo-server-1.0.5.tgz#2d52002199a2af99c2c8771d0657916004345ca9"
   integrity sha512-IGR++flYH70rhLyeXF0Phle56/k4cee87WeQ4mamS+MkVAVP+dDlOHf2nN06Z9Y2KhU0Gp1k+y61KkghF7HdhA==
 
-expo-snowui@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.0.tgz#ba77253abb7db048273bc14a3b7371bdea9c3a7a"
-  integrity sha512-vREWCuNzpgV4PY/3HwuVW+/gUEEql9K/26sbSdomo328yyd+0M0PwQWEAOc5T85VFo28+8Kx1pcIEZ3tWbb+4Q==
+expo-snowui@1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.5.tgz#e59a5c54025ab38e278670bc5b8e8dcfacab3fc7"
+  integrity sha512-1b1RCz0NNiSRpiqDqAXXH8KrU7v2Vmdks3k+TaGCkbOeNutOik4GUDCrMKkSpWgGDRrLkmbZ7RM2h8efLK9ZBQ==
   dependencies:
     expo "54.0.21"
     expo-image "^3.0.10"
