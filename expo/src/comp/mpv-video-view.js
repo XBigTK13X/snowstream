@@ -73,6 +73,10 @@ export default function MpvVideoView(props) {
     if (player.clientOptions?.resolutionKind === 'Video File') {
         videoWidth = player.videoWidth
         videoHeight = player.videoHeight
+        if (videoWidth > CONST.resolution.fullHd.width) {
+            videoWidth = CONST.resolution.fullHd.width
+            videoHeight = CONST.resolution.fullHd.height
+        }
     }
     let videoOutput = player.playbackPlan?.mpv_video_output
     if (!videoOutput) {

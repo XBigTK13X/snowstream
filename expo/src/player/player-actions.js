@@ -1,6 +1,6 @@
 import Snow from 'expo-snowui'
 import _ from 'lodash'
-import { snapshot } from 'valtio'
+import * as NavigationBar from 'expo-navigation-bar';
 import { playerState, initialPlayerState } from './player-state'
 import util from '../util'
 import CONST from '../constant'
@@ -177,6 +177,7 @@ class PlayerActions {
     }
 
     onResumeVideo = () => {
+        NavigationBar.setVisibilityAsync('hidden');
         playerState.controlsVisible = false
         playerState.isPlaying = true
 
@@ -194,7 +195,6 @@ class PlayerActions {
     }
 
     onPlaybackComplete = () => {
-
         this.onProgress(playerState.durationSeconds, 'playback-complete')
             .then(() => {
                 if (this.onCompleteHandler) {
@@ -246,7 +246,11 @@ class PlayerActions {
     }
 
     onProgress = async (nextProgressSeconds, source, nextProgressPercent) => {
-        if (!playerState.videoLoaded) return
+        if (!playerState.videoLoaded && source !== 'manual-seek') {
+            return
+        } else {
+            playerState.videoLoaded = true
+        }
 
         if (source === 'manual-seek') {
             if (nextProgressSeconds == null && nextProgressPercent != null) {
@@ -257,7 +261,9 @@ class PlayerActions {
                 nextProgressSeconds = playerState.durationSeconds
             }
             playerState.completeOnResume = nextProgressPercent >= 1.0
-            if (!playerState.isTranscode) playerState.seekToSeconds = nextProgressSeconds
+            if (!playerState.isTranscode) {
+                playerState.seekToSeconds = nextProgressSeconds
+            }
         }
 
         const enoughTimeDiff =
@@ -355,11 +361,6 @@ class PlayerActions {
     }
 
     onCriticalError = (error) => {
-        // This is some unknown noise from the latest mpv
-        // Should probably figure out the root cause
-        if (error?.includes?.("convert undefined")) {
-            return
-        }
         if (!playerState.isTranscode && this.navPush) {
             const newParams = { ...playerState.routeParams, transcode: true }
             playerState.videoLoaded = false
@@ -406,7 +407,6 @@ class PlayerActions {
     }
 
     parseVideoPayload = async (response) => {
-        playerState.videoLoaded = true
         this.onAddLog({
             kind: 'snowstream',
             message: 'video loaded',
@@ -436,7 +436,7 @@ class PlayerActions {
             playerState.mediaTracks = response.tracks
             if (response?.tracks?.video) {
                 playerState.videoWidth = response?.tracks?.video[0]?.resolution_width
-                playerState.videoHeight = response?.tracks?.vide[0]?.resolution_height
+                playerState.videoHeight = response?.tracks?.video[0]?.resolution_height
             } else {
                 playerState.videoWidth = CONST.resolution.fullHd.width
                 playerState.videoHeight = CONST.resolution.fullHd.height
@@ -457,7 +457,7 @@ class PlayerActions {
         if (response.plan) {
             playerState.playbackPlan = response.plan
         }
-
+        playerState.videoLoaded = true
     }
 
     onSelectTrack = (track) => {

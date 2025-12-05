@@ -1,12 +1,5 @@
 import React from 'react'
-import Snow, {
-    SnowGrid,
-    SnowLabel,
-    SnowRangeSlider,
-    SnowTabs,
-    SnowText,
-    SnowTextButton
-} from 'expo-snowui'
+import Snow from 'expo-snowui'
 import { View } from 'react-native'
 import Player from 'snowstream-player'
 import SnowTrackSelector from './snow-track-selector'
@@ -61,27 +54,27 @@ export default function SnowVideoControls(props) {
     let subtitleControls = null
     if (playerKind !== 'rnv') {
         subtitleControls = (
-            <SnowGrid itemsPerRow={4}>
-                <SnowTextButton title="Sub Smaller" onPress={() => {
+            <Snow.Grid itemsPerRow={4}>
+                <Snow.TextButton title="Sub Smaller" onPress={() => {
                     Player.action.changeSubtitleFontScale(-1)
                 }} />
-                <SnowTextButton title="Sub Bigger" onPress={() => {
+                <Snow.TextButton title="Sub Bigger" onPress={() => {
                     Player.action.changeSubtitleFontScale(1)
                 }} />
-                <SnowTextButton title="Sub Darker" onPress={() => {
+                <Snow.TextButton title="Sub Darker" onPress={() => {
                     Player.action.changeSubtitleColor(-1)
                 }} />
-                <SnowTextButton title="Sub Lighter" onPress={() => {
+                <Snow.TextButton title="Sub Lighter" onPress={() => {
                     Player.action.changeSubtitleColor(1)
                 }}
                 />
-            </SnowGrid>
+            </Snow.Grid>
         )
     }
     let trackControls = null
     if (player.mediaTracks) {
         trackControls = (
-            <SnowTrackSelector
+            <Snow.TrackSelector
                 focusKey="track-selector"
                 style={styles.row}
                 showDelay={true}
@@ -103,7 +96,7 @@ export default function SnowVideoControls(props) {
         }
         slider = (
             <>
-                <SnowRangeSlider
+                <Snow.RangeSlider
                     focusKey="seekbar"
                     focusDown="control-tabs"
                     width={750}
@@ -111,7 +104,7 @@ export default function SnowVideoControls(props) {
                     percent={player.progressPercent ?? 0}
                     onValueChange={onPercentChange}
                 />
-                <SnowText style={styles.progress}>{player.progressDisplay ?? ''} / {player.durationDisplay}</SnowText>
+                <Snow.Text style={styles.progress}>{player.progressDisplay ?? ''} / {player.durationDisplay}            This video {player.isTranscode ? 'is' : 'is not'} transcoding.</Snow.Text>
             </>
         )
     }
@@ -120,29 +113,29 @@ export default function SnowVideoControls(props) {
         (
             <View style={styles.player}>
                 <>
-                    <SnowLabel center>{player.videoTitle}</SnowLabel>
+                    <Snow.Label center>{player.videoTitle}</Snow.Label>
                     {slider}
                 </>
-                <SnowTabs focusStart focusKey="control-tabs" headers={tabs}>
-                    <SnowGrid itemsPerRow={3}>
-                        <SnowTextButton title="Resume" onPress={Player.action.onResumeVideo} />
-                        <SnowTextButton title="Stop" onPress={() => { Player.action.onStopVideo() }} />
-                        <SnowTextButton title="Home" onPress={() => { Player.action.onStopVideo(true) }} />
-                    </SnowGrid>
+                <Snow.Tabs focusStart focusKey="control-tabs" headers={tabs}>
+                    <Snow.Grid itemsPerRow={3}>
+                        <Snow.TextButton title="Resume" onPress={Player.action.onResumeVideo} />
+                        <Snow.TextButton title="Stop" onPress={() => { Player.action.onStopVideo() }} />
+                        <Snow.TextButton title="Home" onPress={() => { Player.action.onStopVideo(true) }} />
+                    </Snow.Grid>
                     {subtitleControls}
                     {trackControls}
-                    <SnowGrid short itemsPerRow={3}>
-                        <SnowTextButton title={logTitle} onPress={() => {
+                    <Snow.Grid short itemsPerRow={3}>
+                        <Snow.TextButton title={logTitle} onPress={() => {
                             Player.action.setVideoLogsVisible(true)
                         }} onLongPress={persistLogs} />
-                        {/* <SnowTextButton title={swapTitle} onPress={() => {
+                        {/* <Snow.TextButton title={swapTitle} onPress={() => {
                             Player.action.togglePlayerKind()
                         }} />
-                        <SnowTextButton title={transcodeTitle} onPress={() => {
+                        <Snow.TextButton title={transcodeTitle} onPress={() => {
                             Player.action.toggleTranscode()
                         }} /> */}
-                    </SnowGrid>
-                </SnowTabs>
+                    </Snow.Grid>
+                </Snow.Tabs>
             </View>
         )
     )
