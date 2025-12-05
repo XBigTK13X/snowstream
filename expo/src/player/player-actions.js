@@ -357,7 +357,7 @@ class PlayerActions {
     onCriticalError = (error) => {
         // This is some unknown noise from the latest mpv
         // Should probably figure out the root cause
-        if (error?.includes("convert undefined")) {
+        if (error?.includes?.("convert undefined")) {
             return
         }
         if (!playerState.isTranscode && this.navPush) {

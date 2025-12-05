@@ -2703,6 +2703,15 @@ expo-modules-core@3.0.23:
   dependencies:
     invariant "^2.2.4"
 
+expo-navigation-bar@^5.0.9:
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/expo-navigation-bar/-/expo-navigation-bar-5.0.9.tgz#9a089360e6fa096ce9222d4ca19da0dce05e20c3"
+  integrity sha512-xqry+MW12atuzYLtvck4fBCv0vqmo8q2Xap1ZeQRdjEm6m6Z35S6A09kRMY4NT7Y5Iaw+FI8YrUTNWSKvSXaDw==
+  dependencies:
+    "@react-native/normalize-colors" "0.81.5"
+    debug "^4.3.2"
+    react-native-is-edge-to-edge "^1.2.1"
+
 expo-secure-store@15.0.7, expo-secure-store@^15.0.7:
   version "15.0.7"
   resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-15.0.7.tgz#f74f928029889b8a32c0eafc2a214abee1e8b71e"
@@ -2713,14 +2722,16 @@ expo-server@^1.0.3:
   resolved "https://registry.yarnpkg.com/expo-server/-/expo-server-1.0.5.tgz#2d52002199a2af99c2c8771d0657916004345ca9"
   integrity sha512-IGR++flYH70rhLyeXF0Phle56/k4cee87WeQ4mamS+MkVAVP+dDlOHf2nN06Z9Y2KhU0Gp1k+y61KkghF7HdhA==
 
-expo-snowui@1.6.5:
-  version "1.6.5"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.5.tgz#e59a5c54025ab38e278670bc5b8e8dcfacab3fc7"
-  integrity sha512-1b1RCz0NNiSRpiqDqAXXH8KrU7v2Vmdks3k+TaGCkbOeNutOik4GUDCrMKkSpWgGDRrLkmbZ7RM2h8efLK9ZBQ==
+expo-snowui@^1.6.7:
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.7.tgz#4f9568925325d8224163523b596d59d93665eb70"
+  integrity sha512-IAZMobRurEZQ0UaQWd95SL2pRTwZwwF6fZ8M4iZ+FLSwLlnVgZK/zHnU8s3zA8rP7usm6Q0VJfDcJB5XAyX+rA==
   dependencies:
     expo "54.0.21"
     expo-image "^3.0.10"
+    expo-navigation-bar "^5.0.9"
     expo-secure-store "^15.0.7"
+    expo-status-bar "^3.0.8"
     lodash "^4.17.21"
     react "19.1.0"
     react-native "npm:react-native-tvos@0.81.4-0"
@@ -2733,6 +2744,13 @@ expo-splash-screen@31.0.10:
   integrity sha512-i6g9IK798mae4yvflstQ1HkgahIJ6exzTCTw4vEdxV0J2SwiW3Tj+CwRjf0te7Zsb+7dDQhBTmGZwdv00VER2A==
   dependencies:
     "@expo/prebuild-config" "^54.0.3"
+
+expo-status-bar@^3.0.8:
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-3.0.8.tgz#ada8b863a405f1619cd87a4b2b874d84e7d21ce5"
+  integrity sha512-L248XKPhum7tvREoS1VfE0H6dPCaGtoUWzRsUv7hGKdiB4cus33Rc0sxkWkoQ77wE8stlnUlL5lvmT0oqZ3ZBw==
+  dependencies:
+    react-native-is-edge-to-edge "^1.2.1"
 
 expo-toast@1.0.3:
   version "1.0.3"
