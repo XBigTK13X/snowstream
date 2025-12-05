@@ -30,6 +30,7 @@ export default function MediaTracksPage(props) {
     const [playParams, setPlayParams] = C.React.useState({})
     const [resumeParams, setResumeParams] = C.React.useState({})
     const [loadError, setLoadError] = C.React.useState(null)
+    const [watchOverride, setWatchOverride] = C.React.useState(null)
 
     const shelfId = currentRoute.routeParams.shelfId;
 
@@ -101,11 +102,8 @@ export default function MediaTracksPage(props) {
 
     const setWatchStatus = (status) => {
         return props.toggleWatchStatus(apiClient, currentRoute.routeParams)
-            .then(() => {
-                return props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile)
-            })
-            .then((response) => {
-                setMedia(response)
+            .then((watched) => {
+                setWatchOverride(watched)
             })
     }
 
@@ -246,7 +244,11 @@ export default function MediaTracksPage(props) {
         }
         const videoTrack = videoFile.info.tracks.video[0]
 
-        const watchTitle = media.watched ? "Mark Unwatched (hold)" : "Mark Watched (hold)"
+        let watchBase = media.watched
+        if (watchOverride !== null) {
+            watchBase = watchOverride
+        }
+        const watchTitle = watchBase ? "Mark Unwatched (hold)" : "Mark Watched (hold)"
 
         let remoteMetadataId = ''
         if (media.remote_metadata_id) {
