@@ -6,7 +6,6 @@ export default function StreamableListPage() {
     const { SnowStyle } = C.useSnowContext()
 
     const [streamSource, setStreamSource] = C.React.useState(null)
-    const [streamableItems, setStreamableItems] = C.React.useState(null)
 
     const styles = {
         tableColumn: {
@@ -21,149 +20,113 @@ export default function StreamableListPage() {
                 setStreamSource(response)
             })
         }
-        if (streamSource) {
-            if (streamSource?.has_groups) {
-                if (currentRoute?.routeParams?.group) {
-                    setStreamableItems(streamSource.grouped_streamables[currentRoute?.routeParams?.group])
-                } else {
-                    setStreamableItems(null)
-                }
-            } else {
-                setStreamableItems(streamSource.streamables)
-            }
-        }
     }, [streamSource, currentRoute])
 
-    if (streamSource?.has_groups && !streamableItems) {
-        const renderItem = (group, itemIndex) => {
+    if (!streamSource) {
+        return <C.Text>Loading stream source {currentRoute.routeParams.streamSourceId}.</C.Text>
+    }
+    let listFocusKey = 'page-entry'
+
+    let itemList = null
+    if (streamSource.has_guide) {
+        const renderItem = (streamable, itemIndex) => {
+            let currentProgram = "No guide information"
+            let nextProgram = "No guide information"
+            if (streamable.current_program) {
+                const pp = streamable.current_program
+                currentProgram = `${pp.display_time} - ${pp.name}`
+            }
+            if (streamable.next_program) {
+                const pp = streamable.next_program
+                nextProgram = `${pp.display_time} - ${pp.name}`
+            }
+            let name = streamable.name_display ? streamable.name_display : streamable.name
+            return (
+                <C.SnowView key={streamable.id}>
+                    < C.SnowGrid key="streamable-grid" assignFocus="false" itemsPerRow={3} >
+                        <C.SnowTextButton
+                            title={name}
+                            onPress={navPush({
+                                path: routes.streamablePlay,
+                                params: {
+                                    streamSourceId: streamSource.id,
+                                    streamableId: streamable.id,
+                                }
+                            })}
+                            onLongPress={navPush({
+                                path: routes.streamablePlay,
+                                params: {
+                                    streamSourceId: streamSource.id,
+                                    streamableId: streamable.id,
+                                    forcePlayer: 'exo'
+                                }
+                            })}
+                        />
+                        <C.SnowText style={styles.tableColumn}>{currentProgram}</C.SnowText>
+                        <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
+                    </C.SnowGrid >
+                    <C.SnowBreak />
+                </C.SnowView>
+            )
+        }
+        itemList = (
+            streamSource.groups.map((group) => {
+                return (
+                    <C.SnowGrid itemsPerRow={1}>
+                        {streamSource.grouped_streamables[group].map(renderItem)}
+                    </C.SnowGrid>
+                )
+            })
+        )
+    }
+    else {
+        const renderItem = (streamable, itemIndex) => {
+            let name = streamable.name_display ? streamable.name_display : streamable.name
             return (
                 <C.SnowTextButton
                     tall
-                    key={itemIndex}
-                    title={group}
+                    key={streamable.id}
+                    title={name}
                     onPress={navPush({
+                        path: routes.streamablePlay,
                         params: {
-                            group,
-                            streamSourceId: currentRoute?.routeParams?.streamSourceId
-                        },
-                        replace: false
+                            streamSourceId: streamSource.id,
+                            streamableId: streamable.id,
+                        }
+                    })}
+                    onLongPress={navPush({
+                        path: routes.streamablePlay,
+                        params: {
+                            streamSourceId: streamSource.id,
+                            streamableId: streamable.id,
+                            forcePlayer: 'exo'
+                        }
                     })}
                 />
             )
         }
-        return (
-            <C.SnowGrid focusStart focusKey="page-entry" items={streamSource.groups} renderItem={renderItem} />
+        let focusProps = {}
+        if (!streamSource.has_groups) {
+            focusProps.focusStart = true
+            focusProps.focusKey = 'page-entry'
+        }
+        itemList = (
+            <C.SnowGrid
+                {...focusProps}
+                key="streamable-grid-with-group"
+                items={streamSource.streamables}
+                renderItem={renderItem} />
         )
     }
-
-    if (streamSource && streamableItems) {
-        let groupsButton = null
-        let listFocusKey = 'page-entry'
-        if (streamSource.has_groups) {
-            listFocusKey = 'streamable-list'
-            groupsButton = (
-                <C.SnowGrid key="group-grid" itemsPerRow={3}>
-                    <C.SnowTextButton
-                        focusKey="page-entry"
-                        focusDown="streamable-list"
-                        title="Groups" onPress={navPop} />
-                </C.SnowGrid>
-            )
-        }
-
-        if (streamSource.has_guide) {
-            return (
-                <>
-                    {groupsButton}
-                    {
-                        streamableItems.map((streamable, itemIndex) => {
-                            let currentProgram = "No guide information"
-                            let nextProgram = "No guide information"
-                            let focus = {}
-                            if (itemIndex === 0) {
-                                focus.focusStart = true
-                                focus.focusKey = listFocusKey
-                            }
-                            else {
-                                focus.focusKey = `${listFocusKey}-${itemIndex}`
-                            }
-                            if (itemIndex !== streamableItems.length - 1) {
-                                focus.focusDown = `${listFocusKey}-${itemIndex + 1}`
-                            }
-                            if (streamable.current_program) {
-                                const pp = streamable.current_program
-                                currentProgram = `${pp.display_time} - ${pp.name}`
-                            }
-                            if (streamable.next_program) {
-                                const pp = streamable.next_program
-                                nextProgram = `${pp.display_time} - ${pp.name}`
-                            }
-                            let name = streamable.name_display ? streamable.name_display : streamable.name
-                            return (
-                                <C.View key={streamable.id}>
-                                    < C.SnowGrid key="streamable-grid" assignFocus="false" itemsPerRow={3} >
-                                        <C.SnowTextButton
-                                            {...focus}
-                                            title={name}
-                                            onPress={navPush({
-                                                path: routes.streamablePlay,
-                                                params: {
-                                                    streamSourceId: streamSource.id,
-                                                    streamableId: streamable.id,
-                                                }
-                                            })}
-                                            onLongPress={navPush({
-                                                path: routes.streamablePlay,
-                                                params: {
-                                                    streamSourceId: streamSource.id,
-                                                    streamableId: streamable.id,
-                                                    forcePlayer: 'exo'
-                                                }
-                                            })}
-                                        />
-                                        <C.SnowText style={styles.tableColumn}>{currentProgram}</C.SnowText>
-                                        <C.SnowText style={styles.tableColumn}>{nextProgram}</C.SnowText>
-                                    </C.SnowGrid >
-                                    <C.SnowBreak />
-                                </C.View>
-                            )
-                        })
-                    }
-                </>
-            )
-        } else {
-            const renderItem = (streamable, itemIndex) => {
-                let name = streamable.name_display ? streamable.name_display : streamable.name
-                return (
-                    <C.SnowTextButton
-                        tall
-                        key={streamable.id}
-                        title={name}
-                        onPress={navPush({
-                            path: routes.streamablePlay,
-                            params: {
-                                streamSourceId: streamSource.id,
-                                streamableId: streamable.id,
-                            }
-                        })}
-                        onLongPress={navPush({
-                            path: routes.streamablePlay,
-                            params: {
-                                streamSourceId: streamSource.id,
-                                streamableId: streamable.id,
-                                forcePlayer: 'exo'
-                            }
-                        })}
-                    />
-                )
-            }
-            return (
-                <>
-                    {groupsButton}
-                    <C.SnowGrid key="streamable-grid-with-group" focusStart focusKey={listFocusKey} items={streamableItems} renderItem={renderItem} />
-                </>
-            )
-        }
+    if (streamSource.has_groups) {
+        return (
+            <C.SnowTabs
+                focusStart
+                focusKey="page-entry"
+                headers={streamSource.groups}>
+                {itemList}
+            </C.SnowTabs>
+        )
     }
-    return <C.Text>Loading stream source {currentRoute.routeParams.streamSourceId}.</C.Text>
+    return itemList
 }
