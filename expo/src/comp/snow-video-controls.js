@@ -74,7 +74,7 @@ export default function SnowVideoControls(props) {
     let trackControls = null
     if (player.mediaTracks) {
         trackControls = (
-            <Snow.TrackSelector
+            <SnowTrackSelector
                 focusKey="track-selector"
                 style={styles.row}
                 showDelay={true}
