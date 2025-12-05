@@ -71,7 +71,7 @@ device_list = [
         'hdr_ten': 'hard',
         'dolby_vision': 'hard',
         'h264_eight': 'hard',
-        'h264_ten': 'soft',
+        'h264_ten': 'hard',
         'h265_eight': 'hard',
         'h265_ten': 'hard',
         'av1': 'soft',
