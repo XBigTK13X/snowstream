@@ -240,7 +240,7 @@ export function AppContextProvider(props) {
                 }
             }
             if (!storedOptions.hasOwnProperty('resolutionKind')) {
-                storedOptions.resolutionKind = '1080p'
+                storedOptions.resolutionKind = 'Video File'
             }
             if (!storedOptions.hasOwnProperty('deviceId')) {
                 storedOptions.deviceId = uuid.v4()

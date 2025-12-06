@@ -25,7 +25,7 @@ export function SnowScreencapGridW(props) {
     }
 
     let scaleProps = {}
-    scaleProps.itemsPerRow = 5
+    scaleProps.itemsPerRow = 4
     if (SnowStyle.isPortrait) {
         scaleProps.itemsPerRow = 2
         scaleProps.itemsPerPage = 10

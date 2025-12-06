@@ -2077,9 +2077,9 @@ base64-js@^1.2.3, base64-js@^1.3.1, base64-js@^1.5.1:
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 baseline-browser-mapping@^2.9.0:
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.9.2.tgz#0ae89ec3e10e07c368b77def89db8044409461d1"
-  integrity sha512-PxSsosKQjI38iXkmb3d0Y32efqyA0uW4s41u4IVBsLlWLhCiYNpH/AfNOVWRqCQBlD8TFJTz6OUWNd4DFJCnmw==
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.9.3.tgz#5eaccdbbe2006e55ec9978a0ccacd59eb785215c"
+  integrity sha512-8QdH6czo+G7uBsNo0GiUfouPN1lRzKdJTGnKXwe12gkFbnnOUaUKGN55dMkfy+mnxmvjwl9zcI4VncczcVXDhA==
 
 better-opn@~3.0.2:
   version "3.0.2"
@@ -2731,10 +2731,10 @@ expo-server@^1.0.3:
   resolved "https://registry.yarnpkg.com/expo-server/-/expo-server-1.0.5.tgz#2d52002199a2af99c2c8771d0657916004345ca9"
   integrity sha512-IGR++flYH70rhLyeXF0Phle56/k4cee87WeQ4mamS+MkVAVP+dDlOHf2nN06Z9Y2KhU0Gp1k+y61KkghF7HdhA==
 
-expo-snowui@^1.6.8:
-  version "1.6.8"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.8.tgz#8067364f0d5b49ec5615e498e7dea3fbb9e6cf2f"
-  integrity sha512-OeLmgsxVoWc+Cax3WdQTJXLS7nNqDXnzPLdPlIwySIzFH6iRQGqIs4k7XznCDQH8ws9qcBkNSSwp68eYAnkMQw==
+expo-snowui@1.6.14:
+  version "1.6.14"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.14.tgz#ede23e2237ae41e931c1ce6a15a6f7c8eed6801e"
+  integrity sha512-J8N9oRQo++23esz6Q2Jnr+MkSDw8RqDSYKy3SMTL5NoaAa2KIGwWwPlIjDW1cNkERIx5RFg4fVuHgYb+rAXUTg==
   dependencies:
     expo "54.0.21"
     expo-image "^3.0.10"
