@@ -1,6 +1,5 @@
 import Snow from 'expo-snowui'
 import _ from 'lodash'
-import * as NavigationBar from 'expo-navigation-bar';
 import { playerState, initialPlayerState } from './player-state'
 import util from '../util'
 import CONST from '../constant'
@@ -177,7 +176,7 @@ class PlayerActions {
     }
 
     onResumeVideo = () => {
-        NavigationBar.setVisibilityAsync('hidden');
+        Snow.hideSystemUi()
         playerState.controlsVisible = false
         playerState.isPlaying = true
 
@@ -269,6 +268,10 @@ class PlayerActions {
         const enoughTimeDiff =
             !playerState.progressSeconds ||
             Math.abs(nextProgressSeconds - playerState.progressSeconds) >= playerState.config.progressMinDeltaSeconds
+
+        if (source !== 'manual-seek' && enoughTimeDiff) {
+            Snow.hideSystemUi()
+        }
 
         if (source === 'manual-seek' || enoughTimeDiff) {
             playerState.progressSeconds = nextProgressSeconds

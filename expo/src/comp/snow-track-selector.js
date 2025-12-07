@@ -90,7 +90,7 @@ export default function SnowTrackSelector(props) {
                 title="Audio"
                 showDelay={props.showDelay}
                 delay={props.audioDelaySeconds}
-                setDelay={props.setAudioDelay}
+                setDelay={props.setAudioDelaySeconds}
                 isAudio={true}
                 tracks={props.tracks.audio.filter((track) => { return track.score > 0 || props.tracks.audio.length < 3 })}
                 selectTrack={props.selectTrack}
@@ -102,7 +102,7 @@ export default function SnowTrackSelector(props) {
                 title="Subtitles"
                 showDelay={props.showDelay}
                 delay={props.subtitleDelaySeconds}
-                setDelay={props.setSubtitleDelay}
+                setDelay={props.setSubtitleDelaySeconds}
                 tracks={props.tracks.subtitle.filter((track) => { return track.score > 0 || props.tracks.subtitle.length < 3 })}
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}

@@ -41,16 +41,16 @@ export default function MpvVideoView(props) {
     }, [player.subtitleColor])
 
     React.useEffect(() => {
-        if (player.audioDelay !== undefined && forwardRef.current?.runCommand && player.isVideoViewReady) {
-            forwardRef.current.runCommand(`set|audio-delay|${player.audioDelay}`).catch(() => { })
+        if (player.audioDelaySeconds !== undefined && forwardRef.current?.runCommand && player.isVideoViewReady) {
+            forwardRef.current.runCommand(`set|audio-delay|${player.audioDelaySeconds}`).catch(() => { })
         }
-    }, [player.audioDelay])
+    }, [player.audioDelaySeconds])
 
     React.useEffect(() => {
-        if (player.subtitleDelay !== undefined && forwardRef.current?.runCommand && player.isVideoViewReady) {
-            forwardRef.current.runCommand(`set|sub-delay|${player.subtitleDelay}`).catch(() => { })
+        if (player.subtitleDelaySeconds !== undefined && forwardRef.current?.runCommand && player.isVideoViewReady) {
+            forwardRef.current.runCommand(`set|sub-delay|${player.subtitleDelaySeconds}`).catch(() => { })
         }
-    }, [player.subtitleDelay])
+    }, [player.subtitleDelaySeconds])
 
     const eventHandler = (libmpvEvent) => {
         Player.action.onVideoUpdate({ kind: 'mpvevent', libmpvEvent })

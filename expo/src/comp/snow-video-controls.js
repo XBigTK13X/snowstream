@@ -78,10 +78,10 @@ export default function SnowVideoControls(props) {
                 focusKey="track-selector"
                 style={styles.row}
                 showDelay={true}
-                audioDelay={player.audioDelaySeconds}
-                setAudioDelay={Player.action.setAudioDelay}
-                subtitleDelay={player.subtitleDelaySeconds}
-                setSubtitleDelay={Player.action.setSubtitleDelay}
+                audioDelaySeconds={player.audioDelaySeconds}
+                setAudioDelaySeconds={Player.action.setAudioDelaySeconds}
+                subtitleDelaySeconds={player.subtitleDelaySeconds}
+                setSubtitleDelaySeconds={Player.action.setSubtitleDelaySeconds}
                 tracks={player.mediaTracks}
                 selectTrack={Player.action.onSelectTrack}
                 audioTrack={player.audioTrackIndex}
