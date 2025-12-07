@@ -114,7 +114,6 @@ export class ApiClient {
                     username: payload.username,
                     password: payload.password,
                     device_name: payload.deviceId,
-                    device_profile: payload.deviceProfile
                 })
                 .then((data) => {
                     if (data && data.data && data.data.access_token) {
@@ -318,8 +317,8 @@ export class ApiClient {
         return this.get(`/show/season/episode?episode_id=${episodeId}&device_profile=${deviceProfile}`)
     }
 
-    getUserList = (deviceProfile) => {
-        return this.get(`/user/list?device_profile=${deviceProfile}`)
+    getUserList = (deviceName) => {
+        return this.get(`/user/list?device_name=${deviceName}`)
     }
 
     getUser = (userId) => {

@@ -24,12 +24,12 @@ auth_scheme = OAuth2PasswordBearer(
 )
 
 
-def authenticate_user(username: str, password: str, device_profile:str):
+def authenticate_user(username: str, password: str, device_name: str):
     user = db.op.get_user_by_name(username=username)
     if not user:
         return False
-    device = snow_media.device.get_device(device_profile)
-    if device.require_password or username == 'admin':
+
+    if not device_name in config.auth_device_whitelist or username == 'admin':
         if not util.verify_password(password, user.hashed_password):
             return False
     return user
@@ -98,8 +98,7 @@ def register(router):
     @router.post("/login",tags=['Unauthed'])
     async def login(
         login_form: Annotated[OAuth2PasswordRequestForm, Depends()],
-        device_name: Annotated[str, Form()] = "swagger-ui",
-        device_profile: Annotated[str, Form()] = None
+        device_name: Annotated[str, Form()] = "swagger-ui"
     ):
         # FIXME Workaround Pydantic validation failures on empty passwords
         if login_form.password == 'SNOWSTREAM_EMPTY':
@@ -107,7 +106,7 @@ def register(router):
         user = authenticate_user(
             username=login_form.username,
             password=login_form.password,
-            device_profile=device_profile
+            device_name=device_name
         )
         if not user:
             raise HTTPException(

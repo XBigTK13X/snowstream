@@ -4,8 +4,8 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "1.4.15"
-        self.server_build_date = "December 06, 2025"
+        self.server_version = "1.4.16"
+        self.server_build_date = "December 07, 2025"
         self.server_build_dev_number = 1
         self.app_data_dir = '.snowstream/'
         self.display_config = None
@@ -54,6 +54,10 @@ class Config:
         self.watch_progress_watched_threshold = 0.90
         self.web_api_url = "http://localhost:8000"
         self.web_media_url = "<need_to_set_an_env_var-SNOWSTREAM_WEB_MEDIA_URL>"
+        self.auth_device_whitelist = [
+            'tv-blue-cast',
+            'tv-blue-shield'
+        ]
 
         self.refresh_postgres_url()
         self.refresh_app_data_dirs()

@@ -6,7 +6,6 @@ class DeviceProfile:
     def __init__(self,config):
         self.name = config['name']
         self.force_player = config.get('force_player')
-        self.require_password = config.get('require_password', True)
 
         self.video = Stub()
         self.video.resolution = Stub()
@@ -80,7 +79,6 @@ device_list = [
         'dts_hd': 'hard',
         'dolby_atmos': 'hard',
         'dolby_hd': 'hard',
-        'require_password': False,
         'mpv_video_output': 'gpu-next',
         'mpv_accelerated_codecs': 'h264,hevc,mpeg4,mpeg2video,vp8,vp9'
     }),

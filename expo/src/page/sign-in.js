@@ -38,7 +38,7 @@ export default function SignInPage() {
 
     C.React.useEffect(() => {
         if (!users?.length && apiClient && clientOptions) {
-            apiClient.getUserList(clientOptions.deviceProfile).then((response) => {
+            apiClient.getUserList(clientOptions.deviceId).then((response) => {
                 setUsers(response)
             })
         }
@@ -81,18 +81,21 @@ export default function SignInPage() {
                 render: () => {
                     return (
                         <>
-                            <C.SnowLabel>Enter the password for {user.username}</C.SnowLabel>
-                            <C.SnowInput
-                                focusStart
-                                focusKey="password"
-                                focusDown="login"
-                                onSubmit={login}
-                                onValueChange={setPassword}
-                                value={password}
-                            />
-                            <C.SnowGrid focusKey="login" itemsPerRow={2} >
-                                <C.SnowTextButton title="Login" onPress={login} />
-                                <C.SnowTextButton title="Cancel" onPress={cancelPassword} />
+
+                            <C.SnowLabel center>Enter the password for {user.username}</C.SnowLabel>
+                            <C.SnowGrid itemsPerRow={1}>
+                                <C.SnowInput
+                                    focusStart
+                                    focusKey="password"
+                                    focusDown="login"
+                                    onSubmit={login}
+                                    onValueChange={setPassword}
+                                    value={password}
+                                />
+                                <C.SnowGrid focusKey="login" itemsPerRow={2} >
+                                    <C.SnowTextButton title="Login" onPress={login} />
+                                    <C.SnowTextButton title="Cancel" onPress={cancelPassword} />
+                                </C.SnowGrid>
                             </C.SnowGrid>
                         </>
                     )
@@ -180,17 +183,19 @@ export default function SignInPage() {
                 </C.SnowGrid>
             </>
             <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
-            <C.SnowInput
-                focusKey="custom-server-input"
-                focusDown="submit-custom-server"
-                onSubmit={() => { applyCustomServer(customServerRef.current) }}
-                onValueChange={setCustomServer}
-                value={customServer} />
-            <C.SnowTextButton
-                focusKey="submit-custom-server"
-                title="Connect to Server"
-                onPress={() => { applyCustomServer(customServerRef.current) }}
-            />
+            <C.SnowGrid itemsPerRow={2}>
+                <C.SnowInput
+                    focusKey="custom-server-input"
+                    focusDown="submit-custom-server"
+                    onSubmit={() => { applyCustomServer(customServerRef.current) }}
+                    onValueChange={setCustomServer}
+                    value={customServer} />
+                <C.SnowTextButton
+                    focusKey="submit-custom-server"
+                    title="Connect to Server"
+                    onPress={() => { applyCustomServer(customServerRef.current) }}
+                />
+            </C.SnowGrid>
         </>
     )
 

@@ -979,8 +979,7 @@ def no_auth_required(router):
 
 
     @router.get("/user/list",tags=['Unauthed'])
-    def get_user_list(device_profile:str=None):
-        device = snow_media.device.get_device(device_profile)
+    def get_user_list(device_name:str=None):
         users = db.op.get_user_list()
         results = []
         admin = None
@@ -989,7 +988,7 @@ def no_auth_required(router):
             if user.username == 'admin':
                 admin = user
             else:
-                if not device.require_password:
+                if device_name in config.auth_device_whitelist:
                     user.has_password = False
                 results.append(user)
         results.append(admin)
