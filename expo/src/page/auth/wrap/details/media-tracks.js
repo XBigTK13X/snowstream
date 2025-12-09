@@ -50,7 +50,8 @@ export default function MediaTracksPage(props) {
                 audioTrack: audioTrack,
                 subtitleTrack: subtitleTrack,
                 shelfId: shelfId,
-                videoIsHdr: videoFile.is_hdr
+                videoIsHdr: videoFile.is_hdr,
+                seekToSeconds: 300
             }
             const mediaDestination = props.getPlayParameters(currentRoute.routeParams)
             let combinedPlayDestination = { ...playDestination, ...mediaDestination, transcode: shouldTranscode }

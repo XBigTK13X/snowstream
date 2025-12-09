@@ -91,8 +91,6 @@ export default function MpvVideoView(props) {
         videoSync = 'audio'
     }
 
-    console.log({ seek: player.seekToSeconds })
-
     return (
         <LibmpvView
             ref={forwardRef}

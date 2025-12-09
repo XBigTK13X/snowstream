@@ -88,6 +88,22 @@ device_list = [
         'mpv_video_sync': 'display-resample'
     }),
     DeviceProfile({
+        'name': 'Pixel',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'mpv_video_sync': 'display-resample'
+    }),
+    DeviceProfile({
+        'name': 'Fire HD 10',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'mpv_video_sync': 'display-resample'
+    }),
+    DeviceProfile({
         'force_player': 'exo',
         'name': 'Web Browser',
         'h264_eight': 'hard',

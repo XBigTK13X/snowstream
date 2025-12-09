@@ -86,7 +86,7 @@ export default function RnvVideoView(props) {
         if (player.seekToSeconds > -1 && videoRef && videoRef.current) {
             videoRef.current.seek(player.seekToSeconds)
         }
-    }, [player.seekToSeconds])
+    }, [player.seekToSeconds, videoRef])
 
     if (isWeb) {
         if (!userPlayed) {

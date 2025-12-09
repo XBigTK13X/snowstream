@@ -66,15 +66,10 @@ class PlayerActions {
             playerState.hasCloseOverlay = !!deps.closeOverlay
         }
 
-
-        if (playerState.progressSeconds == null) {
-            playerState.progressSeconds = playerState.isTranscode ? 0 : null
+        if (!playerState.isTranscode && deps?.currentRoute?.routeParams?.seekToSeconds !== undefined) {
+            playerState.seekToSeconds = deps.currentRoute.routeParams.seekToSeconds
+            playerState.progressSeconds = deps.currentRoute.routeParams.seekToSeconds
         }
-        if (!playerState.initialSeekComplete && playerState.isTranscode) {
-            playerState.initialSeekComplete = true
-        }
-
-        console.log({ routeParams: deps?.currentRoute?.routeParams })
     }
 
     reset = () => {
@@ -140,7 +135,7 @@ class PlayerActions {
         })
 
         const args = playerState.isTranscode
-            ? [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile, playerState.initialSeekSeconds]
+            ? [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile, playerState.seekToSeconds]
             : [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile]
 
         loadHandler(...args)
@@ -247,11 +242,7 @@ class PlayerActions {
     }
 
     onProgress = async (nextProgressSeconds, source, nextProgressPercent) => {
-        if (!playerState.videoLoaded && source !== 'manual-seek') {
-            return
-        } else {
-            playerState.videoLoaded = true
-        }
+        playerState.videoLoaded = true
 
         if (source === 'manual-seek') {
             if (nextProgressSeconds == null && nextProgressPercent != null) {
@@ -267,14 +258,11 @@ class PlayerActions {
             }
         }
 
-        const enoughTimeDiff =
-            !playerState.progressSeconds ||
-            Math.abs(nextProgressSeconds - playerState.progressSeconds) >= playerState.config.progressMinDeltaSeconds
+        const enoughTimeDiff = !playerState.progressSeconds || Math.abs(nextProgressSeconds - playerState.progressSeconds) >= playerState.config.progressMinDeltaSeconds
 
         if (source !== 'manual-seek' && enoughTimeDiff) {
             Snow.hideSystemUi()
         }
-
         if (source === 'manual-seek' || enoughTimeDiff) {
             playerState.progressSeconds = nextProgressSeconds
             if (playerState.durationSeconds > 0 && playerState.progressSeconds > 0) {
@@ -299,39 +287,16 @@ class PlayerActions {
         }
     }
 
-    performInitialSeek = () => {
-        console.log({ initial: playerState.initialSeekSeconds })
-        if (!playerState.initialSeekComplete && playerState.initialSeekSeconds) {
-            this.onAddLog({ kind: 'snowstream', message: 'perform initial seek' })
-            playerState.seekToSeconds = playerState.initialSeekSeconds
-            playerState.progressSeconds = playerState.initialSeekSeconds
-            playerState.initialSeekComplete = true
-        }
-    }
-
     onVideoProgressEvent = (elapsedSeconds) => {
-        console.log({ progress: playerState.initialSeekSeconds })
         let adjustedSeconds = elapsedSeconds
         if (playerState.isTranscode) {
-            adjustedSeconds += playerState.manualSeekSeconds == null
-                ? playerState.initialSeekSeconds
-                : playerState.manualSeekSeconds
+            adjustedSeconds += playerState.seekToSeconds
         }
         this.onProgress(adjustedSeconds, 'player-event')
     }
 
     onVideoUpdate = (eventInfo) => {
         if (playerState.config?.debugVideoPlayer) util.log({ eventInfo })
-
-        if (!playerState.isTranscode) {
-            if (
-                playerState.playerKind === 'rnv' &&
-                eventInfo?.kind === 'rnvevent' &&
-                eventInfo?.data?.event === 'onReadyForDisplay'
-            ) {
-                this.performInitialSeek()
-            }
-        }
 
         if (eventInfo?.kind === 'rnvevent' && eventInfo?.data) {
             if (eventInfo?.data?.data?.currentTime) {
@@ -350,9 +315,6 @@ class PlayerActions {
                 }
                 else if (!['demuxer-cache-time', 'track-list'].includes(mpvEvent.property)) {
                     this.onAddLog(eventInfo)
-                }
-                if (!playerState.isTranscode && mpvEvent.property === 'seekable' && mpvEvent.value) {
-                    this.performInitialSeek()
                 }
                 if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
                     this.onPlaybackComplete()

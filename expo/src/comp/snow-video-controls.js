@@ -101,7 +101,7 @@ export default function SnowVideoControls(props) {
                     focusDown="control-tabs"
                     width={750}
                     debounce={true}
-                    percent={player.progressPercent ?? 0}
+                    percent={player.progressPercent}
                     onValueChange={onPercentChange}
                 />
                 <Snow.Text style={styles.progress}>{player.progressDisplay ?? ''} / {player.durationDisplay}            This video {player.isTranscode ? 'is' : 'is not'} transcoding.</Snow.Text>

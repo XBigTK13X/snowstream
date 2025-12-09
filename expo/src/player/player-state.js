@@ -44,8 +44,6 @@ export const initialPlayerState = {
 
     countedWatch: false,
 
-    initialSeekComplete: false,
-
     progressSeconds: null,
     durationSeconds: 0.0,
     seekToSeconds: 1,
@@ -88,11 +86,6 @@ export const playerState = proxy({
             !this.controlsVisible &&
             !this.logsVisible &&
             !this.isTranscode
-            &&
-            (
-                this.initialSeekComplete ||
-                !this.initialSeekSeconds
-            )
     },
 
     get forceExo() {
@@ -119,15 +112,6 @@ export const playerState = proxy({
             return true
         }
         return false
-    },
-
-    get initialSeekSeconds() {
-        const seekParam = this.routeParams?.seekToSeconds
-        if (!seekParam) {
-            return 0
-        }
-        const parsed = parseInt(seekParam, 10)
-        return Number.isFinite(parsed) ? parsed : 0
     },
 
     get progressPercent() {

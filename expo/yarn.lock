@@ -2191,9 +2191,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001759:
-  version "1.0.30001759"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001759.tgz#d569e7b010372c6b0ca3946e30dada0a2e9d5006"
-  integrity sha512-Pzfx9fOKoKvevQf8oCXoyNRQ5QyxJj+3O0Rqx2V5oxT61KGx8+n6hV/IUyJeifUci2clnmmKVpvtiqRzgiWjSw==
+  version "1.0.30001760"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001760.tgz#bdd1960fafedf8d5f04ff16e81460506ff9b798f"
+  integrity sha512-7AAMPcueWELt1p3mi13HR/LHH0TJLT11cnwDJEs3xA4+CK/PLKeO9Kl1oru24htkyUKtkGCvAx4ohB0Ttry8Dw==
 
 chalk@^2.0.1, chalk@^2.4.2:
   version "2.4.2"
@@ -2731,10 +2731,10 @@ expo-server@^1.0.3:
   resolved "https://registry.yarnpkg.com/expo-server/-/expo-server-1.0.5.tgz#2d52002199a2af99c2c8771d0657916004345ca9"
   integrity sha512-IGR++flYH70rhLyeXF0Phle56/k4cee87WeQ4mamS+MkVAVP+dDlOHf2nN06Z9Y2KhU0Gp1k+y61KkghF7HdhA==
 
-expo-snowui@^1.6.21:
-  version "1.6.21"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.21.tgz#8d47e08c7bc42bfa67e0fc512dbc1bc4959b4be5"
-  integrity sha512-XqL1zhu52q2Lw9RRWMJzlZgwIvRzvWCtM0q3uqsojI2Yb8R5ovzOIaOOzWpsiEp51Dg6etL057fLSCwP/+rpYQ==
+expo-snowui@^1.6.24:
+  version "1.6.24"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.24.tgz#e7dd844578948a6bdfb325a38cdc0b5d7bea5a0b"
+  integrity sha512-UupGPdkLH2iT/u1qpVJSwfILBDsusuH5me9eRBaIBCLmONU8i/J3q4TjdNgET7GLvgwBYp3GZn//9+vtgc5aLA==
   dependencies:
     expo "54.0.21"
     expo-image "^3.0.10"
