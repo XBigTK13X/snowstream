@@ -49,6 +49,7 @@ class DeviceProfile:
         self.mpv.video_output = config.get('mpv_video_output','gpu')
         self.mpv.decoding_mode = config.get('mpv_decoding_mode','mediacodec-copy')
         self.mpv.accelerated_codecs = config.get('mpv_accelerated_codecs','h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1')
+        self.mpv.video_sync = config.get('mpv_video_sync','audio')
 
 device_list = [
     DeviceProfile({
@@ -63,24 +64,6 @@ device_list = [
         'vp9': 'hard',
         'av1': 'hard',
         'transcode_bit_rate': '15M',
-    }),
-    DeviceProfile({
-        'name': 'NVIDIA Shield',
-        'hdr': 'hard',
-        'hdr_ten': 'hard',
-        'dolby_vision': 'hard',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
-        'h265_eight': 'hard',
-        'h265_ten': 'hard',
-        'av1': 'soft',
-        'vp9': 'hard',
-        'dts_x': 'hard',
-        'dts_hd': 'hard',
-        'dolby_atmos': 'hard',
-        'dolby_hd': 'hard',
-        'mpv_video_output': 'gpu-next',
-        'mpv_accelerated_codecs': 'h264,hevc,mpeg4,mpeg2video,vp8,vp9'
     }),
         DeviceProfile({
         'name': 'CCwGTV4K',
@@ -97,6 +80,14 @@ device_list = [
         'mpv_accelerated_codecs': 'h264,hevc,mpeg4,mpeg2video,vp8,vp9'
     }),
     DeviceProfile({
+        'name': 'Fire Max 11',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'mpv_video_sync': 'display-resample'
+    }),
+    DeviceProfile({
         'force_player': 'exo',
         'name': 'Web Browser',
         'h264_eight': 'hard',
@@ -108,13 +99,6 @@ device_list = [
         'transcode_container': 'webm',
         'transcode_video_codec': 'vp9',
         'transcode_audio_codec': 'opus'
-    }),
-    DeviceProfile({
-        'name': 'Fire Max 11',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
     })
 ]
 

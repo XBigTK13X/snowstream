@@ -73,6 +73,8 @@ class PlayerActions {
         if (!playerState.initialSeekComplete && playerState.isTranscode) {
             playerState.initialSeekComplete = true
         }
+
+        console.log({ routeParams: deps?.currentRoute?.routeParams })
     }
 
     reset = () => {
@@ -298,6 +300,7 @@ class PlayerActions {
     }
 
     performInitialSeek = () => {
+        console.log({ initial: playerState.initialSeekSeconds })
         if (!playerState.initialSeekComplete && playerState.initialSeekSeconds) {
             this.onAddLog({ kind: 'snowstream', message: 'perform initial seek' })
             playerState.seekToSeconds = playerState.initialSeekSeconds
@@ -307,7 +310,7 @@ class PlayerActions {
     }
 
     onVideoProgressEvent = (elapsedSeconds) => {
-
+        console.log({ progress: playerState.initialSeekSeconds })
         let adjustedSeconds = elapsedSeconds
         if (playerState.isTranscode) {
             adjustedSeconds += playerState.manualSeekSeconds == null
@@ -321,9 +324,7 @@ class PlayerActions {
         if (playerState.config?.debugVideoPlayer) util.log({ eventInfo })
 
         if (!playerState.isTranscode) {
-            if (playerState.playerKind === 'mpv' && eventInfo?.libmpvEvent?.eventKind === 'PLAYBACK_RESTART') {
-                this.performInitialSeek()
-            } else if (
+            if (
                 playerState.playerKind === 'rnv' &&
                 eventInfo?.kind === 'rnvevent' &&
                 eventInfo?.data?.event === 'onReadyForDisplay'
@@ -349,6 +350,9 @@ class PlayerActions {
                 }
                 else if (!['demuxer-cache-time', 'track-list'].includes(mpvEvent.property)) {
                     this.onAddLog(eventInfo)
+                }
+                if (!playerState.isTranscode && mpvEvent.property === 'seekable' && mpvEvent.value) {
+                    this.performInitialSeek()
                 }
                 if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
                     this.onPlaybackComplete()

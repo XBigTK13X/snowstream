@@ -86,6 +86,12 @@ export default function MpvVideoView(props) {
     if (!acceleratedCodecs) {
         acceleratedCodecs = 'h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1'
     }
+    let videoSync = player.playbackPlan?.mpv_video_sync
+    if (!videoSync) {
+        videoSync = 'audio'
+    }
+
+    console.log({ seek: player.seekToSeconds })
 
     return (
         <LibmpvView
@@ -93,6 +99,7 @@ export default function MpvVideoView(props) {
             videoOutput={videoOutput}
             decodingMode={decodingMode}
             acceleratedCodecs={acceleratedCodecs}
+            videoSync={videoSync}
             playUrl={player.videoUrl}
             isPlaying={player.isPlaying}
             surfaceWidth={videoWidth}
