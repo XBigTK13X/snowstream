@@ -20,10 +20,9 @@ class Config {
         const h264TenBit = '/auth/wrap/details/episode?shelfId=2&showId=528&seasonId=1896&episodeId=33534&showName=Star ☆ Twinkle Precure&seasonOrder=1&episodeOrder=7'
         const h265TenBitHDR = '/auth/wrap/details/movie?shelfId=1&movieId=390'
         const cartoonUrl = '/auth/wrap/details/episode?shelfId=2&showId=228&seasonId=478&episodeId=8827&showName=Aaahh%21%21%21%20Real%20Monsters&seasonOrder=1&episodeOrder=2'
-
         const seekUrl = '/auth/wrap/details/episode?shelfId=2&showId=428&seasonId=1408&episodeId=26468&showName=H2O+-+Just+Add+Water&seasonOrder=1&episodeOrder=3'
 
-        this.debugVideoUrl = seekUrl
+        this.debugVideoUrl = null
         this.debugSnowui = false
     }
 }

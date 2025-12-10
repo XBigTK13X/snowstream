@@ -53,10 +53,8 @@ def build_command(
             dialect = NvidiaTranscodeDialect(video_filter_kind=plan.video_filter_kind)
 
     streaming_protocol = 'tcp'
-    if player_kind == 'rnv':
-        streaming_protocol = 'http'
-    streaming_url = f'{streaming_protocol}://{config.transcode_stream_host}:{stream_port}'
-    ffmpeg_url = f'{streaming_protocol}://{config.transcode_ffmpeg_host}:{stream_port}'
+    streaming_url = f'{streaming_protocol}://{config.transcode_stream_host}:{stream_port}/stream.{plan.transcode_container}'
+    ffmpeg_url = f'{streaming_protocol}://{config.transcode_ffmpeg_host}:{stream_port}/stream.{plan.transcode_container}'
 
     command =  FfmpegCommand()
 
@@ -160,16 +158,7 @@ def build_command(
     if audio_track_index != None:
         command.append(f'-map 0:a:{audio_track_index}')
 
-    log.info(player_kind)
-
-    if player_kind == 'rnv':
-        command.append(
-            '-movflags +frag_keyframe+empty_moov+default_base_moof '
-            '-f mp4 -listen 1 '
-            f'"{ffmpeg_url}"'
-        )
-    else:
-        command.append(f'-f matroska -listen 1 "{ffmpeg_url}/stream.mkv"')
+    command.append(f'-f {plan.transcode_container} -listen 1 "{ffmpeg_url}"')
 
     log.info(command.get_command())
     return command.get_command(),streaming_url

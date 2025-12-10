@@ -135,8 +135,18 @@ class PlayerActions {
         })
 
         const args = playerState.isTranscode
-            ? [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile, playerState.seekToSeconds, playerState.playerKind]
-            : [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile, playerState.playerKind]
+            ? [
+                this.apiClient,
+                playerState.routeParams,
+                playerState.clientOptions.deviceProfile,
+                playerState?.routeParams?.seekToSeconds ?? 0,
+                playerState.playerKind
+            ]
+            : [
+                this.apiClient,
+                playerState.routeParams,
+                playerState.clientOptions.deviceProfile,
+                playerState.playerKind]
 
         loadHandler(...args)
             .then(this.parseVideoPayload)
@@ -282,7 +292,7 @@ class PlayerActions {
             }
         }
 
-        if (source === 'manual-seek' && playerState.isTranscode && playerState.loadTranscode) {
+        if (source === 'manual-seek' && playerState.isTranscode && this.loadTranscodeHandler) {
             playerState.manualSeekSeconds = nextProgressSeconds
             playerState.transcodeOnResume = true
         }
@@ -291,7 +301,7 @@ class PlayerActions {
     onVideoProgressEvent = (elapsedSeconds) => {
         let adjustedSeconds = elapsedSeconds
         if (playerState.isTranscode) {
-            adjustedSeconds += playerState.seekToSeconds
+            adjustedSeconds += playerState?.routeParams?.seekToSeconds ?? 0
         }
         this.onProgress(adjustedSeconds, 'player-event')
     }

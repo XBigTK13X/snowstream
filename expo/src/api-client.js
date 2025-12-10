@@ -377,7 +377,6 @@ export class ApiClient {
     }
 
     createVideoFileTranscodeSession = (payload) => {
-        console.log({ vfPayload: payload })
         let requestUrl = `/transcode/session?video_file_id=${payload.videoFileId}&device_profile=${payload.deviceProfile}&player_kind=${payload.playerKind}`
         if (payload.audioTrackIndex !== -1) {
             requestUrl += `&audio_track_index=${payload.audioTrackIndex}`
@@ -392,7 +391,6 @@ export class ApiClient {
     }
 
     createStreamableTranscodeSession = (payload) => {
-        console.log({ sPayload: payload })
         let requestUrl = `/transcode/session?streamable_id=${payload.streamableId}&device_profile=${payload.deviceProfile}&player_kind=${payload.playerKind}`
         if (payload.seekToSeconds) {
             requestUrl += `&seek_to_seconds=${Math.floor(payload.seekToSeconds)}`
