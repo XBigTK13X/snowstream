@@ -2673,10 +2673,10 @@ expo-keep-awake@~15.0.7:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-15.0.8.tgz#911c5effeba9baff2ccde79ef0ff5bf856215f8d"
   integrity sha512-YK9M1VrnoH1vLJiQzChZgzDvVimVoriibiDIFLbQMpjYBnvyfUeHJcin/Gx1a+XgupNXy92EQJLgI/9ZuXajYQ==
 
-expo-libmpv@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/expo-libmpv/-/expo-libmpv-0.5.0.tgz#d8a75c81c12a65e9edf49a4a2508d7df8b3b8b95"
-  integrity sha512-jbwUHznhRiGyQ7gr+LZAeiod8SKyI0aeJ+ST+F3YMWdBCaJbS64PKOGEDj43ZHCyaUy+lnWM50LN/usYlvc/Nw==
+expo-libmpv@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/expo-libmpv/-/expo-libmpv-0.5.3.tgz#30ed836c254b0aba346c5a8c9aca3219e08a58ce"
+  integrity sha512-6VdakN3AoLGxOLI0WojpNzTbzsGdYTN4BZ7dTbLGZfTi0M+pfE3f74Y2T0IxnOFgoDFTZxc62Fw7JteIuuJSPA==
   dependencies:
     expo-build-properties "1.0.9"
 
@@ -2731,10 +2731,10 @@ expo-server@^1.0.3:
   resolved "https://registry.yarnpkg.com/expo-server/-/expo-server-1.0.5.tgz#2d52002199a2af99c2c8771d0657916004345ca9"
   integrity sha512-IGR++flYH70rhLyeXF0Phle56/k4cee87WeQ4mamS+MkVAVP+dDlOHf2nN06Z9Y2KhU0Gp1k+y61KkghF7HdhA==
 
-expo-snowui@^1.6.24:
-  version "1.6.24"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.24.tgz#e7dd844578948a6bdfb325a38cdc0b5d7bea5a0b"
-  integrity sha512-UupGPdkLH2iT/u1qpVJSwfILBDsusuH5me9eRBaIBCLmONU8i/J3q4TjdNgET7GLvgwBYp3GZn//9+vtgc5aLA==
+expo-snowui@^1.6.25:
+  version "1.6.25"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.6.25.tgz#48c9d796b6f3b47ffe31f32d14004fa2ae0184c2"
+  integrity sha512-TAf25GTz6xP9NwJvtQlyxbyZ+2/jxRQg43T1asClEz0WZJem+54gHJrn1EA+a3Akgo59oqlZdiKDmSZajCpcpw==
   dependencies:
     expo "54.0.21"
     expo-image "^3.0.10"

@@ -66,7 +66,7 @@ class PlayerActions {
             playerState.hasCloseOverlay = !!deps.closeOverlay
         }
 
-        if (!playerState.isTranscode && deps?.currentRoute?.routeParams?.seekToSeconds !== undefined) {
+        if (!playerState.isTranscode && deps?.currentRoute?.routeParams?.seekToSeconds !== undefined && !playerState.manualSeekSeconds) {
             playerState.seekToSeconds = deps.currentRoute.routeParams.seekToSeconds
             playerState.progressSeconds = deps.currentRoute.routeParams.seekToSeconds
         }
@@ -107,7 +107,6 @@ class PlayerActions {
     }
 
     effectLoadVideo = () => {
-
         if (playerState.videoUrl || !playerState.settingsLoaded) {
             return
         }
@@ -256,11 +255,11 @@ class PlayerActions {
         playerState.videoLoaded = true
 
         if (source === 'manual-seek') {
-            if (nextProgressSeconds == null && nextProgressPercent != null) {
+            if (nextProgressSeconds == null && nextProgressPercent != null && playerState.durationSeconds != null) {
                 nextProgressSeconds = nextProgressPercent * playerState.durationSeconds
             }
             if (nextProgressSeconds < 0) nextProgressSeconds = 0
-            if (playerState.durationSeconds && nextProgressSeconds > playerState.durationSeconds) {
+            if (playerState.durationSeconds && nextProgressSeconds > playerState.durationSeconds && playerState.durationSeconds != null) {
                 nextProgressSeconds = playerState.durationSeconds
             }
             playerState.completeOnResume = nextProgressPercent >= 1.0
@@ -292,9 +291,11 @@ class PlayerActions {
             }
         }
 
-        if (source === 'manual-seek' && playerState.isTranscode && this.loadTranscodeHandler) {
+        if (source === 'manual-seek') {
             playerState.manualSeekSeconds = nextProgressSeconds
-            playerState.transcodeOnResume = true
+            if (playerState.isTranscode && this.loadTranscodeHandler) {
+                playerState.transcodeOnResume = true
+            }
         }
     }
 
