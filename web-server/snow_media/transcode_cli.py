@@ -51,8 +51,9 @@ def build_command(
         elif config.transcode_dialect == 'nvidia':
             dialect = NvidiaTranscodeDialect(video_filter_kind=plan.video_filter_kind)
 
-    streaming_url = f'http://{config.transcode_stream_host}:{stream_port}/stream.{plan.transcode_container}'
-    ffmpeg_url = f'http://{config.transcode_ffmpeg_host}:{stream_port}/stream.{plan.transcode_container}'
+    streaming_url = f'tcp://{config.transcode_stream_host}:{stream_port}'
+    ffmpeg_url = f'tcp://{config.transcode_ffmpeg_host}:{stream_port}'
+
     command =  FfmpegCommand()
 
     # Apply any dialect input settings
@@ -155,7 +156,8 @@ def build_command(
     if audio_track_index != None:
         command.append(f'-map 0:a:{audio_track_index}')
 
-    command.append(f'-f {plan.transcode_container} -listen 1')
-    command.append(f'"{ffmpeg_url}"')
+    command.append(f'-f matroska -listen 1')
+    command.append(ffmpeg_url)
+
     log.info(command.get_command())
     return command.get_command(),streaming_url
