@@ -376,24 +376,26 @@ export class ApiClient {
         return this.get('/device/profile/list')
     }
 
-    createVideoFileTranscodeSession = (videoFileId, audioTrackIndex, subtitleTrackIndex, deviceProfile, seekToSeconds) => {
-        let requestUrl = `/transcode/session?video_file_id=${videoFileId}&device_profile=${deviceProfile}`
-        if (audioTrackIndex !== -1) {
-            requestUrl += `&audio_track_index=${audioTrackIndex}`
+    createVideoFileTranscodeSession = (payload) => {
+        console.log({ vfPayload: payload })
+        let requestUrl = `/transcode/session?video_file_id=${payload.videoFileId}&device_profile=${payload.deviceProfile}&player_kind=${payload.playerKind}`
+        if (payload.audioTrackIndex !== -1) {
+            requestUrl += `&audio_track_index=${payload.audioTrackIndex}`
         }
-        if (subtitleTrackIndex !== -1) {
-            requestUrl += `&subtitle_track_index=${subtitleTrackIndex}`
+        if (payload.subtitleTrackIndex !== -1) {
+            requestUrl += `&subtitle_track_index=${payload.subtitleTrackIndex}`
         }
-        if (seekToSeconds) {
-            requestUrl += `&seek_to_seconds=${Math.floor(seekToSeconds)}`
+        if (payload.seekToSeconds) {
+            requestUrl += `&seek_to_seconds=${Math.floor(payload.seekToSeconds)}`
         }
         return this.post(requestUrl)
     }
 
-    createStreamableTranscodeSession = (streamableId, deviceProfile, seekToSeconds) => {
-        let requestUrl = `/transcode/session?streamable_id=${streamableId}&device_profile=${deviceProfile}`
-        if (seekToSeconds) {
-            requestUrl += `&seek_to_seconds=${Math.floor(seekToSeconds)}`
+    createStreamableTranscodeSession = (payload) => {
+        console.log({ sPayload: payload })
+        let requestUrl = `/transcode/session?streamable_id=${payload.streamableId}&device_profile=${payload.deviceProfile}&player_kind=${payload.playerKind}`
+        if (payload.seekToSeconds) {
+            requestUrl += `&seek_to_seconds=${Math.floor(payload.seekToSeconds)}`
         }
         return this.post(requestUrl)
     }

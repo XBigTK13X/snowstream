@@ -11,15 +11,16 @@ export default function PlayKeepsakePage() {
         })
     }
 
-    const loadTranscode = (apiClient, routeParams, deviceProfile, initialSeekSeconds) => {
+    const loadTranscode = (apiClient, routeParams, deviceProfile, initialSeekSeconds, playerKind) => {
         return new Promise((resolve) => {
-            return apiClient.createVideoFileTranscodeSession(
-                routeParams.videoFileId,
-                0,
-                -1,
-                deviceProfile,
-                initialSeekSeconds ?? 0
-            )
+            return apiClient.createVideoFileTranscodeSession({
+                videoFileId: routeParams.videoFileId,
+                audioTrackIndex: 0,
+                subtitleTrackIndex: -1,
+                deviceProfile: deviceProfile,
+                seekToSeconds: initialSeekSeconds ?? 0,
+                playerKind: playerKind
+            })
                 .then((transcodeSession) => {
                     return resolve({
                         name: routeParams.videoName,

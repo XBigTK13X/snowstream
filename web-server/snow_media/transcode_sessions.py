@@ -35,6 +35,7 @@ class TranscodeSessions:
     def create_session(
         self,
         ticket:db.Ticket,
+        player_kind:str,
         device_profile:str=None,
         video_file_id:int=None,
         streamable_id:int=None,
@@ -84,6 +85,7 @@ class TranscodeSessions:
             input_url=input_path,
             snowstream_info=snowstream_info,
             stream_port=stream_port,
+            player_kind=player_kind,
             audio_track_index=audio_track_index,
             subtitle_track_index=subtitle_track_index,
             seek_to_seconds=seek_to_seconds

@@ -737,10 +737,13 @@ def auth_required(router):
         audio_track_index:int=None,
         subtitle_track_index:int=None,
         device_profile:str=None,
-        seek_to_seconds:int=None
+        seek_to_seconds:int=None,
+        player_kind:str=None
     ):
+        log.info(player_kind)
         return transcode_sessions.create_session(
             ticket=auth_user.ticket,
+            player_kind=player_kind,
             device_profile=device_profile,
             video_file_id=video_file_id,
             streamable_id=streamable_id,

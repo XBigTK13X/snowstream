@@ -1,6 +1,6 @@
 from settings import config
-from log import log
 import snow_media.device
+from log import log
 from snow_media.transcode_dialect.default import DefaultTranscodeDialect
 from snow_media.transcode_dialect.nvidia import NvidiaTranscodeDialect
 from snow_media.transcode_dialect.quicksync import QuicksyncTranscodeDialect
@@ -34,10 +34,11 @@ def build_command(
     device_profile:str,
     input_url:str,
     stream_port:int,
+    player_kind:str,
     snowstream_info:dict=None,
     audio_track_index:int=None,
     subtitle_track_index:int=None,
-    seek_to_seconds:int=None
+    seek_to_seconds:int=None,
 ):
 
     plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=snowstream_info)
@@ -51,8 +52,11 @@ def build_command(
         elif config.transcode_dialect == 'nvidia':
             dialect = NvidiaTranscodeDialect(video_filter_kind=plan.video_filter_kind)
 
-    streaming_url = f'tcp://{config.transcode_stream_host}:{stream_port}'
-    ffmpeg_url = f'tcp://{config.transcode_ffmpeg_host}:{stream_port}'
+    streaming_protocol = 'tcp'
+    if player_kind == 'rnv':
+        streaming_protocol = 'http'
+    streaming_url = f'{streaming_protocol}://{config.transcode_stream_host}:{stream_port}'
+    ffmpeg_url = f'{streaming_protocol}://{config.transcode_ffmpeg_host}:{stream_port}'
 
     command =  FfmpegCommand()
 
@@ -156,8 +160,16 @@ def build_command(
     if audio_track_index != None:
         command.append(f'-map 0:a:{audio_track_index}')
 
-    command.append(f'-f matroska -listen 1')
-    command.append(ffmpeg_url)
+    log.info(player_kind)
+
+    if player_kind == 'rnv':
+        command.append(
+            '-movflags +frag_keyframe+empty_moov+default_base_moof '
+            '-f mp4 -listen 1 '
+            f'"{ffmpeg_url}"'
+        )
+    else:
+        command.append(f'-f matroska -listen 1 "{ffmpeg_url}/stream.mkv"')
 
     log.info(command.get_command())
     return command.get_command(),streaming_url

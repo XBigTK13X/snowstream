@@ -11,10 +11,14 @@ export default function PlayStreamablePage() {
         })
     }
 
-    const loadTranscode = (apiClient, routeParams, deviceProfile) => {
+    const loadTranscode = (apiClient, routeParams, deviceProfile, playerKind) => {
         return apiClient.getStreamable(routeParams.streamableId)
             .then((streamable) => {
-                return apiClient.createStreamableTranscodeSession(streamable.id, deviceProfile)
+                return apiClient.createStreamableTranscodeSession({
+                    streamableId: streamable.id,
+                    deviceProfile: deviceProfile,
+                    playerKind: playerKind
+                })
                     .then((response) => {
                         return {
                             url: response.transcode_url,

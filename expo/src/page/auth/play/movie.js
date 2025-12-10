@@ -18,7 +18,7 @@ export default function PlayMoviePage() {
         })
     }
 
-    const loadTranscode = (apiClient, routeParams, deviceProfile, progressSeconds) => {
+    const loadTranscode = (apiClient, routeParams, deviceProfile, progressSeconds, playerKind) => {
         return new Promise((resolve) => {
             apiClient.getMovie(routeParams.movieId, deviceProfile)
                 .then((movie) => {
@@ -27,13 +27,14 @@ export default function PlayMoviePage() {
                         videoFileIndex = parseInt(routeParams.videoFileIndex, 10)
                     }
                     const videoFile = movie.video_files[videoFileIndex]
-                    return apiClient.createVideoFileTranscodeSession(
-                        videoFile.id,
-                        routeParams.audioTrack,
-                        routeParams.subtitleTrack,
-                        deviceProfile,
-                        progressSeconds ?? routeParams.seekToSeconds
-                    )
+                    return apiClient.createVideoFileTranscodeSession({
+                        videoFileId: videoFile.id,
+                        audioTrackIndex: routeParams.audioTrack,
+                        subtitleTrackIndex: routeParams.subtitleTrack,
+                        deviceProfile: deviceProfile,
+                        seekToSeconds: progressSeconds ?? routeParams.seekToSeconds,
+                        playerKind: playerKind
+                    })
                         .then((transcodeSession) => {
                             return resolve({
                                 name: movie.name,

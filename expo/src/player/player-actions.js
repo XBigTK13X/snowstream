@@ -135,8 +135,8 @@ class PlayerActions {
         })
 
         const args = playerState.isTranscode
-            ? [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile, playerState.seekToSeconds]
-            : [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile]
+            ? [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile, playerState.seekToSeconds, playerState.playerKind]
+            : [this.apiClient, playerState.routeParams, playerState.clientOptions.deviceProfile, playerState.playerKind]
 
         loadHandler(...args)
             .then(this.parseVideoPayload)
@@ -162,12 +162,13 @@ class PlayerActions {
         playerState.videoLoading = false
         playerState.videoUrl = null
         playerState.transcodeOnResume = false
-        if (playerState.loadTranscode) {
-            playerState.loadTranscode(
+        if (this.loadTranscodeHandler) {
+            this.loadTranscodeHandler(
                 this.apiClient,
                 playerState.routeParams,
                 playerState.clientOptions.deviceProfile,
-                playerState.manualSeekSeconds
+                playerState.manualSeekSeconds,
+                playerState.playerKind
             ).then(this.parseVideoPayload)
         }
     }
