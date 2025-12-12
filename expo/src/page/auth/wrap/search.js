@@ -64,7 +64,7 @@ export default function SearchPage() {
     }
 
     return (
-        <>
+        <C.SnowGrid itemsPerRow={1}>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput
                 focusStart
@@ -75,6 +75,6 @@ export default function SearchPage() {
                 onSubmit={executeQuery}
                 onDebounce={executeQuery} />
             {resultsTabs}
-        </>
+        </C.SnowGrid>
     )
 }

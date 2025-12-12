@@ -328,7 +328,7 @@ class PlayerActions {
                 else if (!['demuxer-cache-time', 'track-list'].includes(mpvEvent.property)) {
                     this.onAddLog(eventInfo)
                 }
-                if (mpvEvent.property === 'eof-reached' && !!mpvEvent.value) {
+                if (mpvEvent.property === 'eof-reached' && playerState.progressSeconds > 1) {
                     this.onPlaybackComplete()
                 }
             }
