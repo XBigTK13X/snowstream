@@ -2,7 +2,6 @@ import _ from 'lodash'
 import React from 'react'
 import Snow from 'expo-snowui'
 import { subscribe, snapshot } from 'valtio'
-import { useToast } from 'expo-toast';
 
 import { useAppContext } from '../app-context'
 import { playerState } from './player-state'
@@ -16,7 +15,8 @@ export function PlayerManager(props) {
         navPop,
         clearModals,
         closeOverlay,
-        currentRoute
+        currentRoute,
+        toast
     } = Snow.useSnowContext()
     const {
         apiClient,
@@ -24,8 +24,6 @@ export function PlayerManager(props) {
         config,
         routes
     } = useAppContext()
-
-    const toast = useToast();
 
     React.useEffect(() => {
         playerActions.importContexts({

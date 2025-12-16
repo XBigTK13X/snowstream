@@ -119,8 +119,14 @@ export default function SnowVideoControls(props) {
                 <Snow.Tabs focusStart focusKey="control-tabs" headers={tabs}>
                     <Snow.Grid itemsPerRow={3}>
                         <Snow.TextButton title="Resume" onPress={Player.action.onResumeVideo} />
-                        <Snow.TextButton title="Stop" onPress={() => { Player.action.onStopVideo() }} />
-                        <Snow.TextButton title="Home" onPress={() => { Player.action.onStopVideo(true) }} />
+                        <Snow.TextButton title="Stop" onPress={() => {
+                            console.log("Stop button")
+                            Player.action.onStopVideo()
+                        }} />
+                        <Snow.TextButton title="Home" onPress={() => {
+                            console.log("Home button")
+                            Player.action.onStopVideo(true)
+                        }} />
                     </Snow.Grid>
                     {subtitleControls}
                     {trackControls}

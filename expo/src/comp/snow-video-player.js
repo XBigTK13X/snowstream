@@ -24,6 +24,7 @@ export default function SnowVideoPlayer(props) {
     React.useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', appState => {
             if (appState === 'background') {
+                console.log("Background")
                 Player.action.onStopVideo()
             }
         });

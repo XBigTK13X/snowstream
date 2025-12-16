@@ -12,17 +12,14 @@ import {
     View,
 } from 'react-native'
 
-import { Image } from 'expo-image'
-
 import { useKeepAwake } from 'expo-keep-awake';
 
 import { useDebouncedCallback } from 'use-debounce';
 
-import * as Sentry from "@sentry/react-native";
-
 import util from './util'
 
 import Snow, {
+    Image,
     SnowBreak,
     SnowDropdown,
     SnowFillView,
@@ -67,7 +64,6 @@ export default {
     Platform,
     React,
     ScrollView,
-    Sentry,
     Snow,
     SnowBreak,
     SnowCreateJobButton,

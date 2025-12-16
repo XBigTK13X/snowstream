@@ -4,6 +4,8 @@ import { playerState, initialPlayerState } from './player-state'
 import util from '../util'
 import CONST from '../constant'
 
+const MAX_LOGS = 300
+
 class PlayerActions {
     constructor() {
         this.apiClient = null
@@ -196,11 +198,13 @@ class PlayerActions {
     }
 
     onVideoModalBack = () => {
+        console.log("Modal back")
         if (playerState.controlsVisible) return
         this.onStopVideo()
     }
 
     onPlaybackComplete = () => {
+        console.log({ kind: 'complete', progress: playerState.progressSeconds, seek: playerState.seekToSeconds })
         this.onProgress(playerState.durationSeconds, 'playback-complete')
             .then(() => {
                 if (this.onCompleteHandler) {
@@ -212,17 +216,15 @@ class PlayerActions {
             .then(() => {
                 this.reset()
             })
-
     }
 
     onStopVideo = (goHome) => {
+        console.log({ kind: 'stop', progress: playerState.progressSeconds, seek: playerState.seekToSeconds })
         this.onCloseTranscodeSession()
         playerState.controlsVisible = false
         playerState.isPlaying = false
         this.clearModals?.()
         this.closeOverlay?.()
-
-
 
         if (goHome && this.navPush) {
             this.navPush({ path: playerState.routes.landing, func: false })
@@ -249,6 +251,9 @@ class PlayerActions {
 
     onAddLog = (logEvent) => {
         playerState.logs.push(Snow.stringifySafe(logEvent))
+        if (playerState.logs?.length > MAX_LOGS) {
+            playerState.logs.shift()
+        }
     }
 
     onProgress = async (nextProgressSeconds, source, nextProgressPercent) => {
@@ -342,6 +347,7 @@ class PlayerActions {
     }
 
     onCriticalError = (error) => {
+        console.log({ error })
         if (!playerState.isTranscode && this.navPush) {
             const newParams = { ...playerState.routeParams, transcode: true }
             playerState.videoLoaded = false
