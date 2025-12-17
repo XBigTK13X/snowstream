@@ -53,9 +53,19 @@ export default function SnowVideoPlayer(props) {
                 render: () => {
                     const playerSnapshot = Player.snapshot(Player.state)
                     const VideoView = playerSnapshot.VideoView
-                    return (
-                        <VideoView />
-                    )
+                    if (player.clientOptions.nightFilter) {
+                        return (
+                            <>
+                                <VideoView />
+                                <View style={{
+                                    flex: 1,
+                                    backgroundColor: 'rgb(10, 10, 25)',
+                                    opacity: 0.45
+                                }} />
+                            </>
+                        )
+                    }
+                    return <VideoView />
                 }
             })
             if (!player.controlsVisible && player.isVideoViewReady) {
@@ -147,8 +157,6 @@ export default function SnowVideoPlayer(props) {
     if (config.debugVideoPlayer) {
         util.log(player.videoUrl)
     }
-
-    console.log({ url: player.videoUrl })
 
     return (
         <Snow.FillView>

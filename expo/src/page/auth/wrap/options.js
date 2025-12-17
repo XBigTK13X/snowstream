@@ -25,6 +25,7 @@ export default function OptionsPage() {
         alwaysTranscode: clientOptions?.alwaysTranscode ?? '',
         alwaysUsePlayer: clientOptions?.alwaysUsePlayer ?? '',
         audioCompression: clientOptions?.audioCompression ?? '',
+        nightFilter: clientOptions?.nightFilter ?? ''
     })
     const formRef = C.React.useRef(form)
 
@@ -64,6 +65,10 @@ export default function OptionsPage() {
 
     const chooseAlwaysUsePlayer = (selection) => {
         setForm(prev => ({ ...prev, alwaysUsePlayer: players[selection] }))
+    }
+
+    const chooseNightFilter = (selection) => {
+        setForm(prev => ({ ...prev, nightFilter: selection === 0 ? false : true }))
     }
 
     const chooseAudioCompression = (selection) => {
@@ -123,10 +128,16 @@ export default function OptionsPage() {
             <C.SnowTabs
                 focusKey="player-settings"
                 headers={[
+                    'Night',
                     'Audio',
                     'Resolution',
                     'Transcode'
                 ]}>
+                <C.SnowDropdown
+                    title="Night Filter"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseNightFilter}
+                    valueIndex={form.nightFilter === true ? 1 : 0} />
                 <C.SnowDropdown
                     title="Audio Compression (mpv)"
                     options={['No', 'Yes']}

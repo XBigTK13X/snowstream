@@ -256,6 +256,9 @@ export function AppContextProvider(props) {
             if (!storedOptions.hasOwnProperty('alwaysUsePlayer')) {
                 storedOptions.alwaysUsePlayer = 'all'
             }
+            if (!storedOptions.hasOwnProperty('nightFilter')) {
+                storedOptions.nightFilter = false
+            }
             setClientOptions(storedOptions)
         }
     }, [clientOptions])
