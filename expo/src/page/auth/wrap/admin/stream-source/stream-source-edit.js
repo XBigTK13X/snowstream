@@ -4,64 +4,67 @@ import { C, useAppContext } from 'snowstream'
 export default function StreamSourceEditPage() {
     const { navPush, currentRoute } = Snow.useSnowContext()
     const { apiClient, routes } = useAppContext()
+    const { streamSourceId } = currentRoute?.routeParams
+    const [form, setForm] = C.React.useState({
+        id: null,
+        name: '',
+        kind: '',
+        url: '',
+        username: '',
+        password: ''
+    })
+    const formRef = C.React.useRef(form)
+    const [deleteCount, setDeleteCount] = C.React.useState(3)
+    const deleteRef = C.React.useRef(deleteCount)
 
-    const [streamSourceName, setStreamSourceName] = C.React.useState('')
-    const [streamSourceKind, setStreamSourceKind] = C.React.useState('HdHomeRun')
-    const [streamSourceKindIndex, setStreamSourceKindIndex] = C.React.useState(0)
-    const [streamSourceUrl, setStreamSourceUrl] = C.React.useState('')
-    const [streamSourceUsername, setStreamSourceUsername] = C.React.useState('')
-    const [streamSourcePassword, setStreamSourcePassword] = C.React.useState('')
-    const [streamSourceId, setStreamSourceId] = C.React.useState(null)
-    const [streamSourceDeleteCount, setStreamSourceDeleteCount] = C.React.useState(3)
-    const [streamSourceDeleted, setStreamSourceDeleted] = C.React.useState(false)
 
     C.React.useEffect(() => {
-        if (!streamSourceId && currentRoute.routeParams.streamSourceId) {
-            apiClient.getStreamSource(currentRoute.routeParams.streamSourceId).then((streamSource) => {
-                setStreamSourceName(streamSource.name || '')
-                setStreamSourceKind(streamSource.kind || '')
-                setStreamSourceUrl(streamSource.url || '')
-                setStreamSourceUsername(streamSource.username || '')
-                setStreamSourcePassword(streamSource.password || '')
-                setStreamSourceId(streamSource.id)
+        formRef.current = form
+    }, [form])
+
+    C.React.useEffect(() => {
+        deleteRef.current = deleteCount
+    }, [deleteCount])
+
+    C.React.useEffect(() => {
+        if (streamSourceId) {
+            apiClient.getStreamSource(streamSourceId).then((streamSource) => {
+                setForm({
+                    id: streamSource.id,
+                    name: streamSource.name,
+                    kind: streamSource.kind,
+                    url: streamSource.url,
+                    username: streamSource.username,
+                    password: streamSource.password,
+                })
             })
         }
-    })
-    let streamSourceKinds = [
+    }, [streamSourceId])
+
+    const saveStreamSource = () => {
+        apiClient.saveStreamSource(formRef?.current)
+    }
+
+    const deleteStreamSource = () => {
+        if (deleteRef.current > 1) {
+            setDeleteCount(prev => { return prev - 1 })
+        }
+        else {
+            apiClient.deleteStreamSource(streamSourceId).then((() => {
+                navPush({
+                    path: routes.adminStreamSourceList,
+                    func: false
+                })
+            }))
+        }
+    }
+
+    const streamSourceKinds = [
         'HdHomeRun',
         'IptvM3u',
         'FrigateNvr',
         'TubeArchivist'
     ]
-    const chooseStreamSourceKind = (chosenKindIndex) => {
-        setStreamSourceKind(streamSourceKinds[chosenKindIndex])
-        setStreamSourceKindIndex(chosenKindIndex)
-    }
-    const saveStreamSource = () => {
-        let payload = {
-            id: streamSourceId,
-            name: streamSourceName,
-            kind: streamSourceKind,
-            url: streamSourceUrl,
-            username: streamSourceUsername,
-            password: streamSourcePassword
-        }
-        apiClient.saveStreamSource(payload)
-    }
-
-    const deleteStreamSource = () => {
-        if (streamSourceDeleteCount > 1) {
-            setStreamSourceDeleteCount(streamSourceDeleteCount - 1)
-        }
-        else {
-            apiClient.deleteStreamSource(streamSourceId).then((() => {
-                setStreamSourceDeleted(true)
-            }))
-        }
-    }
-    if (streamSourceDeleted) {
-        return <C.Redirect href={routes.adminStreamSourceList} />
-    }
 
     return (
         <C.SnowGrid focusStart focusKey='page-entry' itemsPerRow={1}>
@@ -73,24 +76,45 @@ export default function StreamSourceEditPage() {
                         params: { streamSourceId: currentRoute.routeParams.streamSourceId }
                     })} />
             ) : null}
-            {streamSourceId ? <C.SnowTextButton title={`Delete (${streamSourceDeleteCount})`} onPress={deleteStreamSource} /> : null}
+            {streamSourceId ? <C.SnowTextButton title={`Delete (${deleteCount})`} onPress={deleteStreamSource} /> : null}
 
             <C.SnowLabel>Name</C.SnowLabel>
-            <C.SnowInput onValueChange={setStreamSourceName} value={streamSourceName} />
+            <C.SnowInput onValueChange={(val) => {
+                setForm(prev => {
+                    return { ...prev, name: val }
+                })
+            }} value={form.name} />
 
             <C.SnowLabel>Kind</C.SnowLabel>
             <C.SnowDropdown
                 options={streamSourceKinds}
-                onValueChange={chooseStreamSourceKind}
-                valueIndex={streamSourceKindIndex} />
+                onValueChange={(val) => {
+                    setForm(prev => {
+                        return { ...prev, kind: streamSourceKinds[val] }
+                    })
+                }}
+                valueIndex={streamSourceKinds.indexOf(form.kind)} />
+
             <C.SnowLabel>URL</C.SnowLabel>
-            <C.SnowInput onValueChange={setStreamSourceUrl} value={streamSourceUrl} />
+            <C.SnowInput onValueChange={(val) => {
+                setForm(prev => {
+                    return { ...prev, url: val }
+                })
+            }} value={form.url} />
 
             <C.SnowLabel>Username</C.SnowLabel>
-            <C.SnowInput onValueChange={setStreamSourceUsername} value={streamSourceUsername} />
+            <C.SnowInput onValueChange={(val) => {
+                setForm(prev => {
+                    return { ...prev, username: val }
+                })
+            }} value={form.username} />
 
             <C.SnowLabel>Password</C.SnowLabel>
-            <C.SnowInput onValueChange={setStreamSourcePassword} value={streamSourcePassword} />
+            <C.SnowInput onValueChange={(val) => {
+                setForm(prev => {
+                    return { ...prev, password: val }
+                })
+            }} value={form.password} />
 
             <C.SnowTextButton title="Save Stream Source" onPress={saveStreamSource} />
         </C.SnowGrid >

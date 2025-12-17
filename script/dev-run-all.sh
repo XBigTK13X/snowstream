@@ -1,4 +1,5 @@
 #! /bin/bash
+source script/variables.sh
 cd web-server
 mkdir -p .snowstream/log
 source venv/bin/activate
