@@ -364,7 +364,7 @@ export default function MediaTracksPage(props) {
         tabs.push('Info')
         const infoTab = (
             <C.SnowView>
-                <C.SnowGrid focusKey="inspection-top" focusDown="inspection-middle" itemsPerRow={3}>
+                <C.SnowGrid focusKey="inspection-top" focusDown="discussion-button" itemsPerRow={3}>
                     <C.SnowTextButton
                         tall
                         title="Inspection"
@@ -378,6 +378,7 @@ export default function MediaTracksPage(props) {
                             ...props.getJobTarget(currentRoute.routeParams)
                         }} /> : null}
                 </C.SnowGrid>
+                <C.SnowText center>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowGrid assignFocus={false} itemsPerRow={2}>
                     <C.SnowView>
                         <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
@@ -388,21 +389,26 @@ export default function MediaTracksPage(props) {
                     <C.SnowView
                         style={styles.image}>
                         <C.SnowLabel>Discussion</C.SnowLabel>
-                        <C.Image
-                            source={{ uri: media.discussion_image_url }}
-                            style={{ width: 200, height: 200 }}
+                        <C.SnowImageButton
+                            focusKey="discussion-button"
+                            title="Discussion"
+                            imageSource={{ uri: media.discussion_image_url }}
+                            onPress={() => {
+                                C.Linking.openURL(media.discussion_url)
+                            }}
                         />
                     </C.SnowView>
                 </C.SnowGrid>
-                <C.SnowTarget focusKey="inspection-middle" focusDown="inspection-bottom" />
-                <C.SnowText >Path: {videoFile.network_path}</C.SnowText>
-                <C.SnowGrid assignFocus={false} itemsPerRow={3}>
-                    <C.SnowText >Params: {C.Snow.stringifySafe(currentRoute.routeParams, null, 4)}</C.SnowText>
-                    <C.SnowText >Plan: {C.Snow.stringifySafe(videoFile.plan, null, 4)}</C.SnowText>
-                    <C.SnowText >Options: {C.Snow.stringifySafe(clientOptions, null, 4)}</C.SnowText>
-                </C.SnowGrid>
-                <C.SnowTarget focusKey="inspection-bottom" />
             </C.SnowView>
+        )
+
+        tabs.push('Plan')
+        const planTab = (
+            <C.SnowGrid assignFocus={false} itemsPerRow={3}>
+                <C.SnowText >Params: {C.Snow.stringifySafe(currentRoute.routeParams, null, 4)}</C.SnowText>
+                <C.SnowText >Plan: {C.Snow.stringifySafe(videoFile.plan, null, 4)}</C.SnowText>
+                <C.SnowText >Options: {C.Snow.stringifySafe(clientOptions, null, 4)}</C.SnowText>
+            </C.SnowGrid>
         )
 
         return (
@@ -439,6 +445,7 @@ export default function MediaTracksPage(props) {
                         {fileTab}
                         {trackTab}
                         {infoTab}
+                        {planTab}
                     </C.SnowTabs >
                 </C.SnowView>
             </C.SnowView>

@@ -109,7 +109,8 @@ def search_to_base64_qrcode(query:str):
         box_size=10,
         border=5
     )
-    qr.add_data(f"https://www.google.com/search?q={query.replace(' ','+')}")
+    query_url = f"https://www.google.com/search?q={query.replace(' ','+')}"
+    qr.add_data(query_url)
     qr.make(fit=True)
     image = qr.make_image(back_color="rgb(50, 50, 50)", fill_color="rgb(200, 200, 200)")
 
@@ -117,7 +118,7 @@ def search_to_base64_qrcode(query:str):
     image.save(buffer, format='PNG')
     buffer.seek(0)
     encoded = base64.b64encode(buffer.read()).decode('utf-8')
-    return f'data:image/png;base64,{encoded}'
+    return f'data:image/png;base64,{encoded}', query_url
 
 def fromBase64(input:str):
     return base64.b64decode(input).decode('utf-8')

@@ -475,7 +475,7 @@ def auth_required(router):
             if movie.video_files[ii].version:
                 movie.has_versions = True
         search_query = f'reddit movies discussion {movie.name} ({movie.release_year})'
-        movie.discussion_image_url = util.search_to_base64_qrcode(search_query)
+        movie.discussion_image_url,movie.discussion_url = util.search_to_base64_qrcode(search_query)
         return movie
 
     @router.post("/movie/watched",tags=['Movie'])
@@ -662,7 +662,7 @@ def auth_required(router):
                 episode.has_versions = True
         anime_query = " anime" if episode.video_files[ii].info["is_anime"] else ""
         search_query = f'reddit discussion{anime_query} {episode.season.show.name} season {episode.season.season_order_counter} episode {episode.episode_order_counter}'
-        episode.discussion_image_url = util.search_to_base64_qrcode(search_query)
+        episode.discussion_image_url,episode.discussion_url = util.search_to_base64_qrcode(search_query)
         return episode
 
     @router.post("/show/season/episode/progress",tags=['Show'])
