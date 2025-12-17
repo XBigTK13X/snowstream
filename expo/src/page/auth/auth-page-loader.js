@@ -20,7 +20,7 @@ const styles = {
 }
 
 function HeaderNav(props) {
-    const { navPush } = C.useSnowContext()
+    const { navPush, navPop } = C.useSnowContext()
     const { displayName, routes, isAdmin, signOut } = useAppContext();
 
     React.useEffect(() => {
@@ -48,6 +48,10 @@ function HeaderNav(props) {
                     short
                     onPress={navPush({ path: routes.info })}
                     onLongPress={navPush({ path: routes.options })} />
+                <SnowTextButton
+                    title={`Back`}
+                    short
+                    onPress={navPop(true)} />
             </SnowGrid>
             <SnowBreak />
         </View >
