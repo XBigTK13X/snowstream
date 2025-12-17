@@ -108,7 +108,6 @@ export default function SnowVideoControls(props) {
             </>
         )
     }
-
     return (
         (
             <View style={styles.player}>
@@ -120,11 +119,9 @@ export default function SnowVideoControls(props) {
                     <Snow.Grid itemsPerRow={3}>
                         <Snow.TextButton title="Resume" onPress={Player.action.onResumeVideo} />
                         <Snow.TextButton title="Stop" onPress={() => {
-                            console.log("Stop button")
                             Player.action.onStopVideo()
                         }} />
                         <Snow.TextButton title="Home" onPress={() => {
-                            console.log("Home button")
                             Player.action.onStopVideo(true)
                         }} />
                     </Snow.Grid>

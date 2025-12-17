@@ -198,13 +198,11 @@ class PlayerActions {
     }
 
     onVideoModalBack = () => {
-        console.log("Modal back")
         if (playerState.controlsVisible) return
         this.onStopVideo()
     }
 
     onPlaybackComplete = () => {
-        console.log({ kind: 'complete', progress: playerState.progressSeconds, seek: playerState.seekToSeconds })
         this.onProgress(playerState.durationSeconds, 'playback-complete')
             .then(() => {
                 if (this.onCompleteHandler) {
@@ -219,7 +217,6 @@ class PlayerActions {
     }
 
     onStopVideo = (goHome) => {
-        console.log({ kind: 'stop', progress: playerState.progressSeconds, seek: playerState.seekToSeconds })
         this.onCloseTranscodeSession()
         playerState.controlsVisible = false
         playerState.isPlaying = false
@@ -317,6 +314,9 @@ class PlayerActions {
 
         if (eventInfo?.kind === 'rnvevent' && eventInfo?.data) {
             if (eventInfo?.data?.data?.currentTime) {
+                if (!playerState.isSeekable) {
+                    playerState.isSeekable = true
+                }
                 this.onVideoProgressEvent(eventInfo.data.data.currentTime)
             } else {
                 this.onAddLog(eventInfo)
@@ -330,10 +330,13 @@ class PlayerActions {
                 if (mpvEvent.property === 'time-pos') {
                     this.onVideoProgressEvent(Math.floor(mpvEvent.value))
                 }
+                else if (mpvEvent.property === 'seekable') {
+                    playerState.isSeekable = true
+                }
                 else if (!['demuxer-cache-time', 'track-list'].includes(mpvEvent.property)) {
                     this.onAddLog(eventInfo)
                 }
-                if (mpvEvent.property === 'eof-reached' && playerState.progressSeconds > 1) {
+                if (mpvEvent.property === 'eof-reached' && playerState.isSeekable) {
                     this.onPlaybackComplete()
                 }
             }
@@ -347,7 +350,6 @@ class PlayerActions {
     }
 
     onCriticalError = (error) => {
-        console.log({ error })
         if (!playerState.isTranscode && this.navPush) {
             const newParams = { ...playerState.routeParams, transcode: true }
             playerState.videoLoaded = false

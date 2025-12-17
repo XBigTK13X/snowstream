@@ -50,7 +50,6 @@ export default function PageLoader() {
         <SnowApp
             DEBUG_SNOW={config.debugSnowui}
             ENABLE_FOCUS={Platform.isTV}
-            DEBUG_FOCUS={true}
             snowStyle={appStyle}
             routePaths={routes}
             routePages={pages}

@@ -35,6 +35,7 @@ export const initialPlayerState = {
 
     isVideoViewReady: false,
     isPlaying: false,
+    isSeekable: false,
     playbackFailed: false,
     controlsVisible: false,
 
