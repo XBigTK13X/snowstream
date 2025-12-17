@@ -139,7 +139,7 @@ export default function ShelfEditPage() {
                 <C.SnowLabel>Target Directory</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('targetDirectory')} value={form.targetDirectory} />
             </C.SnowGrid>
-            <C.SnowGrid focusKey="payload" itemsPerRow={6}>
+            <C.SnowGrid focusKey="payload" itemsPerRow={4}>
                 <C.SnowLabel>Target Kind</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('targetKind')} value={form.targetKind} />
                 <C.SnowLabel>Target Id</C.SnowLabel>

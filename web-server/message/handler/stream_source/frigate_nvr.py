@@ -10,10 +10,12 @@ from log import log
 # Important endpoint
 # http://frigate.domain:5000/api/config
 
+# url is the HTTP API to get camera names
+# username is the rtsp url base for stream access
 
 class FrigateNvr(StreamSourceImporter):
     def __init__(self, scope, stream_source):
-        super().__init__(scope, "Frigate NVR", stream_source)
+        super().__init__(scope=scope, kind="Frigate NVR", stream_source=stream_source)
 
     def download(self):
         if super().download():
@@ -30,9 +32,7 @@ class FrigateNvr(StreamSourceImporter):
     def parse_watchable_urls(self):
         frigate_config = json.loads(self.cached_data)
         camera_streams = []
-        stream_url = (
-            f'{self.stream_source.url.replace(":5000",":1984")}/api/stream.mp4?src='
-        )
+
         if "cameras" in frigate_config:
             for camera_name, camera_settings in frigate_config["cameras"].items():
                 if "ffmpeg" in camera_settings:
@@ -40,9 +40,10 @@ class FrigateNvr(StreamSourceImporter):
                         for input in camera_settings["ffmpeg"]["inputs"]:
                             if "roles" in input:
                                 if "record" in input["roles"]:
+                                    camera_url = f'{self.stream_source.username}/{camera_name}'
                                     camera_streams.append(
                                         {
-                                            "url": f"{stream_url}{camera_name}",
+                                            "url": f"{camera_url}",
                                             "name": camera_name,
                                         }
                                     )
@@ -58,5 +59,5 @@ class FrigateNvr(StreamSourceImporter):
                 )
                 new_count += 1
         if new_count > 0:
-            db.op.update_job(job_id=self.scope.job_ib, message=f"Found {new_count} new streams")
+            db.op.update_job(job_id=self.scope.job_id, message=f"Found {new_count} new streams")
         return True

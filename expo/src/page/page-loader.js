@@ -57,7 +57,7 @@ export default function PageLoader() {
         >
             <AppContextProvider>
                 <Player.Manager>
-                    <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1, paddingBottom: 50 }}>
                         <PageWrapper />
                     </View>
                 </Player.Manager>

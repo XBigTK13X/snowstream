@@ -148,6 +148,8 @@ export default function SnowVideoPlayer(props) {
         util.log(player.videoUrl)
     }
 
+    console.log({ url: player.videoUrl })
+
     return (
         <Snow.FillView>
             <Snow.Header center>Preparing the video.</Snow.Header>
