@@ -9,6 +9,9 @@ export function SnowScreencapGridW(props) {
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null
+        if (item.thumbnail_web_path) {
+            thumbnailUrl = item.thumbnail_web_path
+        }
         if (item.screencap_image) {
             thumbnailUrl = item.screencap_image.thumbnail_web_path
         }

@@ -88,7 +88,9 @@ export default function LandingPage(props) {
                         title={shelf.name}
                         onPress={navPush({
                             path: routes.keepsakeDetails,
-                            params: { shelfId: shelf.id, seekToSeconds: 0 }
+                            params: {
+                                shelfId: shelf.id
+                            }
                         })}
                     />
                 )

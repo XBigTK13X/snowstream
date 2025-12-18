@@ -56,6 +56,21 @@ export default function SearchPage() {
                                 )
                             }} />
                         }
+                        if (searchResult.kind === 'keepsake-directories') {
+                            return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
+                                return (
+                                    <C.SnowTextButton title={item.display} onPress={navPush({
+                                        path: routes.keepsakeDetails,
+                                        params: {
+                                            shelfId: item.shelf.id
+                                        }
+                                    })} />
+                                )
+                            }} />
+                        }
+                        if (searchResult.kind === 'keepsake-videos') {
+                            return <C.SnowScreencapGrid disableWatched items={searchResult.items} />
+                        }
                         return <C.SnowPosterGrid disableWatched items={searchResult.items} />
                     })}
                 </C.SnowTabs>

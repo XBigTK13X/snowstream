@@ -102,6 +102,18 @@ export function AppContextProvider(props) {
                     func: false
                 })
             }
+            else if (item.model_kind === 'keepsake_video') {
+                navPush({
+                    path: routes.keepsakePlay,
+                    params: {
+                        videoFileId: item.video_file.id,
+                        videoUrl: item.video_file.network_path,
+                        videoName: item.video_file.name,
+                        videoDurationSeconds: item.video_file.info.duration_seconds,
+                        func: false
+                    },
+                })
+            }
             else {
                 util.log("Unhandled media item route")
                 util.log({ item })

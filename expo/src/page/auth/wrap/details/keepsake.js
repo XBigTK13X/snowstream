@@ -27,7 +27,7 @@ export default function KeepsakeDetailsPage(props) {
         ).then((response) => {
             setKeepsake(response)
         })
-    }, [currentRoute])
+    }, [currentRoute?.routeParams?.shelfId, currentRoute?.routeParams?.subdirectory64])
 
     const styles = {
         webImage: {

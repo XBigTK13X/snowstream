@@ -4,6 +4,7 @@ import database.operation.movie as db_movie
 import database.operation.show as db_show
 import database.operation.show_episode as db_episode
 import database.operation.streamable as db_streamable
+import database.operation.keepsake as db_keepsake
 
 def perform_search(ticket:dbi.dm.Ticket,query:str):
     result = {}
@@ -55,5 +56,26 @@ def perform_search(ticket:dbi.dm.Ticket,query:str):
                 'name': 'Streamables',
                 'items': streamables
             })
+
+        keepsakes = db_keepsake.get_keepsake_list(search_query=query)
+        if keepsakes:
+            if keepsakes['directories']:
+                results.append({
+                    'kind': 'keepsake-directories',
+                    'name': 'Keepsake Directory',
+                    'items': keepsakes['directories']
+                })
+            if keepsakes['videos']:
+                results.append({
+                    'kind': 'keepsake-videos',
+                    'name': 'Keepsake Video',
+                    'items': keepsakes['videos']
+                })
+            if keepsakes['images']:
+                results.append({
+                    'kind': 'keepsake-images',
+                    'name': 'Keepsake Image',
+                    'items': keepsakes['images']
+                })
 
     return results

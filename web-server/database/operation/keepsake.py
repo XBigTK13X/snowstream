@@ -1,4 +1,5 @@
 from database.operation.db_internal import dbi
+import json
 
 def create_keepsake(directory: str):
     with dbi.session() as db:
@@ -56,26 +57,6 @@ def get_keepsake_list_by_directory(directory:str):
             .all()
         )
 
-def get_keepsake_list_by_shelf(shelf_id: int, search_query:str=None):
-    with dbi.session() as db:
-        query = (
-            db.query(dbi.dm.Keepsake)
-            .join(dbi.dm.KeepsakeShelf)
-            .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
-        )
-        if search_query:
-            query = query.filter(dbi.dm.Keepsake.directory.ilike(f'%{search_query}%'))
-        query = (
-            query.filter(dbi.dm.KeepsakeShelf.shelf_id == shelf_id)
-            .order_by(
-                dbi.func.length(dbi.dm.Keepsake.directory),
-                dbi.dm.Keepsake.directory
-            )
-        )
-        if search_query:
-            query = query.limit(dbi.config.search_results_per_shelf_limit)
-        return query.all()
-
 def create_keepsake_video_file(keepsake_id: int, video_file_id: int):
     with dbi.session() as db:
         dbm = dbi.dm.KeepsakeVideoFile()
@@ -114,3 +95,45 @@ def get_keepsake_image_file(keepsake_id: int, image_file_id: int):
             .first()
         )
 
+def get_keepsake_list(search_query: str):
+
+    with dbi.session() as db:
+        directories = (
+            db.query(dbi.dm.Keepsake)
+            .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
+            .filter(dbi.dm.Keepsake.directory.ilike(f'%{search_query}%'))
+            .all()
+        )
+
+        images = (
+            db.query(dbi.dm.KeepsakeImageFile)
+            .join(dbi.dm.KeepsakeImageFile.image_file)
+            .filter(dbi.dm.ImageFile.local_path.ilike(f'%{search_query}%'))
+            .options(dbi.orm.contains_eager(dbi.dm.KeepsakeImageFile.image_file))
+            .all()
+        )
+
+        videos = (
+            db.query(dbi.dm.KeepsakeVideoFile)
+            .join(dbi.dm.KeepsakeVideoFile.video_file)
+            .filter(dbi.dm.VideoFile.local_path.ilike(f'%{search_query}%'))
+            .options(dbi.orm.contains_eager(dbi.dm.KeepsakeVideoFile.video_file))
+            .all()
+        )
+
+        if directories:
+            for xx in directories:
+                xx.display = xx.directory.replace(xx.shelf.local_path+'/','')
+
+        if videos:
+            for xx in videos:
+                xx.thumbnail_web_path = xx.video_file.thumbnail_web_path
+                xx.name = xx.video_file.name
+                xx.model_kind = 'keepsake_video'
+                xx.video_file.info = json.loads(xx.video_file.snowstream_info_json)
+
+        return {
+            'directories': directories,
+            'images': images,
+            'videos': videos
+        }
