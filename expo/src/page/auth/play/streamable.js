@@ -6,7 +6,8 @@ export default function PlayStreamablePage() {
             return {
                 url: response.url,
                 name: response.name,
-                durationSeconds: response.duration_seconds
+                durationSeconds: response.duration_seconds,
+                mpvDecodingMode: response.stream_source.kind === 'FrigateNvr' ? 'mediacodec' : null
             }
         })
     }
@@ -23,7 +24,8 @@ export default function PlayStreamablePage() {
                         return {
                             url: response.transcode_url,
                             name: streamable.name,
-                            durationSeconds: streamable.duration_seconds
+                            durationSeconds: streamable.duration_seconds,
+                            mpvDecodingMode: response.stream_source.kind === 'FrigateNvr' ? 'mediacodec' : null
                         }
                     })
                     .catch((err) => {

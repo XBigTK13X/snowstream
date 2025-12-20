@@ -2,7 +2,8 @@ import { C, useAppContext } from 'snowstream'
 
 
 
-function StreamableWithGuideButton(props) {
+function StreamableWithGuideButtonW(props) {
+    const { readFocusProps } = C.useSnowContext(props)
     let currentProgram = "No guide information"
     let nextProgram = "No guide information"
     if (props.streamable.current_program) {
@@ -16,7 +17,10 @@ function StreamableWithGuideButton(props) {
     let name = props.streamable.name_display ? props.streamable.name_display : props.streamable.name
     return (
         <C.SnowView key={props.streamable.id}>
-            < C.SnowGrid key="streamable-grid" assignFocus="false" itemsPerRow={3} >
+            <C.SnowGrid
+                {...readFocusProps(props)}
+                assignFocus={false}
+                itemsPerRow={3} >
                 <C.SnowTextButton
                     title={name}
                     onPress={props.navPush({
@@ -43,10 +47,17 @@ function StreamableWithGuideButton(props) {
     )
 }
 
-function StreamableButton(props) {
+StreamableWithGuideButtonW.isSnowFocusWired = true
+
+const StreamableWithGuideButton = StreamableWithGuideButtonW
+
+
+function StreamableButtonW(props) {
+    const { readFocusProps } = C.useSnowContext(props)
     let name = props.streamable.name_display ? props.streamable.name_display : props.streamable.name
     return (
         <C.SnowTextButton
+            {...readFocusProps(props)}
             tall
             key={props.streamable.id}
             title={name}
@@ -62,12 +73,16 @@ function StreamableButton(props) {
                 params: {
                     streamSourceId: props.streamSource.id,
                     streamableId: props.streamable.id,
-                    forcePlayer: 'exo'
+                    transcode: 'true'
                 }
             })}
         />
     )
 }
+
+StreamableButtonW.isSnowFocusWired = true
+
+const StreamableButton = StreamableButtonW
 
 export default function StreamableListPage() {
     const { navPush, currentRoute } = C.useSnowContext()
@@ -123,7 +138,12 @@ export default function StreamableListPage() {
             } />
         }
         return (
-            <C.SnowGrid items={groupList} renderItem={renderItem} />
+            <C.SnowGrid
+                focusStart
+                focusKey={'page-entry'}
+                items={groupList}
+                renderItem={renderItem}
+            />
         )
     }
 
@@ -141,15 +161,16 @@ export default function StreamableListPage() {
             )
         }
         itemList = (
-            <C.SnowGrid itemsPerRow={1} items={streamableList} renderItem={renderItem} />
+            <C.SnowGrid
+                focusStart
+                focusKey={'page-entry'}
+                itemsPerRow={1}
+                items={streamableList}
+                renderItem={renderItem}
+            />
         )
     }
     else {
-        let focusProps = {}
-        if (!streamSource.has_groups) {
-            focusProps.focusStart = true
-            focusProps.focusKey = 'page-entry'
-        }
         const renderItem = (item) => {
             return (
                 <StreamableButton
@@ -162,10 +183,11 @@ export default function StreamableListPage() {
         }
         itemList = (
             <C.SnowGrid
-                {...focusProps}
-                key="streamable-grid-with-group"
+                focusStart
+                focusKey={'page-entry'}
                 items={streamableList}
-                renderItem={renderItem} />
+                renderItem={renderItem}
+            />
         )
     }
     return itemList

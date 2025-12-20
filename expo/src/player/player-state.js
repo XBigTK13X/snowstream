@@ -33,6 +33,8 @@ export const initialPlayerState = {
     videoWidth: CONST.resolution.fullHd.width,
     videoHeight: CONST.resolution.fullHd.height,
 
+    mpvDecodingMode: null,
+
     isVideoViewReady: false,
     isPlaying: false,
     isSeekable: false,

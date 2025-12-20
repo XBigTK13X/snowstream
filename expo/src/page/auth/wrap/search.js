@@ -49,7 +49,7 @@ export default function SearchPage() {
                                             params: {
                                                 streamSourceId: item.stream_source.id,
                                                 streamableId: item.id,
-                                                forcePlayer: 'exo'
+                                                transcode: true
                                             }
                                         })}
                                     />

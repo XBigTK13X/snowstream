@@ -54,7 +54,7 @@ export default function PageLoader() {
             routePaths={routes}
             routePages={pages}
             initialRoutePath={routes.signIn}
-        >
+        >t
             <AppContextProvider>
                 <Player.Manager>
                     <View style={{ flex: 1, paddingBottom: 50 }}>

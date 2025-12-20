@@ -404,7 +404,6 @@ class PlayerActions {
         if (response.error) {
             return this.onCriticalError(response.error)
         }
-
         if (response.url) {
             const urlExists = await util.urlExists(response.url)
             playerState.videoUrl = urlExists
@@ -431,7 +430,6 @@ class PlayerActions {
                 playerState.videoHeight = CONST.resolution.fullHd.height
             }
         }
-
         if (response.transcodeId) {
             this.onCloseTranscodeSession()
             playerState.transcodeId = response.transcodeId
@@ -442,9 +440,11 @@ class PlayerActions {
         if (response.subtitle_index) {
             playerState.subtitleTrackIndex = response.subtitle_index
         }
-
         if (response.plan) {
             playerState.playbackPlan = response.plan
+        }
+        if (response.mpvDecodingMode) {
+            playerState.mpvDecodingMode = response.mpvDecodingMode
         }
         playerState.videoLoaded = true
     }

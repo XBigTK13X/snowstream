@@ -70,7 +70,6 @@ def auth_required(router):
         stream_source.grouped_streamables = {}
         stream_source.groups = []
         stream_source.has_guide = False
-        channel_lookup = {}
         now = datetime.now()
         for streamable in stream_source.streamables:
             if streamable.channel:
@@ -740,7 +739,6 @@ def auth_required(router):
         seek_to_seconds:int=None,
         player_kind:str=None
     ):
-        log.info(player_kind)
         return transcode_sessions.create_session(
             ticket=auth_user.ticket,
             player_kind=player_kind,
