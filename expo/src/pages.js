@@ -1,5 +1,6 @@
 import { routes } from './routes'
 import SignInPage from './page/sign-in'
+import EnterPasswordPage from './page/password'
 import LandingPage from './page/auth/wrap/landing'
 import InfoPage from './page/auth/wrap/info'
 
@@ -48,6 +49,7 @@ import UserListPage from './page/auth/wrap/admin/user/user-list'
 
 export var pages = {
     [routes.signIn]: SignInPage,
+    [routes.enterPassword]: EnterPasswordPage,
     [routes.landing]: LandingPage,
     [routes.info]: InfoPage,
 

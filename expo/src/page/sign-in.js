@@ -71,43 +71,6 @@ export default function SignInPage() {
             })
     }
 
-    C.React.useEffect(() => {
-        if (user?.has_password) {
-            pushModal({
-                props: {
-                    focusLayer: "enter-password",
-                    onRequestClose: cancelPassword
-                },
-                render: () => {
-                    return (
-                        <>
-
-                            <C.SnowLabel center>Enter the password for {user.username}</C.SnowLabel>
-                            <C.SnowGrid itemsPerRow={1}>
-                                <C.SnowInput
-                                    focusStart
-                                    focusKey="password"
-                                    focusDown="login"
-                                    onSubmit={login}
-                                    onValueChange={setPassword}
-                                    value={password}
-                                />
-                                <C.SnowGrid focusKey="login" itemsPerRow={2} >
-                                    <C.SnowTextButton title="Login" onPress={login} />
-                                    <C.SnowTextButton title="Cancel" onPress={cancelPassword} />
-                                </C.SnowGrid>
-                            </C.SnowGrid>
-                        </>
-                    )
-                }
-
-            })
-            return () => {
-                popModal()
-            }
-        }
-    }, [user, password])
-
     if (!sessionLoaded || session) {
         return null
     }
@@ -151,7 +114,12 @@ export default function SignInPage() {
             }
             return <C.SnowTextButton
                 title={item.username}
-                onPress={() => { selectUser(item) }}
+                onPress={navPush({
+                    path: routes.enterPassword,
+                    params: {
+                        username: item
+                    }
+                })}
             />
         }
         userList = (
@@ -203,7 +171,6 @@ export default function SignInPage() {
 
     return (
         <>
-            {passwordForm}
             {userList}
             {selectServer}
             <C.SnowLabel>{errors ? 'Errors: ' + C.Snow.stringifySafe(errors) : ""}</C.SnowLabel>

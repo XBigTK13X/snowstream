@@ -1,6 +1,7 @@
 // /wrap/ routes will have the nav header
 export var routes = {
     signIn: '/sign-in',
+    enterPassword: '/password',
     landing: '/auth/wrap/landing',
     info: '/auth/wrap/info',
 

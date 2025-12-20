@@ -79,7 +79,9 @@ export default function SearchPage() {
     }
 
     return (
-        <C.SnowGrid itemsPerRow={1}>
+        <C.SnowGrid
+            assignFocus={false}
+            itemsPerRow={1}>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput
                 focusStart
