@@ -5,8 +5,6 @@ export default function SignInPage() {
     const {
         navReset,
         navPush,
-        pushModal,
-        popModal,
         clearFocusLayers
     } = C.useSnowContext()
     const {
@@ -50,48 +48,20 @@ export default function SignInPage() {
         }
     }, [session])
 
-    const cancelPassword = () => {
-        setPassword('')
-        setUser(null)
-    }
-
-    const login = () => {
-        signIn(user?.username, passwordRef.current)
-            .then((result) => {
-                if (result.failed) {
-                    setErrors("Incorrect password for this user.")
-                }
-                else {
-                    clearFocusLayers()
-                    navReset()
-                }
-            })
-            .catch((err) => {
-                setErrors(err)
-            })
-    }
-
     if (!sessionLoaded || session) {
         return null
     }
 
     const selectUser = (user) => {
-        if (user.has_password) {
-            setUser(user)
-        }
-        else {
-            signIn(user.username, 'SNOWSTREAM_EMPTY')
-                .then(() => {
-                    clearFocusLayers()
-                    navReset()
-                })
-                .catch((err) => {
-                    setErrors(err)
-                })
-        }
-
+        signIn(user.username, 'SNOWSTREAM_EMPTY')
+            .then(() => {
+                clearFocusLayers()
+                navReset()
+            })
+            .catch((err) => {
+                setErrors(err)
+            })
     }
-
 
     const chooseServer = (serverUrl) => {
         setUsers(null)
@@ -104,7 +74,6 @@ export default function SignInPage() {
         setUsers(null)
     }
 
-    let passwordForm = null
     let userList = null
     let selectServer = null
     if (users?.length) {
@@ -112,15 +81,25 @@ export default function SignInPage() {
             if (!item.username) {
                 return null
             }
-            return <C.SnowTextButton
-                title={item.username}
-                onPress={navPush({
-                    path: routes.enterPassword,
-                    params: {
-                        username: item
-                    }
-                })}
-            />
+            if (item.has_password) {
+                return (
+                    <C.SnowTextButton
+                        title={item.username}
+                        onPress={navPush({
+                            path: routes.enterPassword,
+                            params: {
+                                username: item
+                            }
+                        })}
+                    />
+                )
+            }
+            return (
+                <C.SnowTextButton
+                    title={item.username}
+                    onPress={() => { selectUser(item) }}
+                />
+            )
         }
         userList = (
             <>

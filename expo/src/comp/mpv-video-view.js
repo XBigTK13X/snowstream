@@ -79,8 +79,13 @@ export default function MpvVideoView(props) {
         videoOutput = 'gpu'
     }
     let decodingMode = player.playbackPlan?.mpv_decoding_mode
-    if (!decodingMode) {
-        decodingMode = 'mediacodec-copy'
+    if (player.mpvDecodingMode) {
+        decodingMode = player.mpvDecodingMode
+    }
+    else {
+        if (!decodingMode) {
+            decodingMode = 'mediacodec-copy'
+        }
     }
     let acceleratedCodecs = player.playbackPlan?.mpv_accelerated_codecs
     if (!acceleratedCodecs) {
