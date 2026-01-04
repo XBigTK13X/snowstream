@@ -166,18 +166,19 @@ def path_to_info_json(media_path: str, ffprobe_json:str = None, mediainfo_json:s
 # https://github.com/XBigTK13X/snowby/blob/acb151d05f60c77845b3b1e5ba2417f97a7acff2/common/jellyfin-item.js
 def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_existing:str=None):
     raw_ffprobe = None
+    safe_media_path = util.safe_media_path(media_path)
     if ffprobe_existing:
         raw_ffprobe = json.loads(ffprobe_existing)
     else:
-        command = f"ffprobe -hide_banner -loglevel quiet '{media_path}' -print_format json -show_format -show_streams"
+        command = f"ffprobe -hide_banner -loglevel quiet {safe_media_path} -print_format json -show_format -show_streams"
         #log.info(command)
         command_output = util.run_cli(command,raw_output=True)
-        if 'failed' in ffprobe_output:
+        if 'failed' in command_output:
             log.error(f'Failed to get ffprobe for [{media_path}]')
-            log.error(ffprobe_output['result'])
-            log.error(ffprobe_output['stdout'])
-            log.error(ffprobe_output['stderr'])
-            raise Exception(f"Unable to parse media info for [{media_path}]")
+            log.error(command_output['result'])
+            log.error(command_output['stdout'])
+            log.error(command_output['stderr'])
+            raise Exception(f"Unable to ffprobe media info for [{media_path}]")
         ffprobe_output = command_output['stdout']
         cleaned_ffprobe = ffprobe_output.replace("�",'')
         raw_ffprobe = json.loads(cleaned_ffprobe)
@@ -186,7 +187,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     if mediainfo_existing:
         raw_mediainfo = json.loads(mediainfo_existing)
     else:
-        command = f"mediainfo --ParseSpeed={config.mediainfo_parse_speed} --Output=JSON '{media_path}'"
+        command = f"mediainfo --ParseSpeed={config.mediainfo_parse_speed} --Output=JSON {safe_media_path}"
         #log.info(command)
         command_output = util.run_cli(command,raw_output=True)
         mediainfo_output = command_output['stdout']
@@ -322,6 +323,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     return result
 
 def scrub_container_info(local_path:str):
-    command = f'mkvpropedit "{local_path}" --edit info --set title=""'
+    safe_media_path = util.safe_media_path(local_path)
+    command = f"mkvpropedit {safe_media_path} --edit info --set title=''"
     util.run_cli(command,raw_output=True)
     return True

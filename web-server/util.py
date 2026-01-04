@@ -1,12 +1,12 @@
 import threading
 import subprocess
-import sys
 from log import log
 from passlib.context import CryptContext
 import hashlib
 import io
 import qrcode
 import base64
+import shlex
 
 def run_cli(command, raw_output=False, background=False, log_path=None):
     stdout_target = subprocess.PIPE
@@ -127,3 +127,6 @@ def search_to_base64_qrcode(query:str):
 
 def fromBase64(input:str):
     return base64.b64decode(input).decode('utf-8')
+
+def safe_media_path(input:str):
+    return shlex.quote(input)

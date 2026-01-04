@@ -1,3 +1,4 @@
+import util
 from settings import config
 import snow_media.device
 from log import log
@@ -40,8 +41,9 @@ def build_command(
     subtitle_track_index:int=None,
     seek_to_seconds:int=None,
 ):
-
     plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=snowstream_info)
+
+    safe_input_url = util.safe_media_path(input_url)
 
     dialect = DefaultTranscodeDialect(video_filter_kind=plan.video_filter_kind)
     if config.transcode_dialect:
@@ -67,7 +69,7 @@ def build_command(
     if seek_to_seconds:
         command.append(f'-ss {seek_to_seconds}')
 
-    command.append(f"-i '{input_url}'")
+    command.append(f"-i {safe_input_url}")
 
     # -ss after the input is slower, but more compatible
     # It is slower to the point that on large 4k remuxes it isn't usable

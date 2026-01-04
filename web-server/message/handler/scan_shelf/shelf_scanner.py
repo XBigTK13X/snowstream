@@ -113,6 +113,9 @@ class ShelfScanner:
                 kind=info["kind"],
                 local_path=local_path
             )
+            if not dbm:
+                db.op.update_job(job_id=self.scope.job_id,message=f"Unable to create content for [{local_path}]")
+                return False
             info["id"] = dbm.id
         self.file_info_lookup[kind] = items
         return True
