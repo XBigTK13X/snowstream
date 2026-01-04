@@ -169,7 +169,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     if ffprobe_existing:
         raw_ffprobe = json.loads(ffprobe_existing)
     else:
-        command = f'ffprobe -hide_banner -loglevel quiet "{media_path}" -print_format json -show_format -show_streams'
+        command = f"ffprobe -hide_banner -loglevel quiet '{media_path}' -print_format json -show_format -show_streams"
         #log.info(command)
         command_output = util.run_cli(command,raw_output=True)
         ffprobe_output = command_output['stdout']
@@ -180,7 +180,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
     if mediainfo_existing:
         raw_mediainfo = json.loads(mediainfo_existing)
     else:
-        command = f'mediainfo --ParseSpeed={config.mediainfo_parse_speed} --Output=JSON "{media_path}"'
+        command = f"mediainfo --ParseSpeed={config.mediainfo_parse_speed} --Output=JSON '{media_path}'"
         #log.info(command)
         command_output = util.run_cli(command,raw_output=True)
         mediainfo_output = command_output['stdout']

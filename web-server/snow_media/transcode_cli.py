@@ -67,7 +67,7 @@ def build_command(
     if seek_to_seconds:
         command.append(f'-ss {seek_to_seconds}')
 
-    command.append(f'-i "{input_url}"')
+    command.append(f"-i '{input_url}'")
 
     # -ss after the input is slower, but more compatible
     # It is slower to the point that on large 4k remuxes it isn't usable

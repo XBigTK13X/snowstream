@@ -37,13 +37,18 @@ def run_cli(command, raw_output=False, background=False, log_path=None):
         log.error(f"An error occurred while running [{command}]")
         log.error(f"stdout: [{stdout}]")
         log.error(f"stderr: [{stderr}]")
-        sys.exit(1)
+        return {
+            'error': True,
+            'result': result,
+            'stdout': stdout.decode("utf-8").split("\n"),
+            "stderr": stderr.decode("utf-8").split("\n"),
+        }
     if raw_output:
         return {
-        "result": result,
-        "stdout": stdout.decode("utf-8"),
-        "stderr": stderr.decode("utf-8"),
-    }
+            "result": result,
+            "stdout": stdout.decode("utf-8"),
+            "stderr": stderr.decode("utf-8"),
+        }
     return {
         "result": result,
         "stdout": stdout.decode("utf-8").split("\n"),
