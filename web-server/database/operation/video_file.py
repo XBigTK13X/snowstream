@@ -44,15 +44,18 @@ def get_video_file_by_path(local_path: str):
 def get_or_create_video_file(shelf_id: int, kind: str, local_path: str):
     video_file = get_video_file_by_path(local_path=local_path)
     if not video_file:
-        info = snow_media.video.path_to_info_json(media_path=local_path)
-        return create_video_file(
-            shelf_id=shelf_id,
-            kind=kind,
-            local_path=local_path,
-            snowstream_info_json=info['snowstream_info'],
-            ffprobe_raw_json=info['ffprobe_raw'],
-            mediainfo_raw_json=info['mediainfo_raw']
-        )
+        try:
+            info = snow_media.video.path_to_info_json(media_path=local_path)
+            return create_video_file(
+                shelf_id=shelf_id,
+                kind=kind,
+                local_path=local_path,
+                snowstream_info_json=info['snowstream_info'],
+                ffprobe_raw_json=info['ffprobe_raw'],
+                mediainfo_raw_json=info['mediainfo_raw']
+            )
+        except Exception as e:
+            return None
 
     return video_file
 

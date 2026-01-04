@@ -118,7 +118,10 @@ def auth_required(router):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
         if streamable.stream_source.kind == 'TubeArchivist':
             info = snow_media.video.get_snowstream_info(streamable.url)
-            streamable.duration_seconds = info['snowstream_info']['duration_seconds']
+            try:
+                streamable.duration_seconds = info['snowstream_info']['duration_seconds']
+            except Exception as swallow:
+                pass
         return streamable
 
     @router.post('/streamable',tags=['Stream Source'])

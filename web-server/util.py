@@ -40,8 +40,8 @@ def run_cli(command, raw_output=False, background=False, log_path=None):
         return {
             'error': True,
             'result': result,
-            'stdout': stdout.decode("utf-8").split("\n"),
-            "stderr": stderr.decode("utf-8").split("\n"),
+            'stdout': stdout.decode("utf-8"),
+            "stderr": stderr.decode("utf-8"),
         }
     if raw_output:
         return {

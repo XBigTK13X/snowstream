@@ -217,6 +217,7 @@ def handle(scope):
                         ffprobe_json=video_file.ffprobe_raw_json,
                         mediainfo_json=video_file.mediainfo_raw_json
                     )
+
                     db.op.update_video_file_info(
                         video_file_id=video_file.id,
                         snowstream_info_json=info['snowstream_info']
