@@ -28,7 +28,7 @@ export default function JobListPage() {
                         onPress={toggleComplete}
                     />
                 </C.SnowGrid>
-                <C.SnowGrid focusStart focusKey="job-list" itemsPerRow={1} items={jobs} renderItem={(job) => {
+                <C.SnowGrid focusStart focusKey="job-list" items={jobs} renderItem={(job) => {
                     const title = `${job.id}) ${job.kind} - ${job.status} - ${job.message.substring(0, 180).replaceAll('\n', '.')}`
                     return (
                         <C.SnowTextButton

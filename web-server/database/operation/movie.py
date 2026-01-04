@@ -70,14 +70,16 @@ def get_movie_by_name_and_year(name: str, release_year: int):
         )
 
 def get_movie_by_directory(directory:str):
+    needle = directory.removesuffix('/')
     with dbi.session() as db:
-        return db.query(dbi.dm.Movie).filter(dbi.dm.Movie.directory == directory).first()
+        return db.query(dbi.dm.Movie).filter(dbi.dm.Movie.directory == needle).first()
 
 def get_movie_list_by_directory(directory:str):
+    needle = directory.removesuffix('/')
     with dbi.session() as db:
         return (
             db.query(dbi.dm.Movie)
-            .filter(dbi.dm.Movie.directory.ilike(f'%{directory}%'))
+            .filter(dbi.dm.Movie.directory.ilike(f'%{needle}%'))
             .options(dbi.orm.joinedload(dbi.dm.Movie.metadata_files))
             .options(dbi.orm.joinedload(dbi.dm.Movie.tags))
             .all()

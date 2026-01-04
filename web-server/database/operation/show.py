@@ -55,14 +55,16 @@ def get_show_by_id(ticket:dbi.dm.Ticket,show_id: int):
         return show
 
 def get_show_by_directory(directory:str):
+    needle = directory.removesuffix('/')
     with dbi.session() as db:
-        return db.query(dbi.dm.Show).filter(dbi.dm.Show.directory == directory).first()
+        return db.query(dbi.dm.Show).filter(dbi.dm.Show.directory == needle).first()
 
 def get_show_list_by_directory(directory:str):
+    needle = directory.removesuffix('/')
     with dbi.session() as db:
         return (
             db.query(dbi.dm.Show)
-            .filter(dbi.dm.Show.directory.ilike(f'%{directory}%'))
+            .filter(dbi.dm.Show.directory.ilike(f'%{needle}%'))
             .options(dbi.orm.joinedload(dbi.dm.Show.metadata_files))
             .options(dbi.orm.joinedload(dbi.dm.Show.tags))
             .all()
