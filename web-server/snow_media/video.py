@@ -2,12 +2,16 @@ import util
 from log import log
 import json
 from settings import config
+import traceback
 
 def fail_track_parse(exception, media_path, ffprobe=None, mediainfo=None):
     log.error(f"An error occurred while reading track info for [{media_path}]")
+    log.error(f"{exception}\n {traceback.format_exc()}")
     if ffprobe:
+        log.error('ffprobe')
         log.error(json.dumps(ffprobe, indent=4))
     if mediainfo:
+        log.error('mediainfo')
         log.error(json.dumps(mediainfo, indent=4))
     raise exception
 
@@ -23,8 +27,14 @@ class MediaTrack:
                 self.track_index = int(mediainfo['StreamOrder'])
             elif 'index' in ffprobe:
                 self.track_index = int(ffprobe['index'])
-            self.codec = mediainfo['CodecID']
-            self.format = mediainfo['Format']
+            if 'CodecID' in mediainfo:
+                self.codec = mediainfo['CodecID']
+            elif 'codec_name' in ffprobe:
+                self.codec = ffprobe['codec_name']
+            if 'Format' in mediainfo:
+                self.format = mediainfo['Format']
+            else:
+                self.format = None
             if 'StreamSize' in mediainfo:
                 self.bit_size = int(mediainfo['StreamSize'])
             if 'BitRate' in mediainfo:
@@ -175,8 +185,11 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         command_output = util.run_cli(command,raw_output=True)
         if 'failed' in command_output:
             log.error(f'Failed to get ffprobe for [{media_path}]')
+            log.error('result')
             log.error(command_output['result'])
+            log.error('stdout')
             log.error(command_output['stdout'])
+            log.error('stderr')
             log.error(command_output['stderr'])
             raise Exception(f"Unable to ffprobe media info for [{media_path}]")
         ffprobe_output = command_output['stdout']
