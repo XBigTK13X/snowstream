@@ -12,6 +12,13 @@ def create_thumbnail(local_path:str,force_overwrite:bool=False):
     safe_output_path = util.safe_media_path(output_path)
     if not force_overwrite and os.path.exists(safe_output_path):
         return output_path
+
+    # ImageMagick chokes on large GIF
+    # GIF is treated like an image by snowstream
+    # But the thumbnail generator needs to treat it like a video
+    if local_path.lower().endswith(".gif"):
+        return extract_screencap(local_path, duration_seconds=0, output_path=output_path)
+
     safe_input_path = util.safe_media_path(local_path)
 
     command = f"convert {safe_input_path} -resize {config.thumbnail_dimensions} {safe_output_path}"
