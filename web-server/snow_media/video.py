@@ -277,6 +277,8 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         try:
             if not mi['@type'] in valid_mis:
                 continue
+            if '' in mi and mi[''] == None:
+                continue
             kind = mi['@type'].lower()
             if kind == 'text':
                 kind = 'subtitle'
