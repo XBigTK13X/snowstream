@@ -46,18 +46,29 @@ def get_keepsake_by_id(keepsake_id:int):
             .first()
         )
 
-def get_keepsake_list_by_directory(directory:str):
+def get_keepsake_list_by_directory(directory:str,load_files:bool=True):
     with dbi.session() as db:
-        return (
+        query = (
             db.query(dbi.dm.Keepsake)
             .filter(dbi.dm.Keepsake.directory.contains(directory))
-            .options(dbi.orm.joinedload(dbi.dm.Keepsake.video_files))
-            .options(dbi.orm.joinedload(dbi.dm.Keepsake.image_files))
-            .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
-            .order_by(
-                dbi.func.length(dbi.dm.Keepsake.directory),
-                dbi.dm.Keepsake.directory
+        )
+        if load_files:
+            query = (
+                query
+                .options(dbi.orm.joinedload(dbi.dm.Keepsake.video_files))
+                .options(dbi.orm.joinedload(dbi.dm.Keepsake.image_files))
+                .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
             )
+        return query.order_by(
+            dbi.func.length(dbi.dm.Keepsake.directory),
+            dbi.dm.Keepsake.directory
+        ).all()
+
+def get_keepsake_subdirectories(directory: str):
+    with dbi.session() as db:
+        return (
+            db.query(dbi.dm.Keepsake.directory)
+            .filter(dbi.dm.Keepsake.directory.contains(directory))
             .all()
         )
 

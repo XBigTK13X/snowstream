@@ -684,34 +684,53 @@ def auth_required(router):
         absolute_subdirectory = shelf.local_path
         if subdirectory64:
             absolute_subdirectory = util.fromBase64(subdirectory64)
-        keepsakes = db.op.get_keepsake_list_by_directory(directory=absolute_subdirectory)
+
+        current_keepsake = db.op.get_keepsake_by_directory(directory=absolute_subdirectory)
+
         images = []
         videos = []
+
+        if current_keepsake:
+            images = current_keepsake.image_files
+            videos = current_keepsake.video_files
+
+            for video in videos:
+                if video.snowstream_info_json:
+                    video.info = json.loads(video.snowstream_info_json)
+                    del video.snowstream_info_json
+
+            videos.sort(key=lambda xx: xx.name)
+            images.sort(key=lambda xx: xx.local_path.split('/')[-1])
+
+        raw_paths = db.op.get_keepsake_subdirectories(directory=absolute_subdirectory)
+
         directories = []
         directory_dedupe = {}
-        for keepsake in keepsakes:
-            if keepsake.directory == absolute_subdirectory:
-                images = keepsake.image_files
-                videos = keepsake.video_files
-            dir_name = keepsake.directory.replace(absolute_subdirectory,'')
-            parts = dir_name.split('/')
-            if len(parts) == 1:
+
+        for row in raw_paths:
+            full_path = row[0]
+
+            if full_path == absolute_subdirectory:
                 continue
-            subdir = parts[1]
-            if not subdir in directory_dedupe:
+
+            dir_name = full_path.replace(absolute_subdirectory, '')
+            parts = dir_name.split('/')
+
+            subdir = None
+            for part in parts:
+                if part:
+                    subdir = part
+                    break
+
+            if subdir and subdir not in directory_dedupe:
                 directory_dedupe[subdir] = True
                 directories.append({
                     'display': subdir,
-                    'path': os.path.join(absolute_subdirectory,subdir)
+                    'path': os.path.join(absolute_subdirectory, subdir)
                 })
-        for video in videos:
-            video.info = json.loads(video.snowstream_info_json)
-            del video.snowstream_info_json
-        videos.sort(key=lambda xx:xx.name)
-        for image in images:
-            image.name = image.local_path.split('/')[-1]
-        images.sort(key=lambda xx:xx.name)
-        directories.sort(key=lambda xx:xx['display'])
+
+        directories.sort(key=lambda xx: xx['display'])
+
         return {
             'videos': videos,
             'images': images,
