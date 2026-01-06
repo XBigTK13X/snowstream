@@ -20,16 +20,20 @@ def add_keepsake_to_shelf(keepsake_id: int, shelf_id: int):
         db.refresh(dbm)
         return dbm
 
-def get_keepsake_by_directory(directory:str):
+def get_keepsake_by_directory(directory:str,load_files:bool=True):
     with dbi.session() as db:
-        return (
+        query = (
             db.query(dbi.dm.Keepsake)
             .filter(dbi.dm.Keepsake.directory == directory)
-            .options(dbi.orm.joinedload(dbi.dm.Keepsake.video_files))
-            .options(dbi.orm.joinedload(dbi.dm.Keepsake.image_files))
-            .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
-            .first()
         )
+        if load_files:
+            query = (
+                query
+                .options(dbi.orm.joinedload(dbi.dm.Keepsake.video_files))
+                .options(dbi.orm.joinedload(dbi.dm.Keepsake.image_files))
+                .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
+            )
+        return query.first()
 
 def get_keepsake_by_id(keepsake_id:int):
     with dbi.session() as db:

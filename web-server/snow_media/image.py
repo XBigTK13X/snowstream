@@ -30,6 +30,7 @@ def extract_screencap(video_path:str, duration_seconds:int, output_path:str):
     safe_output_path = util.safe_media_path(output_path)
     seconds = config.ffmpeg_screencap_percent_location * duration_seconds
     timestamp = f'{datetime.timedelta(seconds=seconds)}'
-    command = f"ffmpeg -ss {timestamp} -i {safe_input_path} -frames:v 1 -q:v 2 {safe_output_path}"
+    # Force yuv420p for the odd video file with malformed color space metadata
+    command = f"ffmpeg -ss {timestamp} -i {safe_input_path} -vf 'format=yuv420p' -frames:v 1 -q:v 2 {safe_output_path}"
     util.run_cli(command,raw_output=True)
     return output_path

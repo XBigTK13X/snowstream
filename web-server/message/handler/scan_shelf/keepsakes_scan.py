@@ -34,7 +34,7 @@ class KeepsakesScanHandler(ShelfScanner):
 
     def get_or_create_keepsake(self,info:dict):
         if not info['directory'] in self.batch_lookup:
-            keepsake = db.op.get_keepsake_by_directory(directory=info['directory'])
+            keepsake = db.op.get_keepsake_by_directory(directory=info['directory'],load_files=False)
             if not keepsake:
                 keepsake = db.op.create_keepsake(directory=info['directory'])
                 db.op.add_keepsake_to_shelf(shelf_id=self.shelf.id, keepsake_id=keepsake.id)
@@ -69,15 +69,21 @@ class KeepsakesScanHandler(ShelfScanner):
                 )
             video_file = db.op.get_video_file_by_id(video_file_id=info['id'])
             if not video_file.thumbnail_web_path:
-                info = json.loads(video_file.snowstream_info_json)
                 tmp_path = os.path.join('/tmp',str(uuid.uuid4())+'.jpg')
-                image.extract_screencap(
-                    video_path=video_file.local_path,
-                    duration_seconds=info['duration_seconds'],
-                    output_path=tmp_path
-                )
-                thumbnail_path = image.create_thumbnail(local_path=tmp_path)
-                thumbnail_web_path = config.web_media_url + thumbnail_path
-                if thumbnail_path[0] != '/':
-                    thumbnail_web_path = config.web_media_url + '/' + thumbnail_path
-                db.op.update_video_file_thumbnail(video_file_id=video_file.id,thumbnail_web_path=thumbnail_web_path)
+                try:
+                    info = json.loads(video_file.snowstream_info_json)
+                    image.extract_screencap(
+                        video_path=video_file.local_path,
+                        duration_seconds=info['duration_seconds'],
+                        output_path=tmp_path
+                    )
+                    thumbnail_path = image.create_thumbnail(local_path=tmp_path)
+
+                    thumbnail_web_path = config.web_media_url + thumbnail_path
+                    if thumbnail_path[0] != '/':
+                        thumbnail_web_path = config.web_media_url + '/' + thumbnail_path
+                    db.op.update_video_file_thumbnail(video_file_id=video_file.id,thumbnail_web_path=thumbnail_web_path)
+                finally:
+                    if os.path.exists(tmp_path):
+                        os.remove(tmp_path)
+
