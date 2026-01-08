@@ -71,6 +71,10 @@ def create_plan(device_profile:str, snowstream_info:dict):
                 if device.video.av1 == 'soft':
                     plan.mpv_decoding_mode = 'no'
 
+            if device.video.h265.ten == 'soft' and 'hevc' in video_track['format'].lower() and '10' in video_track['bit_depth']:
+                plan.mpv_decoding_mode = 'no'
+                plan.reasons.append('Device cannot hardware accelerate h265 10 bit')
+
             if device.video.h264.ten == 'soft' and 'avc' in video_track['format'].lower() and '10' in video_track['bit_depth']:
                 plan.mpv_decoding_mode = 'no'
                 plan.reasons.append('Device cannot hardware accelerate h264 10 bit')
