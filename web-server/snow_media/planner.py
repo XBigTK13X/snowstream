@@ -43,7 +43,7 @@ def create_plan(device_profile:str, snowstream_info:dict):
         if 'video' in snowstream_info['tracks']:
             video_track = snowstream_info['tracks']['video'][0]
 
-            # HDR plans
+            # HDR
             if 'hdr_format' in video_track:
                 plan.transcode_container = device.transcode.hdr_container
                 plan.player = 'exo'
@@ -63,7 +63,12 @@ def create_plan(device_profile:str, snowstream_info:dict):
                     plan.video_requires_transcode = True
                     plan.reasons.append('Device does not support Dolby Vision video')
 
-            # Video codec compatibility plans
+            # High frame rate
+            if device.video.high_fps == 'soft' and int(video_track['fps']) > 24:
+                plan.mpv_decoding_mode = 'mediacodec'
+                plan.reasons.append('High frame rate video too heavy for mediacodec-copy')
+
+            # Video codec compatibility
             if 'av1' in video_track['format'].lower():
                 plan.reasons.append('Device does not support AV1 codec')
                 if device.video.av1 == 'transcode':
@@ -79,7 +84,7 @@ def create_plan(device_profile:str, snowstream_info:dict):
                 plan.mpv_decoding_mode = 'no'
                 plan.reasons.append('Device cannot hardware accelerate h264 10 bit')
 
-        # Audio plans
+        # Audio
         if 'audio' in snowstream_info['tracks']:
             for audio_track in snowstream_info['tracks']['audio']:
                 if 'codec' in audio_track:

@@ -19,6 +19,8 @@ class DeviceProfile:
         self.transcode.hdr_container = config.get('transcode_hdr_container', 'matroska')
         self.transcode.bit_rate = config.get('transcode_bit_rate')
 
+        self.video.high_fps = config.get('high_fps')
+
         self.video.h264 = Stub()
         self.video.h264.eight = config.get('h264_eight')
         self.video.h264.ten = config.get('h264_ten')
@@ -71,6 +73,7 @@ device_list = [
         'h264_ten': 'hard',
         'h264_eight': 'hard',
         'h264_ten': 'hard',
+        'high_fps': 'soft',
         'mpv_video_sync': 'display-resample'
     }),
     DeviceProfile({
@@ -89,9 +92,6 @@ device_list = [
         'h264_ten': 'hard',
         'h265_ten': 'soft',
         'mpv_video_sync': 'display-resample'
-    }),
-    DeviceProfile({
-        'name': 'Fire Max 11'
     }),
     DeviceProfile({
         'name': 'Web Browser',

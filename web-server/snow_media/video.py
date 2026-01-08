@@ -3,6 +3,7 @@ from log import log
 import json
 from settings import config
 import traceback
+import math
 
 def fail_track_parse(exception, media_path, ffprobe=None, mediainfo=None):
     log.error(f"An error occurred while reading track info for [{media_path}]")
@@ -64,6 +65,11 @@ class MediaTrack:
             self.video_index = int(mediainfo['@typeorder'])-1
         self.resolution_width = int(mediainfo['Width'])
         self.resolution_height = int(mediainfo['Height'])
+        self.fps = 24
+        if 'FrameRate' in mediainfo:
+            self.fps = math.ceil(float(mediainfo['FrameRate']))
+        if 'FrameRate_Real' in mediainfo:
+            self.fps = math.ceil(float(mediainfo['FrameRate_Real']))
         self.is_hdr = 'HDR_Format' in mediainfo
         if self.is_hdr:
             self.hdr_format = mediainfo['HDR_Format']

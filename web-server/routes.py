@@ -699,8 +699,11 @@ def auth_required(router):
                     video.info = json.loads(video.snowstream_info_json)
                     del video.snowstream_info_json
 
+            for image in images:
+                image.name = image.local_path.split('/')[-1]
+
             videos.sort(key=lambda xx: xx.name)
-            images.sort(key=lambda xx: xx.local_path.split('/')[-1])
+            images.sort(key=lambda xx: xx.name)
 
         raw_paths = db.op.get_keepsake_subdirectories(directory=absolute_subdirectory)
 
