@@ -109,9 +109,9 @@ export function AppContextProvider(props) {
                         videoFileId: item.video_file.id,
                         videoUrl: item.video_file.network_path,
                         videoName: item.video_file.name,
-                        videoDurationSeconds: item.video_file.info.duration_seconds,
-                        func: false
+                        videoDurationSeconds: item.video_file.info.duration_seconds
                     },
+                    func: false
                 })
             }
             else {
