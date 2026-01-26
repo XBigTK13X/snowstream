@@ -2,22 +2,40 @@ import { C, useAppContext } from 'snowstream'
 
 export default function SearchPage() {
     const { apiClient, routes } = useAppContext()
-    const { navPush } = C.useSnowContext()
+    const { navPush, currentRoute } = C.useSnowContext()
 
     const [queryText, setQueryText] = C.React.useState('')
     const queryTextRef = C.React.useRef(queryText)
     const [searchResults, setSearchResults] = C.React.useState(null)
     const [resultKey, setResultKey] = C.React.useState(null)
 
-    const executeQuery = (input) => {
-        let query = input ?? queryText
-        setQueryText(query)
-        queryTextRef.current = query
-        apiClient.search(query).then(response => {
-            if (queryTextRef.current === query) {
-                setSearchResults(response)
-                setResultKey(`query-${query}`)
+    C.React.useEffect(() => {
+        let query = currentRoute?.routeParams?.queryText
+        if (query) {
+            setQueryText(query)
+            queryTextRef.current = query
+            if (query?.length > 1) {
+                apiClient.search(query).then(response => {
+                    if (queryTextRef.current === query) {
+                        setSearchResults(response)
+                        setResultKey(`query-${query}`)
+                    }
+                })
             }
+        } else {
+            setQueryText('')
+            queryTextRef.current = ''
+        }
+
+    }, [currentRoute])
+
+    const executeQuery = (input) => {
+        navPush({
+            params: {
+                ...currentRoute?.routeParams,
+                queryText: input ?? queryText
+            },
+            func: false
         })
     }
 
