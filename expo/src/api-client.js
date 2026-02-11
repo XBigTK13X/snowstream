@@ -263,8 +263,11 @@ export class ApiClient {
         return this.delete(`/channel/guide/source/${channel_guide_source_id}`)
     }
 
-    getStreamable = (streamableId) => {
-        return this.get('/streamable', { streamable_id: streamableId })
+    getStreamable = (streamableId, deviceProfile) => {
+        return this.get('/streamable', {
+            streamable_id: streamableId,
+            device_profile: deviceProfile
+        })
     }
 
     getStreamableList = () => {

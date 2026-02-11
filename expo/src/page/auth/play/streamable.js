@@ -1,8 +1,8 @@
 import PlayMediaPage from './media'
 
 export default function PlayStreamablePage() {
-    const loadVideo = (apiClient, routeParams) => {
-        return apiClient.getStreamable(routeParams.streamableId).then((response) => {
+    const loadVideo = (apiClient, routeParams, deviceProfile) => {
+        return apiClient.getStreamable(routeParams.streamableId, deviceProfile).then((response) => {
             return {
                 url: response.url,
                 name: response.name,

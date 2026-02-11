@@ -114,14 +114,19 @@ def auth_required(router):
     def get_streamable(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         streamable_id: int,
+        device_profile:str
     ):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
-        if streamable.stream_source.kind == 'TubeArchivist':
-            info = snow_media.video.get_snowstream_info(streamable.url)
-            try:
-                streamable.duration_seconds = info['snowstream_info']['duration_seconds']
-            except Exception as swallow:
-                pass
+        streamable.info = snow_media.video.get_snowstream_info(streamable.url)
+        streamable.plan = snow_media.planner.create_plan(
+            device_profile=device_profile,
+            snowstream_info=streamable.info
+        )
+        try:
+            streamable.duration_seconds = streamable.info['snowstream_info']['duration_seconds']
+        except Exception as swallow:
+            pass
+
         return streamable
 
     @router.post('/streamable',tags=['Stream Source'])
