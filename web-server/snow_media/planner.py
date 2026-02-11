@@ -1,5 +1,7 @@
 import snow_media
 
+from log import log
+
 # These plans have an impact on the client and server
 # Client-side they can determine if exo/mpv should be used, and other similar actions
 # Server-side they can force the transcode command builder to use different arguments
@@ -20,7 +22,7 @@ class PlaybackPlan:
         self.reasons = []
 
 
-def create_plan(device_profile:str, snowstream_info:dict):
+def create_plan(device_profile:str, snowstream_info:dict, video_kind:str):
     device = snow_media.device.get_device(device_profile)
     plan = PlaybackPlan()
 
@@ -70,11 +72,12 @@ def create_plan(device_profile:str, snowstream_info:dict):
 
             # Video codec compatibility
             if 'av1' in video_track['format'].lower():
-                plan.reasons.append('Device does not support AV1 codec')
-                if device.video.av1 == 'transcode':
-                    plan.video_requires_transcode = True
-                if device.video.av1 == 'soft':
-                    plan.mpv_decoding_mode = 'no'
+                if device.video.av1 != 'hard':
+                    plan.reasons.append('Device does not support AV1 codec')
+                    if device.video.av1 == 'transcode':
+                        plan.video_requires_transcode = True
+                    if device.video.av1 == 'soft':
+                        plan.mpv_decoding_mode = 'no'
 
             if device.video.h265.ten == 'soft' and 'hevc' in video_track['format'].lower() and '10' in video_track['bit_depth']:
                 plan.mpv_decoding_mode = 'no'
@@ -83,6 +86,13 @@ def create_plan(device_profile:str, snowstream_info:dict):
             if device.video.h264.ten == 'soft' and 'avc' in video_track['format'].lower() and '10' in video_track['bit_depth']:
                 plan.mpv_decoding_mode = 'no'
                 plan.reasons.append('Device cannot hardware accelerate h264 10 bit')
+
+            log.info(video_kind)
+            log.info(device.video.streamable_decoding)
+
+            if video_kind == 'streamable' and device.video.streamable_decoding:
+                plan.mpv_decoding_mode = device.video.streamable_decoding
+                plan.reasons.append('Device cannot use mediacodec-copy on streamables')
 
         # Audio
         if 'audio' in snowstream_info['tracks']:

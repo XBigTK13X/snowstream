@@ -20,6 +20,7 @@ class DeviceProfile:
         self.transcode.bit_rate = config.get('transcode_bit_rate')
 
         self.video.high_fps = config.get('high_fps')
+        self.video.streamable_decoding = config.get('streamable_decoding')
 
         self.video.h264 = Stub()
         self.video.h264.eight = config.get('h264_eight')
@@ -66,6 +67,7 @@ device_list = [
         'vp9': 'hard',
         'av1': 'hard',
         'transcode_bit_rate': '15M',
+        'streamable_decoding': 'mediacodec'
     }),
     DeviceProfile({
         'name': 'Fire Max 11',

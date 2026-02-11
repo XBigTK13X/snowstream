@@ -117,13 +117,14 @@ def auth_required(router):
         device_profile:str
     ):
         streamable = db.op.get_streamable_by_id(streamable_id=streamable_id)
-        streamable.info = snow_media.video.get_snowstream_info(streamable.url)
+        streamable.info = snow_media.video.get_snowstream_info(streamable.url)['snowstream_info']
         streamable.plan = snow_media.planner.create_plan(
             device_profile=device_profile,
-            snowstream_info=streamable.info
+            snowstream_info=streamable.info,
+            video_kind="streamable"
         )
         try:
-            streamable.duration_seconds = streamable.info['snowstream_info']['duration_seconds']
+            streamable.duration_seconds = streamable.info['duration_seconds']
         except Exception as swallow:
             pass
 
@@ -471,7 +472,11 @@ def auth_required(router):
             movie.video_files[ii].info = json.loads(movie.video_files[ii].snowstream_info_json)
             del movie.video_files[ii].snowstream_info_json
             if device_profile:
-                plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=movie.video_files[ii].info)
+                plan = snow_media.planner.create_plan(
+                    device_profile=device_profile,
+                    snowstream_info=movie.video_files[ii].info,
+                    video_kind="movie"
+                )
                 movie.video_files[ii].plan = plan
             movie.video_files[ii].file_index = ii
             if 'main_feature' in movie.video_files[ii].kind:
@@ -662,7 +667,11 @@ def auth_required(router):
             episode.video_files[ii].info = json.loads(episode.video_files[ii].snowstream_info_json)
             del episode.video_files[ii].snowstream_info_json
             if device_profile:
-                plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=episode.video_files[ii].info)
+                plan = snow_media.planner.create_plan(
+                    device_profile=device_profile,
+                    snowstream_info=episode.video_files[ii].info,
+                    video_kind="show"
+                )
                 episode.video_files[ii].plan = plan
             episode.video_files[ii].file_index = ii
             if episode.video_files[ii].version:
