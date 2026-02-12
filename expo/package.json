@@ -1,6 +1,6 @@
 {
     "name": "snowstream",
-    "version": "1.4.40",
+    "version": "1.4.42",
     "dependencies": {
         "@sentry/react-native": "7.2.0",
         "axios": "1.12.2",

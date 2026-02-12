@@ -112,7 +112,7 @@ class PlayerActions {
         if (playerState.videoUrl || !playerState.settingsLoaded) {
             return
         }
-        if (playerState.videoLoading || playerState.manualSeekSeconds) {
+        if (playerState.videoLoading) {
             return
         }
 
@@ -272,7 +272,7 @@ class PlayerActions {
 
         const enoughTimeDiff = !playerState.progressSeconds || Math.abs(nextProgressSeconds - playerState.progressSeconds) >= playerState.config.progressMinDeltaSeconds
 
-        if (source !== 'manual-seek' && enoughTimeDiff) {
+        if (playerState.isPlaying) {
             Snow.hideSystemUi()
         }
         if (source === 'manual-seek' || enoughTimeDiff) {

@@ -13,7 +13,8 @@ export default function PlayMoviePage() {
                 name: movie.name,
                 durationSeconds: videoFile.info.duration_seconds,
                 tracks: videoFile.info.tracks,
-                plan: videoFile.plan
+                plan: videoFile.plan,
+                info: videoFile.info
             }
         })
     }

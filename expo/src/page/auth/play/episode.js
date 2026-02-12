@@ -15,7 +15,8 @@ export default function PlayEpisodePage() {
                 name: `${episode.season.show.name} - ${C.util.formatEpisodeTitle(episode)}`,
                 durationSeconds: videoFile.info.duration_seconds,
                 tracks: videoFile.info.tracks,
-                plan: videoFile.plan
+                plan: videoFile.plan,
+                info: videoFile.info
             }
         })
     }

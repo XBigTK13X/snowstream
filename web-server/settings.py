@@ -4,8 +4,8 @@ import sys
 
 class Config:
     def __init__(self):
-        self.server_version = "1.4.40"
-        self.server_build_date = "January 13, 2026"
+        self.server_version = "1.4.42"
+        self.server_build_date = "February 11, 2026"
         self.server_build_dev_number = 1
         self.app_data_dir = '.snowstream/'
         self.display_config = None
