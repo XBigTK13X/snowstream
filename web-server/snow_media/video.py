@@ -24,30 +24,31 @@ class MediaTrack:
         try:
             self.kind = None
             self.track_index = 0
-            if 'StreamOrder' in mediainfo:
+            if mediainfo != None and 'StreamOrder' in mediainfo:
                 self.track_index = int(mediainfo['StreamOrder'])
             elif 'index' in ffprobe:
                 self.track_index = int(ffprobe['index'])
-            if 'CodecID' in mediainfo:
+            if mediainfo != None and 'CodecID' in mediainfo:
                 self.codec = mediainfo['CodecID']
             elif 'codec_name' in ffprobe:
                 self.codec = ffprobe['codec_name']
-            if 'Format' in mediainfo:
+            if mediainfo != None and 'Format' in mediainfo:
                 self.format = mediainfo['Format']
             else:
-                self.format = None
-            if 'StreamSize' in mediainfo:
-                self.bit_size = int(mediainfo['StreamSize'])
-            if 'BitRate' in mediainfo:
-                if '/' in mediainfo['BitRate']:
-                    self.bit_rate = int(mediainfo['BitRate'].split('/')[0])
-                else:
-                    self.bit_rate = int(mediainfo['BitRate'])
-            if 'BitRate_Mode' in mediainfo:
-                self.bit_rate_kind = mediainfo['BitRate_Mode']
-            self.language = mediainfo['Language'] if mediainfo and 'Language' in mediainfo else None
-            self.is_default = mediainfo['Default'] == 'Yes' if mediainfo and 'Default' in mediainfo else False
-            self.title = f"{mediainfo['Title']}" if mediainfo and 'Title' in mediainfo else ''
+                self.format = ffprobe['codec_name']
+            if mediainfo != None:
+                if 'StreamSize' in mediainfo:
+                    self.bit_size = int(mediainfo['StreamSize'])
+                if 'BitRate' in mediainfo:
+                    if '/' in mediainfo['BitRate']:
+                        self.bit_rate = int(mediainfo['BitRate'].split('/')[0])
+                    else:
+                        self.bit_rate = int(mediainfo['BitRate'])
+                if 'BitRate_Mode' in mediainfo:
+                    self.bit_rate_kind = mediainfo['BitRate_Mode']
+                self.language = mediainfo['Language'] if mediainfo and 'Language' in mediainfo else None
+                self.is_default = mediainfo['Default'] == 'Yes' if mediainfo and 'Default' in mediainfo else False
+                self.title = f"{mediainfo['Title']}" if mediainfo and 'Title' in mediainfo else ''
 
             if ffprobe['codec_type'] == 'video':
                 self.read_video(ffprobe, mediainfo)
@@ -61,10 +62,17 @@ class MediaTrack:
     def read_video(self,ffprobe,mediainfo):
         self.kind = 'video'
         self.video_index = 0
+        self.is_hdr = False
+
+        if mediainfo == None:
+            self.resolution_width = int(ffprobe['width'])
+            self.resolution_height = int(ffprobe['height'])
+            return
+        else:
+            self.resolution_width = int(mediainfo['Width'])
+            self.resolution_height = int(mediainfo['Height'])
         if '@typeorder' in mediainfo:
             self.video_index = int(mediainfo['@typeorder'])-1
-        self.resolution_width = int(mediainfo['Width'])
-        self.resolution_height = int(mediainfo['Height'])
         self.fps = 24
         if 'FrameRate' in mediainfo:
             self.fps = math.ceil(float(mediainfo['FrameRate']))
@@ -96,6 +104,8 @@ class MediaTrack:
         return 0
 
     def read_audio(self, ffprobe, mediainfo, is_anime):
+        if mediainfo == None:
+            return
         self.kind = 'audio'
         self.audio_index = 0
         if '@typeorder' in mediainfo:
@@ -133,6 +143,8 @@ class MediaTrack:
         return 0
 
     def read_subtitle(self, ffprobe, mediainfo, is_anime):
+        if mediainfo == None:
+            return
         self.kind = 'subtitle'
         self.subtitle_index = 0
         if '@typeorder' in mediainfo:
@@ -213,7 +225,7 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         raw_mediainfo = json.loads(mediainfo_output)
 
     snowstream_info = {
-        'duration_seconds': float(raw_ffprobe['format']['duration']),
+        'duration_seconds': float(raw_ffprobe.get('format',{}).get('duration',0)),
         'is_hdr': False,
         'is_anime': True if '/anime/' in media_path else False,
         'source_kind': 'remux' if 'remux' in media_path.lower() else 'transcode',
@@ -227,12 +239,25 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         }
     }
 
-    if 'OverallBitRate' in raw_mediainfo['media']['track'][0]:
-        snowstream_info['bit_rate'] = int(raw_mediainfo['media']['track'][0]['OverallBitRate'])
-        if 'OverallBitRate_Mode' in raw_mediainfo['media']['track'][0]:
-            snowstream_info['bit_rate_kind'] = raw_mediainfo['media']['track'][0]['OverallBitRate_Mode']
-    if 'FileSize' in raw_mediainfo['media']['track'][0]:
-        snowstream_info['bit_file_size'] = int(raw_mediainfo['media']['track'][0]['FileSize'])
+    comment = '''
+    import pprint
+    pprint.pprint(raw_mediainfo)
+
+    import pprint
+    pprint.pprint(raw_ffprobe)
+    '''
+
+    mediainfo_empty = raw_mediainfo == None or raw_mediainfo['media'] == None
+
+    if mediainfo_empty:
+        raw_mediainfo = None
+    else:
+        if 'OverallBitRate' in raw_mediainfo['media']['track'][0]:
+            snowstream_info['bit_rate'] = int(raw_mediainfo['media']['track'][0]['OverallBitRate'])
+            if 'OverallBitRate_Mode' in raw_mediainfo['media']['track'][0]:
+                snowstream_info['bit_rate_kind'] = raw_mediainfo['media']['track'][0]['OverallBitRate_Mode']
+        if raw_mediainfo != None and 'FileSize' in raw_mediainfo['media']['track'][0]:
+            snowstream_info['bit_file_size'] = int(raw_mediainfo['media']['track'][0]['FileSize'])
 
     stream_lookup = {}
     stream_keys = []
@@ -279,25 +304,26 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
         'subtitle_index': 0
     }
     valid_mis = ['Audio','Video','Text']
-    for mi in raw_mediainfo['media']['track']:
-        try:
-            if not mi['@type'] in valid_mis:
-                continue
-            if '' in mi and mi[''] == None:
-                continue
-            kind = mi['@type'].lower()
-            if kind == 'text':
-                kind = 'subtitle'
-            key_pool = kind + '_index'
-            stream_key = f'{kind}-{mi_index[key_pool]}'
-            mi_index[key_pool] += 1
-            if not stream_key in stream_keys:
-                stream_keys.append(stream_key)
-            if not stream_key in stream_lookup:
-                stream_lookup[stream_key] = {'track_index': stream_key}
-            stream_lookup[stream_key]['mediainfo'] = mi
-        except Exception as e:
-            fail_track_parse(e,media_path,None,mi)
+    if not mediainfo_empty:
+        for mi in raw_mediainfo['media']['track']:
+            try:
+                if not mi['@type'] in valid_mis:
+                    continue
+                if '' in mi and mi[''] == None:
+                    continue
+                kind = mi['@type'].lower()
+                if kind == 'text':
+                    kind = 'subtitle'
+                key_pool = kind + '_index'
+                stream_key = f'{kind}-{mi_index[key_pool]}'
+                mi_index[key_pool] += 1
+                if not stream_key in stream_keys:
+                    stream_keys.append(stream_key)
+                if not stream_key in stream_lookup:
+                    stream_lookup[stream_key] = {'track_index': stream_key}
+                stream_lookup[stream_key]['mediainfo'] = mi
+            except Exception as e:
+                fail_track_parse(e,media_path,None,mi)
 
     for sk in stream_keys:
         stream = None
@@ -305,9 +331,9 @@ def get_snowstream_info(media_path:str,ffprobe_existing:str=None,mediainfo_exist
             stream = stream_lookup[sk]
             track = MediaTrack(
                 media_path=media_path,
-                ffprobe=stream['ffprobe'],
-                mediainfo=stream['mediainfo'],
-                is_anime=snowstream_info['is_anime']
+                ffprobe=stream.get('ffprobe',None),
+                mediainfo=stream.get('mediainfo',None),
+                is_anime=snowstream_info.get('is_anime',False)
             )
             if track.kind == None:
                 continue
