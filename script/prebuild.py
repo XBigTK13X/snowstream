@@ -7,7 +7,7 @@ with open('expo/android/build.gradle','r',encoding="utf-8") as read_handle:
         if 'allprojects' in line:
             all_found = True
         if all_found and 'mavenCentral' in line:
-            line += '    maven { url "/home/kretst/maven-repo" }\n'
+            line += '    maven { url "/home/storm/maven-repo" }\n'
             all_found = False
         if 'dependencies' in line:
             line = '''
@@ -44,7 +44,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 '''
         if 'hermesCommand' in line and not '//' in line:
-            line = '    hermesCommand = "/home/kretst/bin/hermes/hermesc"\n'
+            line = '    hermesCommand = "/home/storm/bin/hermes/hermesc"\n'
 
         if 'signingConfigs' in line and not keys_written:
             writing_keys = True

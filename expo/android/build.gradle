@@ -24,7 +24,7 @@ allprojects {
   repositories {
     google()
     mavenCentral()
-    maven { url "/home/kretst/maven-repo" }
+    maven { url "/home/storm/maven-repo" }
     maven { url 'https://www.jitpack.io' }
   }
 }
