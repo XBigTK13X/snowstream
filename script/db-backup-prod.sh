@@ -1,8 +1,10 @@
 #! /bin/bash
 
+source script/variables.sh
+
 PROD_DIR="root@beast.9914.us:/mnt/docker/volume/snowstream/postgresql/"
 
-LOCAL_DIR="/home/storm/develop/snowsuite/stream/.docker-volume/postgresql/"
+LOCAL_DIR="$SNOWSTREAM_DB_BACKUP_DIR"
 
 script/dev-kill-all.sh
 

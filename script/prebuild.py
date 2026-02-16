@@ -1,5 +1,20 @@
 #! /usr/bin/python3
 
+import os
+import sys
+
+SNOWSTREAM_MAVEN_REPO = os.environ.get("SNOWSTREAM_MAVEN_REPO")
+
+if not SNOWSTREAM_MAVEN_REPO:
+    print("SNOWSTREAM_MAVEN_REPO must be set to perform a build")
+    sys.exit(1)
+
+SNOWSTREAM_HERMES = os.environ.get("SNOWSTREAM_HERMES")
+
+if not SNOWSTREAM_HERMES:
+    print("SNOWSTREAM_HERMES must be set to perform a build")
+    sys.exit(1)
+
 gradle_body = ''
 with open('expo/android/build.gradle','r',encoding="utf-8") as read_handle:
     all_found = False
@@ -7,7 +22,7 @@ with open('expo/android/build.gradle','r',encoding="utf-8") as read_handle:
         if 'allprojects' in line:
             all_found = True
         if all_found and 'mavenCentral' in line:
-            line += '    maven { url "/home/storm/maven-repo" }\n'
+            line += '    maven { url "'+SNOWSTREAM_MAVEN_REPO+'" }\n'
             all_found = False
         if 'dependencies' in line:
             line = '''
@@ -44,7 +59,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 '''
         if 'hermesCommand' in line and not '//' in line:
-            line = '    hermesCommand = "/home/storm/bin/hermes/hermesc"\n'
+            line = '    hermesCommand = "'+SNOWSTREAM_HERMES+'"\n'
 
         if 'signingConfigs' in line and not keys_written:
             writing_keys = True
