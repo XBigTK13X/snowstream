@@ -1,8 +1,8 @@
 import React from 'react';
 import Snow from 'expo-snowui'
-import { View } from 'react-native';
 import uuid from 'react-native-uuid';
 
+import Player from 'snowstream-player'
 import CONST from './constant'
 import util from './util'
 import { config } from './settings'
@@ -126,7 +126,10 @@ export function AppContextProvider(props) {
     }
 
     const onApiError = (err) => {
-        setApiError(err)
+        const player = Player.useSnapshot(Player.state)
+        if (!player.isPlaying) {
+            setApiError(err)
+        }
     }
 
     const setWebApiUrl = (webApiUrl) => {
