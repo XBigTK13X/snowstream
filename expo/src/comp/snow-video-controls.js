@@ -5,6 +5,7 @@ import Player from 'snowstream-player'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
+    const { openOverlay, closeOverlay } = Snow.useSnowContext()
     const styles = {
         progress: {
             flexBasis: '100%',
@@ -20,6 +21,32 @@ export default function SnowVideoControls(props) {
     const playerKind = player.playerKind
 
     const [logTitle, setLogTitle] = React.useState(playerKind !== 'rnv' ? playerKind + ' Logs' : 'exo Logs')
+
+    const [controlsVisible, setControlsVisible] = React.useState(true)
+
+    React.useEffect(() => {
+        if (!controlsVisible) {
+            openOverlay({
+                props: {
+                    focusStart: true,
+                    focusKey: 'hidden-controls',
+                    focusLayer: 'hidden-controls',
+                    onPress: () => {
+                        closeOverlay()
+                        setControlsVisible(true)
+                    }
+                }
+            })
+            return () => {
+                closeOverlay()
+                setControlsVisible(true)
+            }
+        }
+    }, [controlsVisible])
+
+    if (!controlsVisible) {
+        return null
+    }
 
     const persistLogs = () => {
         Player.action.savePlaybackLogs().then((response) => {
@@ -38,12 +65,9 @@ export default function SnowVideoControls(props) {
     }
 
     let tabs = [
-        'Playback'
+        'Playback',
+        'Style'
     ]
-
-    if (playerKind !== 'rnv') {
-        tabs.push('Style')
-    }
 
     if (player.mediaTracks) {
         tabs.push('Track')
@@ -51,26 +75,40 @@ export default function SnowVideoControls(props) {
 
     tabs.push('Advanced')
 
-    let subtitleControls = null
-    if (playerKind !== 'rnv') {
-        subtitleControls = (
-            <Snow.Grid itemsPerRow={4}>
-                <Snow.TextButton title="Sub Smaller" onPress={() => {
-                    Player.action.changeSubtitleFontScale(-1)
-                }} />
-                <Snow.TextButton title="Sub Bigger" onPress={() => {
-                    Player.action.changeSubtitleFontScale(1)
-                }} />
-                <Snow.TextButton title="Sub Darker" onPress={() => {
-                    Player.action.changeSubtitleColor(-1)
-                }} />
-                <Snow.TextButton title="Sub Lighter" onPress={() => {
-                    Player.action.changeSubtitleColor(1)
-                }}
-                />
-            </Snow.Grid>
-        )
-    }
+    let playbackControls = (
+        <Snow.Grid itemsPerRow={2}>
+            <Snow.TextButton title="Resume" onPress={() => {
+                Player.action.onResumeVideo()
+            }} />
+            <Snow.TextButton title="Hide Controls" onPress={() => {
+                setControlsVisible(false)
+            }} />
+            <Snow.TextButton title="Stop" onPress={() => {
+                Player.action.onStopVideo()
+            }} />
+            <Snow.TextButton title="Home" onPress={() => {
+                Player.action.onStopVideo(true)
+            }} />
+        </Snow.Grid>
+    )
+
+    let subtitleControls = (
+        <Snow.Grid itemsPerRow={2}>
+            <Snow.TextButton title="Sub Smaller" onPress={() => {
+                Player.action.changeSubtitleFontScale(-1)
+            }} />
+            <Snow.TextButton title="Sub Bigger" onPress={() => {
+                Player.action.changeSubtitleFontScale(1)
+            }} />
+            <Snow.TextButton title="Sub Darker" onPress={() => {
+                Player.action.changeSubtitleColor(-1)
+            }} />
+            <Snow.TextButton title="Sub Lighter" onPress={() => {
+                Player.action.changeSubtitleColor(1)
+            }}
+            />
+        </Snow.Grid>
+    )
     let trackControls = null
     if (player.mediaTracks) {
         trackControls = (
@@ -116,15 +154,7 @@ export default function SnowVideoControls(props) {
                     {slider}
                 </>
                 <Snow.Tabs focusStart focusKey="control-tabs" headers={tabs}>
-                    <Snow.Grid itemsPerRow={3}>
-                        <Snow.TextButton title="Resume" onPress={Player.action.onResumeVideo} />
-                        <Snow.TextButton title="Stop" onPress={() => {
-                            Player.action.onStopVideo()
-                        }} />
-                        <Snow.TextButton title="Home" onPress={() => {
-                            Player.action.onStopVideo(true)
-                        }} />
-                    </Snow.Grid>
+                    {playbackControls}
                     {subtitleControls}
                     {trackControls}
                     <Snow.Grid short itemsPerRow={3}>

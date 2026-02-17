@@ -122,7 +122,7 @@ export default function StreamableListPage() {
     }, [currentRoute, streamSource])
 
     if (!streamSource) {
-        return <C.Text>Loading stream source {currentRoute.routeParams.streamSourceId}.</C.Text>
+        return <C.SnowLabel center>Loading stream source {currentRoute.routeParams.streamSourceId}.</C.SnowLabel>
     }
 
     if (groupList && !streamableList) {

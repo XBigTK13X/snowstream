@@ -123,7 +123,7 @@ export function WatchableListPage(props) {
             </>
         )
     }
-    return <C.SnowText>Loading items from shelf {shelfId}.</C.SnowText>
+    return <C.SnowLabel center>Loading items from shelf {shelfId}.</C.SnowLabel>
 }
 
 export default WatchableListPage

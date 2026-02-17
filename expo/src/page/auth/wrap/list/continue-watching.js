@@ -43,7 +43,12 @@ export function ContinueWatchingListPage(props) {
             </C.SnowTabs>
         )
     }
-    return <C.SnowLabel>Loading the continue watching list. This will take a few seconds.</C.SnowLabel>
+    return (
+        <>
+            <C.SnowLabel center>Loading the continue watching list.</C.SnowLabel>
+            <C.SnowText center>This will take a few seconds.</C.SnowText>
+        </>
+    )
 }
 
 export default ContinueWatchingListPage

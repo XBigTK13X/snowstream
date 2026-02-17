@@ -2,7 +2,8 @@ import React from 'react';
 import Snow from 'expo-snowui'
 import uuid from 'react-native-uuid';
 
-import Player from 'snowstream-player'
+import { useSnapshot } from 'valtio'
+import { playerState } from './player/player-state'
 import CONST from './constant'
 import util from './util'
 import { config } from './settings'
@@ -126,7 +127,7 @@ export function AppContextProvider(props) {
     }
 
     const onApiError = (err) => {
-        const player = Player.useSnapshot(Player.state)
+        const player = useSnapshot(playerState)
         if (!player.isPlaying) {
             setApiError(err)
         }

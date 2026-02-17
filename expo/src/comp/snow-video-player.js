@@ -112,8 +112,7 @@ export default function SnowVideoPlayer(props) {
             })
             closeOverlay()
             return () => {
-                Player.action.onAddLog({ kind: 'snowstream', message: 'Closing playback controls. Reenabling video touch overlay.' })
-                openOverlay()
+                Player.action.onAddLog({ kind: 'snowstream', message: 'Closing playback controls.' })
                 popModal()
             }
         }

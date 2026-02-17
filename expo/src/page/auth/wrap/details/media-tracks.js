@@ -452,8 +452,8 @@ export default function MediaTracksPage(props) {
         )
     }
     return (
-        <C.SnowText>
+        <C.SnowLabel center>
             Loading {props.mediaKind} {currentRoute.routeParams.movieId ? currentRoute.routeParams.movieId : currentRoute.routeParams.episodeId}.
-        </C.SnowText>
+        </C.SnowLabel>
     );
 }

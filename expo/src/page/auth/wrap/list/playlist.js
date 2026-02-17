@@ -12,7 +12,7 @@ export default function PlaylistListPage() {
         }
     }, [playlistList])
     if (!playlistList) {
-        return <C.SnowText>Loading playlist list.</C.SnowText>
+        return <C.SnowLabel center> Loading playlist list.</C.SnowLabel>
     }
 
     if (!playlistList.length) {

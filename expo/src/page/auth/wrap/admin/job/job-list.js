@@ -44,6 +44,6 @@ export default function JobListPage() {
         )
     }
     return (
-        <C.SnowText>Loading jobs</C.SnowText>
+        <C.SnowLabel center>Loading jobs</C.SnowLabel>
     )
 }
