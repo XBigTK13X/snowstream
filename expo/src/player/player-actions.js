@@ -476,6 +476,16 @@ class PlayerActions {
         playerState.subtitleFontScale += direction * 0.1
     }
 
+    getVideoView = (kind, clientOptions) => {
+        if (playerState.clientOptions?.alwaysUsePlayer === 'null') {
+            return require('../comp/null-video-view').default
+        }
+        if (playerState.playerKind === 'rnv') {
+            return require('../comp/rnv-video-view').default
+        }
+        return require('../comp/mpv-video-view').default
+    }
+
     // This was used from the player controls before the valtio rewrite
     // It stopped working and I shut it off to fix later
     toggleTranscode = () => {

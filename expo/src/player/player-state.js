@@ -148,15 +148,5 @@ export const playerState = proxy({
             return 'rnv'
         }
         return 'mpv'
-    },
-
-    get VideoView() {
-        if (this.clientOptions?.alwaysUsePlayer === 'null') {
-            return require('../comp/null-video-view').default
-        }
-        if (this.playerKind === 'rnv') {
-            return require('../comp/rnv-video-view').default
-        }
-        return require('../comp/mpv-video-view').default
     }
 })

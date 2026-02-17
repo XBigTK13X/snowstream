@@ -52,8 +52,7 @@ export default function SnowVideoPlayer(props) {
                     }
                 },
                 render: () => {
-                    const playerSnapshot = Player.snapshot(Player.state)
-                    const VideoView = playerSnapshot.VideoView
+                    const VideoView = Player.action.getVideoView()
                     if (player.clientOptions.nightFilter) {
                         return (
                             <>
