@@ -96,7 +96,7 @@ export default function SnowVideoPlayer(props) {
             pushModal({
                 props: {
                     focusLayer: 'video-controls',
-                    obscure: true,
+                    transparent: true,
                     scroll: true,
                     onRequestClose: () => {
                         const player = Player.snapshot(Player.state)
@@ -153,10 +153,8 @@ export default function SnowVideoPlayer(props) {
                     )
                 }
             })
-            closeOverlay()
             return () => {
                 Player.action.onAddLog({ kind: 'snowstream', message: 'Closing video log viewer modal' })
-                openOverlay()
                 popModal()
             }
         }

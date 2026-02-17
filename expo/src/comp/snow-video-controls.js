@@ -5,7 +5,7 @@ import Player from 'snowstream-player'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
-    const { openOverlay, closeOverlay } = Snow.useSnowContext()
+    const { openOverlay, closeOverlay, SnowStyle } = Snow.useSnowContext()
     const styles = {
         progress: {
             flexBasis: '100%',
@@ -13,7 +13,8 @@ export default function SnowVideoControls(props) {
             fontWeight: 'bold',
         },
         player: {
-            padding: 30
+            padding: 30,
+            backgroundColor: SnowStyle.color.transparentDark
         }
     }
     const player = Player.useSnapshot(Player.state)
@@ -23,6 +24,12 @@ export default function SnowVideoControls(props) {
     const [logTitle, setLogTitle] = React.useState(playerKind !== 'rnv' ? playerKind + ' Logs' : 'exo Logs')
 
     const [controlsVisible, setControlsVisible] = React.useState(true)
+
+    React.useEffect(() => {
+        return () => {
+            setControlsVisible(true)
+        }
+    }, [])
 
     React.useEffect(() => {
         if (!controlsVisible) {
@@ -38,14 +45,13 @@ export default function SnowVideoControls(props) {
                 }
             })
             return () => {
-                closeOverlay()
                 setControlsVisible(true)
             }
         }
     }, [controlsVisible])
 
     if (!controlsVisible) {
-        return null
+        return <View></View>
     }
 
     const persistLogs = () => {
