@@ -65,11 +65,6 @@ def create_plan(device_profile:str, snowstream_info:dict, video_kind:str):
                     plan.video_requires_transcode = True
                     plan.reasons.append('Device does not support Dolby Vision video')
 
-            # High frame rate
-            if device.video.high_fps == 'soft' and int(video_track['fps']) > 24:
-                plan.mpv_decoding_mode = 'mediacodec'
-                plan.reasons.append('High frame rate video too heavy for mediacodec-copy')
-
             # Video codec compatibility
             if 'av1' in video_track['format'].lower():
                 if device.video.av1 != 'hard':
@@ -86,13 +81,6 @@ def create_plan(device_profile:str, snowstream_info:dict, video_kind:str):
             if device.video.h264.ten == 'soft' and 'avc' in video_track['format'].lower() and '10' in video_track['bit_depth']:
                 plan.mpv_decoding_mode = 'no'
                 plan.reasons.append('Device cannot hardware accelerate h264 10 bit')
-
-            log.info(video_kind)
-            log.info(device.video.streamable_decoding)
-
-            if video_kind == 'streamable' and device.video.streamable_decoding:
-                plan.mpv_decoding_mode = device.video.streamable_decoding
-                plan.reasons.append('Device cannot use mediacodec-copy on streamables')
 
         # Audio
         if 'audio' in snowstream_info['tracks']:

@@ -84,7 +84,7 @@ export default function MpvVideoView(props) {
     }
     else {
         if (!decodingMode) {
-            decodingMode = 'mediacodec-copy'
+            decodingMode = 'mediacodec'
         }
     }
     let acceleratedCodecs = player.playbackPlan?.mpv_accelerated_codecs

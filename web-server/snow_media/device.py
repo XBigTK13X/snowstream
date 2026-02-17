@@ -50,7 +50,7 @@ class DeviceProfile:
 
         self.mpv = Stub()
         self.mpv.video_output = config.get('mpv_video_output','gpu')
-        self.mpv.decoding_mode = config.get('mpv_decoding_mode','mediacodec-copy')
+        self.mpv.decoding_mode = config.get('mpv_decoding_mode','mediacodec')
         self.mpv.accelerated_codecs = config.get('mpv_accelerated_codecs','h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1')
         self.mpv.video_sync = config.get('mpv_video_sync','audio')
 
