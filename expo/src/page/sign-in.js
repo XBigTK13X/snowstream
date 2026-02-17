@@ -130,19 +130,21 @@ export default function SignInPage() {
                 </C.SnowGrid>
             </>
             <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
-            <C.SnowGrid itemsPerRow={2}>
+            <C.SnowGrid itemsPerRow={2} assignFocus={false}>
                 <C.SnowInput
                     focusKey="custom-server-input"
                     focusDown="submit-custom-server"
                     onSubmit={() => { applyCustomServer(customServerRef.current) }}
                     onValueChange={setCustomServer}
                     value={customServer} />
+            </C.SnowGrid>
+            <C.SnowGrid itemsPerRow={2} assignFocus={false}>
                 <C.SnowTextButton
                     focusKey="submit-custom-server"
                     title="Connect to Server"
                     onPress={() => { applyCustomServer(customServerRef.current) }}
                 />
-            </C.SnowGrid>
+            </C.SnowGrid >
         </>
     )
 

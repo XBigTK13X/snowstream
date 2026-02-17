@@ -126,9 +126,7 @@ export function AppContextProvider(props) {
     }
 
     const onApiError = (err) => {
-        if (!apiError) {
-            setApiError(err)
-        }
+        setApiError(err)
     }
 
     const setWebApiUrl = (webApiUrl) => {
@@ -284,14 +282,16 @@ export function AppContextProvider(props) {
                     onRequestClose: () => { }
                 },
                 render: () => {
-                    <Snow.FillView >
-                        <Snow.Text>Unable to communicate with Snowstream.</Snow.Text>
-                        <Snow.Text>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</Snow.Text>
-                        <Snow.Grid focusStart focusKey="error-buttons" itemsPerRow={2}>
-                            <Snow.TextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
-                            <Snow.TextButton title="Change Server" onPress={() => { logout(true) }} />
-                        </Snow.Grid>
-                    </Snow.FillView>
+                    return (
+                        <Snow.FillView >
+                            <Snow.Label center>Unable to communicate with Snowstream.</Snow.Label>
+                            <Snow.Label center>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</Snow.Label>
+                            <Snow.Grid focusStart focusKey="error-buttons" itemsPerRow={2}>
+                                <Snow.TextButton title="Try to Reload" onPress={() => { setApiError(null) }} />
+                                <Snow.TextButton title="Change Server" onPress={() => { logout(true) }} />
+                            </Snow.Grid>
+                        </Snow.FillView>
+                    )
                 }
             })
         }

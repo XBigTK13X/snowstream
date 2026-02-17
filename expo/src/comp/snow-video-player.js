@@ -36,6 +36,7 @@ export default function SnowVideoPlayer(props) {
     // Video content / player
     React.useEffect(() => {
         if (player.settingsLoaded && player.videoUrl) {
+            Player.action.onAddLog({ kind: 'snowstream', message: 'Showing video content modal' })
             pushModal({
                 props: {
                     assignFocus: false,
@@ -69,6 +70,7 @@ export default function SnowVideoPlayer(props) {
                 }
             })
             if (!player.controlsVisible && player.isVideoViewReady) {
+                Player.action.onAddLog({ kind: 'snowstream', message: 'Enabling video pause touch overlay' })
                 openOverlay({
                     props: {
                         focusStart: true,
@@ -80,6 +82,7 @@ export default function SnowVideoPlayer(props) {
             }
 
             return () => {
+                Player.action.onAddLog({ kind: 'snowstream', message: 'Closing video content and touch overlay' })
                 popModal()
                 closeOverlay()
             }
@@ -88,7 +91,8 @@ export default function SnowVideoPlayer(props) {
 
     // Video controls
     React.useEffect(() => {
-        if (player.controlsVisible && player.settingsLoaded && player.videoUrl) {
+        if (!player.isPlaying && player.controlsVisible && player.settingsLoaded && player.videoUrl) {
+            Player.action.onAddLog({ kind: 'snowstream', message: 'Showing playback controls modal' })
             pushModal({
                 props: {
                     focusLayer: 'video-controls',
@@ -108,15 +112,17 @@ export default function SnowVideoPlayer(props) {
             })
             closeOverlay()
             return () => {
+                Player.action.onAddLog({ kind: 'snowstream', message: 'Closing playback controls. Reenabling video touch overlay.' })
                 openOverlay()
                 popModal()
             }
         }
-    }, [player.controlsVisible, player.settingsLoaded, player.videoUrl])
+    }, [player.controlsVisible, player.settingsLoaded, player.videoUrl, player.isPlaying])
 
     // Video logs
     React.useEffect(() => {
         if (player.logsVisible && player.settingsLoaded && player.videoUrl) {
+            Player.action.onAddLog({ kind: 'snowstream', message: 'Opening video log viewer modal' })
             pushModal({
                 props: {
                     focusLayer: 'video-logs',
@@ -148,7 +154,10 @@ export default function SnowVideoPlayer(props) {
                     )
                 }
             })
+            closeOverlay()
             return () => {
+                Player.action.onAddLog({ kind: 'snowstream', message: 'Closing video log viewer modal' })
+                openOverlay()
                 popModal()
             }
         }
