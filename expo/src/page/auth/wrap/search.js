@@ -8,6 +8,7 @@ export default function SearchPage() {
     const queryTextRef = C.React.useRef(queryText)
     const [searchResults, setSearchResults] = C.React.useState(null)
     const [resultKey, setResultKey] = C.React.useState(null)
+    const [loading, setLoading] = C.React.useState(false)
 
     C.React.useEffect(() => {
         let query = currentRoute?.routeParams?.queryText
@@ -15,11 +16,13 @@ export default function SearchPage() {
             setQueryText(query)
             queryTextRef.current = query
             if (query?.length > 1) {
+                setLoading(true)
                 apiClient.search(query).then(response => {
                     if (queryTextRef.current === query) {
                         setSearchResults(response)
                         setResultKey(`query-${query}`)
                     }
+                    setLoading(false)
                 })
             }
         } else {
@@ -108,7 +111,8 @@ export default function SearchPage() {
                 value={queryText}
                 onValueChange={setQueryText}
                 onSubmit={executeQuery}
-                onDebounce={executeQuery} />
+                onDebounce={setQueryText} />
+            {loading && !searchResults ? <C.SnowText center>Searching for [{queryText}]...</C.SnowText> : null}
             {resultsTabs}
         </C.SnowGrid>
     )
