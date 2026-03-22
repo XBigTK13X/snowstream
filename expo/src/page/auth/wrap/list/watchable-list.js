@@ -115,7 +115,7 @@ export function WatchableListPage(props) {
             <>
                 <>
                     <C.SnowText>{pageTitle}</C.SnowText>
-                    <C.SnowGrid focusKey="page-entry" focusDown="watchable-items" itemsPerRow={itemsPerRow}>
+                    <C.SnowGrid focusKey="page-entry" itemsPerRow={itemsPerRow}>
                         {buttons}
                     </C.SnowGrid>
                 </>

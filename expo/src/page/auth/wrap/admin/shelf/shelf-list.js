@@ -33,7 +33,12 @@ export default function ShelfListPage() {
         }
         return (
             <>
-                <C.SnowTextButton focusStart focusKey='page-entry' focusDown='item-list' title="Create New Shelf" onPress={navPush({ path: routes.adminShelfEdit })} />
+                <C.SnowTextButton
+                    focusStart
+                    focusKey='page-entry'
+                    title="Create New Shelf"
+                    onPress={navPush({ path: routes.adminShelfEdit })}
+                />
                 {
                     destinations.length > 0 ?
                         <>

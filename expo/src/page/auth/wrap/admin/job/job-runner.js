@@ -131,11 +131,13 @@ export default function ShelfEditPage() {
             <C.SnowGrid
                 focusStart
                 focusKey="page-entry"
-                focusDown="directory"
                 itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />
-            <C.SnowGrid focusKey="directory" focusDown="payload" itemsPerRow={1}>
+            <C.SnowGrid
+                focusKey="directory"
+                itemsPerRow={1}
+            >
                 <C.SnowLabel>Target Directory</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('targetDirectory')} value={form.targetDirectory} />
             </C.SnowGrid>

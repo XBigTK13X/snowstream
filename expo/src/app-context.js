@@ -21,7 +21,7 @@ export function useAppContext() {
 }
 
 export function AppContextProvider(props) {
-    const { navReset, clearFocusLayers } = Snow.useSnowContext()
+    const { navReset } = Snow.useSnowContext()
     const { SnowStyle, navPush, pushModal, popModal } = Snow.useSnowContext(props)
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
@@ -198,7 +198,6 @@ export function AppContextProvider(props) {
                 })
             })
             .then(() => {
-                clearFocusLayers()
                 return navReset()
             })
     }

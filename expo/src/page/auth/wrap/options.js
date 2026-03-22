@@ -89,7 +89,6 @@ export default function OptionsPage() {
             <C.SnowGrid
                 focusStart
                 focusKey="page-entry"
-                focusDown="device-profile"
                 itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={saveForm} />
                 <C.SnowInput value={form.deviceId} onValueChange={(val) => { setForm(prev => ({ ...prev, deviceId: val })) }} />
@@ -109,7 +108,6 @@ export default function OptionsPage() {
 
             <C.SnowDropdown
                 focusKey="device-profile"
-                focusDown="player-choice"
                 title="Device Profile"
                 options={deviceProfiles}
                 onValueChange={chooseDeviceProfile}
@@ -117,7 +115,6 @@ export default function OptionsPage() {
 
             <C.SnowDropdown
                 focusKey="player-choice"
-                focusDown="player-settings"
                 title="Force Player"
                 options={players}
                 onValueChange={chooseAlwaysUsePlayer}

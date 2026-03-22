@@ -27,7 +27,6 @@ export default function AdminDashboardPage() {
             <C.SnowGrid
                 focusStart
                 focusKey="page-entry"
-                focusDown="data-buttons"
                 items={actionButtons}
                 renderItem={renderItem}
                 itemsPerRow={4}></C.SnowGrid>

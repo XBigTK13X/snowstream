@@ -139,17 +139,16 @@ export default function SnowVideoControls(props) {
             Player.action.onProgress(null, 'manual-seek', percent);
         }
         slider = (
-            <>
+            <Snow.View>
                 <Snow.RangeSlider
                     focusKey="seekbar"
-                    focusDown="control-tabs"
                     width={750}
                     debounce={true}
                     percent={player.progressPercent}
                     onValueChange={onPercentChange}
                 />
                 <Snow.Text style={styles.progress}>{player.progressDisplay ?? ''} / {player.durationDisplay}            This video is {player.isTranscode ? 'transcoding' : 'playing directly'} through {player.playerKind === 'rnv' ? 'exo' : 'mpv'}.</Snow.Text>
-            </>
+            </Snow.View>
         )
     }
     return (

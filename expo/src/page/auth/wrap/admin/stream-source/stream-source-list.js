@@ -33,7 +33,6 @@ export default function StreamSourceListPage() {
                 <C.SnowTextButton
                     focusStart
                     focusKey='page-entry'
-                    focusDown='item-list'
                     title="Create New Stream Source"
                     onPress={navPush({ path: routes.adminStreamSourceEdit })} />
                 <C.SnowText>{streamSources.length} stream sources found</C.SnowText>

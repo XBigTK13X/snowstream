@@ -7,7 +7,6 @@ function TrackList(props) {
     if (!props.tracks) {
         return null
     }
-    const { readFocusProps } = Snow.useSnowContext()
 
     let activeTrack = props.activeTrack === -1 ? null : props.tracks.filter((track) => {
         return props.isAudio ? track.audio_index === props.activeTrack : track.subtitle_index === props.activeTrack
@@ -21,7 +20,7 @@ function TrackList(props) {
             {props.title} ({props.tracks.length}) {activeBitRate}
         </Snow.Text>
     )
-    let gridProps = readFocusProps(props)
+    let gridProps = {}
     if (props.showDelay) {
         gridProps.focusKey = props.focusKey + '-buttons'
         header = (
@@ -30,8 +29,6 @@ function TrackList(props) {
                     {props.title} ({props.tracks.length}) {activeBitRate}
                 </Snow.Text>
                 <Snow.Input
-                    focusKey={props.focusKey}
-                    focusDown={gridProps.focusKey}
                     value={props.delay}
                     onValueChange={props.setDelay}
                 />
@@ -85,7 +82,6 @@ export default function SnowTrackSelector(props) {
         <Snow.FillView>
             {props.tracks.audio.length ? <TrackList
                 focusKey={props.focusKey}
-                focusDown="subtitle-tracks"
                 kind="audio"
                 title="Audio"
                 showDelay={props.showDelay}

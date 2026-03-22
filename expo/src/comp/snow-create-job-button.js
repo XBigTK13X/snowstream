@@ -3,7 +3,7 @@ import { useAppContext } from '../app-context'
 
 export function SnowCreateJobButtonW(props) {
     const { routes } = useAppContext()
-    const { navPush, readFocusProps } = Snow.useSnowContext()
+    const { navPush } = Snow.useSnowContext()
     const jobDetails = {
         updateImages: true,
         updateMetadata: true,
@@ -12,7 +12,6 @@ export function SnowCreateJobButtonW(props) {
     }
     return (
         <Snow.TextButton
-            {...readFocusProps(props)}
             tall={props.tall}
             title={props.title}
             onPress={navPush({

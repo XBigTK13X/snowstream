@@ -187,10 +187,10 @@ export default function MediaTracksPage(props) {
             const InfoModal = () => {
                 return (
                     <C.FillView>
-                        <C.SnowGrid focusStart focusKey="close-top" focusDown="info-tabs" itemsPerRow={1}>
+                        <C.SnowGrid focusStart focusKey="close-top" itemsPerRow={1}>
                             <C.SnowTextButton title="Close" onPress={() => { setShowInfoModal(false) }} />
                         </C.SnowGrid>
-                        <C.SnowTabs focusKey="info-tabs" focusDown="info-bottom" headers={['Video', 'Audio', 'Subtitle']}>
+                        <C.SnowTabs focusKey="info-tabs" headers={['Video', 'Audio', 'Subtitle']}>
                             <C.SnowView>
                                 <C.SnowText>{fileInfos.join(' ,  ')}</C.SnowText>
                                 <C.SnowText>{videoInfos[0].join('   ')}</C.SnowText>
@@ -293,7 +293,7 @@ export default function MediaTracksPage(props) {
         }
         const controlTab = (
             <C.SnowView>
-                <C.SnowGrid focusDown="player" itemsPerRow={4}>
+                <C.SnowGrid itemsPerRow={4}>
                     <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, navPush, currentRoute.routeParams)} />
                     {props.getNavButtons ? props.getNavButtons(routes, navPush, currentRoute.routeParams).map((button) => { return button }) : null}
                 </C.SnowGrid>
@@ -334,7 +334,7 @@ export default function MediaTracksPage(props) {
             tabs.push('Video')
             fileTab = (
                 <C.SnowView>
-                    <C.SnowTextButton focusDown="video-picker" title="Main Feature" onPress={() => {
+                    <C.SnowTextButton title="Main Feature" onPress={() => {
                         chooseVideoFile(media.main_feature_index)
                     }} />
                     <C.SnowDropdown
@@ -364,7 +364,7 @@ export default function MediaTracksPage(props) {
         tabs.push('Info')
         const infoTab = (
             <C.SnowView>
-                <C.SnowGrid focusKey="inspection-top" focusDown="discussion-button" itemsPerRow={3}>
+                <C.SnowGrid focusKey="inspection-top" itemsPerRow={3}>
                     <C.SnowTextButton
                         tall
                         title="Inspection"
@@ -420,7 +420,6 @@ export default function MediaTracksPage(props) {
                     <C.SnowGrid
                         focusStart
                         focusKey="page-entry"
-                        focusDown="media-tabs"
                         itemsPerRow={4}>
                         {resumeControls}
                         <C.SnowTextButton

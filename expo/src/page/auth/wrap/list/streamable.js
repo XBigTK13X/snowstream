@@ -3,7 +3,6 @@ import { C, useAppContext } from 'snowstream'
 
 
 function StreamableWithGuideButtonW(props) {
-    const { readFocusProps } = C.useSnowContext(props)
     let currentProgram = "No guide information"
     let nextProgram = "No guide information"
     if (props.streamable.current_program) {
@@ -18,7 +17,6 @@ function StreamableWithGuideButtonW(props) {
     return (
         <C.SnowView key={props.streamable.id}>
             <C.SnowGrid
-                {...readFocusProps(props)}
                 assignFocus={false}
                 itemsPerRow={3} >
                 <C.SnowTextButton
@@ -53,11 +51,9 @@ const StreamableWithGuideButton = StreamableWithGuideButtonW
 
 
 function StreamableButtonW(props) {
-    const { readFocusProps } = C.useSnowContext(props)
     let name = props.streamable.name_display ? props.streamable.name_display : props.streamable.name
     return (
         <C.SnowTextButton
-            {...readFocusProps(props)}
             tall
             key={props.streamable.id}
             title={name}

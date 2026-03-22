@@ -4,8 +4,7 @@ import { C, useAppContext } from 'snowstream'
 export default function SignInPage() {
     const {
         navReset,
-        navPush,
-        clearFocusLayers
+        navPush
     } = C.useSnowContext()
     const {
         sessionLoaded,
@@ -55,7 +54,6 @@ export default function SignInPage() {
     const selectUser = (user) => {
         signIn(user.username, 'SNOWSTREAM_EMPTY')
             .then(() => {
-                clearFocusLayers()
                 navReset()
             })
             .catch((err) => {
@@ -88,7 +86,7 @@ export default function SignInPage() {
                         onPress={navPush({
                             path: routes.enterPassword,
                             params: {
-                                username: item
+                                username: item.username
                             }
                         })}
                     />
@@ -107,7 +105,6 @@ export default function SignInPage() {
                 <C.SnowGrid
                     focusStart
                     focusKey="users"
-                    focusDown="servers"
                     items={users}
                     renderItem={renderItem}
                 />
@@ -122,7 +119,6 @@ export default function SignInPage() {
                 <C.SnowGrid
                     focusStart={!!users ? false : true}
                     focusKey="servers"
-                    focusDown="custom-server-input"
                     itemsPerRow={4} >
                     <C.SnowTextButton title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
                     <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
@@ -133,7 +129,6 @@ export default function SignInPage() {
             <C.SnowGrid itemsPerRow={2} assignFocus={false}>
                 <C.SnowInput
                     focusKey="custom-server-input"
-                    focusDown="submit-custom-server"
                     onSubmit={() => { applyCustomServer(customServerRef.current) }}
                     onValueChange={setCustomServer}
                     value={customServer} />

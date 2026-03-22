@@ -6,7 +6,7 @@ import { useAppContext } from '../app-context'
 
 function SnowPosterGridW(props) {
     const { navToItem, apiClient } = useAppContext()
-    const { SnowStyle, readFocusProps } = Snow.useSnowContext(props)
+    const { SnowStyle } = Snow.useSnowContext(props)
 
     const getImageUrl = (item) => {
         let thumbnailUrl = null
@@ -43,7 +43,6 @@ function SnowPosterGridW(props) {
                 </Snow.Label>
                 : null}
             <Snow.ImageGrid
-                {...readFocusProps(props)}
                 {...scaleProps}
                 snowStyle={props.snowStyle}
                 items={props.items}

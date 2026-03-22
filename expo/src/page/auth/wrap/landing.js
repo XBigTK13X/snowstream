@@ -117,7 +117,6 @@ export default function LandingPage(props) {
             <>
                 <C.SnowGrid
                     focusStart
-                    focusDown="error-button"
                     focusKey="page-entry"
                     items={destinations}
                     itemsPerRow={3} />

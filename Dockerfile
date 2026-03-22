@@ -1,4 +1,4 @@
-FROM python:3.12-trixie
+FROM python:3.14-trixie
 
 # Ensure we use ffmpeg with libmfx enabled for quicksync
 COPY docker/debian.sources /etc/apt/sources.list.d/debian.sources

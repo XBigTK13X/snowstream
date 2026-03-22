@@ -22,7 +22,10 @@ export default function JobListPage() {
     if (!!jobs) {
         return (
             <>
-                <C.SnowGrid focusKey="page-entry" focusDown="job-list" itemsPerRow={3}>
+                <C.SnowGrid
+                    focusKey="page-entry"
+                    itemsPerRow={3}
+                >
                     <C.SnowTextButton
                         title={showComplete ? 'Hide Complete' : 'Show All'}
                         onPress={toggleComplete}

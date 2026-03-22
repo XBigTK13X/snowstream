@@ -30,8 +30,7 @@ function HeaderNav(props) {
     return (
         <View style={styles.header}>
             <SnowGrid
-                focusKey="header"
-                focusDown="page-entry">
+                focusKey="header" >
                 <SnowTextButton
                     title="Home"
                     short

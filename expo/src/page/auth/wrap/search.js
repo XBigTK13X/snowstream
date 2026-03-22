@@ -107,7 +107,6 @@ export default function SearchPage() {
             <C.SnowInput
                 focusStart
                 focusKey="page-entry"
-                focusDown="search-results"
                 value={queryText}
                 onValueChange={setQueryText}
                 onSubmit={executeQuery}

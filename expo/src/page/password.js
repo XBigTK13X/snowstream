@@ -14,7 +14,7 @@ export default function SignInPage() {
         signIn,
     } = useAppContext()
 
-    const { username } = currentRoute?.routeParams?.username
+    const { username } = currentRoute?.routeParams
 
     const [errors, setErrors] = C.React.useState(null)
     const [password, setPassword] = C.React.useState("")
@@ -42,7 +42,6 @@ export default function SignInPage() {
                     setErrors({ 'message': `Incorrect password [${passwordRef.current}] for [${username}].` })
                 }
                 else {
-                    clearFocusLayers()
                     navReset()
                 }
             })
@@ -53,13 +52,12 @@ export default function SignInPage() {
 
     return (
         <>
-            <C.SnowGrid itemsPerRow={1} assignFocus={false}>
+            <C.SnowGrid itemsPerRow={1}>
                 <C.SnowLabel center>Enter the password for {username}</C.SnowLabel>
 
                 <C.SnowInput
                     focusStart
                     focusKey="password"
-                    focusDown="login"
                     onSubmit={login}
                     onValueChange={setPassword}
                     value={password}
