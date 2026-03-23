@@ -24,7 +24,14 @@ function TrackList(props) {
     if (props.showDelay) {
         gridProps.focusKey = props.focusKey + '-buttons'
         header = (
-            <Snow.Grid assignFocus={false} itemsPerRow={3} shrink>
+            <Snow.Grid
+                assignFocus={false}
+                itemsPerRow={3}
+                shrink
+                parentPath={props.parentPath}
+                xx={props.xx}
+                yy={props.yy}
+            >
                 <Snow.Text>
                     {props.title} ({props.tracks.length}) {activeBitRate}
                 </Snow.Text>
@@ -79,8 +86,11 @@ export default function SnowTrackSelector(props) {
         return null
     }
     return (
-        <Snow.FillView>
+        <Snow.View>
             {props.tracks.audio.length ? <TrackList
+                yy={0}
+                parentPath={props.parentPath}
+
                 focusKey={props.focusKey}
                 kind="audio"
                 title="Audio"
@@ -93,6 +103,8 @@ export default function SnowTrackSelector(props) {
                 activeTrack={props.audioTrack}
             /> : null}
             {props.tracks.subtitle.length ? <TrackList
+                yy={1}
+                parentPath={props.parentPath}
                 focusKey="subtitle-tracks"
                 kind="subtitle"
                 title="Subtitles"
@@ -103,6 +115,6 @@ export default function SnowTrackSelector(props) {
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}
             /> : null}
-        </Snow.FillView>
+        </Snow.View>
     )
 }

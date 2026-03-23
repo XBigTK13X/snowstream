@@ -1,17 +1,10 @@
 import React from 'react'
-import { View } from 'react-native'
 import { C, useAppContext } from 'snowstream'
 import Snow, {
     SnowTextButton,
     SnowGrid,
     SnowBreak
 } from 'expo-snowui'
-
-
-// If the Header doesn't render before the rest of the page
-// Then the focusMap winds up in the wrong focusLayer
-// If this is pulled up to the root layout
-// then browser refresh always sends you back to the root
 
 const styles = {
     header: {
@@ -23,12 +16,8 @@ function HeaderNav(props) {
     const { navPush, navPop } = C.useSnowContext()
     const { displayName, routes, isAdmin, signOut } = useAppContext();
 
-    React.useEffect(() => {
-        props.setHeaderReady(true)
-    })
-
     return (
-        <View style={styles.header}>
+        <Snow.View yy={0} style={styles.header}>
             <SnowGrid
                 focusKey="header" >
                 <SnowTextButton
@@ -53,21 +42,22 @@ function HeaderNav(props) {
                     onPress={navPop(true)} />
             </SnowGrid>
             <SnowBreak />
-        </View >
+        </Snow.View >
     )
 }
 
 function SnowHeaderNavPage(props) {
     const { displayName, routes } = useAppContext();
-    const [headerReady, setHeaderReady] = React.useState(false)
 
     return (
         <>
             <HeaderNav
+                yy={0}
                 displayName={displayName}
-                routes={routes}
-                setHeaderReady={setHeaderReady} />
-            {headerReady ? props.children : null}
+                routes={routes} />
+            <Snow.View yy={1}>
+                {props.children}
+            </Snow.View>
         </>
     )
 }

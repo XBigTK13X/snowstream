@@ -49,7 +49,8 @@ export default function PageLoader() {
     return (
         <SnowApp
             DEBUG_SNOW={config.debugSnowui}
-            ENABLE_FOCUS={Platform.isTV}
+            DEBUG_FOCUS={true}
+            DEBUG_FOCUS_TREE={true}
             snowStyle={appStyle}
             routePaths={routes}
             routePages={pages}
@@ -57,9 +58,9 @@ export default function PageLoader() {
         >
             <AppContextProvider>
                 <Player.Manager>
-                    <View style={{ flex: 1, paddingBottom: 50 }}>
+                    <Snow.View style={{ flex: 1, paddingBottom: 50 }}>
                         <PageWrapper />
-                    </View>
+                    </Snow.View>
                 </Player.Manager>
             </AppContextProvider >
         </SnowApp>

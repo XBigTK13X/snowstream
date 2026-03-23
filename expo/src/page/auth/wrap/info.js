@@ -17,7 +17,7 @@ export default function InfoPage() {
             <C.SnowText>
                 {authedInfo}
             </C.SnowText>
-            <C.SnowTarget focusStart focusKey="page-entry" />
+            <C.SnowTarget focusStart focusKey="info-bottom" />
         </>
     )
 }

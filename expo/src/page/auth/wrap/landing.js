@@ -117,7 +117,7 @@ export default function LandingPage(props) {
             <>
                 <C.SnowGrid
                     focusStart
-                    focusKey="page-entry"
+                    focusKey="destinations"
                     items={destinations}
                     itemsPerRow={3} />
                 <C.SnowText style={styles.footer} center>{`v${config.clientVersion} - built ${config.clientBuildDate}`}</C.SnowText>

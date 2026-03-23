@@ -43,6 +43,11 @@ export function SnowScreencapGridW(props) {
                 : null}
             <Snow.ImageGrid
                 {...scaleProps}
+                focusStart={props.focusStart}
+                focusKey={props.focusKey}
+                parentPath={props.parentPath}
+                xx={props.xx}
+                yy={props.yy}
                 snowStyle={props.snowStyle}
                 items={props.items}
                 wideImage={true}
