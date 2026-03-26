@@ -1,7 +1,5 @@
 import { C, useAppContext } from 'snowstream'
 
-const kinds = ['Movies', 'Shows', 'Keepsakes']
-
 export default function AdminFormPage(props) {
     const { currentRoute } = C.useSnowContext()
     const { apiClient, routes } = useAppContext()

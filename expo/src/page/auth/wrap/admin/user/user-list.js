@@ -1,39 +1,13 @@
-import { C, useAppContext } from 'snowstream'
+import AdminListPage from '../admin-list-page'
 
 export default function UserListPage() {
-    const { apiClient, routes } = useAppContext()
-    const { navPush } = C.useSnowContext()
-    const [users, setUsers] = C.React.useState(null)
-
-    C.React.useEffect(() => {
-        if (!users) {
-            apiClient.getUserList().then((response) => {
-                setUsers(response)
-            })
-        }
-    })
-
-    if (!!users) {
-        const renderItem = (user, itemIndex) => {
-            return (
-                <C.SnowTextButton
-                    title={user.username || user.display_name}
-                    onPress={navPush({
-                        path: routes.adminUserEdit,
-                        params: { userId: user.id }
-                    })}
-                />
-            )
-
-        }
-        return (
-            <>
-                <C.SnowTextButton title="Create New User" onPress={navPush({ path: routes.adminUserEdit })} />
-                <C.SnowText>{users.length} users found</C.SnowText>
-                <C.SnowGrid items={users} renderItem={renderItem} />
-            </>
-        )
-    }
-
-    return null
+    return (
+        <AdminListPage
+            kind="user"
+            editPath={(routes) => { return routes.adminUserEdit }}
+            editParams={(item) => { return { userId: item.id } }}
+            loadItems={(apiClient) => { return apiClient.getUserList() }}
+            itemTitle={(item) => { return item.username || item.display_name }}
+        />
+    )
 }

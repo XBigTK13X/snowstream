@@ -1,45 +1,12 @@
-import { C, useAppContext } from 'snowstream'
+import AdminListPage from '../admin-list-page'
 
 export default function StreamSourceListPage() {
-    const { apiClient, routes } = useAppContext()
-    const { navPush } = C.useSnowContext()
-    const [streamSources, setStreamSources] = C.React.useState(null)
-
-    C.React.useEffect(() => {
-        if (!streamSources) {
-            apiClient.getStreamSourceList().then((response) => {
-                setStreamSources(response)
-            })
-        }
-    })
-
-
-    if (!!streamSources) {
-        const renderItem = (streamSource, itemIndex) => {
-            return (
-                <C.SnowTextButton
-                    title={streamSource.name}
-                    onPress={navPush({
-                        path: routes.adminStreamSourceEdit,
-                        params: {
-                            streamSourceId: streamSource.id,
-                        }
-                    })}
-                />
-            )
-        }
-        return (
-            <>
-                <C.SnowTextButton
-                    focusStart
-                    focusKey='page-entry'
-                    title="Create New Stream Source"
-                    onPress={navPush({ path: routes.adminStreamSourceEdit })} />
-                <C.SnowText>{streamSources.length} stream sources found</C.SnowText>
-                <C.SnowGrid focusKey='item-list' items={streamSources} renderItem={renderItem} />
-            </>
-        )
-    }
-
-    return null
+    return (
+        <AdminListPage
+            kind="stream source"
+            editPath={(routes) => { return routes.adminStreamSourceEdit }}
+            editParams={(item) => { return { streamSourceId: item.id } }}
+            loadItems={(apiClient) => { return apiClient.getStreamSourceList() }}
+        />
+    )
 }

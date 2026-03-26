@@ -1,5 +1,3 @@
-import { C, useAppContext } from 'snowstream'
-
 import AdminListPage from '../admin-list-page'
 
 export default function ShelfListPage() {

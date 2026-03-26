@@ -18,7 +18,7 @@ export default function AdminListPage(props) {
     const renderItem = (item, itemIndex) => {
         return (
             <C.SnowTextButton
-                title={item.name}
+                title={props.itemTitle ? props.itemTitle(item) : item.name}
                 onPress={navPush({
                     path: props.editPath(routes),
                     params: props.editParams(item)
@@ -27,15 +27,13 @@ export default function AdminListPage(props) {
         )
     }
 
-    let createTitle = `Create new ${props.kind}`
-
     return (
         <>
             <C.SnowGrid>
                 <C.SnowTextButton
                     focusStart
                     focusKey='page-entry'
-                    title={createTitle}
+                    title={`Create new ${props.kind}`}
                     onPress={navPush({
                         path: props.editPath(routes)
                     })}

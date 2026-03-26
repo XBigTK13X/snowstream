@@ -1,46 +1,15 @@
-import { C, useAppContext } from 'snowstream'
+import AdminListPage from '../admin-list-page'
 
-export default function DisplayCleanupRuleListPage() {
-    const { apiClient, routes } = useAppContext()
-    const { navPush } = C.useSnowContext()
-    const [rules, setRules] = C.React.useState(null)
-
-    C.React.useEffect(() => {
-        if (!rules) {
-            apiClient.getDisplayCleanupRuleList().then((response) => {
-                setRules(response)
-            })
-        }
-    })
-
-    if (!!rules) {
-        let rulesList = <C.SnowText>No display cleanup rules found</C.SnowText>
-        if (rules.length) {
-            rulesList = (
-                <C.SnowGrid shouldFocus itemsPerRow={1} items={rules} renderItem={(rule) => {
-                    let title = `${rule.needle} -> ${rule.replacement}`
-                    return (
-                        <C.SnowTextButton
-                            title={title}
-                            onPress={navPush({
-                                path: routes.adminCleanupRuleEdit,
-                                params: { ruleId: rule.id }
-                            })}
-                        />
-                    )
-                }} />
-            )
-        }
-        return (
-            <>
-                <C.SnowTextButton title="Create New Rule" onPress={navPush({ path: routes.adminCleanupRuleEdit })} />
-                {rulesList}
-            </>
-        )
-    }
+export default function CleanupRuleListPage() {
     return (
-        <C.View >
-            <C.SnowText>Loading cleanup rules</C.SnowText>
-        </C.View >
+        <AdminListPage
+            kind="cleanup rule"
+            editPath={(routes) => { return routes.adminCleanupRuleEdit }}
+            editParams={(item) => { return { ruleId: item.id } }}
+            loadItems={(apiClient) => { return apiClient.getDisplayCleanupRuleList() }}
+            itemTitle={(item) => {
+                return `${item.needle} -> ${item.replacement}`
+            }}
+        />
     )
 }
