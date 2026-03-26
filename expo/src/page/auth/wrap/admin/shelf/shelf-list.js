@@ -1,55 +1,14 @@
 import { C, useAppContext } from 'snowstream'
 
+import AdminListPage from '../admin-list-page'
+
 export default function ShelfListPage() {
-    const { apiClient, routes } = useAppContext()
-    const { navPush } = C.useSnowContext()
-    const [shelves, setShelves] = C.React.useState(null)
-    C.React.useEffect(() => {
-        if (!shelves) {
-            apiClient.getShelfList().then((response) => {
-                setShelves(response)
-            })
-        }
-    })
-
-    let destinations = []
-
-    if (!!shelves) {
-        destinations = destinations.concat(shelves)
-    }
-
-    if (!!shelves) {
-        const renderItem = (item, itemIndex) => {
-            let destination = item
-            return (
-                <C.SnowTextButton
-                    title={destination.name}
-                    onPress={navPush({
-                        path: routes.adminShelfEdit,
-                        params: { shelfId: destination.id }
-                    })}
-                />
-            )
-        }
-        return (
-            <>
-                <C.SnowTextButton
-                    focusStart
-                    focusKey='page-entry'
-                    title="Create New Shelf"
-                    onPress={navPush({ path: routes.adminShelfEdit })}
-                />
-                {
-                    destinations.length > 0 ?
-                        <>
-                            <C.SnowText>{destinations.length} shelves found</C.SnowText>
-                            <C.SnowGrid focusKey="item-list" items={destinations} renderItem={renderItem} />
-                        </>
-                        : null
-                }
-            </>
-        )
-    }
-
-    return null
+    return (
+        <AdminListPage
+            kind="shelf"
+            editPath={(routes) => { return routes.adminShelfEdit }}
+            editParams={(item) => { return { shelfId: item.id } }}
+            loadItems={(apiClient) => { return apiClient.getShelfList() }}
+        />
+    )
 }
