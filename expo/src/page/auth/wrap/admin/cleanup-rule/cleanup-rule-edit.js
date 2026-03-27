@@ -21,7 +21,14 @@ export default function DisplayCleanupRuleEditPage() {
                 { label: 'Replacement', key: 'replacement' },
                 { label: 'Rule Kind', key: 'ruleKind', api: 'rule_kind', options: ruleKinds, input: 'dropdown' },
                 { label: 'Target Kind', key: 'targetKind', api: 'target_kind', options: targetKinds, input: 'dropdown' },
-                { label: 'Priority', key: 'priority' },
+                {
+                    label: 'Priority', key: 'priority', empty: (item) => {
+                        if (item.priority !== '') {
+                            return parseInt(item.priority, 10)
+                        }
+                        return null
+                    }
+                },
 
             ]}
             loadExisting={(apiClient, routeParams) => {

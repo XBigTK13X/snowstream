@@ -10,6 +10,7 @@ export default function AdminFormPage(props) {
     }
 
     const [form, setForm] = C.React.useState(formPlaceholder)
+    const [formReady, setFormReady] = C.React.useState(false)
     const [dropdownIndices, setDropdownIndices] = C.React.useState({})
     const [existing, setExisting] = C.React.useState(false)
     const [itemDeleteCount, setItemDeleteCount] = C.React.useState(3)
@@ -39,6 +40,7 @@ export default function AdminFormPage(props) {
                     }
                     initialForm.id = response.id
                     setForm(initialForm)
+                    setFormReady(true)
                     setDropdownIndices(initialDropdownIndices)
                     setExisting(true)
                 } else {
@@ -51,6 +53,7 @@ export default function AdminFormPage(props) {
                         }
                     }
                     setForm(initialForm)
+                    setFormReady(true)
                 }
             })
     }, [])
@@ -63,6 +66,9 @@ export default function AdminFormPage(props) {
             }
             else {
                 apiForm[field.key] = form[field.key]
+            }
+            if (field.empty) {
+                apiForm[field.key] = field.empty(apiForm)
             }
         }
         if (form.id) {
@@ -173,6 +179,10 @@ export default function AdminFormPage(props) {
                 <C.SnowBreak />
             </C.SnowView>
         )
+    }
+
+    if (!formReady) {
+        return <C.SnowLabel center>Loading form...</C.SnowLabel>
     }
 
     return (

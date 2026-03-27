@@ -19,6 +19,7 @@ def create_tag_rule(
         db.add(dbm)
         db.commit()
         db.refresh(dbm)
+        dbm.tag_name = dbm.tag.name
         return dbm
 
 def update_tag_rule(
@@ -31,14 +32,13 @@ def update_tag_rule(
     trigger_target:str=None
 ):
     with dbi.session() as db:
-        rule = db.query(dbi.dm.TagRule).filter(dbi.dm.TagRule.id == rule_id)
+        rule = db.query(dbi.dm.TagRule).filter(dbi.dm.TagRule.id == rule_id).first()
         rule.tag_id = tag_id
         rule.rule_kind = rule_kind
         rule.priority = priority
         rule.target_kind = target_kind
         rule.trigger_kind = trigger_kind
         rule.trigger_target = trigger_target
-        rule.save()
         db.commit()
         db.refresh(rule)
         return rule
@@ -47,12 +47,14 @@ def get_tag_rule(rule_id:int):
     if rule_id == None:
         return None
     with dbi.session() as db:
-        return (
+        result = (
             db.query(dbi.dm.TagRule)
             .filter(dbi.dm.TagRule.id == rule_id)
             .options(dbi.orm.joinedload(dbi.dm.TagRule.tag))
             .first()
         )
+        result.tag_name = result.tag.name
+        return result
 
 def delete_tag_rule(rule_id:int):
     if rule_id == None:
@@ -72,4 +74,7 @@ def get_tag_rule_list(target_kind:str=None):
             )
         )
         query = query.order_by(dbi.dm.TagRule.priority)
-        return query.all()
+        results = query.all()
+        for result in results:
+            result.tag_name = result.tag.name
+        return results

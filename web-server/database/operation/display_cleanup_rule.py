@@ -28,13 +28,12 @@ def update_display_cleanup_rule(
     rule_kind:str=None
 ):
     with dbi.session() as db:
-        rule = db.query(dbi.dm.DisplayCleanupRule).filter(dbi.dm.DisplayCleanupRule.id == rule_id)
+        rule = db.query(dbi.dm.DisplayCleanupRule).filter(dbi.dm.DisplayCleanupRule.id == rule_id).first()
         rule.priority = priority
         rule.needle = needle
         rule.replacement = replacement
         rule.target_kind = target_kind
         rule.rule_kind = rule_kind
-        rule.save()
         db.commit()
         db.refresh(rule)
         return rule

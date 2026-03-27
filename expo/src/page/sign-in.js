@@ -19,7 +19,6 @@ export default function SignInPage() {
 
     const [errors, setErrors] = C.React.useState(null)
     const [users, setUsers] = C.React.useState(null)
-    const [user, setUser] = C.React.useState(null)
     const [password, setPassword] = C.React.useState("")
     const passwordRef = C.React.useRef(password)
     const [customServer, setCustomServer] = C.React.useState('')
@@ -57,7 +56,12 @@ export default function SignInPage() {
                 navReset()
             })
             .catch((err) => {
-                setErrors(err)
+                console.log({ err })
+                if (err?.message) {
+                    setErrors(err.message)
+                } else {
+                    setErrors(C.Snow.stringifySafe(err))
+                }
             })
     }
 
@@ -149,7 +153,7 @@ export default function SignInPage() {
         <>
             {userList}
             {selectServer}
-            <C.SnowLabel>{errors ? 'Errors: ' + C.Snow.stringifySafe(errors) : ""}</C.SnowLabel>
+            {errors ? <C.SnowLabel>{errors}</C.SnowLabel> : null}
         </>
     )
 }

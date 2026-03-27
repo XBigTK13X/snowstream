@@ -22,12 +22,19 @@ export default function TagRuleEditPage() {
         <AdminFormPage
             kind="Tag Rule"
             fields={[
-                { label: 'Tag Name', key: 'name' },
+                { label: 'Tag Name', key: 'tagName', api: 'tag_name' },
                 { label: 'Rule Kind', key: 'ruleKind', api: 'rule_kind', options: ruleKinds, input: 'dropdown' },
                 { label: 'Target Kind', key: 'targetKind', api: 'target_kind', options: targetKinds, input: 'dropdown' },
                 { label: 'Trigger Kind', key: 'triggerKind', api: 'trigger_kind', options: triggerKinds, input: 'dropdown' },
                 { label: 'Trigger Target', key: 'triggerTarget', api: 'trigger_target' },
-                { label: 'Priority', key: 'priority' },
+                {
+                    label: 'Priority', key: 'priority', empty: (item) => {
+                        if (item.priority !== '') {
+                            return parseInt(item.priority, 10)
+                        }
+                        return null
+                    }
+                },
 
             ]}
             loadExisting={(apiClient, routeParams) => {

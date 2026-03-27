@@ -217,14 +217,7 @@ export class ApiClient {
     }
 
     saveStreamSource = (payload) => {
-        return this.post('/stream/source', {
-            id: payload.id,
-            name: payload.name,
-            kind: payload.kind,
-            url: payload.url,
-            username: payload.username,
-            password: payload.password
-        }, false)
+        return this.post('/stream/source', payload, false)
     }
 
     deleteStreamSource = (stream_source_id) => {
@@ -248,14 +241,7 @@ export class ApiClient {
     }
 
     saveChannelGuideSource = (payload) => {
-        return this.post('/channel/guide/source', {
-            id: payload.id,
-            name: payload.name,
-            kind: payload.kind,
-            url: payload.url,
-            username: payload.username,
-            password: payload.password
-        }, false)
+        return this.post('/channel/guide/source', payload, false)
     }
 
     saveChannel = (payload) => {
@@ -366,10 +352,7 @@ export class ApiClient {
     }
 
     saveTag = (payload) => {
-        return this.post('/tag', {
-            id: payload.id,
-            name: payload.name
-        }, false)
+        return this.post('/tag', payload, false)
     }
 
     deleteTag = (tagId) => {
@@ -568,14 +551,7 @@ export class ApiClient {
     }
 
     saveDisplayCleanupRule = (rule) => {
-        return this.post('/display-cleanup-rule', {
-            id: rule.id,
-            rule_kind: rule.ruleKind,
-            target_kind: rule.targetKind,
-            priority: rule.priority !== '' ? parseInt(rule.priority, 10) : null,
-            needle: rule.needle,
-            replacement: rule.replacement
-        }, false)
+        return this.post('/display-cleanup-rule', rule, false)
     }
 
     deleteDisplayCleanupRule = (ruleId) => {
@@ -591,15 +567,7 @@ export class ApiClient {
     }
 
     saveTagRule = (rule) => {
-        return this.post('/tag-rule', {
-            id: rule.id,
-            tag_name: rule.tagName,
-            rule_kind: rule.ruleKind,
-            target_kind: rule.targetKind,
-            priority: rule.priority !== '' ? parseInt(rule.priority, 10) : null,
-            trigger_kind: rule.triggerKind,
-            trigger_target: rule.triggerTarget
-        }, false)
+        return this.post('/tag-rule', rule, false)
     }
 
     deleteTagRule = (ruleId) => {

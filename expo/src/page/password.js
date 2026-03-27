@@ -39,14 +39,14 @@ export default function SignInPage() {
         signIn(username, passwordRef.current)
             .then((result) => {
                 if (result.failed) {
-                    setErrors({ 'message': `Incorrect password [${passwordRef.current}] for [${username}].` })
+                    setErrors(`Incorrect password [${passwordRef.current}] for [${username}].`)
                 }
                 else {
                     navReset()
                 }
             })
             .catch((err) => {
-                setErrors(err)
+                setErrors(C.Snow.stringifySafe({ err }))
             })
     }
 
@@ -66,7 +66,7 @@ export default function SignInPage() {
                     <C.SnowTextButton title="Login" onPress={login} />
                     <C.SnowTextButton title="Cancel" onPress={cancelPassword} />
                 </C.SnowGrid>
-                <C.SnowLabel>{errors ? 'Errors: ' + C.Snow.stringifySafe(errors) : ""}</C.SnowLabel>
+                {errors ? <C.SnowLabel>{errors}</C.SnowLabel> : null}
             </C.SnowGrid>
         </>
     )
