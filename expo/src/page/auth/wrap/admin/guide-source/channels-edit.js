@@ -2,7 +2,7 @@ import { C, useAppContext } from 'snowstream'
 
 function ChannelEditRow(props) {
     const { apiClient } = useAppContext()
-    const { pushModal, popModal, openOverlay, closeOverlay } = C.useSnowContext()
+    const { pushModal, popModal } = C.useSnowContext()
 
     const [form, setForm] = C.React.useState({
         id: props.channel.id,
@@ -38,7 +38,7 @@ function ChannelEditRow(props) {
             },
             render: () => {
                 return (
-                    <>
+                    <C.SnowView>
                         <C.SnowLabel>{props.channel.parsed_id}</C.SnowLabel>
                         <C.SnowTextButton title="Cancel" onPress={() => { setShowModal(false) }} />
                         <C.SnowGrid itemsPerRow={2}>
@@ -71,7 +71,7 @@ function ChannelEditRow(props) {
                                 )
                             })}
                         </C.SnowGrid>
-                    </>
+                    </C.SnowView>
                 )
             }
         })
@@ -109,22 +109,24 @@ function ChannelEditRow(props) {
 }
 
 export default function ChannelEditPage() {
-    const { apiClient, currentRoute } = useAppContext()
+    const { apiClient } = useAppContext()
+    const { currentRoute } = C.Snow.useSnowContext()
     const [guideSource, setGuideSource] = C.React.useState(null)
     const [streamables, setStreamables] = C.React.useState(null)
     const [query, setQuery] = C.React.useState('')
     const [filteredChannels, setFilteredChannels] = C.React.useState([])
     C.React.useEffect(() => {
-        if (!guideSource) {
-            apiClient.getChannelGuideSource(currentRoute.routeParams.guideSourceId).then((guideSource) => {
-                setGuideSource(guideSource)
-            }).then(() => {
-                apiClient.getStreamableList().then((streamableList) => {
-                    setStreamables(streamableList)
-                })
+        apiClient.getChannelGuideSource(currentRoute.routeParams.guideSourceId).then((guideSource) => {
+            setGuideSource(guideSource)
+            if (guideSource?.channels?.length < 100) {
+                setFilteredChannels(guideSource.channels)
+            }
+        }).then(() => {
+            apiClient.getStreamableList().then((streamableList) => {
+                setStreamables(streamableList)
             })
-        }
-    })
+        })
+    }, [])
 
     if (!guideSource || !streamables) {
         return <C.SnowText>Loading channels...</C.SnowText>
