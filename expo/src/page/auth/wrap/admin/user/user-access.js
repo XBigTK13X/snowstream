@@ -199,7 +199,7 @@ export default function UserEditPage() {
     }
 
     return (
-        <>
+        <C.SnowView>
             <C.SnowGrid itemsPerRow={2}>
                 <C.SnowTextButton title="User Details" onPress={navPush({
                     path: routes.adminUserEdit,
@@ -214,8 +214,10 @@ export default function UserEditPage() {
             {shelfPicker}
             {streamSourcePicker}
             {tagPicker}
-
-            <C.SnowTextButton title="Save User Access" onPress={saveUserAccess} />
-        </>
+            <C.SnowBreak />
+            <C.SnowGrid>
+                <C.SnowTextButton title="Save User Access" onPress={saveUserAccess} />
+            </C.SnowGrid>
+        </C.SnowView>
     )
 }
