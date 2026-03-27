@@ -25,13 +25,16 @@ export default function AdminFormPage(props) {
                     let initialDropdownIndices = {}
                     for (let field of props.fields) {
                         if (field.api) {
-                            initialForm[field.key] = response[field.api]
+                            initialForm[field.key] = response[field.api] ?? ''
                         }
                         else {
-                            initialForm[field.key] = response[field.key]
+                            initialForm[field.key] = response[field.key] ?? ''
                         }
                         if (field.input === 'dropdown') {
                             initialDropdownIndices[field.key] = field.options.indexOf(initialForm[field.key])
+                        }
+                        if (initialForm[field.key] === undefined && field.missing) {
+                            initialForm[field.key] = field.missing(response)
                         }
                     }
                     initialForm.id = response.id

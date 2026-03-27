@@ -335,16 +335,11 @@ export class ApiClient {
     }
 
     saveUser = (details) => {
-        let payload = {
-            id: details.id,
-            username: details.username,
-            display_name: details.displayName,
-            enabled: details.enabled,
-            permissions: details.permissions,
-        }
-        if (details.rawPassword) {
-            payload.raw_password = details.rawPassword
-            payload.set_password = details.setPassword
+        let payload = { ...details }
+        if (details.password) {
+            payload.raw_password = details.password
+            payload.set_password = true
+            delete payload.password
         }
         return this.post('/user', payload, false)
     }
