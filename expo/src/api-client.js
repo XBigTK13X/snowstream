@@ -45,7 +45,7 @@ export class ApiClient {
     }
 
     handleError = (err) => {
-        util.log(err)
+        util.log({ err })
         if (err) {
             if (err.response && err.response.status === 401) {
                 this.onLogout?.()
@@ -66,7 +66,10 @@ export class ApiClient {
         }
     }
 
-    get = async (url, params) => {
+    get = async (url, params, silent) => {
+        if (silent === undefined) {
+            silent = true
+        }
         let queryParams = null
         if (params) {
             queryParams = { params: params }
@@ -78,10 +81,16 @@ export class ApiClient {
             })
             .catch((err) => {
                 this.handleError(err)
+                if (silent === false) {
+                    throw { err, url, payload }
+                }
             })
     }
 
-    post = async (url, payload) => {
+    post = async (url, payload, silent) => {
+        if (silent === undefined) {
+            silent = true
+        }
         return this.httpClient
             .post(url, payload)
             .then((response) => {
@@ -89,6 +98,9 @@ export class ApiClient {
             })
             .catch((err) => {
                 this.handleError(err)
+                if (silent === false) {
+                    throw { err, url, payload }
+                }
             })
     }
 
@@ -212,7 +224,7 @@ export class ApiClient {
             url: payload.url,
             username: payload.username,
             password: payload.password
-        })
+        }, false)
     }
 
     deleteStreamSource = (stream_source_id) => {
@@ -224,7 +236,7 @@ export class ApiClient {
             id: payload.id,
             name_display: payload.nameDisplay,
             group_display: payload.groupDisplay
-        })
+        }, false)
     }
 
     getChannelGuideSourceList = () => {
@@ -243,7 +255,7 @@ export class ApiClient {
             url: payload.url,
             username: payload.username,
             password: payload.password
-        })
+        }, false)
     }
 
     saveChannel = (payload) => {
@@ -256,7 +268,7 @@ export class ApiClient {
             edited_number: payload.editedNumber,
             edited_id: payload.editedId,
             streamable_id: payload.streamableId
-        })
+        }, false)
     }
 
     deleteChannelGuideSource = (channel_guide_source_id) => {
@@ -275,13 +287,7 @@ export class ApiClient {
     }
 
     saveShelf = (payload) => {
-        return this.post('/shelf', {
-            name: payload.name,
-            kind: payload.kind,
-            local_path: payload.localPath,
-            network_path: payload.networkPath,
-            id: payload.id
-        })
+        return this.post('/shelf', payload, false)
     }
 
     deleteShelf = (shelfId) => {
@@ -340,7 +346,7 @@ export class ApiClient {
             payload.raw_password = details.rawPassword
             payload.set_password = details.setPassword
         }
-        return this.post('/user', payload)
+        return this.post('/user', payload, false)
     }
 
     deleteUser = (userId) => {
@@ -353,7 +359,7 @@ export class ApiClient {
             tag_ids: payload.tagIds,
             shelf_ids: payload.shelfIds,
             stream_source_ids: payload.streamSourceIds
-        })
+        }, false)
     }
 
     getTag = (tagId) => {
@@ -368,7 +374,7 @@ export class ApiClient {
         return this.post('/tag', {
             id: payload.id,
             name: payload.name
-        })
+        }, false)
     }
 
     deleteTag = (tagId) => {
@@ -574,7 +580,7 @@ export class ApiClient {
             priority: rule.priority !== '' ? parseInt(rule.priority, 10) : null,
             needle: rule.needle,
             replacement: rule.replacement
-        })
+        }, false)
     }
 
     deleteDisplayCleanupRule = (ruleId) => {
@@ -598,7 +604,7 @@ export class ApiClient {
             priority: rule.priority !== '' ? parseInt(rule.priority, 10) : null,
             trigger_kind: rule.triggerKind,
             trigger_target: rule.triggerTarget
-        })
+        }, false)
     }
 
     deleteTagRule = (ruleId) => {

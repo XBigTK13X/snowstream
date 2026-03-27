@@ -46,12 +46,12 @@ export default function StreamblesEditPage() {
     const [filteredStreams, setFilteredStreams] = C.React.useState([])
 
     C.React.useEffect(() => {
-        if (!streamSource) {
+        if (!streamSource && currentRoute?.routeParams?.streamSourceId) {
             apiClient.getStreamSource(currentRoute.routeParams.streamSourceId).then((streamSource) => {
                 setStreamSource(streamSource)
             })
         }
-    })
+    }, [currentRoute])
 
     if (!streamSource) {
         return <C.SnowText>Loading streamables...</C.SnowText>

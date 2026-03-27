@@ -1,5 +1,3 @@
-import { C, useAppContext } from 'snowstream'
-
 const kinds = ['Movies', 'Shows', 'Keepsakes']
 
 import AdminFormPage from '../admin-form-page'
@@ -10,9 +8,9 @@ export default function ShelfEditPage() {
             kind="Shelf"
             fields={[
                 { label: 'Name', key: 'name' },
+                { label: 'Kind', key: 'kind', input: 'dropdown', options: kinds },
                 { label: 'Local Path', key: 'localPath', api: 'local_path' },
                 { label: 'Network Path', key: 'networkPath', api: 'network_path' },
-                { label: 'Kind', key: 'kind', input: 'dropdown', options: kinds }
             ]}
             loadExisting={(apiClient, routeParams) => {
                 if (!routeParams?.shelfId) {

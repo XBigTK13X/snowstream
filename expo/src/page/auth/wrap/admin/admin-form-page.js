@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export default function AdminFormPage(props) {
-    const { currentRoute } = C.useSnowContext()
+    const { currentRoute, navPush } = C.useSnowContext()
     const { apiClient, routes } = useAppContext()
 
     const [form, setForm] = C.React.useState({})
@@ -9,6 +9,8 @@ export default function AdminFormPage(props) {
     const [existing, setExisting] = C.React.useState(false)
     const [itemDeleteCount, setItemDeleteCount] = C.React.useState(3)
     const [deleted, setDeleted] = C.React.useState(false)
+    const [saveError, setSaveError] = C.React.useState(null)
+    const [saveMessage, setSaveMessage] = C.React.useState(`Save ${props.kind}`)
 
     C.React.useEffect(() => {
         props.loadExisting(apiClient, currentRoute?.routeParams)
@@ -27,6 +29,7 @@ export default function AdminFormPage(props) {
                             initialDropdownIndices[field.key] = field.options.indexOf(initialForm[field.key])
                         }
                     }
+                    initialForm.id = response.id
                     setForm(initialForm)
                     setDropdownIndices(initialDropdownIndices)
                     setExisting(true)
@@ -43,6 +46,31 @@ export default function AdminFormPage(props) {
                 }
             })
     }, [])
+
+    const saveItem = () => {
+        let apiForm = {}
+        for (let field of props.fields) {
+            if (field.api) {
+                apiForm[field.api] = form[field.key]
+            }
+            else {
+                apiForm[field.key] = form[field.key]
+            }
+        }
+        if (form.id) {
+            apiForm.id = form.id
+        }
+        setSaveError(null)
+        props.saveItem(apiClient, apiForm)
+            .then(() => {
+                setSaveMessage('Save Complete')
+            })
+            .catch(err => {
+                if (err) {
+                    setSaveError(C.Snow.stringifySafe(err))
+                }
+            })
+    }
 
 
     const deleteItem = () => {
@@ -102,13 +130,14 @@ export default function AdminFormPage(props) {
     const renderItem = (item) => {
         if (!item.hasOwnProperty('input') || item.input === 'text') {
             return (
-                <C.SnowView>
+                <C.SnowGrid itemsPerRow={1}>
                     <C.SnowLabel center>{item.label}</C.SnowLabel>
+                    {item.note ? <C.SnowText center>{item.note}</C.SnowText> : null}
                     <C.SnowInput
                         onValueChange={changeForm(item.key)}
                         value={form[item.key]}
                     />
-                </C.SnowView>
+                </C.SnowGrid>
             )
         }
         else if (item.input === 'dropdown') {
@@ -126,28 +155,37 @@ export default function AdminFormPage(props) {
         return <C.SnowText>Unhandled form field [{item}]</C.SnowText>
     }
 
+    let editButtons = null
+    if (props.editButtons) {
+        editButtons = (
+            <>
+                <C.SnowGrid>
+                    {props.editButtons(routes, currentRoute, navPush)}
+                </C.SnowGrid>
+                <C.SnowBreak />
+            </>
+        )
+    }
 
     return (
-        <C.SnowGrid
-            itemsPerRow={1}
-            focusStart
-            focusKey='item-form'
-        >
-            {
-                props.fields.map(
-                    item => {
-                        return renderItem(item)
-                    }
-                )
-            }
-
-            <C.SnowTextButton
-                title={`Save ${props.kind}`}
-                onPress={() => {
-                    props.saveItem(apiClient, form)
-                }}
-            />
-            {deleteButton}
-        </C.SnowGrid >
+        <C.SnowView>
+            {editButtons}
+            <C.SnowGrid
+                itemsPerRow={1}
+                focusStart
+                focusKey='item-form' >
+                {props.fields.map(item => {
+                    return renderItem(item)
+                })}
+            </C.SnowGrid >
+            <C.SnowBreak />
+            <C.SnowGrid itemsPerRow={1}>
+                <C.SnowTextButton
+                    title={saveMessage}
+                    onPress={saveItem} />
+                {deleteButton}
+            </C.SnowGrid>
+            {saveError !== null ? <C.SnowText>{saveError}</C.SnowText> : null}
+        </C.SnowView>
     )
 }
