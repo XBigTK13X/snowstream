@@ -52,7 +52,7 @@ export default function SearchPage() {
                 return `${searchResult.name} [${searchResult.items.length}]`
             })
             resultsTabs = (
-                <C.SnowTabs key={resultKey} focusKey="search-results" headers={headers}>
+                <C.SnowTabs yy={1} key={resultKey} focusKey="search-results" headers={headers}>
                     {searchResults.map((searchResult, resultIndex) => {
                         if (searchResult.kind === 'streamables') {
                             return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
@@ -105,6 +105,7 @@ export default function SearchPage() {
             itemsPerRow={1}>
             <C.SnowLabel>Enter a search query</C.SnowLabel>
             <C.SnowInput
+                yy={0}
                 focusStart
                 focusKey="page-entry"
                 value={queryText}

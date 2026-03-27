@@ -2,7 +2,7 @@ import { C, useAppContext } from 'snowstream'
 
 
 
-function StreamableWithGuideButtonW(props) {
+function StreamableWithGuideButton(props) {
     let currentProgram = "No guide information"
     let nextProgram = "No guide information"
     if (props.streamable.current_program) {
@@ -15,7 +15,7 @@ function StreamableWithGuideButtonW(props) {
     }
     let name = props.streamable.name_display ? props.streamable.name_display : props.streamable.name
     return (
-        <C.SnowView key={props.streamable.id}>
+        <C.SnowView key={props.streamable.id} {...props}>
             <C.SnowGrid
                 assignFocus={false}
                 itemsPerRow={3} >
@@ -45,17 +45,14 @@ function StreamableWithGuideButtonW(props) {
     )
 }
 
-StreamableWithGuideButtonW.isSnowFocusWired = true
 
-const StreamableWithGuideButton = StreamableWithGuideButtonW
-
-
-function StreamableButtonW(props) {
+function StreamableButton(props) {
     let name = props.streamable.name_display ? props.streamable.name_display : props.streamable.name
     return (
         <C.SnowTextButton
             tall
             key={props.streamable.id}
+            {...props}
             title={name}
             onPress={props.navPush({
                 path: props.routes.streamablePlay,
@@ -75,10 +72,6 @@ function StreamableButtonW(props) {
         />
     )
 }
-
-StreamableButtonW.isSnowFocusWired = true
-
-const StreamableButton = StreamableButtonW
 
 export default function StreamableListPage() {
     const { navPush, currentRoute } = C.useSnowContext()

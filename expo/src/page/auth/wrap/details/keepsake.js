@@ -93,7 +93,7 @@ export default function KeepsakeDetailsPage(props) {
     if (hasVideos) {
         videoFocusKey = 'page-entry'
         videos = (
-            <>
+            <C.SnowView>
                 <C.SnowLabel>Videos</C.SnowLabel>
                 <C.SnowGrid focusStart focusKey={videoFocusKey} itemsPerRow={4} wide={true}>
                     {keepsake.videos.map((video, videoIndex) => {
@@ -116,7 +116,7 @@ export default function KeepsakeDetailsPage(props) {
                         )
                     })}
                 </C.SnowGrid>
-            </>
+            </C.SnowView>
         )
     }
 
@@ -131,7 +131,7 @@ export default function KeepsakeDetailsPage(props) {
         }
         focus.focusKey = imageFocusKey
         images = (
-            <>
+            <C.SnowView>
                 <C.SnowLabel>Images</C.SnowLabel>
                 <C.SnowGrid {...focus} itemsPerRow={4} wide={true}>
                     {keepsake.images.map((image, imageIndex) => {
@@ -146,7 +146,7 @@ export default function KeepsakeDetailsPage(props) {
                         )
                     })}
                 </C.SnowGrid>
-            </>
+            </C.SnowView>
         )
     }
 
@@ -165,7 +165,7 @@ export default function KeepsakeDetailsPage(props) {
             focus.focusUp = videoFocusKey
         }
         dirs = (
-            <>
+            <C.SnowView>
                 <C.SnowLabel>Directories</C.SnowLabel>
                 <C.SnowGrid {...focus} itemsPerRow={4} >
                     {keepsake.directories.map((dir, dirIndex) => {
@@ -188,15 +188,17 @@ export default function KeepsakeDetailsPage(props) {
                         )
                     })}
                 </C.SnowGrid>
-            </>
+            </C.SnowView>
         )
     }
     if (keepsake) {
         return (
             <C.FillView>
-                {videos}
-                {images}
-                {dirs}
+                <C.SnowView>
+                    {videos}
+                    {images}
+                    {dirs}
+                </C.SnowView>
             </C.FillView>
         )
     }
