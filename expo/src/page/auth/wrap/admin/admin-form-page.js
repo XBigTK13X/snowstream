@@ -4,7 +4,12 @@ export default function AdminFormPage(props) {
     const { currentRoute, navPush } = C.useSnowContext()
     const { apiClient, routes } = useAppContext()
 
-    const [form, setForm] = C.React.useState({})
+    const formPlaceholder = {}
+    for (let field of props.fields) {
+        formPlaceholder[field.key] = ''
+    }
+
+    const [form, setForm] = C.React.useState(formPlaceholder)
     const [dropdownIndices, setDropdownIndices] = C.React.useState({})
     const [existing, setExisting] = C.React.useState(false)
     const [itemDeleteCount, setItemDeleteCount] = C.React.useState(3)
@@ -158,12 +163,12 @@ export default function AdminFormPage(props) {
     let editButtons = null
     if (props.editButtons) {
         editButtons = (
-            <>
+            <C.SnowView>
                 <C.SnowGrid>
                     {props.editButtons(routes, currentRoute, navPush)}
                 </C.SnowGrid>
                 <C.SnowBreak />
-            </>
+            </C.SnowView>
         )
     }
 
