@@ -39,19 +39,22 @@ function StreamableEditRow(props) {
     )
 }
 
-export default function StreamblesEditPage() {
-    const { apiClient, currentRoute } = useAppContext()
+export default function StreamablesEditPage() {
+    const { apiClient } = useAppContext()
+    const { currentRoute } = C.Snow.useSnowContext()
     const [streamSource, setStreamSource] = C.React.useState(null)
     const [query, setQuery] = C.React.useState('')
     const [filteredStreams, setFilteredStreams] = C.React.useState([])
 
     C.React.useEffect(() => {
-        if (!streamSource && currentRoute?.routeParams?.streamSourceId) {
-            apiClient.getStreamSource(currentRoute.routeParams.streamSourceId).then((streamSource) => {
-                setStreamSource(streamSource)
+        apiClient.getStreamSource(currentRoute.routeParams.streamSourceId)
+            .then((response) => {
+                setStreamSource(response)
+                if (response?.streamables?.length < 100) {
+                    setFilteredStreams(response.streamables)
+                }
             })
-        }
-    }, [currentRoute])
+    }, [])
 
     if (!streamSource) {
         return <C.SnowText>Loading streamables...</C.SnowText>
