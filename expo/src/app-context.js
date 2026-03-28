@@ -280,7 +280,6 @@ export function AppContextProvider(props) {
         if (apiError) {
             pushModal({
                 props: {
-                    focusLayer: "api-error",
                     center: true,
                     onRequestClose: () => { }
                 },

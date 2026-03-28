@@ -222,7 +222,6 @@ export default function MediaTracksPage(props) {
             }
             pushModal({
                 props: {
-                    focusLayer: "video-inspection",
                     scroll: true,
                     onRequestClose: () => { setShowInfoModal(false) }
                 },

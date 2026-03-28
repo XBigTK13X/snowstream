@@ -72,9 +72,9 @@ export default function SnowVideoPlayer(props) {
                 Player.action.onAddLog({ kind: 'snowstream', message: 'Enabling video pause touch overlay' })
                 openOverlay({
                     props: {
+                        canFocus: true,
                         focusStart: true,
                         focusKey: "video-player",
-                        focusLayer: "video-player",
                         onPress: Player.action.onPauseVideo
                     }
                 })
@@ -94,7 +94,6 @@ export default function SnowVideoPlayer(props) {
             Player.action.onAddLog({ kind: 'snowstream', message: 'Showing playback controls modal' })
             pushModal({
                 props: {
-                    focusLayer: 'video-controls',
                     transparent: true,
                     scroll: true,
                     onRequestClose: () => {
@@ -123,7 +122,6 @@ export default function SnowVideoPlayer(props) {
             Player.action.onAddLog({ kind: 'snowstream', message: 'Opening video log viewer modal' })
             pushModal({
                 props: {
-                    focusLayer: 'video-logs',
                     black: true,
                     scroll: true,
                     onRequestClose: () => {
@@ -165,7 +163,7 @@ export default function SnowVideoPlayer(props) {
 
     return (
         <Snow.FillView>
-            <Snow.Header center>Preparing the video.</Snow.Header>
+            <Snow.Header center>{player.videoLoaded ? null : "Preparing the video."}</Snow.Header>
         </Snow.FillView>
     )
 }

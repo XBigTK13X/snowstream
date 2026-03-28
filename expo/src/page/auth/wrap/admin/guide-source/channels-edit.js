@@ -32,7 +32,6 @@ function ChannelEditRow(props) {
     C.React.useEffect(() => {
         pushModal({
             props: {
-                focusLayer: "channel-list",
                 scroll: true,
                 onRequestClose: () => { setShowModal(false) }
             },

@@ -64,7 +64,6 @@ export default function KeepsakeDetailsPage(props) {
             props: {
                 focusStart: true,
                 focusKey: 'zoomed-item',
-                focusLayer: 'zoomed-item',
                 onPress: closeModal
             }
         })

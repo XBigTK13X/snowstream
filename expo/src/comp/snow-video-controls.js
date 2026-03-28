@@ -35,9 +35,9 @@ export default function SnowVideoControls(props) {
         if (!controlsVisible) {
             openOverlay({
                 props: {
+                    canFocus: true,
                     focusStart: true,
                     focusKey: 'hidden-controls',
-                    focusLayer: 'hidden-controls',
                     onPress: () => {
                         closeOverlay()
                         setControlsVisible(true)
@@ -153,11 +153,9 @@ export default function SnowVideoControls(props) {
     }
     return (
         (
-            <View style={styles.player}>
-                <>
-                    <Snow.Label center>{player.videoTitle}</Snow.Label>
-                    {slider}
-                </>
+            <Snow.View style={styles.player}>
+                <Snow.Label center>{player.videoTitle}</Snow.Label>
+                {slider}
                 <Snow.Tabs focusStart focusKey="control-tabs" headers={tabs}>
                     {playbackControls}
                     {subtitleControls}
@@ -174,7 +172,7 @@ export default function SnowVideoControls(props) {
                         }} /> */}
                     </Snow.Grid>
                 </Snow.Tabs>
-            </View>
+            </Snow.View>
         )
     )
 }

@@ -49,6 +49,7 @@ export default function PageLoader() {
     return (
         <SnowApp
             DEBUG_SNOW={config.debugSnowui}
+            DEBUG_NAVIGATION={false}
             DEBUG_FOCUS={false}
             DEBUG_FOCUS_TREE={false}
             snowStyle={appStyle}
