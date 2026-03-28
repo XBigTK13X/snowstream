@@ -84,7 +84,7 @@ export default function OptionsPage() {
     }
 
     return (
-        <C.FillView>
+        <C.SnowView>
             <C.SnowLabel center>Device ID</C.SnowLabel>
             <C.SnowGrid
                 focusStart
@@ -153,7 +153,6 @@ export default function OptionsPage() {
 
 
             </C.SnowTabs>
-        </C.FillView>
-
+        </C.SnowView>
     )
 }
