@@ -74,6 +74,7 @@ export default function SnowVideoPlayer(props) {
                     props: {
                         canFocus: true,
                         focusStart: true,
+                        boundary: 'video-player',
                         focusKey: "video-player",
                         onPress: Player.action.onPauseVideo
                     }
@@ -95,6 +96,7 @@ export default function SnowVideoPlayer(props) {
             pushModal({
                 props: {
                     transparent: true,
+                    boundary: 'video-controls',
                     scroll: true,
                     onRequestClose: () => {
                         const player = Player.snapshot(Player.state)

@@ -139,7 +139,7 @@ export default function SnowVideoControls(props) {
             Player.action.onProgress(null, 'manual-seek', percent);
         }
         slider = (
-            <Snow.View>
+            <Snow.View yy={1}>
                 <Snow.RangeSlider
                     focusKey="seekbar"
                     width={750}
@@ -156,7 +156,7 @@ export default function SnowVideoControls(props) {
             <Snow.View style={styles.player}>
                 <Snow.Label center>{player.videoTitle}</Snow.Label>
                 {slider}
-                <Snow.Tabs focusStart focusKey="control-tabs" headers={tabs}>
+                <Snow.Tabs yy={2} focusStart focusKey="control-tabs" headers={tabs}>
                     {playbackControls}
                     {subtitleControls}
                     {trackControls}
