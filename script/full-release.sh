@@ -30,7 +30,7 @@ script/prod-generate-apks.sh
 set +e
 
 echo "=-=- Push the apks up to the file server -=-="
-~/script/push-apks.sh snowstream
+~/script/push-apks.py snowstream
 
 echo "=-=- Deploy the apks to all devices -=-="
 ~/script/remote-adb.py All deploy_snowstream

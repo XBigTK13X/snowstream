@@ -2730,10 +2730,10 @@ expo-server@^1.0.5:
   resolved "https://registry.yarnpkg.com/expo-server/-/expo-server-1.0.5.tgz#2d52002199a2af99c2c8771d0657916004345ca9"
   integrity sha512-IGR++flYH70rhLyeXF0Phle56/k4cee87WeQ4mamS+MkVAVP+dDlOHf2nN06Z9Y2KhU0Gp1k+y61KkghF7HdhA==
 
-expo-snowui@^1.7.52:
-  version "1.7.52"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.7.52.tgz#5d343f26107cba79569c6b05b61362b2866db1ee"
-  integrity sha512-rlZgrrXCtjdEFPFrZ3zirTTCJXnPjDKBWHmG7HJqotLiXZ8SX+w/d4XTQJ5UewqxbjTx/MxiZ7TGomWEf/yhag==
+expo-snowui@^1.7.53:
+  version "1.7.53"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.7.53.tgz#f712427b7f4e6d9c6a025ead28950fd618d69330"
+  integrity sha512-WklUDs8njlvgaLr5YbZs4Z74ZV9+9ZibQ0CGYyDPOJkkJajtqQb7F003qn++RVvXWhOsFKP8tLcJGcII/dayig==
   dependencies:
     "@sentry/react-native" "^7.2.0"
     expo "54.0.33"
