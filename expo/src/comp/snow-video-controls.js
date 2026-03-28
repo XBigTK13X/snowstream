@@ -153,7 +153,7 @@ export default function SnowVideoControls(props) {
     }
     return (
         (
-            <Snow.View style={styles.player}>
+            <Snow.View parentPath={props.parentPath} style={styles.player}>
                 <Snow.Label center>{player.videoTitle}</Snow.Label>
                 {slider}
                 <Snow.Tabs yy={2} focusStart focusKey="control-tabs" headers={tabs}>

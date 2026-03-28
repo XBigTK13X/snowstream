@@ -106,8 +106,8 @@ export default function SnowVideoPlayer(props) {
                         }
                     }
                 },
-                render: () => {
-                    return <SnowVideoControls />
+                render: (props) => {
+                    return <SnowVideoControls {...props} />
                 }
             })
             closeOverlay()

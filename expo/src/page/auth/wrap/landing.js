@@ -1,5 +1,6 @@
 import { C, useAppContext } from 'snowstream'
 import Snow from 'expo-snowui'
+const snowuiPackageInfo = require('expo-snowui/package.json')
 
 export default function LandingPage(props) {
     const { apiClient, routes, config } = useAppContext()
@@ -120,7 +121,7 @@ export default function LandingPage(props) {
                     focusKey="destinations"
                     items={destinations}
                     itemsPerRow={3} />
-                <C.SnowText style={styles.footer} center>{`v${config.clientVersion} - built ${config.clientBuildDate}`}</C.SnowText>
+                <C.SnowText style={styles.footer} center>{`snowstream v${config.clientVersion}\nbuilt ${config.clientBuildDate}\nsnowui v${snowuiPackageInfo.version}`}</C.SnowText>
             </>
         )
     }
