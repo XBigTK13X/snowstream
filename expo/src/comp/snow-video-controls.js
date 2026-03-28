@@ -160,10 +160,12 @@ export default function SnowVideoControls(props) {
                     {playbackControls}
                     {subtitleControls}
                     {trackControls}
-                    <Snow.Grid short itemsPerRow={3}>
-                        <Snow.TextButton title={logTitle} onPress={() => {
-                            Player.action.setVideoLogsVisible(true)
-                        }} onLongPress={persistLogs} />
+                    {player.logPlayback ? <Snow.Grid short itemsPerRow={3}>
+                        <Snow.TextButton
+                            title={logTitle}
+                            onPress={() => {
+                                Player.action.setVideoLogsVisible(true)
+                            }} onLongPress={persistLogs} />
                         {/* <Snow.TextButton title={swapTitle} onPress={() => {
                             Player.action.togglePlayerKind()
                         }} />
@@ -171,6 +173,7 @@ export default function SnowVideoControls(props) {
                             Player.action.toggleTranscode()
                         }} /> */}
                     </Snow.Grid>
+                        : null}
                 </Snow.Tabs>
             </Snow.View>
         )

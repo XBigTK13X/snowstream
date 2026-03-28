@@ -247,6 +247,9 @@ class PlayerActions {
     }
 
     onAddLog = (logEvent) => {
+        if (!playerState.clientOptions?.logPlayback) {
+            return
+        }
         playerState.logs.push(Snow.stringifySafe(logEvent))
         if (playerState.logs?.length > MAX_LOGS) {
             playerState.logs.shift()

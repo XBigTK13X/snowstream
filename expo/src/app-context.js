@@ -272,6 +272,9 @@ export function AppContextProvider(props) {
             if (!storedOptions.hasOwnProperty('nightFilter')) {
                 storedOptions.nightFilter = false
             }
+            if (!storedOptions.hasOwnProperty('logPlayback')) {
+                storedOptions.logPlayback = false
+            }
             setClientOptions(storedOptions)
         }
     }, [clientOptions])

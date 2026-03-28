@@ -25,7 +25,8 @@ export default function OptionsPage() {
         alwaysTranscode: clientOptions?.alwaysTranscode ?? '',
         alwaysUsePlayer: clientOptions?.alwaysUsePlayer ?? '',
         audioCompression: clientOptions?.audioCompression ?? '',
-        nightFilter: clientOptions?.nightFilter ?? ''
+        nightFilter: clientOptions?.nightFilter ?? '',
+        logPlayback: clientOptions?.logPlayback ?? ''
     })
     const formRef = C.React.useRef(form)
 
@@ -79,6 +80,10 @@ export default function OptionsPage() {
         setForm(prev => ({ ...prev, alwaysTranscode: selection === 0 ? false : true }))
     }
 
+    const chooseLogPlayback = (selection) => {
+        setForm(prev => ({ ...prev, logPlayback: selection === 0 ? false : true }))
+    }
+
     const saveForm = () => {
         changeClientOptions(formRef.current)
     }
@@ -128,7 +133,8 @@ export default function OptionsPage() {
                     'Night',
                     'Audio',
                     'Resolution',
-                    'Transcode'
+                    'Transcode',
+                    'Log'
                 ]}>
                 <C.SnowDropdown
                     title="Night Filter"
@@ -150,6 +156,11 @@ export default function OptionsPage() {
                     options={['No', 'Yes']}
                     onValueChange={chooseAlwaysTranscode}
                     valueIndex={form.alwaysTranscode === true ? 1 : 0} />
+                <C.SnowDropdown
+                    title="Log Playback"
+                    options={['No', 'Yes']}
+                    onValueChange={chooseLogPlayback}
+                    valueIndex={form.logPlayback === true ? 1 : 0} />
 
 
             </C.SnowTabs>

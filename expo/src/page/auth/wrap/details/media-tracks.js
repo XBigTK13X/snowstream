@@ -184,9 +184,9 @@ export default function MediaTracksPage(props) {
                     }
                 }
             }
-            const InfoModal = () => {
+            const InfoModal = (props) => {
                 return (
-                    <C.FillView>
+                    <C.SnowView {...props}>
                         <C.SnowGrid focusStart focusKey="close-top" itemsPerRow={1}>
                             <C.SnowTextButton title="Close" onPress={() => { setShowInfoModal(false) }} />
                         </C.SnowGrid>
@@ -217,7 +217,7 @@ export default function MediaTracksPage(props) {
                                 <C.SnowTarget focusKey="info-tabs-tab" />
                             </C.SnowView>
                         </C.SnowTabs>
-                    </C.FillView>
+                    </C.SnowView>
                 )
             }
             pushModal({
