@@ -12,7 +12,7 @@ export default function KeepsakeDetailsPage(props) {
     } = C.useSnowContext(props)
 
 
-    const { apiClient, routes } = useAppContext()
+    const { apiClient, routes, isAdmin } = useAppContext()
     const [keepsake, setKeepsake] = C.React.useState(null)
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
@@ -21,6 +21,9 @@ export default function KeepsakeDetailsPage(props) {
     }, [])
 
     C.React.useEffect(() => {
+        if (keepsake) {
+            setKeepsake(null)
+        }
         apiClient.getKeepsake(
             currentRoute.routeParams.shelfId,
             currentRoute.routeParams.subdirectory64
@@ -78,7 +81,7 @@ export default function KeepsakeDetailsPage(props) {
         if (currentRoute.routeParams.subdirectory) {
             subdir = ` subdirectory [${currentRoute.routeParams.subdirectory}]`
         }
-        return <C.SnowLabel center>Loading keepsakes from shelf {currentRoute.routeParams.shelfId} [{subdir}].</C.SnowLabel>
+        return <C.SnowLabel center>Loading keepsakes from shelf {currentRoute.routeParams.shelfId}{subdir ? ` [${subdir}]` : null}.</C.SnowLabel>
     }
 
     let videos = null
@@ -109,6 +112,16 @@ export default function KeepsakeDetailsPage(props) {
                                         videoUrl: video.network_path,
                                         videoName: video.name,
                                         videoDurationSeconds: video.info.duration_seconds,
+                                    }
+                                })}
+                                onLongPress={navPush({
+                                    path: routes.keepsakePlay,
+                                    params: {
+                                        videoFileId: video.id,
+                                        videoUrl: video.network_path,
+                                        videoName: video.name,
+                                        videoDurationSeconds: video.info.duration_seconds,
+                                        logPlayback: true
                                     }
                                 })}
                             />
@@ -190,10 +203,23 @@ export default function KeepsakeDetailsPage(props) {
             </C.SnowView>
         )
     }
+    let admin = null
+    if (isAdmin) {
+        admin = (
+            <C.SnowGrid>
+                <C.SnowCreateJobButton
+                    title="Create Job"
+                    jobDetails={{
+                        shelfId: currentRoute?.routeParams?.shelfId
+                    }} />
+            </C.SnowGrid>
+        )
+    }
     if (keepsake) {
         return (
             <C.FillView>
                 <C.SnowView>
+                    {admin}
                     {videos}
                     {images}
                     {dirs}

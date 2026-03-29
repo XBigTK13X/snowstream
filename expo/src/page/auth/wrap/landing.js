@@ -121,7 +121,7 @@ export default function LandingPage(props) {
                     focusKey="destinations"
                     items={destinations}
                     itemsPerRow={3} />
-                <C.SnowText style={styles.footer} center>{`snowstream v${config.clientVersion}\nbuilt ${config.clientBuildDate}\nsnowui v${snowuiPackageInfo.version}`}</C.SnowText>
+                <C.SnowText style={styles.footer} center>{`[built ${config.clientBuildDate}] [snowstream v${config.clientVersion}] [snowui v${snowuiPackageInfo.version}]`}</C.SnowText>
             </>
         )
     }

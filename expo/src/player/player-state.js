@@ -148,5 +148,9 @@ export const playerState = proxy({
             return 'rnv'
         }
         return 'mpv'
+    },
+
+    get logPlayback() {
+        return this.clientOptions?.logPlayback || this.routeParams?.logPlayback
     }
 })

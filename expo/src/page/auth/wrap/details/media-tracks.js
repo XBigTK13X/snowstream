@@ -40,10 +40,6 @@ export default function MediaTracksPage(props) {
     }
 
     C.React.useEffect(() => {
-        Player.action.reset()
-    }, [])
-
-    C.React.useEffect(() => {
         if (media) {
             const playDestination = {
                 videoFileIndex: videoFileIndex,
@@ -71,34 +67,33 @@ export default function MediaTracksPage(props) {
     }, [player, forcePlayer, media, videoFileIndex, subtitleTrack, audioTrack, shelfId, shouldTranscode])
 
     C.React.useEffect(() => {
-        if (!media) {
-            props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
-                if (response?.video_files) {
-                    setMedia(response)
-                    chooseVideoFile(videoFileIndex, response)
-                    let plan = response.video_files[videoFileIndex].plan
-                    if (plan) {
-                        if (plan.player) {
-                            setPlayer(plan.player)
-                            setForcePlayer(plan.player)
-                        }
-                        else {
-                            setPlayer('mpv')
-                        }
-                        if (plan.video_requires_transcode) {
+        Player.action.reset()
+        props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
+            if (response?.video_files) {
+                setMedia(response)
+                chooseVideoFile(videoFileIndex, response)
+                let plan = response.video_files[videoFileIndex].plan
+                if (plan) {
+                    if (plan.player) {
+                        setPlayer(plan.player)
+                        setForcePlayer(plan.player)
+                    }
+                    else {
+                        setPlayer('mpv')
+                    }
+                    if (plan.video_requires_transcode) {
+                        setShouldTranscode(true)
+                    } else {
+                        if (plan.audio_requires_transcode[audioTrack]) {
                             setShouldTranscode(true)
-                        } else {
-                            if (plan.audio_requires_transcode[audioTrack]) {
-                                setShouldTranscode(true)
-                            }
                         }
                     }
-                } else {
-                    setLoadError(true)
                 }
-            })
-        }
-    }, [media])
+            } else {
+                setLoadError(true)
+            }
+        })
+    }, [])
 
     const setWatchStatus = (status) => {
         return props.toggleWatchStatus(apiClient, currentRoute.routeParams)
@@ -259,20 +254,27 @@ export default function MediaTracksPage(props) {
 
         let playTitle = 'Play'
         let resumeControls = null
-        let playFocus = true
         if (media?.in_progress?.played_seconds) {
-            playFocus = false
             playTitle = 'Play from Start'
             resumeControls = (
                 <C.SnowTextButton
                     key={C.Snow.stringifySafe(resumeParams)}
-                    focusStart
                     tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
                     onPress={() => {
                         navPush({
                             path: props.getPlayRoute(routes),
                             params: resumeParams,
+                            func: false
+                        })
+                    }}
+                    onLongPress={() => {
+                        navPush({
+                            path: props.getPlayRoute(routes),
+                            params: {
+                                ...resumeParams,
+                                logPlayback: true
+                            },
                             func: false
                         })
                     }}
@@ -418,7 +420,7 @@ export default function MediaTracksPage(props) {
                     </C.SnowLabel>
                     <C.SnowGrid
                         focusStart
-                        focusKey="page-entry"
+                        focusKey="play-controls"
                         itemsPerRow={4}>
                         {resumeControls}
                         <C.SnowTextButton
@@ -429,6 +431,16 @@ export default function MediaTracksPage(props) {
                                 navPush({
                                     path: props.getPlayRoute(routes),
                                     params: playParams,
+                                    func: false
+                                })
+                            }}
+                            onLongPress={() => {
+                                navPush({
+                                    path: props.getPlayRoute(routes),
+                                    params: {
+                                        ...playParams,
+                                        logPlayback: true
+                                    },
                                     func: false
                                 })
                             }}
