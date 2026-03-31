@@ -4,8 +4,8 @@ class Config {
         this.stormWebApiUrl = 'http://192.168.104.113:8000' // Laptop
         this.beastWebApiUrl = 'http://beast.9914.us:9063' // Prod
 
-        this.clientVersion = "1.5.3"
-        this.clientBuildDate = "March 29, 2026"
+        this.clientVersion = "1.5.4"
+        this.clientBuildDate = "March 30, 2026"
         this.clientDevBuildNumber = 1
 
         this.debounceMilliseconds = 700

@@ -14,7 +14,7 @@ function pad(input) {
 
 const ONE_HOUR = 3600;
 const ONE_MINUTE = 60
-export function secondsToTimestamp(secondsInput) {
+export function secondsToTimestamp(secondsInput, letters) {
     if (!secondsInput || secondsInput < 0) {
         return "00:00";
     }
@@ -25,7 +25,14 @@ export function secondsToTimestamp(secondsInput) {
 
 
     if (secondsInput < ONE_HOUR) {
+        if (letters) {
+            return `${pad(minutes)} minutes`
+        }
         return `${pad(minutes)}:${pad(seconds)}`
+    }
+
+    if (letters) {
+        return `${hours} hours and ${pad(minutes)} minutes`
     }
 
     return `${hours}:${pad(minutes)}:${pad(seconds)}`

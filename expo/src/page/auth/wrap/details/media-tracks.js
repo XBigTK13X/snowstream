@@ -418,6 +418,11 @@ export default function MediaTracksPage(props) {
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(currentRoute.routeParams, media) : media.name}
                     </C.SnowLabel>
+                    {videoFile?.info?.duration_seconds ? (
+                        <C.SnowText center>
+                            Runtime {C.util.secondsToTimestamp(videoFile?.info?.duration_seconds, true)}
+                        </C.SnowText>
+                    ) : null}
                     <C.SnowGrid
                         focusStart
                         focusKey="play-controls"
