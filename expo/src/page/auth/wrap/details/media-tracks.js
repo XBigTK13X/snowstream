@@ -21,6 +21,7 @@ export default function MediaTracksPage(props) {
 
     const [media, setMedia] = C.React.useState(null);
     const [audioTrack, setAudioTrack] = C.React.useState(0)
+    const [audioLanguage, setAudioLanguage] = C.React.useState(null)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
     const [videoFileIndex, setVideoFileIndex] = C.React.useState(0)
     const [player, setPlayer] = C.React.useState(null)
@@ -71,6 +72,14 @@ export default function MediaTracksPage(props) {
         props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
             if (response?.video_files) {
                 setMedia(response)
+                if (response?.tags?.length) {
+                    for (let tag of response.tags) {
+                        if (tag.name.includes('AudioLanguage:')) {
+                            const lang = tag.name.split(':')[1]
+                            setAudioLanguage(lang)
+                        }
+                    }
+                }
                 chooseVideoFile(videoFileIndex, response)
                 let plan = response.video_files[videoFileIndex].plan
                 if (plan) {
@@ -358,6 +367,7 @@ export default function MediaTracksPage(props) {
                     tracks={videoFile.info.tracks}
                     selectTrack={selectTrack}
                     audioTrack={audioTrack}
+                    audioLanguage={audioLanguage}
                     subtitleTrack={subtitleTrack}
                 />
             </C.SnowView>

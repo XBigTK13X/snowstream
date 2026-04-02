@@ -85,12 +85,27 @@ export default function SnowTrackSelector(props) {
     if (!props.tracks) {
         return null
     }
+    let audioTracks = []
+    for (let track of props.tracks.audio) {
+        if (track.score > 0 || props.tracks.audio.length < 3) {
+            audioTracks.push(track)
+        } else {
+            if (props.audioLanguage && props.audioLanguage === track.language) {
+                audioTracks.push(track)
+            }
+        }
+    }
+    let subtitleTracks = []
+    for (let track of props.tracks.subtitle) {
+        if (track.score > 0 || props.tracks.subtitle.length < 3) {
+            subtitleTracks.push(track)
+        }
+    }
     return (
         <Snow.View>
             {props.tracks.audio.length ? <TrackList
                 yy={0}
                 parentPath={props.parentPath}
-
                 focusKey={props.focusKey}
                 kind="audio"
                 title="Audio"
@@ -98,7 +113,7 @@ export default function SnowTrackSelector(props) {
                 delay={props.audioDelaySeconds}
                 setDelay={props.setAudioDelaySeconds}
                 isAudio={true}
-                tracks={props.tracks.audio.filter((track) => { return track.score > 0 || props.tracks.audio.length < 3 })}
+                tracks={audioTracks}
                 selectTrack={props.selectTrack}
                 activeTrack={props.audioTrack}
             /> : null}
@@ -111,7 +126,7 @@ export default function SnowTrackSelector(props) {
                 showDelay={props.showDelay}
                 delay={props.subtitleDelaySeconds}
                 setDelay={props.setSubtitleDelaySeconds}
-                tracks={props.tracks.subtitle.filter((track) => { return track.score > 0 || props.tracks.subtitle.length < 3 })}
+                tracks={subtitleTracks}
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}
             /> : null}

@@ -1,13 +1,14 @@
 import Snow from 'expo-snowui'
 import { useAppContext } from '../app-context'
 
-export function SnowCreateJobButtonW(props) {
+export function SnowCreateJobButton(props) {
     const { routes } = useAppContext()
     const { navPush } = Snow.useSnowContext()
     const jobDetails = {
         updateImages: true,
         updateMetadata: true,
         updateVideos: false,
+        skipExisting: true,
         ...props.jobDetails
     }
     return (
@@ -21,9 +22,5 @@ export function SnowCreateJobButtonW(props) {
         />
     )
 }
-
-SnowCreateJobButtonW.isFocusWired = true
-
-const SnowCreateJobButton = SnowCreateJobButtonW
 
 export default SnowCreateJobButton

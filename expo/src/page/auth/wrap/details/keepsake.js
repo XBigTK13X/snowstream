@@ -210,7 +210,10 @@ export default function KeepsakeDetailsPage(props) {
                 <C.SnowCreateJobButton
                     title="Create Job"
                     jobDetails={{
-                        shelfId: currentRoute?.routeParams?.shelfId
+                        targetId: currentRoute?.routeParams?.shelfId,
+                        targetKind: 'shelf',
+                        updateVideos: true,
+                        skipExisting: false
                     }} />
             </C.SnowGrid>
         )
