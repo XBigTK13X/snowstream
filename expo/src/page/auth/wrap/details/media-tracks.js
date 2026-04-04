@@ -415,9 +415,12 @@ export default function MediaTracksPage(props) {
 
         tabs.push('Plan')
         const planTab = (
-            <C.SnowGrid assignFocus={false} itemsPerRow={3}>
-                <C.SnowText >Params: {C.Snow.stringifySafe(currentRoute.routeParams, null, 4)}</C.SnowText>
+            <C.SnowGrid itemsPerRow={2}>
+                <C.SnowTextButton title="Plan" />
                 <C.SnowText >Plan: {C.Snow.stringifySafe(videoFile.plan, null, 4)}</C.SnowText>
+                <C.SnowTextButton title="Params" />
+                <C.SnowText >Params: {C.Snow.stringifySafe(currentRoute.routeParams, null, 4)}</C.SnowText>
+                <C.SnowTextButton title="Options" />
                 <C.SnowText >Options: {C.Snow.stringifySafe(clientOptions, null, 4)}</C.SnowText>
             </C.SnowGrid>
         )

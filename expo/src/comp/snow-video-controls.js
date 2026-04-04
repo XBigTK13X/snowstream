@@ -21,7 +21,7 @@ export default function SnowVideoControls(props) {
 
     const playerKind = player.playerKind
 
-    const [logTitle, setLogTitle] = React.useState(playerKind !== 'rnv' ? playerKind + ' Logs' : 'exo Logs')
+    const [logTitle, setLogTitle] = React.useState('Persist Logs')
 
     const [controlsVisible, setControlsVisible] = React.useState(true)
 
@@ -79,7 +79,24 @@ export default function SnowVideoControls(props) {
         tabs.push('Track')
     }
 
-    tabs.push('Advanced')
+    let slider = null
+    if (player.durationSeconds > 0) {
+        const onPercentChange = (percent) => {
+            Player.action.onProgress(null, 'manual-seek', percent);
+        }
+        slider = (
+            <Snow.View yy={1}>
+                <Snow.RangeSlider
+                    focusKey="seekbar"
+                    width={750}
+                    debounce={true}
+                    percent={player.progressPercent}
+                    onValueChange={onPercentChange}
+                />
+                <Snow.Text style={styles.progress}>{player.progressDisplay ?? ''} / {player.durationDisplay}            This video is {player.isTranscode ? 'transcoding' : 'playing directly'} through {player.playerKind === 'rnv' ? 'exo' : 'mpv'}.</Snow.Text>
+            </Snow.View>
+        )
+    }
 
     let playbackControls = (
         <Snow.Grid itemsPerRow={2}>
@@ -133,24 +150,25 @@ export default function SnowVideoControls(props) {
             />
         )
     }
-    let slider = null
-    if (player.durationSeconds > 0) {
-        const onPercentChange = (percent) => {
-            Player.action.onProgress(null, 'manual-seek', percent);
-        }
-        slider = (
-            <Snow.View yy={1}>
-                <Snow.RangeSlider
-                    focusKey="seekbar"
-                    width={750}
-                    debounce={true}
-                    percent={player.progressPercent}
-                    onValueChange={onPercentChange}
-                />
-                <Snow.Text style={styles.progress}>{player.progressDisplay ?? ''} / {player.durationDisplay}            This video is {player.isTranscode ? 'transcoding' : 'playing directly'} through {player.playerKind === 'rnv' ? 'exo' : 'mpv'}.</Snow.Text>
-            </Snow.View>
+
+    let advancedControls = null
+    if (player.logPlayback) {
+        tabs.push('Advanced')
+        advancedControls = (
+            <Snow.Grid short itemsPerRow={3}>
+                <Snow.TextButton
+                    title={logTitle}
+                    onPress={persistLogs} />
+                <Snow.TextButton
+                    title="View Logs"
+                    onPress={() => {
+                        Player.action.setVideoLogsVisible(true)
+                    }} />
+            </Snow.Grid>
         )
     }
+
+
     return (
         (
             <Snow.View parentPath={props.parentPath} style={styles.player}>
@@ -160,20 +178,7 @@ export default function SnowVideoControls(props) {
                     {playbackControls}
                     {subtitleControls}
                     {trackControls}
-                    {player.logPlayback ? <Snow.Grid short itemsPerRow={3}>
-                        <Snow.TextButton
-                            title={logTitle}
-                            onPress={() => {
-                                Player.action.setVideoLogsVisible(true)
-                            }} onLongPress={persistLogs} />
-                        {/* <Snow.TextButton title={swapTitle} onPress={() => {
-                            Player.action.togglePlayerKind()
-                        }} />
-                        <Snow.TextButton title={transcodeTitle} onPress={() => {
-                            Player.action.toggleTranscode()
-                        }} /> */}
-                    </Snow.Grid>
-                        : null}
+                    {advancedControls}
                 </Snow.Tabs>
             </Snow.View>
         )
