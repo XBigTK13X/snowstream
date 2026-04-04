@@ -22,7 +22,7 @@ function TrackList(props) {
     )
     let gridProps = {}
     if (props.showDelay) {
-        gridProps.focusKey = props.focusKey + '-buttons'
+        gridProps.focusKey = `${props.focusKey}-${props.kind}-buttons`
         header = (
             <Snow.Grid
                 assignFocus={false}
@@ -47,7 +47,7 @@ function TrackList(props) {
     return (
         <>
             {header}
-            <Snow.Grid {...gridProps} short shrink itemsPerRow={4}>
+            <Snow.Grid {...gridProps} short shrink itemsPerRow={4} yy={props.yy}>
                 {props.tracks.map((track, trackKey) => {
                     let display = track.language ? track.language + ' - ' : ''
                     display += `${(!track.title.includes('.') && track.title) ? track.title + ' - ' : ''}`
