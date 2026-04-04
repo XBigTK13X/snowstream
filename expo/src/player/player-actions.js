@@ -68,7 +68,11 @@ class PlayerActions {
             playerState.hasCloseOverlay = !!deps.closeOverlay
         }
 
-        if (!playerState.isTranscode && deps?.currentRoute?.routeParams?.seekToSeconds !== undefined && !playerState.manualSeekSeconds) {
+        if (!playerState.isTranscode
+            && deps?.currentRoute?.routeParams?.seekToSeconds !== undefined
+            && !playerState.manualSeekSeconds
+            && !playerState.videoLoaded
+        ) {
             playerState.seekToSeconds = deps.currentRoute.routeParams.seekToSeconds
             playerState.progressSeconds = deps.currentRoute.routeParams.seekToSeconds
         }
