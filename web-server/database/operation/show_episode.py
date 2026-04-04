@@ -272,7 +272,7 @@ def get_show_episode_list(
         from show_episode as episode
         join show_season as season on season.id = episode.show_season_id
             {f' and episode.id = {show_episode_id}' if show_episode_id else ''}
-            {f" and episode.name ilike '%{search_query}%'" if search_query else ''}
+            {f" and unaccent(episode.name) ilike unaccent('%{search_query}%')" if search_query else ''}
             {f' and season.season_order_counter != 0' if not include_specials else ''}
             {f' and season.id = {show_season_id}' if show_season_id else ''}
         join show as show on show.id = season.show_id

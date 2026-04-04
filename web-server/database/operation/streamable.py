@@ -48,14 +48,16 @@ def get_streamable_list(ticket:dbi.dm.Ticket,stream_source_id:int=None,search_qu
         if stream_source_id:
             query = query.filter(dbi.dm.Streamable.stream_source_id == stream_source_id)
         if search_query:
+            u = dbi.func.unaccent
+            uq = u(f"%{search_query}%")
             query = query.filter(dbi.or_(
-                dbi.dm.Channel.parsed_name.ilike(f"%{search_query}%"),
-                dbi.dm.Channel.edited_name.ilike(f"%{search_query}%"),
-                dbi.dm.Streamable.url.ilike(f"%{search_query}%"),
-                dbi.dm.Streamable.name.ilike(f"%{search_query}%"),
-                dbi.dm.Streamable.name_display.ilike(f"%{search_query}%"),
-                dbi.dm.Streamable.group.ilike(f"%{search_query}%"),
-                dbi.dm.Streamable.group_display.ilike(f"%{search_query}%"),
+                u(dbi.dm.Channel.parsed_name).ilike(uq),
+                u(dbi.dm.Channel.edited_name).ilike(uq),
+                u(dbi.dm.Streamable.url).ilike(uq),
+                u(dbi.dm.Streamable.name).ilike(uq),
+                u(dbi.dm.Streamable.name_display).ilike(uq),
+                u(dbi.dm.Streamable.group).ilike(uq),
+                u(dbi.dm.Streamable.group_display).ilike(uq),
             ))
         results = query.all()
         if ticket.has_tag_restrictions():

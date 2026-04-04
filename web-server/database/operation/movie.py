@@ -253,7 +253,7 @@ def get_movie_list(
 
         from movie as movie
         join movie_shelf as ms on ms.movie_id = movie.id
-            {f" and movie.name ilike '%{search_query}%'" if search_query else ''}
+            {f" and unaccent(movie.name) ilike unaccent('%{search_query}%')" if search_query else ''}
         join shelf as shelf on shelf.id = ms.shelf_id
             {f' and shelf.id = {shelf_id}' if shelf_id else ''}
         {f"""

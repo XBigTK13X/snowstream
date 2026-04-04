@@ -113,27 +113,28 @@ def get_keepsake_image_file(keepsake_id: int, image_file_id: int):
 def get_keepsake_list(search_query: str):
 
     with dbi.session() as db:
+        u = dbi.func.unaccent
+        uq = u(f'%{search_query}%')
+
         directories = (
             db.query(dbi.dm.Keepsake)
-            .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
-            .filter(dbi.dm.Keepsake.directory.ilike(f'%{search_query}%'))
-            .all()
+                .options(dbi.orm.joinedload(dbi.dm.Keepsake.shelf))
+                .filter(u(dbi.dm.Keepsake.directory).ilike(uq))
+                .all()
         )
-
         images = (
             db.query(dbi.dm.KeepsakeImageFile)
-            .join(dbi.dm.KeepsakeImageFile.image_file)
-            .filter(dbi.dm.ImageFile.local_path.ilike(f'%{search_query}%'))
-            .options(dbi.orm.contains_eager(dbi.dm.KeepsakeImageFile.image_file))
-            .all()
+                .join(dbi.dm.KeepsakeImageFile.image_file)
+                .filter(u(dbi.dm.ImageFile.local_path).ilike(uq))
+                .options(dbi.orm.contains_eager(dbi.dm.KeepsakeImageFile.image_file))
+                .all()
         )
-
         videos = (
             db.query(dbi.dm.KeepsakeVideoFile)
-            .join(dbi.dm.KeepsakeVideoFile.video_file)
-            .filter(dbi.dm.VideoFile.local_path.ilike(f'%{search_query}%'))
-            .options(dbi.orm.contains_eager(dbi.dm.KeepsakeVideoFile.video_file))
-            .all()
+                .join(dbi.dm.KeepsakeVideoFile.video_file)
+                .filter(u(dbi.dm.VideoFile.local_path).ilike(uq))
+                .options(dbi.orm.contains_eager(dbi.dm.KeepsakeVideoFile.video_file))
+                .all()
         )
 
         if directories:

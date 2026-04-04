@@ -124,7 +124,9 @@ def get_show_list_by_shelf(
             .options(dbi.orm.joinedload(dbi.dm.Show.seasons))
         )
         if search_query:
-            query = query.filter(dbi.dm.Show.name.ilike(f'%{search_query}%'))
+            query = query.filter(
+                dbi.func.unaccent(dbi.dm.Show.name).ilike(dbi.func.unaccent(f'%{search_query}%'))
+            )
         query = query.options(dbi.orm.joinedload(dbi.dm.Show.tags))
         query = (
             query
