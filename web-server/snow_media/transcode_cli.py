@@ -41,7 +41,10 @@ def build_command(
     subtitle_track_index:int=None,
     seek_to_seconds:int=None,
 ):
-    plan = snow_media.planner.create_plan(device_profile=device_profile,snowstream_info=snowstream_info)
+    plan = snow_media.planner.create_plan(
+        device_profile=device_profile,
+        snowstream_info=snowstream_info
+    )
 
     safe_input_url = util.safe_media_path(input_url)
 

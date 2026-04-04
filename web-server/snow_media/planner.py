@@ -22,7 +22,11 @@ class PlaybackPlan:
         self.reasons = []
 
 
-def create_plan(device_profile:str, snowstream_info:dict, video_kind:str):
+def create_plan(
+        device_profile:str,
+        snowstream_info:dict,
+        video_kind:str=None
+    ):
     device = snow_media.device.get_device(device_profile)
     plan = PlaybackPlan()
 

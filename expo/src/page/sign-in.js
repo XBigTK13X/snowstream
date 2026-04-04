@@ -70,12 +70,6 @@ export default function SignInPage() {
         setWebApiUrl(serverUrl)
     }
 
-
-    const applyCustomServer = (target) => {
-        setWebApiUrl(target)
-        setUsers(null)
-    }
-
     let userList = null
     let selectServer = null
     if (users?.length) {
@@ -123,15 +117,15 @@ export default function SignInPage() {
                 focusStart={!!users ? false : true}
                 focusKey="servers"
                 itemsPerRow={4} >
-                <C.SnowTextButton title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
-                <C.SnowTextButton title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
-                <C.SnowTextButton title="Storm" onPress={() => { chooseServer(config.stormWebApiUrl) }} />
+                <C.SnowTextButton selected={apiClient?.webApiUrl === config.beastWebApiUrl} title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
+                <C.SnowTextButton selected={apiClient?.webApiUrl === config.vondoomWebApiUrl} title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
+                <C.SnowTextButton selected={apiClient?.webApiUrl === config.stormWebApiUrl} title="Storm" onPress={() => { chooseServer(config.stormWebApiUrl) }} />
             </C.SnowGrid>
             <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
             <C.SnowGrid itemsPerRow={2} assignFocus={false}>
                 <C.SnowInput
                     focusKey="custom-server-input"
-                    onSubmit={() => { applyCustomServer(customServerRef.current) }}
+                    onSubmit={() => { chooseServer(customServerRef.current) }}
                     onValueChange={setCustomServer}
                     value={customServer} />
             </C.SnowGrid>
@@ -139,7 +133,7 @@ export default function SignInPage() {
                 <C.SnowTextButton
                     focusKey="submit-custom-server"
                     title="Connect to Server"
-                    onPress={() => { applyCustomServer(customServerRef.current) }}
+                    onPress={() => { chooseServer(customServerRef.current) }}
                 />
             </C.SnowGrid >
         </C.SnowView>

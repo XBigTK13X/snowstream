@@ -21,16 +21,16 @@ export default function LandingPage(props) {
     }, [config])
 
     C.React.useEffect(() => {
-        if (!shelves) {
-            apiClient.getShelfList().then((response) => {
-                setShelves(response)
-            }).then(() => {
-                apiClient.getStreamSourceList().then((response) => {
-                    setStreamSources(response)
-                })
-            })
-        }
-    }, [shelves])
+        apiClient.getShelfList().then((response) => {
+            setShelves(response)
+        })
+    }, [])
+
+    C.React.useEffect(() => {
+        apiClient.getStreamSourceList().then((response) => {
+            setStreamSources(response)
+        })
+    }, [])
 
     if (config.debugVideoUrl) {
         return null

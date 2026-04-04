@@ -135,10 +135,10 @@ export default function RnvVideoView(props) {
             playInBackground={false}
             muted={!player.isPlaying}
             selectedAudioTrack={{ type: 'index', value: player.audioTrackIndex }}
-            selectedTextTrack={{ type: 'index', value: player.audioTrackIndex }}
+            selectedTextTrack={{ type: 'index', value: player.subtitleTrackIndex }}
             subtitleStyle={{
                 fontSize: player.subtitleFontScale * fontSize,
-                color: `rgba(${shade}, ${shade}, ${shade}})`,
+                color: `rgba(${shade}, ${shade}, ${shade})`,
                 textShadowColor: 'rgba(0, 0, 0)',
                 textShadowOffset: { width: 1, height: 1 },
                 textShadowRadius: 5,
