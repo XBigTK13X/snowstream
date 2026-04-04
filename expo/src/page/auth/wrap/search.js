@@ -12,7 +12,7 @@ export default function SearchPage() {
 
     C.React.useEffect(() => {
         let query = currentRoute?.routeParams?.queryText
-        if (query) {
+        if (query && query !== queryTextRef.current) {
             setQueryText(query)
             queryTextRef.current = query
             if (query?.length > 1) {
@@ -25,11 +25,7 @@ export default function SearchPage() {
                     setLoading(false)
                 })
             }
-        } else {
-            setQueryText('')
-            queryTextRef.current = ''
         }
-
     }, [currentRoute])
 
     const executeQuery = (input) => {
