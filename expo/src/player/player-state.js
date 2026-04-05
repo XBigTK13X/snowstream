@@ -26,6 +26,7 @@ export const initialPlayerState = {
     navPop: null,
     hasNavPop: false,
 
+    readyToLoad: false,
     videoUrl: null,
     videoTitle: null,
     videoLoading: false,

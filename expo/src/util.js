@@ -58,7 +58,13 @@ export function bitsToPretty(bits) {
     return `${(bits / 1000000000).toFixed(2)} Gb`
 }
 
-async function urlExists(url) {
+async function urlExists(url, isTranscode) {
+    // Transcode URLs fail the live check
+    if (isTranscode) {
+        return new Promise((resolve) => {
+            resolve(true)
+        })
+    }
     return fetch(url, { method: 'head' })
         .then((status) => {
             return status.ok

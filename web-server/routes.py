@@ -5,9 +5,10 @@ import uuid
 import os
 from datetime import datetime, timezone
 
+import httpx
 from fastapi import Response, Request
 from fastapi import Security
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, StreamingResponse
 
 from auth import get_current_user
 from db import db
@@ -805,6 +806,20 @@ def auth_required(router):
         else:
             transcode_sessions.close(transcode_session_id=transcode_session_id)
         return True
+
+    @router.get("/transcode/stream", tags=['Unauthed Video'])
+    @router.head("/transcode/stream", tags=['Unauthed Video'])
+    async def stream_transcode(transcode_session_id: int):
+        session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
+        if not session:
+            return Response(status_code=404)
+        ffmpeg_url = f'http://{config.transcode_ffmpeg_host}:{session.stream_port}/stream.matroska'
+        async def iterfile():
+            async with httpx.AsyncClient() as client:
+                async with client.stream('GET', ffmpeg_url) as r:
+                    async for chunk in r.aiter_bytes(65536):
+                        yield chunk
+        return StreamingResponse(iterfile(), media_type="video/x-matroska")
 
     @router.get("/playing/queue",tags=['User'])
     def get_playing_queue(

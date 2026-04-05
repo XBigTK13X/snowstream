@@ -66,7 +66,7 @@ device_list = [
         'h264_ten': 'hard',
         'vp9': 'hard',
         'av1': 'hard',
-        'transcode_bit_rate': '15M',
+        'transcode_bit_rate': '20M',
         'streamable_decoding': 'mediacodec'
     }),
     DeviceProfile({
@@ -93,7 +93,8 @@ device_list = [
         'h264_eight': 'hard',
         'h264_ten': 'hard',
         'h265_ten': 'soft',
-        'mpv_video_sync': 'display-resample'
+        'mpv_video_sync': 'display-resample',
+        'transcode_bit_rate': '10M'
     }),
     DeviceProfile({
         'name': 'Web Browser',

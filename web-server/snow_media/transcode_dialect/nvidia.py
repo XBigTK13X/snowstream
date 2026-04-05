@@ -8,5 +8,5 @@ class NvidiaTranscodeDialect(DefaultTranscodeDialect):
         if codec == 'h264':
             return f'-c:v h264_nvenc -cq 25'
         if codec == 'h265':
-            return f'-c:v h264_nvenc -cq 25'
+            return f'-c:v hevc_nvenc -cq 28'
         return super().encode(codec)

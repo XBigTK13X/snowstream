@@ -41,6 +41,7 @@ def build_command(
     subtitle_track_index:int=None,
     seek_to_seconds:int=None,
 ):
+
     plan = snow_media.planner.create_plan(
         device_profile=device_profile,
         snowstream_info=snowstream_info
@@ -58,6 +59,10 @@ def build_command(
             dialect = NvidiaTranscodeDialect(video_filter_kind=plan.video_filter_kind)
 
     streaming_protocol = 'tcp'
+
+    if player_kind == 'rnv':
+        streaming_protocol = 'http'
+
     streaming_url = f'{streaming_protocol}://{config.transcode_stream_host}:{stream_port}/stream.{plan.transcode_container}'
     ffmpeg_url = f'{streaming_protocol}://{config.transcode_ffmpeg_host}:{stream_port}/stream.{plan.transcode_container}'
 

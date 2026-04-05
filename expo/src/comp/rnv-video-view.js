@@ -55,7 +55,6 @@ export default function RnvVideoView(props) {
         }
     }
 
-
     // Workaround for web not allowing videos to autoplay
     let userClickedPlay = () => { }
     if (isWeb) {
@@ -80,7 +79,7 @@ export default function RnvVideoView(props) {
                 onError({ message: 'web video player cannot select tracks', error: { code: 4 } })
             }
         }
-    })
+    }, [])
 
     React.useEffect(() => {
         if (player.seekToSeconds > -1 && videoRef && videoRef.current) {
@@ -114,6 +113,10 @@ export default function RnvVideoView(props) {
         }
     }
 
+    if (!player.videoUrl) {
+        return null
+    }
+
     const shade = player.subtitleColor.shade * 255
     return (
 
@@ -133,7 +136,7 @@ export default function RnvVideoView(props) {
             paused={!player.isPlaying}
             playWhenInactive={false}
             playInBackground={false}
-            muted={!player.isPlaying}
+            muted={false}
             selectedAudioTrack={{ type: 'index', value: player.audioTrackIndex }}
             selectedTextTrack={{ type: 'index', value: player.subtitleTrackIndex }}
             subtitleStyle={{

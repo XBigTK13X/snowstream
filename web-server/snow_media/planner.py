@@ -90,8 +90,8 @@ def create_plan(
         if 'audio' in snowstream_info['tracks']:
             for audio_track in snowstream_info['tracks']['audio']:
                 if 'codec' in audio_track:
-                    if 'TrueHD' in audio_track['codec'] and not device.audio.dolby.hd:
-                        plan.audio_requires_transcode[audio_track['relative_index']] = True
+                    if 'truehd' in audio_track['codec'].lower() and not device.audio.dolby.hd:
+                        plan.audio_requires_transcode[audio_track['audio_index']] = True
                         plan.reasons.append('Device does not support TrueHD audio')
 
         if not plan.reasons:

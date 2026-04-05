@@ -17,3 +17,4 @@ themoviedb==1.0.2
 tvdb-v4-official==1.1.0
 uvicorn[standard]==0.37.0
 xmltodict==0.14.2
+httpx==0.28.1

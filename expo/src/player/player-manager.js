@@ -103,7 +103,9 @@ export function PlayerManager(props) {
 
     React.useEffect(() => {
         const unsubscribe = subscribe(playerState, () => {
-            playerActions.effectLoadVideo()
+            if (playerState.readyToLoad && !playerState.videoUrl) {
+                playerActions.effectLoadVideo()
+            }
         })
         return () => { unsubscribe() }
     }, [])

@@ -46,18 +46,13 @@ class TranscodeSessions:
         existing = db.op.get_transcode_session(cduid=ticket.cduid,video_file_id=video_file_id,streamable_id=streamable_id)
         if existing:
             self.refresh_known_processes()
-            if seek_to_seconds == None:
-                if self.process_is_running(existing):
-                    return existing
-                else:
-                    db.op.delete_transcode_session(transcode_session_id=existing.id)
-            else:
-                if self.process_is_running(existing):
-                    try:
-                        os.kill(existing.process_id)
-                    except Exception as e:
-                        log.info("Unable to kill supposedly running transcode process")
-                db.op.delete_transcode_session(transcode_session_id=existing.id)
+            if self.process_is_running(existing):
+                try:
+                    os.kill(existing.process_id)
+                except Exception as e:
+                    log.info("Unable to kill supposedly running transcode process")
+            db.op.delete_transcode_session(transcode_session_id=existing.id)
+
         input_path = None
         snowstream_info = None
         if video_file_id != None:
@@ -103,6 +98,9 @@ class TranscodeSessions:
         db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
 
         time.sleep(5)
+
+        if player_kind == 'rnv':
+            streaming_url = f'{config.web_api_url}/api/transcode/stream?transcode_session_id={transcode_session.id}'
 
         return {
             'transcode_url': streaming_url,

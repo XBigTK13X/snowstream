@@ -4,7 +4,7 @@ class Config {
         this.stormWebApiUrl = 'http://192.168.104.113:8000' // Laptop
         this.beastWebApiUrl = 'http://beast.9914.us:9063' // Prod
 
-        this.clientVersion = "1.5.6"
+        this.clientVersion = "1.5.7"
         this.clientBuildDate = "April 04, 2026"
         this.clientDevBuildNumber = 1
 
@@ -21,8 +21,9 @@ class Config {
         const h265TenBitHDR = '/auth/wrap/details/movie?shelfId=1&movieId=390'
         const cartoonUrl = '/auth/wrap/details/episode?shelfId=2&showId=228&seasonId=478&episodeId=8827&showName=Aaahh%21%21%21%20Real%20Monsters&seasonOrder=1&episodeOrder=2'
         const seekUrl = '/auth/wrap/details/episode?shelfId=2&showId=428&seasonId=1408&episodeId=26468&showName=H2O+-+Just+Add+Water&seasonOrder=1&episodeOrder=3'
+        const transcodeUrl = '/auth/wrap/details/movie?shelfId=1&movieId=928'
 
-        this.debugVideoUrl = null
+        this.debugVideoUrl = transcodeUrl
         this.debugSnowui = false
     }
 }

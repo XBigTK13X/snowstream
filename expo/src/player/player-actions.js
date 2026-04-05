@@ -110,13 +110,17 @@ class PlayerActions {
         this.onStopVideoHandler = props?.onStopVideo
         this.updateProgressHandler = props?.updateProgress
         this.increaseWatchCountHandler = props?.increaseWatchCount
+        playerState.readyToLoad = true
     }
 
     effectLoadVideo = () => {
-        if (playerState.videoUrl || !playerState.settingsLoaded) {
-            return
-        }
-        if (playerState.videoLoading) {
+        const loadHandler = playerState.isTranscode ? this.loadTranscodeHandler : this.loadVideoHandler
+
+        if (!loadHandler
+            || playerState.videoUrl
+            || !playerState.settingsLoaded
+            || playerState.videoLoading
+        ) {
             return
         }
 
@@ -125,11 +129,6 @@ class PlayerActions {
         }
         if (playerState.routeParams?.subtitleTrack && playerState.subtitleTrackIndex !== playerState.routeParams?.subtitleTrack) {
             playerState.subtitleTrackIndex = parseInt(playerState.routeParams?.subtitleTrack, 10)
-        }
-
-        const loadHandler = playerState.isTranscode ? this.loadTranscodeHandler : this.loadVideoHandler
-        if (!loadHandler) {
-            return
         }
 
         playerState.videoLoading = true
@@ -412,7 +411,7 @@ class PlayerActions {
             return this.onCriticalError(response.error)
         }
         if (response.url) {
-            const urlExists = await util.urlExists(response.url)
+            const urlExists = await util.urlExists(response.url, playerState.isTranscode)
             playerState.videoUrl = urlExists
                 ? response.url
                 : response.url.replace(
