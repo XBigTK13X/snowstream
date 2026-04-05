@@ -4,7 +4,7 @@ class Config {
         this.stormWebApiUrl = 'http://192.168.104.113:8000' // Laptop
         this.beastWebApiUrl = 'http://beast.9914.us:9063' // Prod
 
-        this.clientVersion = "1.5.7"
+        this.clientVersion = "1.5.8"
         this.clientBuildDate = "April 04, 2026"
         this.clientDevBuildNumber = 1
 
@@ -23,7 +23,7 @@ class Config {
         const seekUrl = '/auth/wrap/details/episode?shelfId=2&showId=428&seasonId=1408&episodeId=26468&showName=H2O+-+Just+Add+Water&seasonOrder=1&episodeOrder=3'
         const transcodeUrl = '/auth/wrap/details/movie?shelfId=1&movieId=928'
 
-        this.debugVideoUrl = transcodeUrl
+        this.debugVideoUrl = null
         this.debugSnowui = false
     }
 }
