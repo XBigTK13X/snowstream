@@ -13,9 +13,7 @@ sudo dnf install --allowerasing \
     python3.14-devel
 
 cd web-server
-python3.14 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+uv sync
 cd ..
 
 cd expo

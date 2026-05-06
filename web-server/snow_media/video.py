@@ -97,8 +97,10 @@ class MediaTrack:
         if self.language:
             if self.language and 'en' in self.language.lower():
                 if 'truehd' in ffprobe['codec_name']:
-                    return 2100
-                return 2050
+                    return 2030
+                if 'atmos' in mediainfo.get('Format_Commercial_IfAny','').lower():
+                    return 2050
+                return 2070
             if self.language == 'ja':
                 return 3000 if is_anime else 1000
         return 0
@@ -122,7 +124,7 @@ class MediaTrack:
         if self.language and 'en' in self.language.lower():
             low_title = self.title.lower()
             if not self.is_text:
-                return 2040
+                return 1040
             if 'sdh' in low_title:
                 return 2060
             if self.is_captioned:

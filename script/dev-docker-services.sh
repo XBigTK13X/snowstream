@@ -1,5 +1,7 @@
 #! /bin/bash
 
+source script/variables.sh
+
 echo "Docker services working dir"
 
 pwd

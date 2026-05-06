@@ -210,6 +210,7 @@ def handle(scope):
                 db.op.update_job(job_id=scope.job_id, message=f"WARNING A video_file db entry exists for a path that does not exist\n\t({video_file.id})[{video_file.local_path}]")
                 continue
             try:
+                log.info("Entering loop")
                 if scope.skip_existing and video_file.ffprobe_raw_json and video_file.mediainfo_raw_json:
                     # Regenerate the snowstream info without running the file through mediainfo + ffprobe
                     info = snow_media.video.path_to_info_json(

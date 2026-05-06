@@ -32,7 +32,6 @@ Create a script `script/variables.sh` with something like the following.
 ```
 #! /bin/bash
 
-source web-server/venv/bin/activate
 
 export SNOWSTREAM_WEB_MEDIA_URL="http://<your-dev-machine-ip>:9064/media"
 export SNOWSTREAM_WEB_API_URL="http://<your-dev-machine-ip>:8000"

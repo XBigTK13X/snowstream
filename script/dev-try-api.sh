@@ -1,3 +1,3 @@
 cd web-server
-python -m "bin.$1"
+uv run python -m "bin.$1"
 cd ..

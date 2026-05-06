@@ -1,5 +1,4 @@
 #! /bin/bash
 
 cd web-server
-source venv/bin/activate
-npx nodemon --exec python -m bin.worker.py
+npx nodemon --exec uv run python -m bin.worker.py

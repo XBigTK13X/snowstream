@@ -1,3 +1,3 @@
 #! /bin/bash
 
-python -m bin.worker.py
+uv run python -m bin.worker.py

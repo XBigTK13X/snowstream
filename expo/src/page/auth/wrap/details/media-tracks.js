@@ -74,7 +74,7 @@ export default function MediaTracksPage(props) {
                 setMedia(response)
                 if (response?.tags?.length) {
                     for (let tag of response.tags) {
-                        if (tag.name.includes('AudioLanguage:')) {
+                        if (tag?.name?.includes('AudioLanguage:')) {
                             const lang = tag.name.split(':')[1]
                             setAudioLanguage(lang)
                         }
