@@ -47,6 +47,7 @@ class DeviceProfile:
         self.audio.dolby = Stub()
         self.audio.dolby.atmos = config.get('dolby_atmos')
         self.audio.dolby.hd = config.get('dolby_hd')
+        self.audio.dolby.digital_plus = config.get('dolby_dp')
 
         self.mpv = Stub()
         self.mpv.video_output = config.get('mpv_video_output','gpu')
@@ -66,6 +67,25 @@ device_list = [
         'h264_ten': 'hard',
         'vp9': 'hard',
         'av1': 'hard',
+        'transcode_bit_rate': '20M',
+        'streamable_decoding': 'mediacodec'
+    }),
+    DeviceProfile({
+        'name': 'Homatics 4K Pro',
+        'hdr': 'hard',
+        'hdr_ten': 'hard',
+        'hdr_ten_plus': 'hard',
+        'dolby_vision': 'hard',
+        'h264_eight': 'hard',
+        'h264_eight': 'hard',
+        'h264_ten': 'hard',
+        'vp9': 'hard',
+        'av1': 'hard',
+        'dts_x': 'passthrough',
+        'dts_hd': 'passthrough',
+        'dolby_atmos': 'passthrough',
+        'dolby_hd': 'passthrough',
+        'dolby_dp': 'passthrough',
         'transcode_bit_rate': '20M',
         'streamable_decoding': 'mediacodec'
     }),

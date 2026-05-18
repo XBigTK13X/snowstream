@@ -89,12 +89,17 @@ export default function MediaTracksPage(props) {
                     }
                     else {
                         setPlayer('mpv')
+
                     }
                     if (plan.video_requires_transcode) {
                         setShouldTranscode(true)
                     } else {
                         if (plan.audio_requires_transcode[audioTrack]) {
                             setShouldTranscode(true)
+                        }
+                        if (plan.audio_requires_passthrough[audioTrack]) {
+                            setPlayer('exo')
+                            setForcePlayer('exo')
                         }
                     }
                 }
