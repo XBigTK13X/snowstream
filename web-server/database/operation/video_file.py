@@ -110,9 +110,14 @@ def get_video_file_list(directory:str=None):
         return query
 
 def get_video_file_path_list_by_query(db_query):
-    with dbi.session() as db:
-        raw_query = f'''
-        select local_path from video_file where
+    raw_query = f'''
+        select local_path from video_file
         {db_query}
-'''
-        return db.execute(dbi.sql_text(raw_query))
+    '''
+    dbi.log.info(raw_query)
+    with dbi.session() as db:
+        cursor = db.execute(dbi.sql_text(raw_query))
+        return {
+            'video_files': [dict(row) for row in cursor.mappings()],
+            'query': raw_query
+        }

@@ -30,7 +30,7 @@ export default function AdminDashboardPage() {
                 focusKey="page-entry"
                 items={actionButtons}
                 renderItem={renderItem}
-                itemsPerRow={4}></C.SnowGrid>
+                itemsPerRow={3}></C.SnowGrid>
             <C.SnowBreak />
             <C.SnowGrid focusKey="data-buttons" items={dataButtons} renderItem={renderItem} itemsPerRow={4}></C.SnowGrid>
         </>

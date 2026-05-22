@@ -442,7 +442,7 @@ def auth_required(router):
         return db.op.get_playlist_by_tag_id(ticket=auth_user.ticket,tag_id=tag_id)
 
 
-    @router.get("/video_file/search",tags=['Admin'])
+    @router.post("/video-file/search",tags=['Admin'])
     def get_video_file_list_by_query(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
         query: str

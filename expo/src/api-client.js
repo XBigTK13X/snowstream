@@ -176,7 +176,7 @@ export class ApiClient {
     createJobUpdateMediaFiles = (details) => { return this.createScopedJob('update_media_files', details) }
 
     getVideoFileListByQuery = (query) => {
-        return this.get(`/video_file/search?query=${}`)
+        return this.post(`/video-file/search?query=${encodeURIComponent(query)}`)
     }
 
     getJobList = (showComplete, limit) => {

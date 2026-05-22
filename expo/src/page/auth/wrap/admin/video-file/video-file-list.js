@@ -17,7 +17,7 @@ export default function VideoFileListPage() {
             queryTextRef.current = query
             if (query?.length > 1) {
                 setLoading(true)
-                apiClient.search(query).then(response => {
+                apiClient.getVideoFileListByQuery(query).then(response => {
                     if (queryTextRef.current === query) {
                         setSearchResults(response)
                         setResultKey(`query-${query}`)
@@ -38,60 +38,31 @@ export default function VideoFileListPage() {
         })
     }
 
+    const downloadJson = () => {
+        if (!searchResults?.video_files) return
+        const dataString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(searchResults.video_files, null, 2))
+        const downloadAnchor = document.createElement('a')
+        downloadAnchor.setAttribute("href", dataString)
+        downloadAnchor.setAttribute("download", `snowstream_video_files.json`)
+        document.body.appendChild(downloadAnchor)
+        downloadAnchor.click()
+        downloadAnchor.remove()
+    }
+
     let resultsTabs = null
     if (searchResults) {
-        if (!searchResults.length) {
+        if (!searchResults?.video_files?.length) {
             resultsTabs = <C.SnowText>No results found for [{queryText}].</C.SnowText>
         }
         else {
-            let headers = searchResults.map(searchResult => {
-                return `${searchResult.name} [${searchResult.items.length}]`
-            })
             resultsTabs = (
-                <C.SnowTabs yy={1} key={resultKey} focusKey="search-results" headers={headers}>
-                    {searchResults.map((searchResult, resultIndex) => {
-                        if (searchResult.kind === 'streamables') {
-                            return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
-                                return (
-                                    <C.SnowTextButton title={item.name}
-                                        onPress={navPush({
-                                            path: routes.streamablePlay,
-                                            params: {
-                                                streamSourceId: item.stream_source.id,
-                                                streamableId: item.id
-                                            }
-                                        })}
-                                        onLongPress={navPush({
-                                            path: routes.streamablePlay,
-                                            params: {
-                                                streamSourceId: item.stream_source.id,
-                                                streamableId: item.id,
-                                                transcode: true
-                                            }
-                                        })}
-                                    />
-                                )
-                            }} />
-                        }
-                        if (searchResult.kind === 'keepsake-directories') {
-                            return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
-                                return (
-                                    <C.SnowTextButton title={item.display} onPress={navPush({
-                                        path: routes.keepsakeDetails,
-                                        params: {
-                                            shelfId: item.shelf.id
-                                        }
-                                    })} />
-                                )
-                            }} />
-                        }
-                        if (searchResult.kind === 'keepsake-videos') {
-                            return <C.SnowScreencapGrid disableWatched items={searchResult.items} />
-                        }
-                        return <C.SnowPosterGrid disableWatched items={searchResult.items} />
-                    })}
-                </C.SnowTabs>
+                <>
+                    <C.SnowTextButton title="Download JSON" onPress={downloadJson} />
+                    <C.SnowText>{searchResults?.query}</C.SnowText>
+                    <C.SnowText key={resultKey}>{C.Snow.stringifySafe(searchResults?.video_files)}</C.SnowText>
+                </>
             )
+
         }
     }
 
