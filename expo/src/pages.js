@@ -46,6 +46,7 @@ import TagRuleListPage from './page/auth/wrap/admin/tag-rule/tag-rule-list'
 import UserAccessPage from './page/auth/wrap/admin/user/user-access'
 import UserEditPage from './page/auth/wrap/admin/user/user-edit'
 import UserListPage from './page/auth/wrap/admin/user/user-list'
+import VideoFileListPage from './page/auth/wrap/admin/video-file/video-file-list'
 
 export var pages = {
     [routes.signIn]: SignInPage,
@@ -96,6 +97,7 @@ export var pages = {
     [routes.adminUserAccess]: UserAccessPage,
     [routes.adminUserEdit]: UserEditPage,
     [routes.adminUserList]: UserListPage,
+    [routes.adminVideoFileList]: VideoFileListPage
 }
 
 

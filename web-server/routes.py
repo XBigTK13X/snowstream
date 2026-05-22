@@ -442,6 +442,15 @@ def auth_required(router):
         return db.op.get_playlist_by_tag_id(ticket=auth_user.ticket,tag_id=tag_id)
 
 
+    @router.get("/video_file/search",tags=['Admin'])
+    def get_video_file_list_by_query(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        query: str
+    ):
+        if not auth_user.is_admin():
+            return None
+        return db.op.get_video_file_path_list_by_query(db_query=query)
+
     @router.get("/movie/list",tags=['Movie'])
     def get_movie_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
@@ -1002,6 +1011,7 @@ def auth_required(router):
     def deployment_hotfix(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
     ):
+
         #db.sql.truncate('streamable')
         #db.sql.truncate('cached_text')
         return True

@@ -1,0 +1,115 @@
+import { C, useAppContext } from 'snowstream'
+
+export default function VideoFileListPage() {
+    const { apiClient, routes } = useAppContext()
+    const { navPush, currentRoute } = C.useSnowContext()
+
+    const [queryText, setQueryText] = C.React.useState('')
+    const queryTextRef = C.React.useRef(queryText)
+    const [searchResults, setSearchResults] = C.React.useState(null)
+    const [resultKey, setResultKey] = C.React.useState(null)
+    const [loading, setLoading] = C.React.useState(false)
+
+    C.React.useEffect(() => {
+        let query = currentRoute?.routeParams?.queryText
+        if (query && query !== queryTextRef.current) {
+            setQueryText(query)
+            queryTextRef.current = query
+            if (query?.length > 1) {
+                setLoading(true)
+                apiClient.search(query).then(response => {
+                    if (queryTextRef.current === query) {
+                        setSearchResults(response)
+                        setResultKey(`query-${query}`)
+                    }
+                    setLoading(false)
+                })
+            }
+        }
+    }, [currentRoute])
+
+    const executeQuery = (input) => {
+        navPush({
+            params: {
+                ...currentRoute?.routeParams,
+                queryText: input ?? queryText
+            },
+            func: false
+        })
+    }
+
+    let resultsTabs = null
+    if (searchResults) {
+        if (!searchResults.length) {
+            resultsTabs = <C.SnowText>No results found for [{queryText}].</C.SnowText>
+        }
+        else {
+            let headers = searchResults.map(searchResult => {
+                return `${searchResult.name} [${searchResult.items.length}]`
+            })
+            resultsTabs = (
+                <C.SnowTabs yy={1} key={resultKey} focusKey="search-results" headers={headers}>
+                    {searchResults.map((searchResult, resultIndex) => {
+                        if (searchResult.kind === 'streamables') {
+                            return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
+                                return (
+                                    <C.SnowTextButton title={item.name}
+                                        onPress={navPush({
+                                            path: routes.streamablePlay,
+                                            params: {
+                                                streamSourceId: item.stream_source.id,
+                                                streamableId: item.id
+                                            }
+                                        })}
+                                        onLongPress={navPush({
+                                            path: routes.streamablePlay,
+                                            params: {
+                                                streamSourceId: item.stream_source.id,
+                                                streamableId: item.id,
+                                                transcode: true
+                                            }
+                                        })}
+                                    />
+                                )
+                            }} />
+                        }
+                        if (searchResult.kind === 'keepsake-directories') {
+                            return <C.SnowGrid items={searchResult.items} renderItem={(item) => {
+                                return (
+                                    <C.SnowTextButton title={item.display} onPress={navPush({
+                                        path: routes.keepsakeDetails,
+                                        params: {
+                                            shelfId: item.shelf.id
+                                        }
+                                    })} />
+                                )
+                            }} />
+                        }
+                        if (searchResult.kind === 'keepsake-videos') {
+                            return <C.SnowScreencapGrid disableWatched items={searchResult.items} />
+                        }
+                        return <C.SnowPosterGrid disableWatched items={searchResult.items} />
+                    })}
+                </C.SnowTabs>
+            )
+        }
+    }
+
+    return (
+        <C.SnowGrid
+            assignFocus={false}
+            itemsPerRow={1}>
+            <C.SnowLabel>Enter a search query</C.SnowLabel>
+            <C.SnowInput
+                yy={0}
+                focusStart
+                focusKey="page-entry"
+                value={queryText}
+                onValueChange={setQueryText}
+                onSubmit={executeQuery}
+                onDebounce={setQueryText} />
+            {loading && !searchResults ? <C.SnowText center>Searching for [{queryText}]...</C.SnowText> : null}
+            {resultsTabs}
+        </C.SnowGrid>
+    )
+}

@@ -48,6 +48,7 @@ export var routes = {
     adminUserAccess: '/auth/wrap/admin/user/user-access',
     adminUserEdit: '/auth/wrap/admin/user/user-edit',
     adminUserList: '/auth/wrap/admin/user/user-list',
+    adminVideoFileList: '/auth/wrap/admin/video-file/video-file-list'
 }
 
 export function QuietReactWarning() {

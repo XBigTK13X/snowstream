@@ -175,6 +175,10 @@ export class ApiClient {
     createJobStreamSourcesRefresh = (details) => { return this.createScopedJob('stream_sources_refresh', details) }
     createJobUpdateMediaFiles = (details) => { return this.createScopedJob('update_media_files', details) }
 
+    getVideoFileListByQuery = (query) => {
+        return this.get(`/video_file/search?query=${}`)
+    }
+
     getJobList = (showComplete, limit) => {
         let query = `/job/list?show_complete=${showComplete}`
         if (limit) {
