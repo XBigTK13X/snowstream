@@ -139,6 +139,7 @@ export default function RnvVideoView(props) {
             muted={false}
             selectedAudioTrack={{ type: 'index', value: player.audioTrackIndex }}
             selectedTextTrack={{ type: 'index', value: player.subtitleTrackIndex }}
+            subtitlesFollowSystem={false}
             subtitleStyle={{
                 fontSize: player.subtitleFontScale * fontSize,
                 color: `rgba(${shade}, ${shade}, ${shade})`,

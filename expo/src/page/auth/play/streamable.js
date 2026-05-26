@@ -14,8 +14,8 @@ export default function PlayStreamablePage() {
         })
     }
 
-    const loadTranscode = (apiClient, routeParams, deviceProfile, playerKind) => {
-        return apiClient.getStreamable(routeParams.streamableId)
+    const loadTranscode = (apiClient, routeParams, deviceProfile, progressSeconds, playerKind) => {
+        return apiClient.getStreamable(routeParams.streamableId, deviceProfile)
             .then((streamable) => {
                 return apiClient.createStreamableTranscodeSession({
                     streamableId: streamable.id,

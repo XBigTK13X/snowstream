@@ -77,6 +77,8 @@ device_list = [
         'dolby_vision': 'hard',
         'h264_eight': 'hard',
         'h264_ten': 'soft',
+        'h265_eight': 'hard',
+        'h265_ten': 'hard',
         'vp9': 'hard',
         'av1': 'hard',
         'dts_x': 'passthrough',
@@ -85,7 +87,8 @@ device_list = [
         'dolby_hd': 'passthrough',
         'dolby_dp': 'passthrough',
         'transcode_bit_rate': '20M',
-        'streamable_decoding': 'mediacodec'
+        'streamable_decoding': 'mediacodec',
+        'mpv_video_sync': 'display-resample'
     }),
     DeviceProfile({
         'name': 'Fire Max 11',
