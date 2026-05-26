@@ -76,6 +76,8 @@ def show_episode_to_xml(
     tvdbid:int=None,
     tmdbid:int=None,
     tags:list[str]=None,
+    season_override:int=None,
+    episode_override:int=None
 ):
     nfo_dict = {
         'episodedetails':{
@@ -105,6 +107,12 @@ def show_episode_to_xml(
 
     if tags:
         nfo_dict['episodedetails']['tag'] = tags
+
+    if season_override:
+        nfo_dict['episodedetails']['seasonoverride'] = season_override
+
+    if episode_override:
+        nfo_dict['episodedetails']['episode_override'] = episode_override
 
     return nfo_dict_to_xml(nfo_dict=nfo_dict)
 

@@ -69,6 +69,12 @@ class ShowEpisode(MediaUpdater):
             info['tmdbid'] = self.local_nfo_dict['tmdbid']
         if 'tvdbid' in self.local_nfo_dict and (not info or not info['tvdbid']):
             info['tvdbid'] = self.local_nfo_dict['tvdbid']
+        episode_override = None
+        if self.local_nfo_dict and 'episode_override' in self.local_nfo_dict:
+            episode_override = int(self.local_dict['episode_override'])
+        season_override = None
+        if self.local_nfo_dict and 'season_override' in self.local_nfo_dict:
+            season_override = int(self.local_dict['season_override'])
         self.new_nfo_xml = self.nfo.show_episode_to_xml(
             season=info['season'],
             episode=info['episode'],
@@ -79,7 +85,9 @@ class ShowEpisode(MediaUpdater):
             aired=info['aired'],
             year=info['year'],
             end_episode=self.show_episode.episode_end_order_counter,
-            tags=tags
+            tags=tags,
+            episode_override=episode_override,
+            season_override=season_override
         )
 
         if self.show_episode.name != info['name']:

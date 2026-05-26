@@ -26,8 +26,13 @@ export default function MpvVideoView(props) {
         }
     })
 
+    const disableHeavyAss = () => {
+        forwardRef.current.runCommand(`set|sub-ass-override|force`).catch(() => { })
+    }
+
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && player.isVideoViewReady) {
+            disableHeavyAss()
             forwardRef.current.runCommand(`set|sub-scale|${player.subtitleFontScale}`).catch(() => { })
         }
 
@@ -35,7 +40,7 @@ export default function MpvVideoView(props) {
 
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && player.isVideoViewReady) {
-            forwardRef.current.runCommand(`set|sub-ass-override|force`).catch(() => { })
+            disableHeavyAss()
             forwardRef.current.runCommand(`set|sub-color|${player.subtitleColor.shade}/${player.subtitleColor.alpha}`).catch(() => { })
         }
     }, [player.subtitleColor])
