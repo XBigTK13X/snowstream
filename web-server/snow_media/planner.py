@@ -99,19 +99,20 @@ def create_plan(
                             plan.audio_requires_transcode[audio_track['audio_index']] = True
                             plan.reasons.append('Device does not support TrueHD audio')
                     if 'atmos' in audio_format:
-                        if device.audio.dolby.atmos == 'passthrough':
-                            plan.audio_requires_passthrough[audio_track['audio_index']] = True
-                            plan.reasons.append('Device supports passthrough atmos audio via exo')
+                        if 'digital plus' in audio_format:
+                            if device.audio.dolby.digital_plus == 'passthrough':
+                                plan.audio_requires_passthrough[audio_track['audio_index']] = True
+                                plan.reasons.append('Device supports passthrough ddp atmos audio via exo')
+                            else:
+                                plan.audio_requires_transcode[audio_track['audio_index']] = True
+                                plan.reasons.append('Device does not support ddp atmos audio')
                         else:
-                            plan.audio_requires_transcode[audio_track['audio_index']] = True
-                            plan.reasons.append('Device does not support atmos audio')
-                    if 'digital plus' in audio_format:
-                        if device.audio.dolby.digital_plus == 'passthrough':
-                            plan.audio_requires_passthrough[audio_track['audio_index']] = True
-                            plan.reasons.append('Device supports passthrough ddp atmos audio via exo')
-                        else:
-                            plan.audio_requires_transcode[audio_track['audio_index']] = True
-                            plan.reasons.append('Device does not support ddp atmos audio')
+                            if device.audio.dolby.atmos == 'passthrough':
+                                plan.audio_requires_passthrough[audio_track['audio_index']] = True
+                                plan.reasons.append('Device supports passthrough atmos audio via exo')
+                            else:
+                                plan.audio_requires_transcode[audio_track['audio_index']] = True
+                                plan.reasons.append('Device does not support atmos audio')
                     if 'dts' in audio_format and 'x' in audio_format:
                         if device.audio.dts.x == 'passthrough':
                             plan.audio_requires_passthrough[audio_track['audio_index']] = True
