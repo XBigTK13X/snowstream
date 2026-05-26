@@ -12,7 +12,8 @@ export default function AdminDashboardPage() {
         { title: 'Job List', route: routes.adminJobList },
         { title: 'Logs', route: routes.adminLogViewer },
         { title: 'Sessions', route: routes.adminSessionList },
-        { title: 'Video Files', route: routes.adminVideoFileList }
+        { title: 'Video Files', route: routes.adminVideoFileList },
+        { title: 'Cached Text', route: routes.adminCachedTextDetails }
     ]
     const dataButtons = [
         { title: 'Shelves', route: routes.adminShelfList },

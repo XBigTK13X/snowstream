@@ -179,6 +179,10 @@ export class ApiClient {
         return this.post(`/video-file/search?query=${encodeURIComponent(query)}`)
     }
 
+    getCachedText = (query) => {
+        return this.get(`/cached-text?cache_key=${query}`)
+    }
+
     getJobList = (showComplete, limit) => {
         let query = `/job/list?show_complete=${showComplete}`
         if (limit) {

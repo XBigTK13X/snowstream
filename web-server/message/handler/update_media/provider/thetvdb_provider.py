@@ -249,11 +249,18 @@ class ThetvdbProvider(base.MediaProvider):
         first = metadata[0]
         if not first:
             return None
+        episodeNumber = 0
+        if first:
+            if 'episodeNumber' in first:
+                episodeNumber = first['episodeNumber']
+            elif 'number' in first:
+                episodeNumber = first['number']
+
         result = {
             'overview': first['overview'] if first and 'overview' in first else None,
             'tvdbid': int(first['id']),
             'tmdbid': None,
-            'episode': int(first['number']),
+            'episode': episodeNumber,
             'season': int(first['seasonNumber']),
             'name': first['name'],
             'year': int(first['year']) if first and 'year' in first else None,

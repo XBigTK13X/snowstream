@@ -24,6 +24,7 @@ import StreamableListPage from './page/auth/wrap/list/streamable'
 import StreamablePlayPage from './page/auth/play/streamable'
 
 import DashboardPage from './page/auth/wrap/admin/dashboard'
+import CachedTextDetailsPage from './page/auth/wrap/admin/cached-text/cached-text-details'
 import CleanupRuleEditPage from './page/auth/wrap/admin/cleanup-rule/cleanup-rule-edit'
 import CleanupRuleListPage from './page/auth/wrap/admin/cleanup-rule/cleanup-rule-list'
 import ChannelsEditPage from './page/auth/wrap/admin/guide-source/channels-edit'
@@ -75,6 +76,7 @@ export var pages = {
     [routes.streamableList]: StreamableListPage,
 
     [routes.adminDashboard]: DashboardPage,
+    [routes.adminCachedTextDetails]: CachedTextDetailsPage,
     [routes.adminCleanupRuleEdit]: CleanupRuleEditPage,
     [routes.adminCleanupRuleList]: CleanupRuleListPage,
     [routes.adminChannelsEdit]: ChannelsEditPage,

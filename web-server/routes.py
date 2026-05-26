@@ -443,6 +443,21 @@ def auth_required(router):
     ):
         return db.op.get_playlist_by_tag_id(ticket=auth_user.ticket,tag_id=tag_id)
 
+    @router.get("/cached-text",tags=['Admin'])
+    def get_cached_text_by_query(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+        cache_key: str
+    ):
+        if not auth_user.is_admin():
+            return None
+        result = db.op.get_cached_text_by_key(key=cache_key)
+        if result == None:
+            return {
+                'content': f"No content cached under [{cache_key}]"
+            }
+        return {
+            'content': json.loads(result)
+        }
 
     @router.post("/video-file/search",tags=['Admin'])
     def get_video_file_list_by_query(

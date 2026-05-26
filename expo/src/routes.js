@@ -26,6 +26,7 @@ export var routes = {
     streamableList: '/auth/wrap/list/streamable',
 
     adminDashboard: '/auth/wrap/admin/dashboard',
+    adminCachedTextDetails: '/auth/wrap/admin/cached-text/cached-text-details',
     adminCleanupRuleEdit: '/auth/wrap/admin/cleanup-rule/cleanup-rule-edit',
     adminCleanupRuleList: '/auth/wrap/admin/cleanup-rule/cleanup-rule-list',
     adminChannelsEdit: '/auth/wrap/admin/guide-source/channels-edit',
