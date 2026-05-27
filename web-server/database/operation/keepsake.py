@@ -65,10 +65,11 @@ def get_keepsake_list_by_directory(directory:str,load_files:bool=True):
         ).all()
 
 def get_keepsake_subdirectories(directory: str):
+    parent_dir = directory + '/'
     with dbi.session() as db:
         return (
             db.query(dbi.dm.Keepsake.directory)
-            .filter(dbi.dm.Keepsake.directory.contains(directory))
+            .filter(dbi.dm.Keepsake.directory.contains(parent_dir))
             .all()
         )
 
