@@ -36,16 +36,29 @@ const SnowApp = Snow.createSnowApp({
     appVersion: pkg.version
 })
 
-function PageWrapper() {
-    const { CurrentPage, currentRoute } = Snow.useSnowContext()
+function PageWrapper(props) {
     const { routes } = useAppContext()
-    if (currentRoute.routePath === routes.signIn || currentRoute.routePath === '/') {
-        return <CurrentPage />
+    const { CurrentPage, currentRoute, SnowStyle } = Snow.useSnowContext(props)
+    let appWrapperStyle = { flex: 1, paddingBottom: 50 }
+    if (SnowStyle.isPortrait) {
+        appWrapperStyle.paddingTop = 50
     }
-    return <AuthPageLoader />
+
+    let interior = null
+    if (currentRoute.routePath === routes.signIn || currentRoute.routePath === '/') {
+        interior = <CurrentPage />
+    } else {
+        interior = <AuthPageLoader />
+    }
+    return (
+        <Snow.View style={appWrapperStyle}>
+            {interior}
+        </Snow.View>
+    )
 }
 
 export default function PageLoader() {
+
     return (
         <SnowApp
             DEBUG_SNOW={config.debugSnowui}
@@ -59,9 +72,7 @@ export default function PageLoader() {
         >
             <AppContextProvider>
                 <Player.Manager>
-                    <Snow.View style={{ flex: 1, paddingBottom: 50 }}>
-                        <PageWrapper />
-                    </Snow.View>
+                    <PageWrapper />
                 </Player.Manager>
             </AppContextProvider >
         </SnowApp>

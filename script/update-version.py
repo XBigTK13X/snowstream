@@ -3,7 +3,9 @@
 import os
 import sys
 import datetime
+import json
 
+VERSIONS_JSON_PATH = '/mnt/software/android/versions.json'
 CLIENT_SETTINGS_PATH = './expo/src/settings.js'
 SERVER_SETTINGS_PATH = './web-server/settings.py'
 EXPO_SETTINGS_PATH = './expo/app.json'
@@ -80,3 +82,10 @@ update_info(
     version_needle='versionName',
     version_replacement=f'        versionName "{build_version}"\n'
 )
+
+versions_content = None
+with open(VERSIONS_JSON_PATH,'r',encoding='utf-8') as read_handle:
+    versions_content = json.load(read_handle)
+versions_content['applications']['snowstream']['version'] = build_version
+with open(VERSIONS_JSON_PATH,'w',encoding='utf-8') as write_handle:
+    json.dump(versions_content,fp=write_handle,indent=4)

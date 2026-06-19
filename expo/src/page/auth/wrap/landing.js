@@ -119,8 +119,7 @@ export default function LandingPage(props) {
                 <C.SnowGrid
                     focusStart
                     focusKey="destinations"
-                    items={destinations}
-                    itemsPerRow={3} />
+                    items={destinations} />
                 <C.SnowText style={styles.footer} center>{`[built ${config.clientBuildDate}] [snowstream v${config.clientVersion}] [snowui v${snowuiPackageInfo.version}]`}</C.SnowText>
             </>
         )

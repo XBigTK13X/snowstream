@@ -308,11 +308,11 @@ export default function MediaTracksPage(props) {
         }
         const controlTab = (
             <C.SnowView>
-                <C.SnowGrid itemsPerRow={4}>
+                <C.SnowGrid>
                     <C.SnowTextButton tall title={media.shelf_name} onPress={props.gotoShelf(routes, navPush, currentRoute.routeParams)} />
                     {props.getNavButtons ? props.getNavButtons(routes, navPush, currentRoute.routeParams).map((button) => { return button }) : null}
                 </C.SnowGrid>
-                <C.SnowGrid focusKey="player" itemsPerRow={4}>
+                <C.SnowGrid focusKey="player">
                     <C.SnowTextButton tall title={watchTitle} onLongPress={setWatchStatus} />
                     <C.SnowTextButton
                         title={playerDisplay}
@@ -443,8 +443,7 @@ export default function MediaTracksPage(props) {
                     ) : null}
                     <C.SnowGrid
                         focusStart
-                        focusKey="play-controls"
-                        itemsPerRow={4}>
+                        focusKey="play-controls">
                         {resumeControls}
                         <C.SnowTextButton
                             key={C.Snow.stringifySafe(playParams)}

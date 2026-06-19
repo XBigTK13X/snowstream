@@ -94,7 +94,7 @@ export default function OptionsPage() {
             <C.SnowGrid
                 focusStart
                 focusKey="save"
-                itemsPerRow={3}>
+                itemsPerRow={2}>
                 <C.SnowTextButton title="Save" onPress={saveForm} />
                 <C.SnowInput value={form.deviceId} onValueChange={(val) => { setForm(prev => ({ ...prev, deviceId: val })) }} />
             </C.SnowGrid>

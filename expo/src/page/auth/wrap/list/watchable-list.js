@@ -84,8 +84,6 @@ export function WatchableListPage(props) {
             remoteId = props.getRemoteId(items[0])
         }
 
-        let itemsPerRow = 4
-
         let buttons = []
         if (togglePlaylistedEnabled && props.toggleShowPlaylisted) {
             buttons.push((
@@ -114,7 +112,7 @@ export function WatchableListPage(props) {
         return (
             <C.SnowView>
                 <C.SnowText>{pageTitle}</C.SnowText>
-                <C.SnowGrid focusKey="admin-buttons" itemsPerRow={itemsPerRow}>
+                <C.SnowGrid focusKey="admin-buttons">
                     {buttons}
                 </C.SnowGrid>
                 <Grid focusStart focusKey="watchable-items" items={items} />

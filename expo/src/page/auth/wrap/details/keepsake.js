@@ -97,7 +97,7 @@ export default function KeepsakeDetailsPage(props) {
         videos = (
             <C.SnowView>
                 <C.SnowLabel>Videos</C.SnowLabel>
-                <C.SnowGrid focusStart focusKey={videoFocusKey} itemsPerRow={4} wide={true}>
+                <C.SnowGrid focusStart focusKey={videoFocusKey} wide={true}>
                     {keepsake.videos.map((video, videoIndex) => {
                         return (
                             <C.SnowImageButton
@@ -145,7 +145,7 @@ export default function KeepsakeDetailsPage(props) {
         images = (
             <C.SnowView>
                 <C.SnowLabel>Images</C.SnowLabel>
-                <C.SnowGrid {...focus} itemsPerRow={4} wide={true}>
+                <C.SnowGrid {...focus} wide={true}>
                     {keepsake.images.map((image, imageIndex) => {
                         return (
                             <C.SnowImageButton
@@ -179,7 +179,7 @@ export default function KeepsakeDetailsPage(props) {
         dirs = (
             <C.SnowView>
                 <C.SnowLabel>Directories</C.SnowLabel>
-                <C.SnowGrid {...focus} itemsPerRow={4} >
+                <C.SnowGrid {...focus} >
                     {keepsake.directories.map((dir, dirIndex) => {
                         return (
                             <C.SnowTextButton
