@@ -97,16 +97,6 @@ export default function OptionsPage() {
                 itemsPerRow={3}>
                 <C.SnowTextButton title="Save" onPress={saveForm} />
                 <C.SnowInput value={form.deviceId} onValueChange={(val) => { setForm(prev => ({ ...prev, deviceId: val })) }} />
-                <C.SnowTextButton
-                    title="Download Latest"
-                    onPress={() => {
-                        if (C.isTV) {
-                            C.Linking.openURL('https://android.9914.us/snowstream-tv.apk')
-                        } else {
-                            C.Linking.openURL('https://android.9914.us/snowstream-mobile.apk')
-                        }
-                    }}
-                />
             </C.SnowGrid>
 
             <C.SnowBreak />
