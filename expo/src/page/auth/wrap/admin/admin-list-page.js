@@ -11,7 +11,7 @@ export default function AdminListPage(props) {
         })
     }, [])
 
-    if (!items) {
+    if (items === null) {
         return <C.SnowText>Loading {props.kind}s...</C.SnowText>
     }
 
