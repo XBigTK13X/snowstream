@@ -4,6 +4,10 @@ source script/variables.sh
 
 script/prod-build-web-client.sh
 
+cd web-server
+find . -type d -name "__pycache__" -exec rm -r {} +
+cd ..
+
 set -e
 docker build -t $SNOWSTREAM_DOCKER_IMAGE .
 set +e

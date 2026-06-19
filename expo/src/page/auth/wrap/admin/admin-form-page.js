@@ -93,7 +93,9 @@ export default function AdminFormPage(props) {
         }
         else {
             props.deleteItem(apiClient, form).then((() => {
-                setDeleted(true)
+                navPush({
+                    path: props.listRoute(routes)
+                })
             }))
         }
     }
@@ -109,7 +111,7 @@ export default function AdminFormPage(props) {
     }
 
     if (deleted) {
-        return <C.Redirect href={props.listRoute(routes)} />
+        return null
     }
 
     const changeForm = (key) => {

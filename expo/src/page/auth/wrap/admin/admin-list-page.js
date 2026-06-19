@@ -11,7 +11,7 @@ export default function AdminListPage(props) {
         })
     }, [])
 
-    if (!items?.length) {
+    if (!items) {
         return <C.SnowText>Loading {props.kind}s...</C.SnowText>
     }
 
@@ -39,12 +39,16 @@ export default function AdminListPage(props) {
                     })}
                 />
             </C.SnowGrid>
-            <C.SnowLabel center>{items.length} {props.kind}s found</C.SnowLabel>
-            <C.SnowGrid
-                focusKey="item-list"
-                items={items}
-                renderItem={renderItem}
-            />
+            {items?.length ? (
+                <>
+                    <C.SnowLabel center>{items.length} {props.kind}s found</C.SnowLabel>
+                    <C.SnowGrid
+                        focusKey="item-list"
+                        items={items}
+                        renderItem={renderItem}
+                    />
+                </>
+            ) : null}
         </>
     )
 
