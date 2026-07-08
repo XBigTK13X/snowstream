@@ -101,6 +101,7 @@ export default function KeepsakeDetailsPage(props) {
                     {keepsake.videos.map((video, videoIndex) => {
                         return (
                             <C.SnowImageButton
+                                overlayTitle
                                 wide={true}
                                 key={videoIndex}
                                 title={video.name}
@@ -149,6 +150,7 @@ export default function KeepsakeDetailsPage(props) {
                     {keepsake.images.map((image, imageIndex) => {
                         return (
                             <C.SnowImageButton
+                                overlayTitle
                                 wide={true}
                                 key={imageIndex}
                                 title={image.name}

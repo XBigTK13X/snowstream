@@ -43,6 +43,7 @@ export function SnowScreencapGridW(props) {
                 : null}
             <Snow.ImageGrid
                 {...scaleProps}
+                overlayTitle
                 focusStart={props.focusStart}
                 focusKey={props.focusKey}
                 parentPath={props.parentPath}
