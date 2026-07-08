@@ -2,8 +2,9 @@ class Stub:
     def __init__(self):
         pass
 
+
 class DeviceProfile:
-    def __init__(self,config):
+    def __init__(self, config):
         self.name = config['name']
         self.force_player = config.get('force_player')
 
@@ -13,7 +14,7 @@ class DeviceProfile:
         self.video.resolution.height = config.get('video_height')
 
         self.transcode = Stub()
-        self.transcode.container = config.get('transcode_container','matroska')
+        self.transcode.container = config.get('transcode_container', 'matroska')
         self.transcode.video_codec = config.get('transcode_video_codec', 'h265')
         self.transcode.audio_codec = config.get('transcode_audio_codec', 'aac')
         self.transcode.hdr_container = config.get('transcode_hdr_container', 'matroska')
@@ -50,84 +51,99 @@ class DeviceProfile:
         self.audio.dolby.digital_plus = config.get('dolby_dp')
 
         self.mpv = Stub()
-        self.mpv.video_output = config.get('mpv_video_output','gpu')
-        self.mpv.decoding_mode = config.get('mpv_decoding_mode','mediacodec')
-        self.mpv.accelerated_codecs = config.get('mpv_accelerated_codecs','h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1')
-        self.mpv.video_sync = config.get('mpv_video_sync','audio')
+        self.mpv.video_output = config.get('mpv_video_output', 'gpu')
+        self.mpv.decoding_mode = config.get('mpv_decoding_mode', 'mediacodec')
+        self.mpv.accelerated_codecs = config.get(
+            'mpv_accelerated_codecs', 'h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1'
+        )
+        self.mpv.video_sync = config.get('mpv_video_sync', 'audio')
+
 
 device_list = [
-    DeviceProfile({
-        'name': 'Google Streamer',
-        'av1': 'hard',
-        'dolby_vision': 'hard',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
-        'hdr_ten_plus': 'hard',
-        'hdr_ten': 'hard',
-        'hdr': 'hard',
-        'streamable_decoding': 'mediacodec',
-        'transcode_bit_rate': '20M',
-        'vp9': 'hard',
-    }),
-    DeviceProfile({
-        'name': 'Homatics 4K Pro',
-        'av1': 'hard',
-        'dolby_atmos': 'passthrough',
-        'dolby_dp': 'passthrough',
-        'dolby_hd': 'passthrough',
-        'dolby_vision': 'hard',
-        'dts_hd': 'passthrough',
-        'dts_x': 'passthrough',
-        'h264_eight': 'hard',
-        'h264_ten': 'soft',
-        'h265_eight': 'hard',
-        'h265_ten': 'hard',
-        'hdr_ten_plus': 'hard',
-        'hdr_ten': 'hard',
-        'hdr': 'hard',
-        'mpv_video_sync': 'display-resample',
-        'streamable_decoding': 'mediacodec',
-        'transcode_bit_rate': '20M',
-        'vp9': 'hard',
-    }),
-    DeviceProfile({
-        'name': 'Fire Max 11',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
-        'h265_eight': 'hard',
-        'h265_ten': 'hard',
-        'high_fps': 'soft',
-        'mpv_video_sync': 'display-resample'
-    }),
-    DeviceProfile({
-        'name': 'Pixel Phone',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
-        'h265_eight': 'hard',
-        'h265_ten': 'hard',
-        'mpv_video_sync': 'display-resample'
-    }),
-    DeviceProfile({
-        'name': 'Fire HD 10',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
-        'h265_ten': 'soft',
-        'mpv_video_sync': 'display-resample',
-        'transcode_bit_rate': '10M'
-    }),
-    DeviceProfile({
-        'name': 'Web Browser',
-        'force_player': 'exo',
-        'h264_eight': 'hard',
-        'h264_ten': 'hard',
-        'h265_eight': 'hard',
-        'h265_ten': 'hard',
-        'av1': 'hard',
-        'vp9': 'hard',
-        'transcode_container': 'webm',
-        'transcode_video_codec': 'vp9',
-        'transcode_audio_codec': 'opus'
-    })
+    DeviceProfile(
+        {
+            'name': 'Google Streamer',
+            'av1': 'hard',
+            'dolby_vision': 'hard',
+            'h264_eight': 'hard',
+            'h264_ten': 'hard',
+            'hdr_ten_plus': 'hard',
+            'hdr_ten': 'hard',
+            'hdr': 'hard',
+            'streamable_decoding': 'mediacodec',
+            'transcode_bit_rate': '20M',
+            'vp9': 'hard',
+        }
+    ),
+    DeviceProfile(
+        {
+            'name': 'Homatics 4K Pro',
+            'av1': 'hard',
+            'dolby_atmos': 'passthrough',
+            'dolby_dp': 'passthrough',
+            'dolby_hd': 'passthrough',
+            'dolby_vision': 'hard',
+            'dts_hd': 'passthrough',
+            'dts_x': 'passthrough',
+            'h264_eight': 'hard',
+            'h264_ten': 'soft',
+            'h265_eight': 'hard',
+            'h265_ten': 'hard',
+            'hdr_ten_plus': 'hard',
+            'hdr_ten': 'hard',
+            'hdr': 'hard',
+            'mpv_video_sync': 'display-resample',
+            'streamable_decoding': 'mediacodec',
+            'transcode_bit_rate': '20M',
+            'vp9': 'hard',
+        }
+    ),
+    DeviceProfile(
+        {
+            'name': 'Fire Max 11',
+            'h264_eight': 'hard',
+            'h264_ten': 'hard',
+            'h265_eight': 'hard',
+            'h265_ten': 'hard',
+            'high_fps': 'soft',
+            'mpv_video_sync': 'display-resample',
+        }
+    ),
+    DeviceProfile(
+        {
+            'name': 'Pixel Phone',
+            'h264_eight': 'hard',
+            'h264_ten': 'hard',
+            'h265_eight': 'hard',
+            'h265_ten': 'hard',
+            'mpv_video_sync': 'display-resample',
+        }
+    ),
+    DeviceProfile(
+        {
+            'name': 'Fire HD 10',
+            'h264_eight': 'hard',
+            'h264_ten': 'hard',
+            'h265_ten': 'soft',
+            'mpv_video_sync': 'display-resample',
+            'transcode_bit_rate': '10M',
+        }
+    ),
+    DeviceProfile(
+        {
+            'name': 'Web Browser',
+            'force_player': 'exo',
+            'h264_eight': 'hard',
+            'h264_ten': 'hard',
+            'h265_eight': 'hard',
+            'h265_ten': 'hard',
+            'av1': 'hard',
+            'vp9': 'hard',
+            'transcode_container': 'webm',
+            'transcode_video_codec': 'vp9',
+            'transcode_audio_codec': 'opus',
+        }
+    ),
 ]
 
 default_device = 'Google Streamer'
@@ -135,7 +151,8 @@ device_lookup = {}
 for device in device_list:
     device_lookup[device.name] = device
 
-def get_device(profile_name:str):
+
+def get_device(profile_name: str):
     if not profile_name or not profile_name in device_lookup:
         return device_lookup[default_device]
     return device_lookup[profile_name]

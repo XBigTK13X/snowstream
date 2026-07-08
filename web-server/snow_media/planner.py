@@ -6,6 +6,7 @@ from log import log
 # Client-side they can determine if exo/mpv should be used, and other similar actions
 # Server-side they can force the transcode command builder to use different arguments
 
+
 class PlaybackPlan:
     def __init__(self):
         self.player = 'mpv'
@@ -22,11 +23,8 @@ class PlaybackPlan:
         self.audio_requires_passthrough = {}
         self.reasons = []
 
-def create_plan(
-        device_profile:str,
-        snowstream_info:dict,
-        video_kind:str=None
-    ):
+
+def create_plan(device_profile: str, snowstream_info: dict, video_kind: str = None):
     device = snow_media.device.get_device(device_profile)
     plan = PlaybackPlan()
 
@@ -44,6 +42,10 @@ def create_plan(
     if device.transcode.bit_rate:
         plan.transcode_bit_rate = device.transcode.bit_rate
 
+    if video_kind == 'youtube':
+        plan.player = 'exo'
+        plan.reasons.append('mpv cannot handle high fps high resolution youtube')
+
     if snowstream_info and 'tracks' in snowstream_info:
         # Video plans
         if 'video' in snowstream_info['tracks']:
@@ -59,13 +61,21 @@ def create_plan(
             if 'hdr_compatibility' in video_track and video_track['hdr_compatibility']:
                 hdr_kind = video_track['hdr_compatibility'].lower()
                 if '10+' in hdr_kind and not device.video.hdr.ten_plus:
-                    plan.video_filter_kind = snow_media.filter_kind.hdr_ten_plus_to_hdr_ten
+                    plan.video_filter_kind = (
+                        snow_media.filter_kind.hdr_ten_plus_to_hdr_ten
+                    )
                     plan.video_requires_transcode = True
                     plan.reasons.append('Device does not support HDR10+ video')
-            if not hdr_kind and 'hdr_format' in video_track and video_track['hdr_format']:
+            if (
+                not hdr_kind
+                and 'hdr_format' in video_track
+                and video_track['hdr_format']
+            ):
                 hdr_kind = video_track['hdr_format'].lower()
                 if 'dolby vision' in hdr_kind and not device.video.hdr.dolby_vision:
-                    plan.video_filter_kind = snow_media.filter_kind.dolby_vision_to_hdr_ten
+                    plan.video_filter_kind = (
+                        snow_media.filter_kind.dolby_vision_to_hdr_ten
+                    )
                     plan.video_requires_transcode = True
                     plan.reasons.append('Device does not support Dolby Vision video')
 
@@ -78,11 +88,19 @@ def create_plan(
                     if device.video.av1 == 'soft':
                         plan.mpv_decoding_mode = 'no'
 
-            if device.video.h265.ten == 'soft' and 'hevc' in video_track['format'].lower() and '10' in video_track['bit_depth']:
+            if (
+                device.video.h265.ten == 'soft'
+                and 'hevc' in video_track['format'].lower()
+                and '10' in video_track['bit_depth']
+            ):
                 plan.mpv_decoding_mode = 'no'
                 plan.reasons.append('Device cannot hardware accelerate h265 10 bit')
 
-            if device.video.h264.ten == 'soft' and 'avc' in video_track['format'].lower() and '10' in video_track['bit_depth']:
+            if (
+                device.video.h264.ten == 'soft'
+                and 'avc' in video_track['format'].lower()
+                and '10' in video_track['bit_depth']
+            ):
                 plan.mpv_decoding_mode = 'no'
                 plan.reasons.append('Device cannot hardware accelerate h264 10 bit')
 
@@ -90,44 +108,80 @@ def create_plan(
         if 'audio' in snowstream_info['tracks']:
             for audio_track in snowstream_info['tracks']['audio']:
                 if 'codec' in audio_track:
-                    audio_format = audio_track.get('format_full','').lower()
+                    audio_format = audio_track.get('format_full', '').lower()
                     if 'truehd' in audio_track['codec'].lower():
                         if device.audio.dolby.hd == 'passthrough':
-                            plan.audio_requires_passthrough[audio_track['audio_index']] = True
-                            plan.reasons.append('Device supports passthrough truehd audio via exo')
+                            plan.audio_requires_passthrough[
+                                audio_track['audio_index']
+                            ] = True
+                            plan.reasons.append(
+                                'Device supports passthrough truehd audio via exo'
+                            )
                         else:
-                            plan.audio_requires_transcode[audio_track['audio_index']] = True
+                            plan.audio_requires_transcode[
+                                audio_track['audio_index']
+                            ] = True
                             plan.reasons.append('Device does not support TrueHD audio')
                     if 'atmos' in audio_format:
                         if 'digital plus' in audio_format:
                             if device.audio.dolby.digital_plus == 'passthrough':
-                                plan.audio_requires_passthrough[audio_track['audio_index']] = True
-                                plan.reasons.append('Device supports passthrough ddp atmos audio via exo')
+                                plan.audio_requires_passthrough[
+                                    audio_track['audio_index']
+                                ] = True
+                                plan.reasons.append(
+                                    'Device supports passthrough ddp atmos audio via exo'
+                                )
                             else:
-                                plan.audio_requires_transcode[audio_track['audio_index']] = True
-                                plan.reasons.append('Device does not support ddp atmos audio')
+                                plan.audio_requires_transcode[
+                                    audio_track['audio_index']
+                                ] = True
+                                plan.reasons.append(
+                                    'Device does not support ddp atmos audio'
+                                )
                         else:
                             if device.audio.dolby.atmos == 'passthrough':
-                                plan.audio_requires_passthrough[audio_track['audio_index']] = True
-                                plan.reasons.append('Device supports passthrough atmos audio via exo')
+                                plan.audio_requires_passthrough[
+                                    audio_track['audio_index']
+                                ] = True
+                                plan.reasons.append(
+                                    'Device supports passthrough atmos audio via exo'
+                                )
                             else:
-                                plan.audio_requires_transcode[audio_track['audio_index']] = True
-                                plan.reasons.append('Device does not support atmos audio')
+                                plan.audio_requires_transcode[
+                                    audio_track['audio_index']
+                                ] = True
+                                plan.reasons.append(
+                                    'Device does not support atmos audio'
+                                )
                     if 'dts' in audio_format and 'x' in audio_format:
                         if device.audio.dts.x == 'passthrough':
-                            plan.audio_requires_passthrough[audio_track['audio_index']] = True
-                            plan.reasons.append('Device supports passthrough dts x audio via exo')
+                            plan.audio_requires_passthrough[
+                                audio_track['audio_index']
+                            ] = True
+                            plan.reasons.append(
+                                'Device supports passthrough dts x audio via exo'
+                            )
                         else:
-                            plan.audio_requires_transcode[audio_track['audio_index']] = True
+                            plan.audio_requires_transcode[
+                                audio_track['audio_index']
+                            ] = True
                             plan.reasons.append('Device does not support dts x audio')
                     if 'dts' in audio_format and 'hd' in audio_format:
                         if device.audio.dts.hd == 'passthrough':
-                            plan.audio_requires_passthrough[audio_track['audio_index']] = True
-                            plan.reasons.append('Device supports passthrough dts hd audio via exo')
+                            plan.audio_requires_passthrough[
+                                audio_track['audio_index']
+                            ] = True
+                            plan.reasons.append(
+                                'Device supports passthrough dts hd audio via exo'
+                            )
                         else:
-                            plan.audio_requires_transcode[audio_track['audio_index']] = True
+                            plan.audio_requires_transcode[
+                                audio_track['audio_index']
+                            ] = True
                             plan.reasons.append('Device does not support dts hd audio')
 
         if not plan.reasons:
-            plan.reasons.append('No plan needed. Device can play the media or fallback to transcode')
+            plan.reasons.append(
+                'No plan needed. Device can play the media or fallback to transcode'
+            )
     return plan

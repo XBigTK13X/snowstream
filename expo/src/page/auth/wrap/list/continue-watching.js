@@ -37,6 +37,7 @@ export function ContinueWatchingListPage(props) {
                     headers={tabs}>
                     {continueWatchingList.map((kind) => {
                         return <C.SnowPosterGrid
+                            overlayTitle
                             disableWatched
                             items={kind.items}
                         />

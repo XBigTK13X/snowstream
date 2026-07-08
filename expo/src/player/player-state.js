@@ -93,7 +93,7 @@ export const playerState = proxy({
     },
 
     get forceExo() {
-        if (this.routeParams?.forcePlayer === 'exo') {
+        if (this.routeParams?.forcePlayer === 'exo' || this.routeParams?.forcePlayer === 'rnv') {
             return true
         }
         if (this.routeParams?.videoIsHdr && this.routeParams?.forcePlayer !== 'mpv') {

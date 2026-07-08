@@ -44,7 +44,7 @@ function SnowPosterGridW(props) {
                 : null}
             <Snow.ImageGrid
                 {...scaleProps}
-                overlayTitle
+                overlayTitle={props.overlayTitle}
                 focusStart={props.focusStart}
                 focusKey={props.focusKey}
                 parentPath={props.parentPath}

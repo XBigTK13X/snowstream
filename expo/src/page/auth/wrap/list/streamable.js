@@ -48,6 +48,14 @@ function StreamableWithGuideButton(props) {
 
 function StreamableButton(props) {
     let name = props.streamable.name_display ? props.streamable.name_display : props.streamable.name
+    let navParams = {
+        streamSourceId: props.streamSource.id,
+        streamableId: props.streamable.id,
+    }
+    if (props.streamSource.kind === "TubeArchivist") {
+        navParams.forcePlayer = 'rnv'
+    }
+
     return (
         <C.SnowTextButton
             tall
@@ -56,16 +64,12 @@ function StreamableButton(props) {
             title={name}
             onPress={props.navPush({
                 path: props.routes.streamablePlay,
-                params: {
-                    streamSourceId: props.streamSource.id,
-                    streamableId: props.streamable.id,
-                }
+                params: navParams
             })}
             onLongPress={props.navPush({
                 path: props.routes.streamablePlay,
                 params: {
-                    streamSourceId: props.streamSource.id,
-                    streamableId: props.streamable.id,
+                    ...navParams,
                     transcode: 'true'
                 }
             })}

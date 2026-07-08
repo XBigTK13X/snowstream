@@ -88,7 +88,7 @@ export default function SnowVideoControls(props) {
             <Snow.View yy={1}>
                 <Snow.RangeSlider
                     focusKey="seekbar"
-                    width={750}
+                    width={SnowStyle.isPortrait ? 350 : 750}
                     debounce={true}
                     percent={player.progressPercent}
                     onValueChange={onPercentChange}

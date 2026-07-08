@@ -115,7 +115,7 @@ export function WatchableListPage(props) {
                 <C.SnowGrid focusKey="admin-buttons">
                     {buttons}
                 </C.SnowGrid>
-                <Grid focusStart focusKey="watchable-items" items={items} />
+                <Grid focusStart focusKey="watchable-items" overlayTitle={props.overlayTitle} items={items} />
             </C.SnowView>
         )
     }

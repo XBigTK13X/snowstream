@@ -15,6 +15,7 @@ export default function ShowListPage() {
     }
     return (
         <WatchableListPage
+            overlayTitle
             kind="Shelf"
             loadItems={loadItems}
             toggleShowPlaylisted={toggleShowPlaylisted}
