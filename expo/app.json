@@ -40,6 +40,7 @@
     ],
     "splash": {
       "image": "./assets/icon/splash.png",
+      "resizeMode": "contain",
       "backgroundColor": "#FD6F01"
     },
     "icon": "./assets/icon/appicon.png",
@@ -47,6 +48,9 @@
     "slug": "snowstream",
     "orientation": "landscape",
     "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FD6F01"
+      },
       "package": "com.simplepathstudios.snowstream",
       "edgeToEdgeEnabled": true,
       "backgroundColor": "#000000",
