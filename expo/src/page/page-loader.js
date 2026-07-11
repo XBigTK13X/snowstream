@@ -14,18 +14,18 @@ import AuthPageLoader from './auth/auth-page-loader'
 
 const appStyle = {
     color: {
-        background: 'black',
-        text: 'rgb(235, 235, 235)',
-        textDark: 'rgb(22, 22, 22)',
-        active: 'rgb(150, 150, 150)',
-        hover: 'rgb(119, 139, 255)',
-        hoverDark: 'rgba(83, 97, 177, 1)',
-        core: 'rgb(219, 158, 44)',
-        coreDark: 'rgb(136, 98, 27)',
-        outlineDark: 'rgb(63, 63, 63)',
-        fade: 'rgb(23, 23, 23)',
-        transparentDark: 'rgba(0,0,0,0.6)',
-        panel: 'rgb(50,50,50)'
+        background: '#000000',
+        text: '#ebebeb',
+        textDark: '#161616',
+        active: '#969696',
+        hover: '#778bff',
+        hoverDark: '#5361b1',
+        core: '#db9e2c',
+        coreDark: '#88621b',
+        outlineDark: '#3f3f3f',
+        fade: '#171717',
+        transparentDark: '#00000099',
+        panel: '#323232'
     }
 }
 
