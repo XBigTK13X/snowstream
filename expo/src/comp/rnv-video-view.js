@@ -2,7 +2,7 @@ import React from 'react'
 import { Platform } from 'react-native'
 import Snow from 'expo-snowui'
 import Player from 'snowstream-player'
-import { useVideoPlayer, VideoView } from 'expo-video'
+import { useVideoPlayer, VideoView } from 'react-native-video'
 
 const isWeb = Platform.OS === 'web'
 
@@ -63,16 +63,11 @@ export default function RnvVideoView(props) {
         }
     }
 
-    const videoPlayer = useVideoPlayer(playerState.videoUrl || '', (instance) => {
+    const nativePlayer = useVideoPlayer(playerState.videoUrl || '', (instance) => {
+        if (!instance) return
         instance.loop = false
         instance.staysActiveInBackground = false
         instance.preservesPitch = true
-
-        if (playerState.isPlaying) {
-            instance.play()
-        } else {
-            instance.pause()
-        }
     })
 
     React.useEffect(() => {
@@ -88,64 +83,62 @@ export default function RnvVideoView(props) {
     }, [])
 
     React.useEffect(() => {
-        if (!videoPlayer) {
-            return
-        }
-
+        if (!nativePlayer) return
         if (playerState.isPlaying) {
-            videoPlayer.play()
+            nativePlayer.play?.()
         } else {
-            videoPlayer.pause()
+            nativePlayer.pause?.()
         }
-    }, [playerState.isPlaying, videoPlayer])
+    }, [playerState.isPlaying, nativePlayer])
 
     React.useEffect(() => {
-        if (playerState.seekToSeconds > -1 && videoPlayer) {
-            videoPlayer.currentTime = playerState.seekToSeconds
-        }
-    }, [playerState.seekToSeconds, videoPlayer])
-
-    React.useEffect(() => {
-        if (!videoPlayer) {
-            return
-        }
-
-        const statusSub = videoPlayer.addListener('statusChange', (payload) => {
-            onRnvEvent('onPlaybackStateChanged')(payload)
-            if (payload.status === 'error' && payload.error) {
-                onError(payload.error)
+        if (playerState.seekToSeconds > -1 && nativePlayer) {
+            if (typeof nativePlayer.seekBy === 'function') {
+                nativePlayer.seekBy(playerState.seekToSeconds)
+            } else if (typeof nativePlayer.seek === 'function') {
+                nativePlayer.seek(playerState.seekToSeconds)
             }
-        })
+        }
+    }, [playerState.seekToSeconds, nativePlayer])
 
-        const playToEndSub = videoPlayer.addListener('playToEnd', () => {
-            onRnvEvent('onEnd')()
-        })
+    React.useEffect(() => {
+        if (!nativePlayer) return
 
-        const timeUpdateSub = videoPlayer.addListener('timeUpdate', (payload) => {
-            onRnvEvent('onProgress')(payload)
-        })
+        if (playerState.audioTrackIndex >= 0 && nativePlayer.audioTracks) {
+            const track = nativePlayer.audioTracks[playerState.audioTrackIndex]
+            if (track) nativePlayer.selectedAudioTrack = track
+        }
 
-        const sourceChangeSub = videoPlayer.addListener('sourceChange', (payload) => {
-            onRnvEvent('onLoadStart')(payload)
-        })
+        if (playerState.subtitleTrackIndex >= 0 && nativePlayer.textTracks) {
+            const track = nativePlayer.textTracks[playerState.subtitleTrackIndex]
+            if (track) nativePlayer.selectedTextTrack = track
+        } else if (playerState.subtitleTrackIndex === -1) {
+            nativePlayer.selectedTextTrack = undefined
+        }
+    }, [nativePlayer, playerState.audioTrackIndex, playerState.subtitleTrackIndex])
 
-        const volumeChangeSub = videoPlayer.addListener('volumeChange', (payload) => {
-            onRnvEvent('onVolumeChange')(payload)
-        })
+    React.useEffect(() => {
+        if (!nativePlayer || typeof nativePlayer.addListener !== 'function') return
 
-        const playbackRateSub = videoPlayer.addListener('playbackRateChange', (payload) => {
-            onRnvEvent('onPlaybackRateChange')(payload)
-        })
+        const subProgress = nativePlayer.addListener('onProgress', (data) => onRnvEvent('onProgress')(data))
+        const subEnd = nativePlayer.addListener('onEnd', () => onRnvEvent('onEnd')())
+        const subLoad = nativePlayer.addListener('onLoad', (data) => onRnvEvent('onLoad')(data))
+        const subError = nativePlayer.addListener('onError', (err) => onError(err))
 
         return () => {
-            statusSub.remove()
-            playToEndSub.remove()
-            timeUpdateSub.remove()
-            sourceChangeSub.remove()
-            volumeChangeSub.remove()
-            playbackRateSub.remove()
+            const removeSub = (sub) => {
+                if (typeof sub === 'function') {
+                    sub()
+                } else if (sub && typeof sub.remove === 'function') {
+                    sub.remove()
+                }
+            }
+            removeSub(subProgress)
+            removeSub(subEnd)
+            removeSub(subLoad)
+            removeSub(subError)
         }
-    }, [videoPlayer])
+    }, [nativePlayer])
 
     if (isWeb) {
         if (!userPlayed) {
@@ -166,24 +159,22 @@ export default function RnvVideoView(props) {
     }
 
     const shade = playerState.subtitleColor.shade * 255
-    const subtitleStyle = {
-        fontSize: playerState.subtitleFontScale * fontSize,
-        color: `rgba(${shade}, ${shade}, ${shade})`,
-        textShadowColor: 'rgba(0, 0, 0)',
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 5,
-        opacity: 0.9
-    }
 
     return (
         <VideoView
             style={styles.video}
-            player={videoPlayer}
-            nativeControls={false}
-            contentFit="contain"
-            allowsFullscreen={false}
-            allowsPictureInPicture={false}
-            subtitleStyle={subtitleStyle}
+            player={nativePlayer}
+            controls={false}
+            resizeMode="contain"
+            viewType="surface"
+            subtitleStyle={{
+                fontSize: playerState.subtitleFontScale * fontSize,
+                color: `rgba(${shade}, ${shade}, ${shade})`,
+                textShadowColor: 'rgba(0, 0, 0)',
+                textShadowOffset: { width: 1, height: 1 },
+                textShadowRadius: 5,
+                opacity: 0.9
+            }}
         />
     )
 }

@@ -1,6 +1,6 @@
 {
     "name": "snowstream",
-    "version": "1.6.4",
+    "version": "1.6.2",
     "dependencies": {
         "@sentry/react-native": "7.11.0",
         "axios": "1.19.0",
@@ -13,13 +13,14 @@
         "expo-secure-store": "57.0.1",
         "expo-snowui": "1.8.1",
         "expo-splash-screen": "57.0.5",
-        "expo-video": "57.0.2",
         "react": "19.2.8",
         "react-dom": "19.2.8",
         "react-native": "npm:react-native-tvos@0.86.2-0",
+        "react-native-nitro-modules": "^0.36.5",
         "react-native-safe-area-context": "5.7.0",
         "react-native-screens": "4.26.2",
         "react-native-uuid": "2.0.4",
+        "react-native-video": "7.0.0-beta.10",
         "react-native-web": "0.21.2",
         "use-debounce": "10.1.1",
         "valtio": "2.1.8"
