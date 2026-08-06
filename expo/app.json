@@ -1,6 +1,6 @@
 {
   "expo": {
-    "version": "1.6.2",
+    "version": "1.6.3",
     "scheme": "com.simplepathstudios.snowstream",
     "newArchEnabled": true,
     "plugins": [
@@ -14,7 +14,6 @@
       [
         "expo-navigation-bar"
       ],
-      "react-native-video",
       [
         "expo-build-properties",
         {
@@ -52,7 +51,6 @@
         "backgroundColor": "#FD6F01"
       },
       "package": "com.simplepathstudios.snowstream",
-      "edgeToEdgeEnabled": true,
       "backgroundColor": "#000000",
       "versionCode": 1
     },
