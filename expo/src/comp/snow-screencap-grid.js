@@ -3,11 +3,14 @@ import Snow from 'expo-snowui'
 import { Asset } from '../asset'
 import { useAppContext } from '../app-context'
 
-export function SnowScreencapGridW(props) {
+export function SnowScreencapGrid(props) {
     const { apiClient, navToItem } = useAppContext()
     const { SnowStyle } = Snow.useSnowContext(props)
 
     const getImageUrl = (item) => {
+        if (!props.disableWatched && !item.watched) {
+            return null
+        }
         let thumbnailUrl = null
         if (item.thumbnail_web_path) {
             thumbnailUrl = item.thumbnail_web_path
@@ -17,9 +20,24 @@ export function SnowScreencapGridW(props) {
         }
         return thumbnailUrl
     }
+    const getItemImageSource = (item) => {
+        if (!props.disableWatched && !item.watched) {
+            return Asset.image.spoiler.screencap
+        }
+        return null
+    }
+
     const getItemImageFallback = () => {
         return Asset.image.missing.screencap
     }
+
+    const getItemName = (item) => {
+        if (!props.disableWatched && !item.watched) {
+            return item?.name?.split(' - ')[0]
+        }
+        return item.name
+    }
+
     const onLongPress = (item) => {
         apiClient.toggleItemWatched(item)
     }
@@ -54,8 +72,9 @@ export function SnowScreencapGridW(props) {
                 wideImage={true}
                 longPressToggle={true}
                 disableToggle={props.disableWatched}
-                getItemName={(item) => { return item.name }}
+                getItemName={getItemName}
                 getItemImageUrl={getImageUrl}
+                getItemImageSource={getItemImageSource}
                 getItemImageFallback={getItemImageFallback}
                 getItemToggleStatus={getItemToggleStatus}
                 onPress={navToItem}
@@ -63,9 +82,5 @@ export function SnowScreencapGridW(props) {
         </Snow.FillView>
     )
 }
-
-SnowScreencapGridW.isSnowFocusWired = true
-
-export const SnowScreencapGrid = SnowScreencapGridW
 
 export default SnowScreencapGrid

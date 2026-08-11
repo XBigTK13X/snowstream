@@ -4,7 +4,7 @@ import { Asset } from '../asset'
 import { useAppContext } from '../app-context'
 
 
-function SnowPosterGridW(props) {
+export function SnowPosterGrid(props) {
     const { navToItem, apiClient } = useAppContext()
     const { SnowStyle } = Snow.useSnowContext(props)
 
@@ -64,9 +64,5 @@ function SnowPosterGridW(props) {
         </>
     )
 }
-
-SnowPosterGridW.isSnowFocusWired = true
-
-export const SnowPosterGrid = SnowPosterGridW
 
 export default SnowPosterGrid

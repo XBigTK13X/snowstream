@@ -8,7 +8,8 @@ export default function KeepsakeDetailsPage(props) {
         pushModal,
         openOverlay,
         clearModals,
-        closeOverlay
+        closeOverlay,
+        SnowStyle
     } = C.useSnowContext(props)
 
 
@@ -97,11 +98,10 @@ export default function KeepsakeDetailsPage(props) {
         videos = (
             <C.SnowView>
                 <C.SnowLabel>Videos</C.SnowLabel>
-                <C.SnowGrid focusStart focusKey={videoFocusKey} wide={true}>
+                <C.SnowGrid itemsPerRow={SnowStyle.isPortrait ? 2 : 4} focusStart focusKey={videoFocusKey} wide={true}>
                     {keepsake.videos.map((video, videoIndex) => {
                         return (
                             <C.SnowImageButton
-                                overlayTitle
                                 wide={true}
                                 key={videoIndex}
                                 title={video.name}
