@@ -7,4 +7,4 @@ fi
 
 cd web-server
 
-alembic revision -m "$1"
+uv run alembic revision -m "$1"

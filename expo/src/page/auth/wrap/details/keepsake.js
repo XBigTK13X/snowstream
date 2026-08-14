@@ -183,12 +183,9 @@ export default function KeepsakeDetailsPage(props) {
                 <C.SnowLabel>Directories</C.SnowLabel>
                 <C.SnowGrid {...focus} >
                     {keepsake.directories.map((dir, dirIndex) => {
-                        return (
-                            <C.SnowTextButton
-                                tall
-                                title={dir.display}
-                                key={dirIndex}
-                                onPress={navPush({
+                        const pressDir = () => {
+                            try {
+                                navPush({
                                     path: routes.keepsakeDetails,
                                     params: {
                                         shelfId: currentRoute.routeParams.shelfId,
@@ -196,8 +193,20 @@ export default function KeepsakeDetailsPage(props) {
                                         subdirectory64: C.Snow.toBase64(dir.path),
                                         seekToSeconds: 0
                                     },
-                                    replace: false
-                                })}
+                                    replace: false,
+                                    func: false
+                                })
+                            }
+                            catch (err) {
+                                console.log({ err, dir })
+                            }
+                        }
+                        return (
+                            <C.SnowTextButton
+                                tall
+                                title={dir.display}
+                                key={dirIndex}
+                                onPress={pressDir}
                             />
                         )
                     })}
