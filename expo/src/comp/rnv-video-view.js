@@ -121,7 +121,7 @@ export default function RnvVideoView(props) {
         if (!nativePlayer || typeof nativePlayer.addListener !== 'function') return
 
         const subProgress = nativePlayer.addListener('onProgress', (data) => onRnvEvent('onProgress')(data))
-        const subEnd = nativePlayer.addListener('onEnd', () => onRnvEvent('onEnd')())
+        const subEnd = nativePlayer.addListener('onPlaybackEnded', () => onRnvEvent('onPlaybackEnded')())
         const subLoad = nativePlayer.addListener('onLoad', (data) => onRnvEvent('onLoad')(data))
         const subError = nativePlayer.addListener('onError', (err) => onError(err))
 
