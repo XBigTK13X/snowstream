@@ -1,3 +1,5 @@
+expo/android/
+expo/ios/
 .kotlin/
 db-dump/
 .snowstream/

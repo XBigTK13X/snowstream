@@ -5,6 +5,19 @@
     "newArchEnabled": true,
     "plugins": [
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#FD6F01",
+          "android": {
+            "image": "./assets/icon/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#FD6F01"
+          }
+        }
+      ],
+      [
         "@react-native-tvos/config-tv",
         {
           "androidTVBanner": "./assets/icon/android/tvbanner.png"
@@ -38,17 +51,13 @@
         }
       ]
     ],
-    "splash": {
-      "image": "./assets/icon/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FD6F01"
-    },
     "icon": "./assets/icon/appicon.png",
     "name": "snowstream",
     "slug": "snowstream",
     "orientation": "landscape",
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/icon/appicon.png",
         "backgroundColor": "#FD6F01"
       },
       "package": "com.simplepathstudios.snowstream",
