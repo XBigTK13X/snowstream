@@ -327,7 +327,7 @@ class PlayerActions {
             } else {
                 this.onAddLog(eventInfo)
             }
-            if (eventInfo?.data?.event === 'onPlaybackEnded') {
+            if (eventInfo?.data?.event === 'onEnd') {
                 this.onPlaybackComplete()
             }
         } else if (eventInfo?.kind === 'mpvevent') {
