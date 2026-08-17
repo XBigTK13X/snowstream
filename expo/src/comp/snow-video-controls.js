@@ -10,7 +10,7 @@ export default function SnowVideoControls(props) {
         progress: {
             flexBasis: '100%',
             textAlign: 'center',
-            fontWeight: 'bold',
+            fontWeight: 'bold'
         },
         player: {
             padding: 30,
@@ -22,8 +22,9 @@ export default function SnowVideoControls(props) {
     const playerKind = player.playerKind
 
     const [logTitle, setLogTitle] = React.useState('Persist Logs')
-
     const [controlsVisible, setControlsVisible] = React.useState(true)
+    const [localPercent, setLocalPercent] = React.useState(null)
+    const isInteractingRef = React.useRef(false)
 
     React.useEffect(() => {
         return () => {
@@ -81,16 +82,25 @@ export default function SnowVideoControls(props) {
 
     let slider = null
     if (player.durationSeconds > 0) {
-        const onPercentChange = (percent) => {
-            Player.action.onProgress(null, 'manual-seek', percent);
+        const activePercent = isInteractingRef.current && localPercent !== null
+            ? localPercent
+            : player.progressPercent
+
+        const onPercentChange = (percentValue) => {
+            isInteractingRef.current = true
+            setLocalPercent(percentValue)
+            Player.action.onProgress(null, 'manual-seek', percentValue)
+            isInteractingRef.current = false
+            setLocalPercent(null)
         }
+
         slider = (
             <Snow.View yy={1}>
                 <Snow.RangeSlider
                     focusKey="seekbar"
                     width={SnowStyle.isPortrait ? 350 : 750}
                     debounce={true}
-                    percent={player.progressPercent}
+                    percent={activePercent}
                     onValueChange={onPercentChange}
                 />
                 <Snow.Text style={styles.progress}>{player.progressDisplay ?? ''} / {player.durationDisplay}            This video is {player.isTranscode ? 'transcoding' : 'playing directly'} through {player.playerKind === 'rnv' ? 'exo' : 'mpv'}.</Snow.Text>
@@ -168,19 +178,16 @@ export default function SnowVideoControls(props) {
         )
     }
 
-
     return (
-        (
-            <Snow.View parentPath={props.parentPath} style={styles.player}>
-                <Snow.Label center>{player.videoTitle}</Snow.Label>
-                {slider}
-                <Snow.Tabs yy={2} focusStart focusKey="control-tabs" headers={tabs}>
-                    {playbackControls}
-                    {subtitleControls}
-                    {trackControls}
-                    {advancedControls}
-                </Snow.Tabs>
-            </Snow.View>
-        )
+        <Snow.View parentPath={props.parentPath} style={styles.player}>
+            <Snow.Label center>{player.videoTitle}</Snow.Label>
+            {slider}
+            <Snow.Tabs yy={2} focusStart focusKey="control-tabs" headers={tabs}>
+                {playbackControls}
+                {subtitleControls}
+                {trackControls}
+                {advancedControls}
+            </Snow.Tabs>
+        </Snow.View>
     )
 }
