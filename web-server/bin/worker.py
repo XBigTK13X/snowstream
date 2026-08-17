@@ -1,5 +1,6 @@
 from log import log
 from settings import config
+
 config.validate(log)
 
 from db import db
@@ -19,23 +20,26 @@ import message.handler.clean_file_records
 import message.handler.delete_media_records
 import message.handler.identify_unknown_media
 import message.handler.read_media_files
+import message.handler.regen_screencap_thumbnails
 import message.handler.sanitize_file_properties
 import message.handler.scan_shelves_content
 import message.handler.stream_sources_refresh
 import message.handler.update_media_files
 
 handlers = {
-    'apply_directory_tag': message.handler.apply_directory_tag,
-    'channel_guide_refresh': message.handler.channel_guide_refresh,
-    'clean_file_records': message.handler.clean_file_records,
-    'delete_media_records': message.handler.delete_media_records,
-    'identify_unknown_media': message.handler.identify_unknown_media,
-    'read_media_files': message.handler.read_media_files,
-    'update_media_files': message.handler.update_media_files,
-    'sanitize_file_properties': message.handler.sanitize_file_properties,
+    "apply_directory_tag": message.handler.apply_directory_tag,
+    "channel_guide_refresh": message.handler.channel_guide_refresh,
+    "clean_file_records": message.handler.clean_file_records,
+    "delete_media_records": message.handler.delete_media_records,
+    "identify_unknown_media": message.handler.identify_unknown_media,
+    "read_media_files": message.handler.read_media_files,
+    "regen_screencap_thumbnails": message.handler.regen_screencap_thumbnails,
+    "update_media_files": message.handler.update_media_files,
+    "sanitize_file_properties": message.handler.sanitize_file_properties,
     "scan_shelves_content": message.handler.scan_shelves_content,
     "stream_sources_refresh": message.handler.stream_sources_refresh,
 }
+
 
 def start():
     global max_failures
@@ -45,11 +49,11 @@ def start():
     def callback(channel, method, properties, body):
         global max_failures
         global delay_seconds
-        log.info('')
+        log.info("")
         payload = json.loads(body)
         job_id = payload["job_id"]
         job = db.op.get_job_by_id(job_id=job_id)
-        if job == None or job.status == 'complete':
+        if job == None or job.status == "complete":
             # Something glitched out with rabbitmq
             # but snowstream completed the previous run of the job
             # ack the message so rabbitmq doesn't requeue it
@@ -57,28 +61,39 @@ def start():
             max_failures = 4
             delay_seconds = 5
             return
-        user = 'unknown' if 'auth_user' in payload else payload['auth_user']
-        db.op.update_job(job_id=job_id,message=f"Message received from {user}. {message.read.count()} messages remain in queue.")
-        db.op.update_job(job_id=job_id,message="\n"+json.dumps(payload,indent=4))
+        user = "unknown" if "auth_user" in payload else payload["auth_user"]
+        db.op.update_job(
+            job_id=job_id,
+            message=f"Message received from {user}. {message.read.count()} messages remain in queue.",
+        )
+        db.op.update_job(job_id=job_id, message="\n" + json.dumps(payload, indent=4))
         if "kind" in payload:
             db.op.update_job(
                 job_id=job_id,
                 message="A worker is processing the job.",
-                status="running"
+                status="running",
             )
             try:
                 kind = payload["kind"]
                 if kind in handlers:
-                    scope = JobMediaScope(job_id,payload['input'])
+                    scope = JobMediaScope(job_id, payload["input"])
                     if handlers[kind].handle(scope=scope):
-                        db.op.update_job(job_id=job_id, message="The job has completed successfully.", status="complete")
+                        db.op.update_job(
+                            job_id=job_id,
+                            message="The job has completed successfully.",
+                            status="complete",
+                        )
                     else:
-                        db.op.update_job(job_id=job_id, message="The job has completed in failure.", status="failed")
+                        db.op.update_job(
+                            job_id=job_id,
+                            message="The job has completed in failure.",
+                            status="failed",
+                        )
                 else:
                     db.op.update_job(
                         job_id=job_id,
                         message=f"No registered handler for kind [{payload['kind']}]",
-                        status="ignored"
+                        status="ignored",
                     )
             except Exception as e:
                 db.op.update_job(

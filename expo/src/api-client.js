@@ -170,6 +170,7 @@ export class ApiClient {
     createJobDeleteMediaRecords = (details) => { return this.createScopedJob('delete_media_records', details) }
     createJobIdentifyUnknownMedia = (details) => { return this.createScopedJob('identify_unknown_media', details) }
     createJobReadMediaFiles = (details) => { return this.createScopedJob('read_media_files', details) }
+    createJobRegenScreencapThumbnails = (details) => { return this.createScopedJob('regen_screencap_thumbnails', details) }
     createJobSanitizeFileProperties = (details) => { return this.createScopedJob('sanitize_file_properties', details) }
     createJobShelvesScan = (details) => { return this.createScopedJob('scan_shelves_content', details) }
     createJobStreamSourcesRefresh = (details) => { return this.createScopedJob('stream_sources_refresh', details) }
