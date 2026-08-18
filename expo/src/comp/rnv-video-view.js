@@ -93,11 +93,7 @@ export default function RnvVideoView(props) {
 
     React.useEffect(() => {
         if (playerState.seekToSeconds > -1 && nativePlayer) {
-            if (typeof nativePlayer.seekBy === 'function') {
-                nativePlayer.seekBy(playerState.seekToSeconds)
-            } else if (typeof nativePlayer.seek === 'function') {
-                nativePlayer.seek(playerState.seekToSeconds)
-            }
+            nativePlayer.seekTo(playerState.seekToSeconds)
         }
     }, [playerState.seekToSeconds, nativePlayer])
 

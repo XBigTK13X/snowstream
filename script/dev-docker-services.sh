@@ -52,7 +52,18 @@ docker run -d \
     -v /mnt/m-media/movie:/mnt/m-media/movie \
     $SNOWSTREAM_DOCKER_IMAGE
 
-sleep 12
+target_phrase="database system is ready to accept connections"
+timeout_seconds=60
+elapsed_seconds=0
+
+until docker logs snowstream 2>&1 | grep -q "$target_phrase"; do
+    if [ "$elapsed_seconds" -ge "$timeout_seconds" ]; then
+        echo "Timed out waiting for database to be ready" >&2
+        exit 1
+    fi
+    sleep 1
+    elapsed_seconds=$((elapsed_seconds + 1))
+done
 
 if [ -z "$1" ]; then
     script/db-migrate.sh
