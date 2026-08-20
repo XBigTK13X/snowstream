@@ -11,6 +11,7 @@ class PlayerActions {
         this.apiClient = null
         this.navPush = null
         this.navPop = null
+        this.navReset = null
         this.clearModals = null
         this.closeOverlay = null
         this.loadVideoHandler = null
@@ -56,6 +57,11 @@ class PlayerActions {
             this.navPop = deps.navPop
             playerState.navPop = deps.navPop
             playerState.hasNavPop = !!deps.navPop
+        }
+        if (!_.isEqual(this.navReset, deps.navReset)) {
+            this.navReset = deps.navReset
+            playerState.navReset = deps.navReset
+            playerState.hasNavReset = !!deps.navReset
         }
         if (!_.isEqual(this.clearModals, deps.clearModals)) {
             this.clearModals = deps.clearModals
@@ -205,17 +211,28 @@ class PlayerActions {
         this.onStopVideo()
     }
 
+    cleanupVideoState = () => {
+        this.onCloseTranscodeSession()
+        playerState.videoUrl = null
+        playerState.videoLoaded = false
+        playerState.videoLoading = false
+        playerState.isVideoViewReady = false
+        playerState.isPlaying = false
+        playerState.progressSeconds = null
+        playerState.manualSeekSeconds = null
+        playerState.controlsVisible = false
+    }
+
     onPlaybackComplete = () => {
         this.onProgress(playerState.durationSeconds, 'playback-complete')
             .then(() => {
                 if (this.onCompleteHandler) {
                     return this.onCompleteHandler(this.apiClient, playerState.routes, this.navPush)
                 } else if (this.navPop) {
-                    return this.navPop()
+                    return this.navPop().then(() => {
+                        this.reset()
+                    })
                 }
-            })
-            .then(() => {
-                this.reset()
             })
     }
 
@@ -226,23 +243,23 @@ class PlayerActions {
         this.clearModals?.()
         this.closeOverlay?.()
 
-        if (goHome && this.navPush) {
-            this.navPush({ path: playerState.routes.landing, func: false })
-            this.reset()
+        if (this.onStopVideoHandler) {
+            this.onStopVideoHandler(this.apiClient, playerState.routes, this.navPush, this.navPop, goHome)
             return
         }
 
-        if (this.onStopVideoHandler) {
-            this.onStopVideoHandler(this.apiClient, playerState.routes, this.navPush)
-            this.reset()
-        } else {
-            if (this.navPop) {
+        if (goHome) {
+            if (this.navReset) {
                 this.navPop()
-                this.reset()
+                this.navReset()
+                return
             }
         }
-    }
 
+        if (this.navPop) {
+            this.navPop()
+        }
+    }
     onVideoReady = () => {
         this.onAddLog({ kind: 'snowstream', message: 'low level video player reports that it is ready to play' })
         playerState.isVideoViewReady = true

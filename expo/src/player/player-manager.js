@@ -13,6 +13,7 @@ export function PlayerManager(props) {
         removeActionListener,
         navPush,
         navPop,
+        navReset,
         clearModals,
         closeOverlay,
         currentRoute,
@@ -35,6 +36,7 @@ export function PlayerManager(props) {
             currentRoute,
             navPop,
             navPush,
+            navReset,
             routes,
         })
     }, [
@@ -46,6 +48,7 @@ export function PlayerManager(props) {
         currentRoute,
         navPop,
         navPush,
+        navReset,
         routes,
     ])
 

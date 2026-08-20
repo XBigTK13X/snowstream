@@ -1,4 +1,5 @@
 import { C, useAppContext } from 'snowstream'
+import { util } from 'expo-snowui'
 import Player from 'snowstream-player'
 
 export default function KeepsakeDetailsPage(props) {
@@ -198,7 +199,7 @@ export default function KeepsakeDetailsPage(props) {
                                 })
                             }
                             catch (err) {
-                                console.log({ err, dir })
+                                util.prettyLog({ err, dir })
                             }
                         }
                         return (

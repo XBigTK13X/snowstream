@@ -1,11 +1,10 @@
 import React from 'react'
 import Snow from 'expo-snowui'
-import { View } from 'react-native'
 import Player from 'snowstream-player'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
-    const { openOverlay, closeOverlay, SnowStyle } = Snow.useSnowContext()
+    const { SnowStyle } = Snow.useSnowContext()
     const styles = {
         progress: {
             flexBasis: '100%',
@@ -18,42 +17,11 @@ export default function SnowVideoControls(props) {
         }
     }
     const player = Player.useSnapshot(Player.state)
-
     const playerKind = player.playerKind
 
     const [logTitle, setLogTitle] = React.useState('Persist Logs')
-    const [controlsVisible, setControlsVisible] = React.useState(true)
     const [localPercent, setLocalPercent] = React.useState(null)
     const isInteractingRef = React.useRef(false)
-
-    React.useEffect(() => {
-        return () => {
-            setControlsVisible(true)
-        }
-    }, [])
-
-    React.useEffect(() => {
-        if (!controlsVisible) {
-            openOverlay({
-                props: {
-                    canFocus: true,
-                    focusStart: true,
-                    focusKey: 'hidden-controls',
-                    onPress: () => {
-                        closeOverlay()
-                        setControlsVisible(true)
-                    }
-                }
-            })
-            return () => {
-                setControlsVisible(true)
-            }
-        }
-    }, [controlsVisible])
-
-    if (!controlsVisible) {
-        return <View></View>
-    }
 
     const persistLogs = () => {
         Player.action.savePlaybackLogs().then((response) => {
@@ -114,10 +82,10 @@ export default function SnowVideoControls(props) {
                 Player.action.onResumeVideo()
             }} />
             <Snow.TextButton title="Hide Controls" onPress={() => {
-                setControlsVisible(false)
+                Player.state.controlsVisible = false
             }} />
             <Snow.TextButton title="Stop" onPress={() => {
-                Player.action.onStopVideo()
+                Player.action.onStopVideo(false)
             }} />
             <Snow.TextButton title="Home" onPress={() => {
                 Player.action.onStopVideo(true)

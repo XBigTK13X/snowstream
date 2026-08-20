@@ -1,21 +1,24 @@
-import { C, Player, useAppContext } from 'snowstream'
+import { C, useAppContext } from 'snowstream'
+import { util } from 'expo-snowui'
 import PlayMediaPage from './media'
+import Player from 'snowstream-player'
 
-export default function PlayPlayingQueuePage() {
-    const { navToItem } = useAppContext()
+export default function PlayPlayingQueuePage(props) {
+    const { routes } = useAppContext()
+    const { currentRoute, navReset, navPop } = C.useSnowContext(props)
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
+    const [isTransitioning, setIsTransitioning] = C.React.useState(false)
+    const [queueIndex, setQueueIndex] = C.React.useState(
+        currentRoute?.routeParams?.queueIndex ?? null
+    )
     const playingQueueRef = C.React.useRef(playingQueue)
-
-    C.React.useEffect(() => {
-        playingQueueRef.current = playingQueue
-    }, [playingQueue])
 
     const loadVideo = (apiClient, routeParams, deviceProfile) => {
         return apiClient.getPlayingQueue({
             source: routeParams.playingQueueSource
         }).then(queueResponse => {
             setPlayingQueue(queueResponse)
-            // This needs to make sure the video file selected is main_feature
+            playingQueueRef.current = queueResponse
             let entry = queueResponse.queue.content[queueResponse.queue.progress]
             if (entry.kind === 'm') {
                 return apiClient.getMovie(entry.id, deviceProfile).then((movieResponse) => {
@@ -57,34 +60,46 @@ export default function PlayPlayingQueuePage() {
         })
     }
 
-    const onComplete = (apiClient, routes, navPush) => {
+    const onComplete = (apiClient, routesContext, navPushContext) => {
         const queue = playingQueueRef?.current
+        let nextProgress = queue.queue.progress + 1
+        if (nextProgress > queue.queue.content.length - 1) {
+            nextProgress = 0
+        }
+        setIsTransitioning(true)
         return apiClient.updatePlayingQueue(
             queue.queue.source,
-            queue.queue.progress + 1
-        )
-            .then(() => {
-                navPush({
-                    path: routes.playingQueuePlay,
-                    params: {
-                        playingQueueSource: queue.queue.source,
-                        queueIndex: queue.queue.progress
-                    },
-                    func: false,
-                    replace: false
-                })
-            })
+            nextProgress
+        ).then(() => {
+            setQueueIndex(nextProgress)
+            setIsTransitioning(false)
+        })
     }
 
-    const onStopVideo = (apiClient, routes, navPush) => {
-        const queue = playingQueueRef?.current
-        if (queue?.item) {
-            navToItem(queue.item)
+    const onStopVideo = (apiClient, routes, navPush, navPop, toHome) => {
+        if (toHome) {
+            navPop()
+            navReset()
+            Player.action.reset()
+            return
         }
+        navPop()
+        Player.action.reset()
     }
+    if (isTransitioning) {
+        return (
+            <C.FillView>
+                <C.SnowHeader style={{ flex: 1 }} center>Getting next queue item.</C.SnowHeader>
+                <C.SnowLabel style={{ flex: 1 }} center>This should only take a moment.</C.SnowLabel>
+            </C.FillView>
+        )
+    }
+
+    const activeIndex = queueIndex ?? playingQueue?.queue?.progress ?? 0
 
     return (
         <PlayMediaPage
+            key={activeIndex}
             loadVideo={loadVideo}
             onComplete={onComplete}
             onStopVideo={onStopVideo}

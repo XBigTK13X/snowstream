@@ -63,7 +63,6 @@ export function WatchableListPage(props) {
                 .then(() => {
                     return props.shuffleAll(apiClient, shelfId)
                 }).then((response) => {
-
                     navPush({
                         path: routes.playingQueuePlay,
                         params: {
