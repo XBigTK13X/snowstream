@@ -1,6 +1,5 @@
 import { C, useAppContext } from 'snowstream'
 import Snow from 'expo-snowui'
-const snowuiPackageInfo = require('expo-snowui/package.json')
 
 export default function LandingPage(props) {
     const { apiClient, routes, config } = useAppContext()
@@ -34,14 +33,6 @@ export default function LandingPage(props) {
 
     if (config.debugVideoUrl) {
         return null
-    }
-
-    const styles = {
-        footer: {
-            width: '100%',
-            textAlign: 'right',
-            color: SnowStyle.color.active
-        }
     }
 
     let destinations = [
@@ -120,7 +111,10 @@ export default function LandingPage(props) {
                     focusStart
                     focusKey="destinations"
                     items={destinations} />
-                <C.SnowText style={styles.footer} center>{`[built ${config.clientBuildDate}] [snowstream v${config.clientVersion}] [snowui v${snowuiPackageInfo.version}]`}</C.SnowText>
+                <C.SnowVersion
+                    appName="snowstream"
+                    appVersion={config.clientVersion}
+                    buildDate={config.clientBuildDate} />
             </>
         )
     }

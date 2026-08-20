@@ -36,6 +36,7 @@ import Snow, {
     SnowText,
     SnowTextButton,
     SnowToggle,
+    SnowVersion,
     SnowView,
     useSnowContext
 } from 'expo-snowui'
@@ -84,6 +85,7 @@ export default {
     SnowTextButton,
     SnowToggle,
     SnowTrackSelector,
+    SnowVersion,
     SnowView,
     Text,
     TouchableOpacity,
