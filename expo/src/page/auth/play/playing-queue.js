@@ -12,6 +12,10 @@ export default function PlayPlayingQueuePage(props) {
         currentRoute?.routeParams?.queueIndex ?? null
     )
     const playingQueueRef = C.React.useRef(playingQueue)
+    const queueIndexRef = C.React.useRef(queueIndex)
+    const isTransitioningRef = C.React.useRef(false)
+
+    queueIndexRef.current = queueIndex
 
     const loadVideo = (apiClient, routeParams, deviceProfile) => {
         return apiClient.getPlayingQueue({
@@ -19,11 +23,12 @@ export default function PlayPlayingQueuePage(props) {
         }).then(queueResponse => {
             setPlayingQueue(queueResponse)
             playingQueueRef.current = queueResponse
-            let entry = queueResponse.queue.content[queueResponse.queue.progress]
+            const targetIndex = queueIndexRef.current ?? queueResponse.queue.progress
+            let entry = queueResponse.queue.content[targetIndex]
             if (entry.kind === 'm') {
                 return apiClient.getMovie(entry.id, deviceProfile).then((movieResponse) => {
                     const videoFile = movieResponse.video_files[routeParams.videoFileIndex ?? 0]
-                    const name = `Queue [${queueResponse.queue.progress + 1}/${queueResponse.queue.length}] - ${movieResponse.name}`
+                    const name = `Queue [${targetIndex + 1}/${queueResponse.queue.length}] - ${movieResponse.name}`
                     return {
                         url: videoFile.network_path,
                         name: name,
@@ -39,7 +44,7 @@ export default function PlayPlayingQueuePage(props) {
             else if (entry.kind === 'e') {
                 return apiClient.getEpisode(entry.id, deviceProfile).then((episodeResponse) => {
                     let name = `${episodeResponse.season.show.name} - ${C.util.formatEpisodeTitle(episodeResponse)}`
-                    name = `Queue [${queueResponse.queue.progress + 1}/${queueResponse.queue.length}] - ${name}`
+                    name = `Queue [${targetIndex + 1}/${queueResponse.queue.length}] - ${name}`
                     const videoFile = episodeResponse.video_files[routeParams.videoFileIndex ?? 0]
                     return {
                         url: videoFile.network_path,
@@ -61,17 +66,36 @@ export default function PlayPlayingQueuePage(props) {
     }
 
     const onComplete = (apiClient, routesContext, navPushContext) => {
+        if (isTransitioningRef.current) {
+            return Promise.resolve()
+        }
+        isTransitioningRef.current = true
+
+        Player.action.reset()
+        setIsTransitioning(true)
+
         const queue = playingQueueRef?.current
-        let nextProgress = queue.queue.progress + 1
-        if (nextProgress > queue.queue.content.length - 1) {
+        const currentIndex = queueIndexRef.current ?? queue?.queue?.progress ?? 0
+        const totalItems = queue?.queue?.content?.length ?? 1
+        let nextProgress = currentIndex + 1
+        if (nextProgress >= totalItems) {
             nextProgress = 0
         }
-        setIsTransitioning(true)
+
+        const source = queue?.queue?.source ?? currentRoute?.routeParams?.playingQueueSource
+
         return apiClient.updatePlayingQueue(
-            queue.queue.source,
+            source,
             nextProgress
         ).then(() => {
+            queueIndexRef.current = nextProgress
             setQueueIndex(nextProgress)
+            setTimeout(() => {
+                isTransitioningRef.current = false
+                setIsTransitioning(false)
+            }, 100)
+        }).catch((error) => {
+            isTransitioningRef.current = false
             setIsTransitioning(false)
         })
     }
@@ -86,6 +110,7 @@ export default function PlayPlayingQueuePage(props) {
         navPop()
         Player.action.reset()
     }
+
     if (isTransitioning) {
         return (
             <C.FillView>

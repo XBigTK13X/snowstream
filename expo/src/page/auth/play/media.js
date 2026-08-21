@@ -1,6 +1,7 @@
 import { C } from 'snowstream'
 import SnowVideoPlayer from '../../../comp/snow-video-player'
 import Player from 'snowstream-player'
+import _ from 'lodash'
 
 export function PlayMediaPage(props) {
     const player = Player.useSnapshot(Player.state)

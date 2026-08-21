@@ -14,8 +14,6 @@ export const initialPlayerState = {
     hasApiClient: false,
     clientOptions: null,
     hasClientOptions: false,
-    config: null,
-    hasConfig: false,
     routes: null,
     hasRoutes: false,
     routePath: null,
@@ -76,7 +74,6 @@ export const playerState = proxy({
         return !!(
             this.hasApiClient &&
             this.hasClientOptions &&
-            this.hasConfig &&
             this.hasRoutes &&
             this.hasNavPush &&
             this.hasNavPop &&

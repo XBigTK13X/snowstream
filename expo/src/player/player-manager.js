@@ -22,7 +22,6 @@ export function PlayerManager(props) {
     const {
         apiClient,
         clientOptions,
-        config,
         routes
     } = useAppContext()
 
@@ -32,7 +31,6 @@ export function PlayerManager(props) {
             clearModals,
             clientOptions,
             closeOverlay,
-            config,
             currentRoute,
             navPop,
             navPush,
@@ -44,7 +42,6 @@ export function PlayerManager(props) {
         clearModals,
         clientOptions,
         closeOverlay,
-        config,
         currentRoute,
         navPop,
         navPush,

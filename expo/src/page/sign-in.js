@@ -99,7 +99,7 @@ export default function SignInPage() {
         }
         userList = (
             <C.SnowView yy={1}>
-                <C.SnowLabel center>Select a user to login to {apiClient.webApiUrl}.</C.SnowLabel>
+                <C.SnowLabel center>Select a user to login to {apiClient?.webApiUrl}.</C.SnowLabel>
                 <C.SnowGrid
                     focusStart
                     focusKey="users"

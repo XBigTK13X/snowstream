@@ -1,8 +1,9 @@
-import Snow from 'expo-snowui'
+import Snow, { util as snowUtil } from 'expo-snowui'
 import _ from 'lodash'
 import { playerState, initialPlayerState } from './player-state'
 import util from '../util'
 import CONST from '../constant'
+import { config } from '../settings'
 
 const MAX_LOGS = 300
 
@@ -20,9 +21,16 @@ class PlayerActions {
         this.onStopVideoHandler = null
         this.updateProgressHandler = null
         this.increaseWatchCountHandler = null
+        this.debug = (message) => {
+            if (config.debugValtio) {
+                snowUtil.prettyLog(message)
+            }
+        }
+        this.debug({ action: "constructor", owner: "player-actions" })
     }
 
     importContexts = (deps) => {
+        this.debug({ owner: 'player-actions', action: 'importContext' })
         if (!_.isEqual(this.apiClient?.authToken, deps.apiClient?.authToken)) {
             this.apiClient = deps.apiClient
             playerState.apiClient = deps.apiClient
@@ -31,10 +39,6 @@ class PlayerActions {
         if (!_.isEqual(playerState.clientOptions, deps.clientOptions)) {
             playerState.clientOptions = deps.clientOptions
             playerState.hasClientOptions = !!deps.clientOptions
-        }
-        if (!_.isEqual(playerState.config, deps.config)) {
-            playerState.config = deps.config
-            playerState.hasConfig = !!deps.config
         }
         if (!_.isEqual(playerState.routes, deps.routes)) {
             playerState.routes = deps.routes
@@ -85,6 +89,7 @@ class PlayerActions {
     }
 
     reset = () => {
+        this.debug({ owner: 'player-actions', action: 'reset' })
         return new Promise(resolve => {
             Object.assign(playerState, initialPlayerState)
             playerState.logs = []
@@ -96,7 +101,6 @@ class PlayerActions {
             this.routeParams = playerState.routeParams
             this.routePath = playerState.routePath
             this.clientOptions = playerState.clientOptions
-            this.config = playerState.config
             this.clearModals = playerState.clearModals
             this.closeOverlay = playerState.closeOverlay
             this.loadVideoHandler = null
@@ -110,6 +114,7 @@ class PlayerActions {
     }
 
     effectSetVideoHandlers = (props) => {
+        this.debug({ owner: 'player-actions', action: 'effectSetVideoHandlers', props: Object.keys(props || {}) })
         this.loadVideoHandler = props?.loadVideo
         this.loadTranscodeHandler = props?.loadTranscode
         this.onCompleteHandler = props?.onComplete
@@ -122,11 +127,14 @@ class PlayerActions {
     effectLoadVideo = () => {
         const loadHandler = playerState.isTranscode ? this.loadTranscodeHandler : this.loadVideoHandler
 
+        this.debug({ owner: 'player-actions', action: 'effectLoadVideo', loadHandler })
+
         if (!loadHandler
             || playerState.videoUrl
             || !playerState.settingsLoaded
             || playerState.videoLoading
         ) {
+            this.debug({ owner: 'player-actions', action: 'effectLoadVideo', message: 'No loadHandler found' })
             return
         }
 
@@ -164,19 +172,23 @@ class PlayerActions {
     }
 
     onPauseVideo = () => {
+        this.debug({ owner: 'player-actions', action: 'onPauseVideo' })
         playerState.controlsVisible = true
         playerState.isPlaying = false
     }
 
     setVideoLogsVisible = (value) => {
+        this.debug({ owner: 'player-actions', action: 'setVideoLogsVisible' })
         playerState.logsVisible = value
     }
 
     savePlaybackLogs = () => {
+        this.debug({ owner: 'player-actions', action: 'savePlaybackLogs' })
         return this.apiClient.savePlaybackLogs(playerState.logs)
     }
 
     onTranscodeSeek = () => {
+        this.debug({ owner: 'player-actions', action: 'onTranscodeSeek' })
         this.onAddLog({ kind: 'snowstream', message: `transcode triggered seek to ${playerState.manualSeekSeconds} seconds` })
         playerState.videoLoaded = false
         playerState.videoLoading = false
@@ -194,6 +206,7 @@ class PlayerActions {
     }
 
     onResumeVideo = () => {
+        this.debug({ owner: 'player-actions', action: 'onResumeVideo' })
         Snow.hideSystemUi()
         playerState.controlsVisible = false
         playerState.isPlaying = true
@@ -207,11 +220,13 @@ class PlayerActions {
     }
 
     onVideoModalBack = () => {
+        this.debug({ owner: 'player-actions', action: 'onVideoModalBack' })
         if (playerState.controlsVisible) return
         this.onStopVideo()
     }
 
     cleanupVideoState = () => {
+        this.debug({ owner: 'player-actions', action: 'cleanupVideoState' })
         this.onCloseTranscodeSession()
         playerState.videoUrl = null
         playerState.videoLoaded = false
@@ -224,6 +239,7 @@ class PlayerActions {
     }
 
     onPlaybackComplete = () => {
+        this.debug({ owner: 'player-actions', action: 'onPlaybackComplete' })
         this.onProgress(playerState.durationSeconds, 'playback-complete')
             .then(() => {
                 if (this.onCompleteHandler) {
@@ -237,6 +253,7 @@ class PlayerActions {
     }
 
     onStopVideo = (goHome) => {
+        this.debug({ owner: 'player-actions', action: 'onStopVideo' })
         this.onCloseTranscodeSession()
         playerState.controlsVisible = false
         playerState.isPlaying = false
@@ -261,12 +278,14 @@ class PlayerActions {
         }
     }
     onVideoReady = () => {
+        this.debug({ owner: 'player-actions', action: 'onVideoReady' })
         this.onAddLog({ kind: 'snowstream', message: 'low level video player reports that it is ready to play' })
         playerState.isVideoViewReady = true
         playerState.isPlaying = true
     }
 
     onAddLog = (logEvent) => {
+        this.debug({ owner: 'player-actions', action: 'onAddLog' })
         if (!playerState.logPlayback) {
             return
         }
@@ -277,6 +296,7 @@ class PlayerActions {
     }
 
     onProgress = async (nextProgressSeconds, source, nextProgressPercent) => {
+        this.debug({ owner: 'player-actions', action: 'onProgress', nextProgressSeconds, source, nextProgressPercent })
         playerState.videoLoaded = true
 
         if (source === 'manual-seek') {
@@ -293,7 +313,7 @@ class PlayerActions {
             }
         }
 
-        const enoughTimeDiff = !playerState.progressSeconds || Math.abs(nextProgressSeconds - playerState.progressSeconds) >= playerState.config.progressMinDeltaSeconds
+        const enoughTimeDiff = !playerState.progressSeconds || Math.abs(nextProgressSeconds - playerState.progressSeconds) >= config.progressMinDeltaSeconds
 
         if (playerState.isPlaying) {
             Snow.hideSystemUi()
@@ -325,6 +345,7 @@ class PlayerActions {
     }
 
     onVideoProgressEvent = (elapsedSeconds) => {
+        this.debug({ owner: 'player-actions', action: 'onVideoProgressEvent', elapsedSeconds })
         let adjustedSeconds = elapsedSeconds
         if (playerState.isTranscode) {
             adjustedSeconds += playerState?.routeParams?.seekToSeconds ?? 0
@@ -333,7 +354,8 @@ class PlayerActions {
     }
 
     onVideoUpdate = (eventInfo) => {
-        if (playerState.config?.debugVideoPlayer) util.log({ eventInfo })
+        this.debug({ owner: 'player-actions', action: 'onVideoUpdate' })
+        if (config.debugVideoPlayer) util.log({ eventInfo })
 
         if (eventInfo?.kind === 'rnvevent' && eventInfo?.data) {
             if (eventInfo?.data?.data?.currentTime) {
@@ -373,6 +395,7 @@ class PlayerActions {
     }
 
     onCriticalError = (error) => {
+        this.debug({ owner: 'player-actions', action: 'onCriticalError', error })
         if (!playerState.isTranscode && this.navPush) {
             const newParams = { ...playerState.routeParams, transcode: true }
             playerState.videoLoaded = false
@@ -386,6 +409,7 @@ class PlayerActions {
     }
 
     isRnvCode = (error, code) => {
+        this.debug({ owner: 'player-actions', action: 'isRnvCode', error, code })
         const rnvError = error?.error
         if (!rnvError) return false
         return (
@@ -397,7 +421,8 @@ class PlayerActions {
     }
 
     onVideoError = (error) => {
-        if (playerState.config?.debugVideoPlayer) util.log({ error })
+        this.debug({ owner: 'player-actions', action: 'onVideoError', error })
+        if (config.debugVideoPlayer) util.log({ error })
         this.onAddLog(error)
         if (error?.kind === 'rnv') {
             if (this.isRnvCode(error, 4) || this.isRnvCode(error, 24001) || this.isRnvCode(error, 24003)) {
@@ -413,12 +438,14 @@ class PlayerActions {
     }
 
     onCloseTranscodeSession = () => {
+        this.debug({ owner: 'player-actions', action: 'onCloseTranscodeSession' })
         if (playerState.transcodeId) {
             this.apiClient.closeTranscodeSession(playerState.transcodeId)
         }
     }
 
     parseVideoPayload = async (response) => {
+        this.debug({ owner: 'player-actions', action: 'parseVideoPayload', response })
         this.onAddLog({
             kind: 'snowstream',
             message: 'video loaded',
@@ -473,6 +500,7 @@ class PlayerActions {
     }
 
     onSelectTrack = (track) => {
+        this.debug({ owner: 'player-actions', action: 'onSelectTrack', track })
         if (track.kind === 'audio') {
             playerState.audioTrackIndex = playerState.audioTrackIndex === track.audio_index ? -1 : track.audio_index
         } else if (track.kind === 'subtitle') {
@@ -481,14 +509,17 @@ class PlayerActions {
     }
 
     setAudioDelaySeconds = (value) => {
+        this.debug({ owner: 'player-actions', action: 'setAudioDelaySeconds', value })
         playerState.audioDelaySeconds = value
     }
 
     setSubtitleDelaySeconds = (value) => {
+        this.debug({ owner: 'player-actions', action: 'setSubtitleDelaySeconds', value })
         playerState.subtitleDelaySeconds = value
     }
 
     changeSubtitleColor = (direction) => {
+        this.debug({ owner: 'player-actions', action: 'changeSubtitleColor', direction })
         const newColor = { ...playerState.subtitleColor }
         newColor.shade += direction * 0.15
         newColor.shade = Math.min(1.0, Math.max(0.0, newColor.shade))
@@ -496,10 +527,12 @@ class PlayerActions {
     }
 
     changeSubtitleFontScale = (direction) => {
+        this.debug({ owner: 'player-actions', action: 'changeSubtitleFontScale', direction })
         playerState.subtitleFontScale += direction * 0.1
     }
 
     getVideoView = (kind, clientOptions) => {
+        this.debug({ owner: 'player-actions', action: 'getVideoView', kind, clientOptions })
         if (playerState.clientOptions?.alwaysUsePlayer === 'null') {
             return require('../comp/null-video-view').default
         }
@@ -512,6 +545,7 @@ class PlayerActions {
     // This was used from the player controls before the valtio rewrite
     // It stopped working and I shut it off to fix later
     toggleTranscode = () => {
+        this.debug({ owner: 'player-actions', action: 'toggleTranscode' })
         playerState.videoLoaded = false
         playerState.videoLoading = false
         playerState.isVideoViewReady = false
@@ -524,6 +558,7 @@ class PlayerActions {
     // This was used from the player controls before the valtio rewrite
     // It stopped working and I shut it off to fix later
     togglePlayerKind = () => {
+        this.debug({ owner: 'player-actions', action: 'togglePlayerKind' })
         playerState.videoLoaded = false
         playerState.videoLoading = false
         playerState.isVideoViewReady = false
