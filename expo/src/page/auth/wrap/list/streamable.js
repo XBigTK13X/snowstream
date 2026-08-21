@@ -77,7 +77,7 @@ function StreamableButton(props) {
     )
 }
 
-export default function StreamableListPage() {
+export default function StreamableListPage(props) {
     const { navPush, currentRoute } = C.useSnowContext()
     const { apiClient, routes } = useAppContext()
     const { SnowStyle } = C.useSnowContext()
@@ -155,6 +155,7 @@ export default function StreamableListPage() {
         }
         itemList = (
             <C.SnowGrid
+                {...props}
                 focusStart
                 focusKey={'page-entry'}
                 itemsPerRow={1}
@@ -176,6 +177,7 @@ export default function StreamableListPage() {
         }
         itemList = (
             <C.SnowGrid
+                {...props}
                 focusStart
                 focusKey={'page-entry'}
                 items={streamableList}

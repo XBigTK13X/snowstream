@@ -4,7 +4,7 @@ class Config {
         this.stormWebApiUrl = 'http://192.168.104.113:8000' // Laptop
         this.beastWebApiUrl = 'http://beast.9914.us:9063' // Prod
 
-        this.clientVersion = "1.6.14"
+        this.clientVersion = "1.6.15"
         this.clientBuildDate = "August 21, 2026"
         this.clientDevBuildNumber = 1
 
@@ -24,8 +24,9 @@ class Config {
         const transcodeUrl = '/auth/wrap/details/movie?shelfId=1&movieId=928'
 
         this.debugVideoUrl = null
-        this.debugSnowui = false
         this.debugValtio = false
+        this.debugSnowui = false
+        this.debugFocus = false
     }
 }
 
