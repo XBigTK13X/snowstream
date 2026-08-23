@@ -1,6 +1,6 @@
 {
     "name": "snowstream",
-    "version": "1.6.15",
+    "version": "1.6.16",
     "dependencies": {
         "@sentry/react-native": "7.11.0",
         "axios": "1.19.0",
@@ -20,7 +20,7 @@
         "react-native-safe-area-context": "5.7.0",
         "react-native-screens": "4.26.2",
         "react-native-uuid": "2.0.4",
-        "react-native-video": "7.0.0-beta.10",
+        "react-native-video": "7.0.0-beta.11",
         "react-native-web": "0.21.2",
         "use-debounce": "10.1.1",
         "valtio": "2.1.8"

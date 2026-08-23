@@ -2,7 +2,7 @@ import React from 'react'
 import { Platform } from 'react-native'
 import Snow from 'expo-snowui'
 import Player from 'snowstream-player'
-import { useVideoPlayer, VideoView } from 'react-native-video'
+import { useVideoPlayer, useEvent, VideoView } from 'react-native-video'
 
 const isWeb = Platform.OS === 'web'
 
@@ -100,41 +100,29 @@ export default function RnvVideoView(props) {
     React.useEffect(() => {
         if (!nativePlayer) return
 
-        if (playerState.audioTrackIndex >= 0 && nativePlayer.audioTracks) {
-            const track = nativePlayer.audioTracks[playerState.audioTrackIndex]
-            if (track) nativePlayer.selectedAudioTrack = track
+        if (playerState.audioTrackIndex >= 0) {
+            nativePlayer.selectAudioTrack?.({
+                type: 'index',
+                value: playerState.audioTrackIndex
+            })
         }
 
-        if (playerState.subtitleTrackIndex >= 0 && nativePlayer.textTracks) {
-            const track = nativePlayer.textTracks[playerState.subtitleTrackIndex]
-            if (track) nativePlayer.selectedTextTrack = track
+        if (playerState.subtitleTrackIndex >= 0) {
+            nativePlayer.selectTextTrack?.({
+                type: 'index',
+                value: playerState.subtitleTrackIndex
+            })
         } else if (playerState.subtitleTrackIndex === -1) {
-            nativePlayer.selectedTextTrack = undefined
+            nativePlayer.selectTextTrack?.({
+                type: 'disabled'
+            })
         }
     }, [nativePlayer, playerState.audioTrackIndex, playerState.subtitleTrackIndex])
 
-    React.useEffect(() => {
-        if (!nativePlayer) return
-
-        const subProgress = nativePlayer.addEventListener('onProgress', (data) => onRnvEvent('onProgress')(data))
-        const subEnd = nativePlayer.addEventListener('onEnd', () => onRnvEvent('onEnd')())
-        const subLoad = nativePlayer.addEventListener('onLoad', (data) => onRnvEvent('onLoad')(data))
-        const subError = nativePlayer.addEventListener('onError', (err) => onError(err))
-
-        return () => {
-            const removeSub = (sub) => {
-                if (typeof sub === 'function') {
-                    sub()
-                } else if (sub && typeof sub.remove === 'function') {
-                    sub.remove()
-                }
-            }
-            removeSub(subProgress)
-            removeSub(subEnd)
-            removeSub(subLoad)
-            removeSub(subError)
-        }
-    }, [nativePlayer])
+    useEvent(nativePlayer, 'onProgress', (data) => onRnvEvent('onProgress')(data))
+    useEvent(nativePlayer, 'onEnd', () => onRnvEvent('onEnd')())
+    useEvent(nativePlayer, 'onLoad', (data) => onRnvEvent('onLoad')(data))
+    useEvent(nativePlayer, 'onError', (err) => onError(err))
 
     if (isWeb) {
         if (!userPlayed) {
