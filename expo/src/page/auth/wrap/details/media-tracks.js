@@ -17,9 +17,9 @@ export default function MediaTracksPage(props) {
         clientOptions,
         isAdmin,
         routes,
-    } = useAppContext();
+    } = useAppContext()
 
-    const [media, setMedia] = C.React.useState(null);
+    const [media, setMedia] = C.React.useState(null)
     const [audioTrack, setAudioTrack] = C.React.useState(0)
     const [audioLanguage, setAudioLanguage] = C.React.useState(null)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
@@ -33,7 +33,7 @@ export default function MediaTracksPage(props) {
     const [loadError, setLoadError] = C.React.useState(null)
     const [watchOverride, setWatchOverride] = C.React.useState(null)
 
-    const shelfId = currentRoute.routeParams.shelfId;
+    const shelfId = currentRoute.routeParams.shelfId
 
     let videoFile = null
     if (media) {
@@ -55,7 +55,7 @@ export default function MediaTracksPage(props) {
                 combinedPlayDestination.forcePlayer = player
             }
             else {
-                delete combinedPlayDestination.forcePlayer;
+                delete combinedPlayDestination.forcePlayer
             }
             setPlayParams(combinedPlayDestination)
             if (media?.in_progress?.played_seconds) {
@@ -272,7 +272,7 @@ export default function MediaTracksPage(props) {
             playTitle = 'Play from Start'
             resumeControls = (
                 <C.SnowTextButton
-                    key={C.Snow.stringifySafe(resumeParams)}
+                    key="resume-button"
                     tall
                     title={`Resume from ${C.util.secondsToTimestamp(media.in_progress.played_seconds)}`}
                     onPress={() => {
@@ -446,7 +446,7 @@ export default function MediaTracksPage(props) {
                         focusKey="play-controls">
                         {resumeControls}
                         <C.SnowTextButton
-                            key={C.Snow.stringifySafe(playParams)}
+                            key="play-button"
                             tall
                             title={playTitle}
                             onPress={() => {
@@ -487,5 +487,5 @@ export default function MediaTracksPage(props) {
         <C.SnowLabel center>
             Loading {props.mediaKind} {currentRoute.routeParams.movieId ? currentRoute.routeParams.movieId : currentRoute.routeParams.episodeId}.
         </C.SnowLabel>
-    );
+    )
 }

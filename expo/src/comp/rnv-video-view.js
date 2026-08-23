@@ -2,7 +2,7 @@ import React from 'react'
 import { Platform } from 'react-native'
 import Snow from 'expo-snowui'
 import Player from 'snowstream-player'
-import { useVideoPlayer, useEvent, VideoView } from 'react-native-video'
+import { useVideoPlayer, VideoView } from 'react-native-video'
 
 const isWeb = Platform.OS === 'web'
 
@@ -11,6 +11,7 @@ export default function RnvVideoView(props) {
     const playerState = Player.useSnapshot(Player.state)
     const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
+    const [availableTextTracks, setAvailableTextTracks] = React.useState([])
 
     const fontSize = getWindowHeight() * 0.033
 
@@ -100,29 +101,50 @@ export default function RnvVideoView(props) {
     React.useEffect(() => {
         if (!nativePlayer) return
 
-        if (playerState.audioTrackIndex >= 0) {
-            nativePlayer.selectAudioTrack?.({
-                type: 'index',
-                value: playerState.audioTrackIndex
-            })
+        if (playerState.audioTrackIndex >= 0 && nativePlayer.audioTracks) {
+            const track = nativePlayer.audioTracks[playerState.audioTrackIndex]
+            if (track) nativePlayer.selectedAudioTrack = track
         }
 
-        if (playerState.subtitleTrackIndex >= 0) {
-            nativePlayer.selectTextTrack?.({
-                type: 'index',
-                value: playerState.subtitleTrackIndex
-            })
+        if (playerState.subtitleTrackIndex >= 0 && availableTextTracks.length > 0) {
+            const track = availableTextTracks[playerState.subtitleTrackIndex]
+            if (track) {
+                nativePlayer.selectedTextTrack = track
+            }
         } else if (playerState.subtitleTrackIndex === -1) {
-            nativePlayer.selectTextTrack?.({
-                type: 'disabled'
-            })
+            nativePlayer.selectedTextTrack = null
         }
-    }, [nativePlayer, playerState.audioTrackIndex, playerState.subtitleTrackIndex])
+    }, [nativePlayer, availableTextTracks, playerState.audioTrackIndex, playerState.subtitleTrackIndex])
 
-    useEvent(nativePlayer, 'onProgress', (data) => onRnvEvent('onProgress')(data))
-    useEvent(nativePlayer, 'onEnd', () => onRnvEvent('onEnd')())
-    useEvent(nativePlayer, 'onLoad', (data) => onRnvEvent('onLoad')(data))
-    useEvent(nativePlayer, 'onError', (err) => onError(err))
+    React.useEffect(() => {
+        if (!nativePlayer) return
+
+        const subProgress = nativePlayer.addEventListener('onProgress', (data) => onRnvEvent('onProgress')(data))
+        const subEnd = nativePlayer.addEventListener('onEnd', () => onRnvEvent('onEnd')())
+        const subLoad = nativePlayer.addEventListener('onLoad', (data) => {
+            if (data?.textTracks) {
+                setAvailableTextTracks(data.textTracks)
+            } else if (nativePlayer.textTracks) {
+                setAvailableTextTracks(nativePlayer.textTracks)
+            }
+            onRnvEvent('onLoad')(data)
+        })
+        const subError = nativePlayer.addEventListener('onError', (err) => onError(err))
+
+        return () => {
+            const removeSub = (sub) => {
+                if (typeof sub === 'function') {
+                    sub()
+                } else if (sub && typeof sub.remove === 'function') {
+                    sub.remove()
+                }
+            }
+            removeSub(subProgress)
+            removeSub(subEnd)
+            removeSub(subLoad)
+            removeSub(subError)
+        }
+    }, [nativePlayer])
 
     if (isWeb) {
         if (!userPlayed) {
