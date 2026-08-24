@@ -12,6 +12,7 @@ export default function RnvVideoView(props) {
     const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
     const [availableTextTracks, setAvailableTextTracks] = React.useState([])
+    const [availableAudioTracks, setAvailableAudioTracks] = React.useState([])
 
     const fontSize = getWindowHeight() * 0.033
 
@@ -64,12 +65,26 @@ export default function RnvVideoView(props) {
         }
     }
 
-    const nativePlayer = useVideoPlayer(playerState.videoUrl || '', (instance) => {
+    const safeUrl = playerState.videoUrl ? encodeURI(playerState.videoUrl) : ''
+
+    const nativePlayer = useVideoPlayer(safeUrl, (instance) => {
         if (!instance) return
         instance.loop = false
         instance.staysActiveInBackground = false
         instance.preservesPitch = true
     })
+
+    const updateAvailableTracks = () => {
+        if (!nativePlayer) return
+
+        if (nativePlayer.textTracks && nativePlayer.textTracks.length > 0) {
+            setAvailableTextTracks(nativePlayer.textTracks)
+        }
+
+        if (nativePlayer.audioTracks && nativePlayer.audioTracks.length > 0) {
+            setAvailableAudioTracks(nativePlayer.audioTracks)
+        }
+    }
 
     React.useEffect(() => {
         if (!isWeb && !playerState.isVideoViewReady) {
@@ -101,33 +116,40 @@ export default function RnvVideoView(props) {
     React.useEffect(() => {
         if (!nativePlayer) return
 
-        if (playerState.audioTrackIndex >= 0 && nativePlayer.audioTracks) {
-            const track = nativePlayer.audioTracks[playerState.audioTrackIndex]
-            if (track) nativePlayer.selectedAudioTrack = track
+        const currentTextTracks = availableTextTracks.length > 0 ? availableTextTracks : nativePlayer.textTracks
+        const currentAudioTracks = availableAudioTracks.length > 0 ? availableAudioTracks : nativePlayer.audioTracks
+
+        if (playerState.audioTrackIndex >= 0 && currentAudioTracks?.length > 0) {
+            const track = currentAudioTracks[playerState.audioTrackIndex]
+            if (track) {
+                nativePlayer.selectedAudioTrack = track
+            }
         }
 
-        if (playerState.subtitleTrackIndex >= 0 && availableTextTracks.length > 0) {
-            const track = availableTextTracks[playerState.subtitleTrackIndex]
+        if (playerState.subtitleTrackIndex >= 0 && currentTextTracks?.length > 0) {
+            const track = currentTextTracks[playerState.subtitleTrackIndex]
             if (track) {
                 nativePlayer.selectedTextTrack = track
             }
         } else if (playerState.subtitleTrackIndex === -1) {
             nativePlayer.selectedTextTrack = null
         }
-    }, [nativePlayer, availableTextTracks, playerState.audioTrackIndex, playerState.subtitleTrackIndex])
+    }, [nativePlayer, availableTextTracks, availableAudioTracks, playerState.audioTrackIndex, playerState.subtitleTrackIndex])
 
     React.useEffect(() => {
         if (!nativePlayer) return
 
-        const subProgress = nativePlayer.addEventListener('onProgress', (data) => onRnvEvent('onProgress')(data))
+        const subProgress = nativePlayer.addEventListener('onProgress', (data) => {
+            updateAvailableTracks()
+            onRnvEvent('onProgress')(data)
+        })
         const subEnd = nativePlayer.addEventListener('onEnd', () => onRnvEvent('onEnd')())
         const subLoad = nativePlayer.addEventListener('onLoad', (data) => {
-            if (data?.textTracks) {
-                setAvailableTextTracks(data.textTracks)
-            } else if (nativePlayer.textTracks) {
-                setAvailableTextTracks(nativePlayer.textTracks)
-            }
+            updateAvailableTracks()
             onRnvEvent('onLoad')(data)
+        })
+        const subPlaybackState = nativePlayer.addEventListener('onPlaybackStateChange', () => {
+            updateAvailableTracks()
         })
         const subError = nativePlayer.addEventListener('onError', (err) => onError(err))
 
@@ -142,6 +164,7 @@ export default function RnvVideoView(props) {
             removeSub(subProgress)
             removeSub(subEnd)
             removeSub(subLoad)
+            removeSub(subPlaybackState)
             removeSub(subError)
         }
     }, [nativePlayer])
@@ -164,8 +187,6 @@ export default function RnvVideoView(props) {
         return null
     }
 
-    const shade = playerState.subtitleColor.shade * 255
-
     return (
         <VideoView
             style={styles.video}
@@ -173,14 +194,6 @@ export default function RnvVideoView(props) {
             controls={false}
             resizeMode="contain"
             viewType="surface"
-            subtitleStyle={{
-                fontSize: playerState.subtitleFontScale * fontSize,
-                color: `rgba(${shade}, ${shade}, ${shade})`,
-                textShadowColor: 'rgba(0, 0, 0)',
-                textShadowOffset: { width: 1, height: 1 },
-                textShadowRadius: 5,
-                opacity: 0.9
-            }}
         />
     )
 }
