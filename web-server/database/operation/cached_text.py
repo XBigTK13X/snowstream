@@ -1,5 +1,6 @@
 from database.operation.db_internal import dbi
 
+
 def create_cached_text(key: str, data: str, ttl_seconds: int):
     with dbi.session() as db:
         dbm = dbi.dm.CachedText()
@@ -14,10 +15,15 @@ def create_cached_text(key: str, data: str, ttl_seconds: int):
 
 def get_cached_text_by_key(key: str):
     with dbi.session() as db:
-        result = db.query(dbi.dm.CachedText).filter(dbi.dm.CachedText.key == key).first()
+        result = (
+            db.query(dbi.dm.CachedText).filter(dbi.dm.CachedText.key == key).first()
+        )
         if not result:
             return None
-        if (result.updated_at.timestamp() - dbi.datetime.now(dbi.timezone.utc).timestamp()) > result.time_to_live_seconds:
+        if (
+            dbi.datetime.now(dbi.timezone.utc).timestamp()
+            - result.updated_at.timestamp()
+        ) > result.time_to_live_seconds:
             db.query(dbi.dm.CachedText).filter(dbi.dm.CachedText.key == key).delete()
             db.commit()
             return None
@@ -32,7 +38,7 @@ def update_cached_text(key: str, data: str):
         return dbm.data
 
 
-def upsert_cached_text(key: str, data: str, ttl_seconds:int=None):
+def upsert_cached_text(key: str, data: str, ttl_seconds: int = None):
     if not ttl_seconds:
         ttl_seconds = dbi.config.cached_text_ttl_seconds
     cached_text = get_cached_text_by_key(key=key)
@@ -40,16 +46,18 @@ def upsert_cached_text(key: str, data: str, ttl_seconds:int=None):
         return update_cached_text(key=key, data=data)
     return create_cached_text(key=key, data=data, ttl_seconds=ttl_seconds)
 
-def get_cached_text_list(search_query:str):
+
+def get_cached_text_list(search_query: str):
     with dbi.session() as db:
         return (
             db.query(dbi.dm.CachedText)
-            .filter(dbi.dm.CachedText.key.ilike(f'%{search_query}%'))
+            .filter(dbi.dm.CachedText.key.ilike(f"%{search_query}%"))
             .order_by(dbi.desc(dbi.dm.CachedText.updated_at))
             .all()
         )
 
-def delete_cached_text_by_key(key:str):
+
+def delete_cached_text_by_key(key: str):
     if not key:
         return False
     with dbi.session() as db:
@@ -57,8 +65,9 @@ def delete_cached_text_by_key(key:str):
         db.commit()
         return True
 
+
 def delete_all_cached_text():
     with dbi.session() as db:
-        db.execute(dbi.sql_text('truncate cached_text;'))
+        db.execute(dbi.sql_text("truncate cached_text;"))
         db.commit()
         return True
