@@ -13,13 +13,15 @@ source_handlers = {
     "HdHomeRun": hhr.HdHomeRun,
     "IptvM3u": im.IptvM3u,
     "FrigateNvr": fn.FrigateNvr,
-    'TubeArchivist': ta.TubeArchivist
+    "TubeArchivist": ta.TubeArchivist,
 }
 
 
-def generate_streamable_m3u(job_id:int):
+def generate_streamable_m3u(job_id: int):
     db.op.update_job(job_id=job_id, message="Generating streamable M3U content")
-    stream_sources = db.op.get_stream_source_list(ticket=db.Ticket(ignore_watch_group=True),streamables=True)
+    stream_sources = db.op.get_stream_source_list(
+        ticket=db.Ticket(ignore_watch_group=True), streamables=True
+    )
 
     m3u = "#EXTM3U"
     stream_count = 0
@@ -36,30 +38,43 @@ def generate_streamable_m3u(job_id:int):
             m3u += f'\n#EXTINF: tvg-id="{streamable.name} (d)" tvg-name="{streamable.name}" tvg-logo="" group-title="{stream_source.name}" channel-id="{channel_id} (d)"'
             m3u += f"\n{config.web_api_url}/api/streamable/direct?streamable_id={streamable.id}"
     m3u += "\n"
-    db.op.update_job(job_id=job_id, message=f"Generated m3u with {channel_count} channels")
-    db.op.upsert_cached_text(
-        key=cache.key.STREAMABLE_M3U,
-        data=m3u
+    db.op.update_job(
+        job_id=job_id, message=f"Generated m3u with {channel_count} channels"
     )
+    db.op.upsert_cached_text(key=cache.key.STREAMABLE_M3U, data=m3u)
     return True
 
 
 def handle(scope):
-    ticket=db.Ticket(ignore_watch_group=True)
-    db.op.update_job(job_id=scope.job_id, message=f"[WORKER] Handling a stream_sources_refresh job")
+    ticket = db.Ticket(ignore_watch_group=True)
+    db.op.update_job(
+        job_id=scope.job_id, message=f"[WORKER] Handling a stream_sources_refresh job"
+    )
 
     stream_sources = None
     if scope.is_stream_source():
-        stream_sources = [db.op.get_stream_source_by_id(ticket=db.Ticket(),stream_source_id=scope.target_id)]
+        stream_sources = [
+            db.op.get_stream_source_by_id(
+                ticket=db.Ticket(), stream_source_id=scope.target_id
+            )
+        ]
     else:
-        stream_sources = db.op.get_stream_source_list(ticket=db.Ticket(),streamables=True)
+        stream_sources = db.op.get_stream_source_list(
+            ticket=db.Ticket(), streamables=True
+        )
 
     refresh_results = {}
     for stream_source in stream_sources:
-        db.op.update_job(job_id=scope.job_id, message="Refreshing stream source " + stream_source.kind)
+        db.op.update_job(
+            job_id=scope.job_id,
+            message="Refreshing stream source " + stream_source.kind,
+        )
         handler = source_handlers[stream_source.kind](scope, stream_source)
         if scope.skip_existing == False:
-            db.op.update_job(job_id=scope.job_id, message=f"Delete all existing streamables")
+            db.op.update_job(
+                job_id=scope.job_id,
+                message=f"Delete all existing streamables for [{stream_source.name}]",
+            )
             db.op.delete_streamables_by_stream_source(stream_source_id=stream_source.id)
         if not handler.download():
             refresh_results[stream_source.url] = False
@@ -71,43 +86,62 @@ def handle(scope):
 
     streamables = []
     if scope.is_stream_source():
-        streamables = db.op.get_streamable_list(ticket,stream_source_id=scope.target_id)
+        streamables = db.op.get_streamable_list(
+            ticket, stream_source_id=scope.target_id
+        )
     else:
         streamables = db.op.get_streamable_list(ticket)
 
     cleanup_rules = db.op.get_display_cleanup_rule_list()
     tag_rules = db.op.get_tag_rule_list()
-    db.op.update_job(job_id=scope.job_id, message=f"Applying {len(cleanup_rules)} cleanup rules to {len(streamables)} streamables")
+    db.op.update_job(
+        job_id=scope.job_id,
+        message=f"Applying {len(cleanup_rules)} cleanup rules to {len(streamables)} streamables",
+    )
     for streamable in streamables:
         name_display = copy.copy(streamable.name)
         group_display = copy.copy(streamable.group)
         for rule in cleanup_rules:
-            if rule.target_kind != 'All' and rule.target_kind != streamable.stream_source.kind:
+            if (
+                rule.target_kind != "All"
+                and rule.target_kind != streamable.stream_source.kind
+            ):
                 continue
-            replacement = rule.replacement if rule.replacement else ''
+            replacement = rule.replacement if rule.replacement else ""
             if name_display:
                 name_display = name_display.replace(rule.needle, replacement)
             if group_display:
                 group_display = group_display.replace(rule.needle, replacement)
         if name_display != streamable.name or group_display != streamable.group:
-            if streamable.name_display != name_display or streamable.group_display != group_display:
+            if (
+                streamable.name_display != name_display
+                or streamable.group_display != group_display
+            ):
                 streamable = db.op.update_streamable_display(
                     streamable_id=streamable.id,
                     group_display=group_display,
-                    name_display=name_display
+                    name_display=name_display,
                 )
 
         for rule in tag_rules:
-            if rule.target_kind != 'All' and rule.target_kind != streamable.stream_source.kind:
+            if (
+                rule.target_kind != "All"
+                and rule.target_kind != streamable.stream_source.kind
+            ):
                 continue
             apply_tag = False
-            if rule.trigger_kind == 'group':
+            if rule.trigger_kind == "group":
                 if streamable.group and rule.trigger_target in streamable.group:
                     apply_tag = True
-                if streamable.group_display and rule.trigger_target in streamable.group_display:
+                if (
+                    streamable.group_display
+                    and rule.trigger_target in streamable.group_display
+                ):
                     apply_tag = True
             if apply_tag:
-                db.op.upsert_streamable_tag(streamable_id=streamable.id,tag_id=rule.tag.id)
+                db.op.upsert_streamable_tag(
+                    streamable_id=streamable.id, tag_id=rule.tag.id
+                )
 
     db.op.update_job(job_id=scope.job_id, message="Finished refreshing stream sources")
 
