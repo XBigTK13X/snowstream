@@ -47,7 +47,7 @@ export default function LandingPage(props) {
                 return (
                     <C.SnowTextButton
                         title={shelf.name}
-                        onPress={navPush({ path: routes.movieList, params: { shelfId: shelf.id } })}
+                        onPress={navPush({ path: routes.movieList, params: { shelfId: shelf.id, shelfName: shelf.name } })}
                         onLongPress={() => {
                             apiClient.toggleMovieShelfWatchStatus(shelf.id).then((watched) => {
                                 apiClient.getShelfList().then((response) => {
@@ -62,7 +62,7 @@ export default function LandingPage(props) {
                     <C.SnowTextButton
                         title={shelf.name}
                         onPress={
-                            navPush({ path: routes.showList, params: { shelfId: shelf.id } })
+                            navPush({ path: routes.showList, params: { shelfId: shelf.id, shelfName: shelf.name } })
                         }
                         onLongPress={() => {
                             apiClient.toggleShowShelfWatchStatus(shelf.id).then((watched) => {
@@ -81,7 +81,8 @@ export default function LandingPage(props) {
                         onPress={navPush({
                             path: routes.keepsakeDetails,
                             params: {
-                                shelfId: shelf.id
+                                shelfId: shelf.id,
+                                shelfName: shelf.name
                             }
                         })}
                     />
@@ -98,7 +99,7 @@ export default function LandingPage(props) {
                 title={streamSource.name}
                 onPress={navPush({
                     path: routes.streamableList,
-                    params: { streamSourceId: streamSource.id }
+                    params: { streamSourceId: streamSource.id, streamSourceName: streamSource.name }
                 })}
             />)
         }))

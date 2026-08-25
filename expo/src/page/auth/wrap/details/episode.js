@@ -22,7 +22,7 @@ export default function EpisodeDetailsPage() {
             gotoShelf={(routes, navPush, routeParams) => {
                 return navPush({
                     path: routes.showList,
-                    params: { shelfId: routeParams.shelfId }
+                    params: { shelfId: routeParams.shelfId, shelfName: routeParams.shelfName }
                 })
             }}
             getNavButtons={(routes, navPush, routeParams) => {

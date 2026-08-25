@@ -83,7 +83,7 @@ export default function KeepsakeDetailsPage(props) {
         if (currentRoute.routeParams.subdirectory) {
             subdir = ` subdirectory [${currentRoute.routeParams.subdirectory}]`
         }
-        return <C.SnowLabel center>Loading keepsakes from shelf {currentRoute.routeParams.shelfId}{subdir ? ` [${subdir}]` : null}.</C.SnowLabel>
+        return <C.SnowLabel center>Loading {currentRoute.routeParams.shelfName}{subdir ? ` [${subdir}]` : null}.</C.SnowLabel>
     }
 
     let videos = null

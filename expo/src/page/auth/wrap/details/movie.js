@@ -13,7 +13,7 @@ export default function MovieDetailsPage() {
         gotoShelf={(routes, navPush, routeParams) => {
             return navPush({
                 path: routes.movieList,
-                params: { shelfId: routeParams.shelfId }
+                params: { shelfId: routeParams.shelfId, shelfName: routeParams.shelfName }
             })
         }}
         getPlayRoute={(routes) => {

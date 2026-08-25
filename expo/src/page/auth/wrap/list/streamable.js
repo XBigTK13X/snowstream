@@ -115,7 +115,7 @@ export default function StreamableListPage(props) {
     }, [currentRoute, streamSource])
 
     if (!streamSource) {
-        return <C.SnowLabel center>Loading stream source {currentRoute.routeParams.streamSourceId}.</C.SnowLabel>
+        return <C.SnowLabel center>Loading {currentRoute.routeParams.streamSourceName}.</C.SnowLabel>
     }
 
     if (groupList && !streamableList) {

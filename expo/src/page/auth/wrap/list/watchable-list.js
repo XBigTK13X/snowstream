@@ -9,6 +9,7 @@ export function WatchableListPage(props) {
     const [items, setItems] = C.React.useState(null)
 
     const shelfId = currentRoute.routeParams.shelfId
+    const shelfName = currentRoute.routeParams?.shelfName ?? shelfId
     const [showPlaylisted, setShowPlaylisted] = C.React.useState(
         currentRoute.routeParams.showPlaylisted ? currentRoute.routeParams.showPlaylisted === 'true' : false
     )
@@ -110,7 +111,7 @@ export function WatchableListPage(props) {
         }
         return (
             <C.SnowView>
-                <C.SnowText>{pageTitle}</C.SnowText>
+                <C.SnowText center>{pageTitle}</C.SnowText>
                 <C.SnowGrid focusKey="admin-buttons">
                     {buttons}
                 </C.SnowGrid>
@@ -118,7 +119,7 @@ export function WatchableListPage(props) {
             </C.SnowView>
         )
     }
-    return <C.SnowLabel center>Loading items from shelf {shelfId}.</C.SnowLabel>
+    return <C.SnowLabel center>Loading {shelfName}.</C.SnowLabel>
 }
 
 export default WatchableListPage
