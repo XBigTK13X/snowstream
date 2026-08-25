@@ -1,23 +1,33 @@
 import Snow from 'expo-snowui'
 import { C, useAppContext } from 'snowstream'
 
+const parseBoolParam = (paramValue, defaultValue) => {
+    if (paramValue === 'true' || paramValue === true) {
+        return true
+    }
+    if (paramValue === 'false' || paramValue === false) {
+        return false
+    }
+    return defaultValue
+}
+
 export default function ShelfEditPage() {
     const { navPush, currentRoute } = Snow.useSnowContext()
     const { apiClient, routes } = useAppContext()
 
     const [form, setForm] = C.React.useState({
         episodeOrder: currentRoute.routeParams.episodeOrder ?? '',
-        extractOnly: currentRoute.routeParams.extractOnly ?? '',
+        extractOnly: parseBoolParam(currentRoute.routeParams.extractOnly, false),
         metadataId: currentRoute.routeParams.metadataId ?? '',
         metadataSource: currentRoute.routeParams.metadataSource ?? '',
         seasonOrder: currentRoute.routeParams.seasonOrder ?? '',
-        skipExisting: currentRoute.routeParams.skipExisting ?? '',
+        skipExisting: parseBoolParam(currentRoute.routeParams.skipExisting, true),
         targetDirectory: currentRoute.routeParams.targetDirectory ?? '',
         targetId: currentRoute.routeParams.targetId ?? '',
         targetKind: currentRoute.routeParams.targetKind ?? '',
-        updateImages: currentRoute.routeParams.updateImages ?? '',
-        updateMetadata: currentRoute.routeParams.updateMetadata ?? '',
-        updateVideos: currentRoute.routeParams.updateVideos ?? '',
+        updateImages: parseBoolParam(currentRoute.routeParams.updateImages, true),
+        updateMetadata: parseBoolParam(currentRoute.routeParams.updateMetadata, true),
+        updateVideos: parseBoolParam(currentRoute.routeParams.updateVideos, false),
     })
     const formRef = C.React.useRef(form)
 
@@ -135,36 +145,28 @@ export default function ShelfEditPage() {
                 itemsPerRow={4}
                 items={buttons}
                 renderItem={renderItem} />
-            <C.SnowGrid
-                focusKey="directory"
-                itemsPerRow={1}
-            >
-                <C.SnowLabel>Target Directory</C.SnowLabel>
+            <C.SnowGrid focusKey="payload" itemsPerRow={2}>
+                <C.SnowLabel style={{ width: 250 }}>Target Directory</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('targetDirectory')} value={form.targetDirectory} />
-            </C.SnowGrid>
-            <C.SnowGrid focusKey="payload" itemsPerRow={4}>
-                <C.SnowLabel>Target Kind</C.SnowLabel>
+                <C.SnowLabel style={{ width: 250 }}>Target Kind</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('targetKind')} value={form.targetKind} />
-                <C.SnowLabel>Target Id</C.SnowLabel>
+                <C.SnowLabel style={{ width: 250 }}>Target Id</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('targetId')} value={form.targetId} />
-                <C.SnowLabel>Metadata Id</C.SnowLabel>
+                <C.SnowLabel style={{ width: 250 }}>Metadata Id</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('metadataId')} value={form.metadataId} />
-                <C.SnowLabel>Metadata Source</C.SnowLabel>
+                <C.SnowLabel style={{ width: 250 }}>Metadata Source</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('metadataSource')} value={form.metadataSource} />
-                <C.SnowLabel>Season Order</C.SnowLabel>
+                <C.SnowLabel style={{ width: 250 }}>Season Order</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('seasonOrder')} value={form.seasonOrder} />
-                <C.SnowLabel>Episode Order</C.SnowLabel>
+                <C.SnowLabel style={{ width: 250 }}>Episode Order</C.SnowLabel>
                 <C.SnowInput onValueChange={changeForm('episodeOrder')} value={form.episodeOrder} />
-                <C.SnowLabel>Update Images</C.SnowLabel>
-                <C.SnowInput onValueChange={changeForm('updateImages')} value={form.updateImages} />
-                <C.SnowLabel>Update Metadata</C.SnowLabel>
-                <C.SnowInput onValueChange={changeForm('updateMetadata')} value={form.updateMetadata} />
-                <C.SnowLabel>Update Videos</C.SnowLabel>
-                <C.SnowInput onValueChange={changeForm('updateVideos')} value={form.updateVideos} />
-                <C.SnowLabel>Skip Existing</C.SnowLabel>
-                <C.SnowInput onValueChange={changeForm('skipExisting')} value={form.skipExisting} />
-                <C.SnowLabel>Extract Only</C.SnowLabel>
-                <C.SnowInput onValueChange={changeForm('extractOnly')} value={form.extractOnly} />
+            </C.SnowGrid>
+            <C.SnowGrid focusKey="underload" itemsPerRow={1}>
+                <C.SnowToggle title="Update Images" onValueChange={changeForm('updateImages')} value={form.updateImages} />
+                <C.SnowToggle title="Update Metadata" onValueChange={changeForm('updateMetadata')} value={form.updateMetadata} />
+                <C.SnowToggle title="Update Videos" onValueChange={changeForm('updateVideos')} value={form.updateVideos} />
+                <C.SnowToggle title="Skip Existing" onValueChange={changeForm('skipExisting')} value={form.skipExisting} />
+                <C.SnowToggle title="Extract Only" onValueChange={changeForm('extractOnly')} value={form.extractOnly} />
             </C.SnowGrid>
         </>
     )
