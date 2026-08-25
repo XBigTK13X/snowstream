@@ -395,7 +395,7 @@ export default function MediaTracksPage(props) {
                         }} /> : null}
                 </C.SnowGrid>
                 <C.SnowText center>Path: {videoFile.network_path}</C.SnowText>
-                <C.SnowGrid assignFocus={false} itemsPerRow={2}>
+                <C.SnowGrid itemsPerRow={2}>
                     <C.SnowView>
                         <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
                         <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
@@ -415,6 +415,7 @@ export default function MediaTracksPage(props) {
                         />
                     </C.SnowView>
                 </C.SnowGrid>
+                <C.SnowTarget />
             </C.SnowView>
         )
 

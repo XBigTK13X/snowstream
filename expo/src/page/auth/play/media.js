@@ -10,6 +10,9 @@ export function PlayMediaPage(props) {
         Player.action.effectSetVideoHandlers(
             props
         )
+        return () => {
+            Player.action.reset()
+        }
     }, [])
 
     if (player.playbackFailed) {
