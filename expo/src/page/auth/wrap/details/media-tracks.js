@@ -11,7 +11,7 @@ const styles = {
 }
 
 export default function MediaTracksPage(props) {
-    const { navPush, currentRoute, pushModal, popModal } = C.useSnowContext()
+    const { navPush, currentRoute, pushModal, popModal, SnowStyle } = C.useSnowContext(props)
     const {
         apiClient,
         clientOptions,
@@ -33,12 +33,22 @@ export default function MediaTracksPage(props) {
     const [loadError, setLoadError] = C.React.useState(null)
     const [watchOverride, setWatchOverride] = C.React.useState(null)
 
+    const [downloadProgress, setDownloadProgress] = C.React.useState(null)
+    const [downloadDirectory, setDownloadDirectory] = C.React.useState(null)
+
     const shelfId = currentRoute.routeParams.shelfId
 
     let videoFile = null
     if (media) {
         videoFile = media.video_files[videoFileIndex]
     }
+
+    C.React.useEffect(() => {
+        const savedDir = C.Snow.loadData('video_download_dir')
+        if (savedDir && typeof savedDir === 'string') {
+            setDownloadDirectory(savedDir)
+        }
+    }, [])
 
     C.React.useEffect(() => {
         if (media) {
@@ -108,6 +118,46 @@ export default function MediaTracksPage(props) {
             }
         })
     }, [])
+
+    const handleDownload = async () => {
+        let targetDir = downloadDirectory
+        if (!targetDir) {
+            targetDir = await C.Snow.Download.pickDirectory()
+            if (!targetDir) return
+            await C.Snow.saveData('video_download_dir', targetDir)
+            setDownloadDirectory(targetDir)
+        }
+
+        const mediaName = props.getMediaName ? props.getMediaName(currentRoute.routeParams, media) : media.name
+        const ext = videoFile.network_path.split('.').pop() || 'mkv'
+        const fileName = `${mediaName.replace(/[/\\?%*:|"<>]/g, '-')}.${ext}`
+
+        // Assumes apiClient handles token injection or returns a formatted download url string
+        const downloadUrl = apiClient.getVideoDownloadUrl
+            ? apiClient.getVideoDownloadUrl(media.id, videoFile.file_index)
+            : videoFile.network_path
+
+        setDownloadProgress(0)
+
+        const progressSub = C.Snow.Download.addProgressListener((event) => {
+            setDownloadProgress(event.progress)
+        })
+
+        try {
+            await C.Snow.Download.download({
+                url: downloadUrl,
+                fileName: fileName,
+                isTemp: false,
+                treeUri: targetDir,
+                openAfterDownload: false
+            })
+        } catch (error) {
+            console.error("Video Download Error:", error)
+        } finally {
+            progressSub?.remove()
+            setDownloadProgress(null)
+        }
+    }
 
     const setWatchStatus = (status) => {
         return props.toggleWatchStatus(apiClient, currentRoute.routeParams)
@@ -378,21 +428,45 @@ export default function MediaTracksPage(props) {
             </C.SnowView>
         )
         tabs.push('Info')
+
+        const infoActions = [
+            <C.SnowTextButton
+                key="inspection-btn"
+                tall
+                title="Inspection"
+                onPress={showInfo}
+            />
+        ]
+
+        if (!SnowStyle.isTV && !SnowStyle.isWeb) {
+            infoActions.push(
+                <C.SnowTextButton
+                    key="download-btn"
+                    tall
+                    title={downloadProgress !== null ? `Downloading ${downloadProgress}%` : "Download"}
+                    disabled={downloadProgress !== null}
+                    onPress={handleDownload}
+                />)
+        }
+
+        if (isAdmin) {
+            infoActions.push(
+                <C.SnowCreateJobButton
+                    key="create-job-btn"
+                    tall
+                    title="Create Job"
+                    jobDetails={{
+                        metadataId: remoteMetadataId,
+                        ...props.getJobTarget(currentRoute.routeParams)
+                    }}
+                />
+            )
+        }
+
         const infoTab = (
             <C.SnowView>
-                <C.SnowGrid focusKey="inspection-top" itemsPerRow={3}>
-                    <C.SnowTextButton
-                        tall
-                        title="Inspection"
-                        onPress={showInfo}
-                    />
-                    {isAdmin ? <C.SnowCreateJobButton
-                        tall
-                        title="Create Job"
-                        jobDetails={{
-                            metadataId: remoteMetadataId,
-                            ...props.getJobTarget(currentRoute.routeParams)
-                        }} /> : null}
+                <C.SnowGrid focusKey="inspection-top" itemsPerRow={infoActions.length}>
+                    {infoActions}
                 </C.SnowGrid>
                 <C.SnowText center>Path: {videoFile.network_path}</C.SnowText>
                 <C.SnowGrid itemsPerRow={2}>
