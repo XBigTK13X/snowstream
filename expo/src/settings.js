@@ -5,7 +5,7 @@ class Config {
         this.beastWebApiUrl = 'http://beast.9914.us:9063' // Prod
 
         this.clientVersion = "1.6.22"
-        this.clientBuildDate = "August 27, 2026"
+        this.clientBuildDate = "September 22, 2026"
         this.clientDevBuildNumber = 1
 
         this.debounceMilliseconds = 700

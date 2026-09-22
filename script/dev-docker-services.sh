@@ -1,12 +1,10 @@
 #! /bin/bash
 
-source script/variables.sh
-
 echo "Docker services working dir"
 
 pwd
 
-docker pull $SNOWSTREAM_DOCKER_IMAGE
+docker pull gitea.9914.us/xbigtk13x/snowstream
 
 docker rm -f snowstream || true
 
@@ -50,7 +48,7 @@ docker run -d \
     -v /mnt/j-media/keepsake:/mnt/j-media/keepsake \
     -v /mnt/j-media/photo:/mnt/j-media/photo \
     -v /mnt/m-media/movie:/mnt/m-media/movie \
-    $SNOWSTREAM_DOCKER_IMAGE
+    gitea.9914.us/xbigtk13x/snowstream
 
 target_phrase="database system is ready to accept connections"
 timeout_seconds=60
