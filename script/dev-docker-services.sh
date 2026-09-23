@@ -63,6 +63,4 @@ until docker logs snowstream 2>&1 | grep -q "$target_phrase"; do
     elapsed_seconds=$((elapsed_seconds + 1))
 done
 
-if [ -z "$1" ]; then
-    script/db-migrate.sh
-fi
+echo "DB is online"
