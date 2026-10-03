@@ -119,7 +119,6 @@ export default function SignInPage() {
                 itemsPerRow={4} >
                 <C.SnowTextButton selected={apiClient?.webApiUrl === config.beastWebApiUrl} title="Beast" onPress={() => { chooseServer(config.beastWebApiUrl) }} />
                 <C.SnowTextButton selected={apiClient?.webApiUrl === config.vondoomWebApiUrl} title="Vondoom" onPress={() => { chooseServer(config.vondoomWebApiUrl) }} />
-                <C.SnowTextButton selected={apiClient?.webApiUrl === config.stormWebApiUrl} title="Storm" onPress={() => { chooseServer(config.stormWebApiUrl) }} />
             </C.SnowGrid>
             <C.SnowLabel center>Or enter a custom server.</C.SnowLabel>
             <C.SnowGrid itemsPerRow={2} assignFocus={false}>

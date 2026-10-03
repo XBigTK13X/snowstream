@@ -12,7 +12,6 @@ export default function RnvVideoView(props) {
     const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
     const [availableTextTracks, setAvailableTextTracks] = React.useState([])
-    const [availableAudioTracks, setAvailableAudioTracks] = React.useState([])
 
     const fontSize = getWindowHeight() * 0.033
 
@@ -77,19 +76,16 @@ export default function RnvVideoView(props) {
     const updateAvailableTracks = () => {
         if (!nativePlayer) return
 
-        if (nativePlayer.textTracks && nativePlayer.textTracks.length > 0) {
-            setAvailableTextTracks(nativePlayer.textTracks)
-        }
+        const textTracks = nativePlayer.getAvailableTextTracks()
 
-        if (nativePlayer.audioTracks && nativePlayer.audioTracks.length > 0) {
-            setAvailableAudioTracks(nativePlayer.audioTracks)
-        }
+        setAvailableTextTracks(textTracks)
     }
 
     React.useEffect(() => {
         if (!isWeb && !playerState.isVideoViewReady) {
             Player.action.onVideoReady()
         }
+
         if (isWeb && !requestTranscode) {
             if (!playerState.isTranscode && (playerState.audioTrackIndex > 0 || playerState.subtitleTrackIndex > 0)) {
                 setRequestTranscode(true)
@@ -100,10 +96,11 @@ export default function RnvVideoView(props) {
 
     React.useEffect(() => {
         if (!nativePlayer) return
+
         if (playerState.isPlaying) {
-            nativePlayer.play?.()
+            nativePlayer.play()
         } else {
-            nativePlayer.pause?.()
+            nativePlayer.pause()
         }
     }, [playerState.isPlaying, nativePlayer])
 
@@ -114,44 +111,50 @@ export default function RnvVideoView(props) {
     }, [playerState.seekToSeconds, nativePlayer])
 
     React.useEffect(() => {
-        if (!nativePlayer) return
+        if (!nativePlayer || isWeb) return
 
-        const currentTextTracks = availableTextTracks.length > 0 ? availableTextTracks : nativePlayer.textTracks
-        const currentAudioTracks = availableAudioTracks.length > 0 ? availableAudioTracks : nativePlayer.audioTracks
+        const textTracks = availableTextTracks.length > 0
+            ? availableTextTracks
+            : nativePlayer.getAvailableTextTracks()
 
-        if (playerState.audioTrackIndex >= 0 && currentAudioTracks?.length > 0) {
-            const track = currentAudioTracks[playerState.audioTrackIndex]
+        if (playerState.subtitleTrackIndex >= 0) {
+            const track = textTracks[playerState.subtitleTrackIndex]
+
             if (track) {
-                nativePlayer.selectedAudioTrack = track
+                nativePlayer.selectTextTrack(track)
             }
+        } else {
+            nativePlayer.selectTextTrack(null)
         }
-
-        if (playerState.subtitleTrackIndex >= 0 && currentTextTracks?.length > 0) {
-            const track = currentTextTracks[playerState.subtitleTrackIndex]
-            if (track) {
-                nativePlayer.selectedTextTrack = track
-            }
-        } else if (playerState.subtitleTrackIndex === -1) {
-            nativePlayer.selectedTextTrack = null
-        }
-    }, [nativePlayer, availableTextTracks, availableAudioTracks, playerState.audioTrackIndex, playerState.subtitleTrackIndex])
+    }, [
+        nativePlayer,
+        availableTextTracks,
+        playerState.subtitleTrackIndex
+    ])
 
     React.useEffect(() => {
         if (!nativePlayer) return
 
         const subProgress = nativePlayer.addEventListener('onProgress', (data) => {
-            updateAvailableTracks()
             onRnvEvent('onProgress')(data)
         })
-        const subEnd = nativePlayer.addEventListener('onEnd', () => onRnvEvent('onEnd')())
+
+        const subEnd = nativePlayer.addEventListener('onEnd', () => {
+            onRnvEvent('onEnd')()
+        })
+
         const subLoad = nativePlayer.addEventListener('onLoad', (data) => {
             updateAvailableTracks()
             onRnvEvent('onLoad')(data)
         })
-        const subPlaybackState = nativePlayer.addEventListener('onPlaybackStateChange', () => {
-            updateAvailableTracks()
+
+        const subTrackChange = nativePlayer.addEventListener('onTrackChange', (track) => {
+            onRnvEvent('onTrackChange')(track)
         })
-        const subError = nativePlayer.addEventListener('onError', (err) => onError(err))
+
+        const subError = nativePlayer.addEventListener('onError', (err) => {
+            onError(err)
+        })
 
         return () => {
             const removeSub = (sub) => {
@@ -161,10 +164,11 @@ export default function RnvVideoView(props) {
                     sub.remove()
                 }
             }
+
             removeSub(subProgress)
             removeSub(subEnd)
             removeSub(subLoad)
-            removeSub(subPlaybackState)
+            removeSub(subTrackChange)
             removeSub(subError)
         }
     }, [nativePlayer])
@@ -175,9 +179,11 @@ export default function RnvVideoView(props) {
                 <Snow.TextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
             )
         }
+
         if (!playerState.isTranscode && (playerState.audioTrackIndex > 0 || playerState.subtitleTrackIndex > 0)) {
             return <Snow.Text>Waiting on transcode...</Snow.Text>
         }
+
         if (requestTranscode && !playerState.isTranscode) {
             return <Snow.Text>Waiting on transcode...</Snow.Text>
         }
