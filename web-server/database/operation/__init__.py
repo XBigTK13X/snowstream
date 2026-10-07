@@ -11,6 +11,7 @@ from database.operation.metadata_file import *
 from database.operation.movie import *
 from database.operation.playing_queue import *
 from database.operation.playlist import *
+from database.operation.recently_added import *
 from database.operation.search import *
 from database.operation.shelf import *
 from database.operation.show import *

@@ -37,6 +37,7 @@ export default function LandingPage(props) {
 
     let destinations = [
         <C.SnowTextButton title="Continue" onPress={navPush({ path: routes.continueWatching })} />,
+        <C.SnowTextButton title="Recently Added" onPress={navPush({ path: routes.recentlyAdded })} />,
         <C.SnowTextButton title="Search" onPress={navPush({ path: routes.search })} />,
         <C.SnowTextButton title="Playlists" onPress={navPush({ path: routes.playlistList })} />
     ]

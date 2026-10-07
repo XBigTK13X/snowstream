@@ -20,6 +20,7 @@ export var routes = {
     options: '/auth/wrap/options',
     playlistDetails: '/auth/wrap/details/playlist',
     playlistList: '/auth/wrap/list/playlist',
+    recentlyAdded: '/auth/wrap/recently/added',
     search: '/auth/wrap/search',
     seasonList: '/auth/wrap/list/season',
     showList: '/auth/wrap/list/show',

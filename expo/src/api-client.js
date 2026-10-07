@@ -450,6 +450,10 @@ export class ApiClient {
         return this.get('/continue/watching')
     }
 
+    getRecentlyAddedList = () => {
+        return this.get('/recently/added')
+    }
+
     search = (query) => {
         return this.get('/search', { query })
     }

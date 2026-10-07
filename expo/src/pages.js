@@ -17,6 +17,7 @@ import OptionsPage from './page/auth/wrap/options'
 import PlayingQueuePlayPage from './page/auth/play/playing-queue'
 import PlaylistDetailsPage from './page/auth/wrap/details/playlist'
 import PlaylistListPage from './page/auth/wrap/list/playlist'
+import RecentlyAddedPage from './page/auth/wrap/list/recently-added'
 import SearchPage from './page/auth/wrap/search'
 import SeasonListPage from './page/auth/wrap/list/season'
 import ShowListPage from './page/auth/wrap/list/show'
@@ -70,6 +71,7 @@ export var pages = {
     [routes.options]: OptionsPage,
     [routes.playlistDetails]: PlaylistDetailsPage,
     [routes.playlistList]: PlaylistListPage,
+    [routes.recentlyAdded]: RecentlyAddedPage,
     [routes.search]: SearchPage,
     [routes.seasonList]: SeasonListPage,
     [routes.showList]: ShowListPage,

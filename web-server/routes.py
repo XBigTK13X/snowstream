@@ -815,6 +815,12 @@ def auth_required(router):
     ):
         return db.op.get_continue_watching_list(ticket=auth_user.ticket)
 
+    @router.get("/recently/added", tags=["User"])
+    def get_recently_added_list(
+        auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
+    ):
+        return db.op.get_recently_added_list(ticket=auth_user.ticket)
+
     @router.get("/device/profile/list", tags=["User"])
     def get_device_profile_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
