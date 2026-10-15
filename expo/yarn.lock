@@ -705,7 +705,16 @@
   resolved "https://registry.yarnpkg.com/@expo/dom-webview/-/dom-webview-57.0.1.tgz#e41e9ab9b691046c944ef2d0cd874cf316894097"
   integrity sha512-lAKsME4SAq+8sf56oN0DX5TBYyruupoRxbWbD2xf9RnKY8y6x8eb9LCE5pxSN0qyWdqnp+0wmyWzDkKboThKAw==
 
-"@expo/env@^2.4.3", "@expo/env@~2.4.2", "@expo/env@~2.4.3":
+"@expo/env@^2.4.3":
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/@expo/env/-/env-2.5.2.tgz#0ab8ab97e76d699f55abb548926481295f2e312c"
+  integrity sha512-z8kCvBVJpd2S20a+Ab1otQgz8sJLeR7CXDTsuAMcNbYFsK10Fdhfb7rx9Ys1vvlbijnY55eZhQvJACajc1IjBQ==
+  dependencies:
+    chalk "^4.0.0"
+    debug "^4.3.4"
+    getenv "^2.0.0"
+
+"@expo/env@~2.4.2", "@expo/env@~2.4.3":
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/@expo/env/-/env-2.4.3.tgz#cba412d1cf19374bedd83106b32166a12862667c"
   integrity sha512-M1NXeZCA1mkMkYOyIe7PlyRX0/jqFtMoJgyblnlq/vpCRfmueFT7RnGSQG8uEFDF5WHOFGijAQ3fogPh3/n5Ng==
@@ -756,7 +765,15 @@
   dependencies:
     "@expo/config-plugins" "~57.0.10"
 
-"@expo/json-file@^11.0.1", "@expo/json-file@~11.0.1":
+"@expo/json-file@^11.0.1", "@expo/json-file@^11.2.1":
+  version "11.2.1"
+  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-11.2.1.tgz#57176987ed1060b0aa504defa4cc1a5079341184"
+  integrity sha512-UPhKoFCj8BcwgLB1rKQ1CuR/REITnZLiqxHEHOeH1tPsdXcHGtUDh0P5bLbr7oU0nKVdtJ5rzyKx8jniMQdESQ==
+  dependencies:
+    "@babel/code-frame" "^7.20.0"
+    json5 "^2.2.3"
+
+"@expo/json-file@~11.0.1":
   version "11.0.1"
   resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-11.0.1.tgz#dab8f6e5ff78e7c33a8e49a48722ce972306036c"
   integrity sha512-zxHWj4MKKMAL29ZQSY/Fssx4Thluk40JmuGNaeS078wy/NhlFhnVi+rHHunulE3xJAJ0CM73m8VK2+GkF9eRwQ==
@@ -842,18 +859,18 @@
     metro-transform-worker "0.84.5"
 
 "@expo/osascript@^2.7.1":
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/@expo/osascript/-/osascript-2.7.1.tgz#1880dcbaf79cde9631e0e68f461f05c8f0542b88"
-  integrity sha512-Zn03EX6In7ts2lPUW2ESUSkEhEWQN1qqsiXjadtZMJOuZRkMiAg1ZQHuvz9DjByDWNJ2pBwAGyrts9lj9k389g==
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/@expo/osascript/-/osascript-2.8.1.tgz#b1cec514ef77ad9c37bc4fc235e03af79d0dbc6c"
+  integrity sha512-SCi+6q6uOkGhiAn6AIP/OPFgaIq/iKD2oYpnAOg2rShHStJ8ey7wyT127RbOaZXmlcY/62rHOX1WiiMnD8u/BA==
   dependencies:
     "@expo/spawn-async" "^1.8.0"
 
 "@expo/package-manager@^1.13.1":
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/@expo/package-manager/-/package-manager-1.13.1.tgz#a6ce56c602a70e33ed376525dd100945e19006f9"
-  integrity sha512-y/K+CaYYpZpNGZhSX4HyLT/vyIunFjNfyoxNysPBCefeLKI/VCx6f9LNPzrxayr3rCYO5bl9O8H+HRQK265Nkg==
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@expo/package-manager/-/package-manager-1.14.2.tgz#49ed74b75b5e2b68e67b761c20f315b11654dd8b"
+  integrity sha512-sftl0eRVVCarI6grMdjAB3jX2pX1Mt3cdSnajlXS4QyeDkaKRM/ntBy6dcagj1VL0+cEfEqctlyvinmlZdNubg==
   dependencies:
-    "@expo/json-file" "^11.0.1"
+    "@expo/json-file" "^11.2.1"
     "@expo/spawn-async" "^1.8.0"
     chalk "^4.0.0"
     npm-package-arg "^11.0.0"
@@ -1738,9 +1755,9 @@ base64-js@^1.5.1:
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 baseline-browser-mapping@^2.11.26:
-  version "2.11.28"
-  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.11.28.tgz#784efec0fa3965c28a0bbb755f40604ace1c9db0"
-  integrity sha512-br0LOmjJqr6Rt4AEkadbcNf67Zpo7EPwKsWbjnRrJIa1QYFHQBqM4C7F2WTbV8ahTEcg1Eo+Y0aWjjORInYFyA==
+  version "2.11.29"
+  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.11.29.tgz#dbed0ed2c17943aa4427863c91300865d9d8ca23"
+  integrity sha512-YeesxhUmR4h5y5V8KF8iBCqJb8YFrBJ++XBTeGcWIaQOYXGN19JM0FoiOjAhwuDoln8owMgXcWBmgHtYSkky2w==
 
 big-integer@1.6.x:
   version "1.6.52"

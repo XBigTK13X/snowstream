@@ -3,10 +3,10 @@ const path = require('path')
 
 const config = getSentryExpoConfig(__dirname)
 
-const localSnowuiDir = null; //path.resolve("/home/kretst/develop/library/expo-snowui")
+const localSnowuiDir = "/home/kretst/develop/library/expo-snowui"
 
 const snowuiOverride = localSnowuiDir ? {
-  "expo-snowui": localSnowuiDir,
+  "expo-snowui": path.resolve(localSnowuiDir, 'src/index.tsx'), // or src/index.js
   react: path.resolve(__dirname, 'node_modules/react'),
   'react-native': path.resolve(__dirname, 'node_modules/react-native')
 } : {}
@@ -32,6 +32,6 @@ if (localSnowuiDir) {
   config.resolver.disableHierarchicalLookup = true
 }
 
-config.resolver.unstable_conditionNames = ['browser', 'require', 'react-native']
+config.resolver.unstable_conditionNames = ['source', 'browser', 'require', 'react-native']
 
 module.exports = config
