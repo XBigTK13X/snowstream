@@ -20,10 +20,11 @@ export function PlayerManager(props) {
         clearModals,
         closeOverlay,
         currentRoute,
+        envelope,
         getEnvelope,
         updateEnvelope,
         resetEnvelope,
-        getHandlers
+        registerEnvelopeActions
     } = Snow.useSnowContext()
 
     const actions = usePlayerActions({
@@ -38,33 +39,27 @@ export function PlayerManager(props) {
         closeOverlay,
         updateEnvelope,
         getEnvelope,
-        resetEnvelope,
-        get handlers() {
-            return getHandlers ? getHandlers() : {}
-        }
+        resetEnvelope
     })
 
     const actionsRef = React.useRef(actions)
     actionsRef.current = actions
 
-    const envelope = getEnvelope()
-
-    // Auto-load video when parameters are mounted
     React.useEffect(() => {
-        if (!envelope?.videoUrl && !envelope?.videoLoading) {
-            actionsRef.current.loadVideo()
-        }
-    }, [envelope?.videoUrl, envelope?.videoLoading, currentRoute])
+        registerEnvelopeActions({
+            setHandlers: (handlers) => actionsRef.current.setHandlers(handlers),
+            loadVideo: () => actionsRef.current.loadVideo(),
+            onPauseVideo: () => actionsRef.current.onPauseVideo(),
+            onResumeVideo: () => actionsRef.current.onResumeVideo(),
+            onStopVideo: (goHome) => actionsRef.current.onStopVideo(goHome),
+            onProgress: (seconds, source, percent) => actionsRef.current.onProgress(seconds, source, percent),
+            onVideoReady: () => actionsRef.current.onVideoReady(),
+            onVideoUpdate: (eventInfo) => actionsRef.current.onVideoUpdate(eventInfo),
+            onVideoError: (error) => actionsRef.current.onVideoError(error),
+            savePlaybackLogs: () => actionsRef.current.savePlaybackLogs()
+        })
+    }, [registerEnvelopeActions])
 
-    // Cleanup envelope on route unmount
-    React.useEffect(() => {
-        return () => {
-            actionsRef.current.onStopVideo()
-            resetEnvelope()
-        }
-    }, [])
-
-    // Register remote listeners once on mount
     React.useEffect(() => {
         addActionListener('player-controls', {
             onRight: () => {
@@ -82,15 +77,15 @@ export function PlayerManager(props) {
             onDown: () => {
                 const current = getEnvelope()
                 if (playerSelectors.allowShortcuts(current)) {
-                    updateEnvelope((prev) => ({ subtitleFontScale: prev.subtitleFontScale - 0.1 }))
+                    updateEnvelope((prev) => ({ subtitleFontScale: (prev.subtitleFontScale || 1.0) - 0.1 }))
                 }
             },
             onUp: () => {
                 const current = getEnvelope()
                 if (playerSelectors.allowShortcuts(current)) {
                     updateEnvelope((prev) => {
-                        const nextShade = Math.min(1.0, Math.max(0.0, prev.subtitleColor.shade - 0.15))
-                        return { subtitleColor: { ...prev.subtitleColor, shade: nextShade } }
+                        const nextShade = Math.min(1.0, Math.max(0.0, (prev.subtitleColor?.shade || 1.0) - 0.15))
+                        return { subtitleColor: { ...(prev.subtitleColor || {}), shade: nextShade } }
                     })
                 }
             },
@@ -100,6 +95,12 @@ export function PlayerManager(props) {
             removeActionListener('player-controls')
         }
     }, [])
+
+    React.useEffect(() => {
+        if (apiClient && actionsRef.current.hasHandlers() && !envelope?.videoUrl && !envelope?.videoLoading) {
+            actionsRef.current.loadVideo()
+        }
+    }, [apiClient, envelope?.videoUrl, envelope?.videoLoading, currentRoute])
 
     return props.children
 }

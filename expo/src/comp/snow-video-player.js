@@ -96,8 +96,8 @@ export default function SnowVideoPlayer(props) {
 
     // Touch Overlay for Pause
     React.useEffect(() => {
-        if (envelope?.videoUrl && !envelope?.controlsVisible) {
-            actions?.addLog?.({ kind: 'snowstream', message: 'Enabling video pause touch overlay' })
+        // Only mount touch overlay when video is actively ready and playing
+        if (envelope?.videoUrl && envelope?.isVideoViewReady && envelope?.isPlaying && !envelope?.controlsVisible) {
             openOverlay({
                 props: {
                     canFocus: true,
@@ -116,7 +116,7 @@ export default function SnowVideoPlayer(props) {
         } else {
             closeOverlay()
         }
-    }, [envelope?.controlsVisible, envelope?.videoUrl])
+    }, [envelope?.controlsVisible, envelope?.videoUrl, envelope?.isVideoViewReady, envelope?.isPlaying])
 
     // Playback Controls Modal
     React.useEffect(() => {

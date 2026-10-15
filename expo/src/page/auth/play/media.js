@@ -6,15 +6,19 @@ import { playerSelectors } from '../../../player/player-envelope'
 import { useAppContext } from '../../../app-context'
 
 export function PlayMediaPage(props) {
-    const { envelope, resetEnvelope, registerHandlers, currentRoute } = Snow.useSnowContext()
+    const {
+        envelope,
+        resetEnvelope,
+        dispatchEnvelopeAction,
+        currentRoute
+    } = Snow.useSnowContext()
     const { clientOptions } = useAppContext()
 
     const routeParams = currentRoute?.routeParams || {}
     const isTranscode = playerSelectors.isTranscode(envelope, routeParams, clientOptions)
 
-    // Keep handlers updated imperatively without triggering store re-renders
     React.useEffect(() => {
-        registerHandlers({
+        dispatchEnvelopeAction('setHandlers', {
             loadVideo: props.loadVideo,
             loadTranscode: props.loadTranscode,
             onComplete: props.onComplete,
@@ -22,10 +26,9 @@ export function PlayMediaPage(props) {
             updateProgress: props.updateProgress,
             increaseWatchCount: props.increaseWatchCount
         })
-    })
 
-    // Wipe playback state strictly when leaving the page
-    React.useEffect(() => {
+        dispatchEnvelopeAction('loadVideo')
+
         return () => {
             resetEnvelope()
         }

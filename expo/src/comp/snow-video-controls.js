@@ -9,7 +9,7 @@ export default function SnowVideoControls(props) {
         SnowStyle,
         envelope,
         updateEnvelope,
-        getEnvelope,
+        dispatchEnvelopeAction,
         currentRoute
     } = Snow.useSnowContext()
 
@@ -40,19 +40,19 @@ export default function SnowVideoControls(props) {
 
     const persistLogs = () => {
         if (apiClient?.savePlaybackLogs) {
-            apiClient.savePlaybackLogs(envelope.logs || []).then((response) => {
+            apiClient.savePlaybackLogs(envelope?.logs || []).then((response) => {
                 setLogTitle(response.cache_key)
             })
         }
     }
 
     const tabs = ['Playback', 'Style']
-    if (envelope.mediaTracks) {
+    if (envelope?.mediaTracks) {
         tabs.push('Track')
     }
 
     let slider = null
-    if (envelope.durationSeconds > 0) {
+    if (envelope?.durationSeconds > 0) {
         const activePercent = isInteractingRef.current && localPercent !== null
             ? localPercent
             : progressPercent
@@ -60,7 +60,7 @@ export default function SnowVideoControls(props) {
         const onPercentChange = (percentValue) => {
             isInteractingRef.current = true
             setLocalPercent(percentValue)
-            props.actions?.onProgress(null, 'manual-seek', percentValue)
+            dispatchEnvelopeAction('onProgress', null, 'manual-seek', percentValue)
             isInteractingRef.current = false
             setLocalPercent(null)
         }
@@ -75,7 +75,7 @@ export default function SnowVideoControls(props) {
                     onValueChange={onPercentChange}
                 />
                 <Snow.Text style={styles.progress}>
-                    {progressDisplay ?? ''} / {durationDisplay} - {isTranscode ? 'transcoding' : 'direct play'} via {playerKind === 'rnv' ? 'exo' : 'mpv'}
+                    {progressDisplay ?? ''} / {durationDisplay} {isTranscode ? 'transcoding' : 'direct play'} via {playerKind === 'rnv' ? 'exo' : 'mpv'}
                 </Snow.Text>
             </Snow.View>
         )
@@ -83,64 +83,88 @@ export default function SnowVideoControls(props) {
 
     const playbackControls = (
         <Snow.Grid itemsPerRow={2}>
-            <Snow.TextButton title="Resume" onPress={() => props.actions?.onResumeVideo()} />
-            <Snow.TextButton title="Hide Controls" onPress={() => updateEnvelope({ controlsVisible: false })} />
-            <Snow.TextButton title="Stop" onPress={() => props.actions?.onStopVideo(false)} />
-            <Snow.TextButton title="Home" onPress={() => props.actions?.onStopVideo(true)} />
+            <Snow.TextButton
+                title="Resume"
+                onPress={() => dispatchEnvelopeAction('onResumeVideo')}
+            />
+            <Snow.TextButton
+                title="Hide Controls"
+                onPress={() => updateEnvelope({ controlsVisible: false })}
+            />
+            <Snow.TextButton
+                title="Stop"
+                onPress={() => dispatchEnvelopeAction('onStopVideo', false)}
+            />
+            <Snow.TextButton
+                title="Home"
+                onPress={() => dispatchEnvelopeAction('onStopVideo', true)}
+            />
         </Snow.Grid>
     )
 
     const subtitleControls = (
         <Snow.Grid itemsPerRow={2}>
-            <Snow.TextButton title="Sub Smaller" onPress={() => {
-                updateEnvelope((prev) => ({ subtitleFontScale: prev.subtitleFontScale - 0.1 }))
-            }} />
-            <Snow.TextButton title="Sub Bigger" onPress={() => {
-                updateEnvelope((prev) => ({ subtitleFontScale: prev.subtitleFontScale + 0.1 }))
-            }} />
-            <Snow.TextButton title="Sub Darker" onPress={() => {
-                updateEnvelope((prev) => {
-                    const nextShade = Math.min(1.0, Math.max(0.0, prev.subtitleColor.shade - 0.15))
-                    return { subtitleColor: { ...prev.subtitleColor, shade: nextShade } }
-                })
-            }} />
-            <Snow.TextButton title="Sub Lighter" onPress={() => {
-                updateEnvelope((prev) => {
-                    const nextShade = Math.min(1.0, Math.max(0.0, prev.subtitleColor.shade + 0.15))
-                    return { subtitleColor: { ...prev.subtitleColor, shade: nextShade } }
-                })
-            }} />
+            <Snow.TextButton
+                title="Sub Smaller"
+                onPress={() => {
+                    updateEnvelope((prev) => ({ subtitleFontScale: (prev?.subtitleFontScale || 1.0) - 0.1 }))
+                }}
+            />
+            <Snow.TextButton
+                title="Sub Bigger"
+                onPress={() => {
+                    updateEnvelope((prev) => ({ subtitleFontScale: (prev?.subtitleFontScale || 1.0) + 0.1 }))
+                }}
+            />
+            <Snow.TextButton
+                title="Sub Darker"
+                onPress={() => {
+                    updateEnvelope((prev) => {
+                        const nextShade = Math.min(1.0, Math.max(0.0, (prev?.subtitleColor?.shade || 1.0) - 0.15))
+                        return { subtitleColor: { ...(prev?.subtitleColor || {}), shade: nextShade } }
+                    })
+                }}
+            />
+            <Snow.TextButton
+                title="Sub Lighter"
+                onPress={() => {
+                    updateEnvelope((prev) => {
+                        const nextShade = Math.min(1.0, Math.max(0.0, (prev?.subtitleColor?.shade || 1.0) + 0.15))
+                        return { subtitleColor: { ...(prev?.subtitleColor || {}), shade: nextShade } }
+                    })
+                }}
+            />
         </Snow.Grid>
     )
 
-    const trackControls = envelope.mediaTracks ? (
+    const trackControls = envelope?.mediaTracks ? (
         <SnowTrackSelector
             focusKey="track-selector"
             showDelay={true}
-            audioDelaySeconds={envelope.audioDelaySeconds}
+            audioDelaySeconds={envelope?.audioDelaySeconds}
             setAudioDelaySeconds={(val) => updateEnvelope({ audioDelaySeconds: val })}
-            subtitleDelaySeconds={envelope.subtitleDelaySeconds}
+            subtitleDelaySeconds={envelope?.subtitleDelaySeconds}
             setSubtitleDelaySeconds={(val) => updateEnvelope({ subtitleDelaySeconds: val })}
             tracks={envelope.mediaTracks}
             selectTrack={(track) => {
                 if (track.kind === 'audio') {
                     updateEnvelope((prev) => ({
-                        audioTrackIndex: prev.audioTrackIndex === track.audio_index ? -1 : track.audio_index
+                        audioTrackIndex: prev?.audioTrackIndex === track.audio_index ? -1 : track.audio_index
                     }))
                 } else if (track.kind === 'subtitle') {
                     updateEnvelope((prev) => ({
-                        subtitleTrackIndex: prev.subtitleTrackIndex === track.subtitle_index ? -1 : track.subtitle_index
+                        subtitleTrackIndex: prev?.subtitleTrackIndex === track.subtitle_index ? -1 : track.subtitle_index
                     }))
                 }
             }}
-            audioTrack={envelope.audioTrackIndex}
-            subtitleTrack={envelope.subtitleTrackIndex}
+            audioTrack={envelope?.audioTrackIndex}
+            subtitleTrack={envelope?.subtitleTrackIndex}
         />
     ) : null
 
     return (
         <Snow.View parentPath={props.parentPath} style={styles.player}>
-            <Snow.Label center>{envelope.videoTitle}</Snow.Label>
+            <Snow.Label center>{envelope?.videoTitle}</Snow.Label>
             {slider}
             <Snow.Tabs yy={2} focusStart focusKey="control-tabs" headers={tabs}>
                 {playbackControls}

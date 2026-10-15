@@ -1,8 +1,9 @@
+import React from 'react'
 import Snow from 'expo-snowui'
 import util from '../util'
 import CONST from '../constant'
 import { config } from '../settings'
-import { playerSelectors, initialPlayerEnvelope } from './player-envelope'
+import { playerSelectors } from './player-envelope'
 
 const MAX_LOGS = 300
 
@@ -18,10 +19,18 @@ export function usePlayerActions({
     closeOverlay,
     updateEnvelope,
     getEnvelope,
-    resetEnvelope,
-    handlers = {}
+    resetEnvelope
 }) {
     const routeParams = currentRoute?.routeParams || {}
+    const handlersRef = React.useRef({})
+
+    const setHandlers = (nextHandlers) => {
+        handlersRef.current = { ...handlersRef.current, ...nextHandlers }
+    }
+
+    const hasHandlers = () => {
+        return !!(handlersRef.current.loadVideo || handlersRef.current.loadTranscode)
+    }
 
     const addLog = (logEvent) => {
         const envelope = getEnvelope()
@@ -110,9 +119,9 @@ export function usePlayerActions({
     const loadVideo = () => {
         const envelope = getEnvelope()
         const isTranscode = playerSelectors.isTranscode(envelope, routeParams, clientOptions)
-        const loadHandler = isTranscode ? handlers.loadTranscode : handlers.loadVideo
+        const loadHandler = isTranscode ? handlersRef.current.loadTranscode : handlersRef.current.loadVideo
 
-        if (!loadHandler || envelope.videoUrl || envelope.videoLoading) {
+        if (!apiClient || !loadHandler || envelope.videoUrl || envelope.videoLoading) {
             return
         }
 
@@ -155,9 +164,9 @@ export function usePlayerActions({
             transcodeOnResume: false
         })
 
-        if (handlers.loadTranscode) {
+        if (handlersRef.current.loadTranscode && apiClient) {
             const kind = playerSelectors.playerKind(envelope, routeParams, clientOptions)
-            handlers.loadTranscode(
+            handlersRef.current.loadTranscode(
                 apiClient,
                 routeParams,
                 clientOptions?.deviceProfile,
@@ -192,23 +201,23 @@ export function usePlayerActions({
             if (!isTranscode) {
                 patch.seekToSeconds = resolvedSeconds
             }
-            if (isTranscode && handlers.loadTranscode) {
+            if (isTranscode && handlersRef.current.loadTranscode) {
                 patch.transcodeOnResume = true
             }
         }
 
         if (source === 'manual-seek' || enoughDiff) {
             patch.progressSeconds = resolvedSeconds
-            if (envelope.durationSeconds > 0 && resolvedSeconds > 0 && handlers.updateProgress) {
-                const isWatched = await handlers.updateProgress(
+            if (envelope.durationSeconds > 0 && resolvedSeconds > 0 && handlersRef.current.updateProgress && apiClient) {
+                const isWatched = await handlersRef.current.updateProgress(
                     apiClient,
                     routeParams,
                     resolvedSeconds,
                     envelope.durationSeconds
                 )
-                if (isWatched && !envelope.countedWatch && handlers.increaseWatchCount) {
+                if (isWatched && !envelope.countedWatch && handlersRef.current.increaseWatchCount) {
                     patch.countedWatch = true
-                    await handlers.increaseWatchCount(apiClient, routeParams)
+                    await handlersRef.current.increaseWatchCount(apiClient, routeParams)
                 }
             }
         }
@@ -219,8 +228,8 @@ export function usePlayerActions({
     const onPlaybackComplete = () => {
         const envelope = getEnvelope()
         onProgress(envelope.durationSeconds, 'playback-complete').then(() => {
-            if (handlers.onComplete) {
-                return handlers.onComplete(apiClient, routes, navPush)
+            if (handlersRef.current.onComplete && apiClient) {
+                return handlersRef.current.onComplete(apiClient, routes, navPush)
             } else if (navPop) {
                 return navPop().then(() => resetEnvelope())
             }
@@ -237,8 +246,8 @@ export function usePlayerActions({
         clearModals?.()
         closeOverlay?.()
 
-        if (handlers.onStopVideo) {
-            handlers.onStopVideo(apiClient, routes, navPush, navPop, goHome)
+        if (handlersRef.current.onStopVideo && apiClient) {
+            handlersRef.current.onStopVideo(apiClient, routes, navPush, navPop, goHome)
             return
         }
 
@@ -251,7 +260,49 @@ export function usePlayerActions({
         navPop?.()
     }
 
+    const onVideoReady = () => {
+        addLog({ kind: 'snowstream', message: 'low level video player reports that it is ready to play' })
+        updateEnvelope({ isVideoViewReady: true, isPlaying: true })
+    }
+
+    const onVideoUpdate = (eventInfo) => {
+        if (eventInfo?.kind === 'rnvevent' && eventInfo?.data) {
+            if (eventInfo?.data?.data?.currentTime !== undefined) {
+                const current = getEnvelope()
+                if (!current.isSeekable) {
+                    updateEnvelope({ isSeekable: true })
+                }
+                let adjustedSeconds = eventInfo.data.data.currentTime
+                if (playerSelectors.isTranscode(current, routeParams, clientOptions)) {
+                    adjustedSeconds += routeParams?.seekToSeconds ?? 0
+                }
+                onProgress(adjustedSeconds, 'player-event')
+            } else {
+                addLog(eventInfo)
+            }
+            if (eventInfo?.data?.event === 'onEnd') {
+                onPlaybackComplete()
+            }
+        }
+    }
+
+    const onVideoError = (error) => {
+        addLog(error)
+        const code = error?.error?.code || error?.error?.errorCode
+        if ([4, '4', 24001, '24001', 24003, '24003'].includes(code)) {
+            onCriticalError(error)
+        }
+    }
+
+    const savePlaybackLogs = () => {
+        if (!apiClient) return Promise.resolve()
+        const envelope = getEnvelope()
+        return apiClient.savePlaybackLogs(envelope.logs || [])
+    }
+
     return {
+        setHandlers,
+        hasHandlers,
         loadVideo,
         onPauseVideo,
         onResumeVideo,
@@ -259,8 +310,12 @@ export function usePlayerActions({
         onProgress,
         onPlaybackComplete,
         onCriticalError,
+        onVideoReady,
+        onVideoUpdate,
+        onVideoError,
+        savePlaybackLogs,
         addLog,
         parseVideoPayload,
-        resetPlayer: resetEnvelope,
+        resetPlayer: resetEnvelope
     }
 }
