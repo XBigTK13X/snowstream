@@ -1,13 +1,11 @@
-import { useSnapshot, snapshot } from 'valtio'
 
-import { playerState } from './player-state'
+import { initialPlayerEnvelope, playerSelectors } from './player-envelope'
 import { playerActions } from './player-actions'
 import PlayerManager from './player-manager'
 export const Player = {
-    state: playerState,
+    initialPlayerEnvelope: initialPlayerEnvelope,
+    selectors: playerSelectors,
     action: playerActions,
-    Manager: PlayerManager,
-    useSnapshot,
-    snapshot
+    Manager: PlayerManager
 }
 export default Player

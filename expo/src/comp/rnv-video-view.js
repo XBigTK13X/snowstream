@@ -1,14 +1,26 @@
 import React from 'react'
 import { Platform } from 'react-native'
 import Snow from 'expo-snowui'
-import Player from 'snowstream-player'
 import { useVideoPlayer, VideoView } from 'react-native-video'
+import { useAppContext } from '../app-context'
+import { playerSelectors } from '../player/player-envelope'
 
 const isWeb = Platform.OS === 'web'
 
 export default function RnvVideoView(props) {
-    const { getWindowWidth, getWindowHeight } = Snow.useSnowContext(props)
-    const playerState = Player.useSnapshot(Player.state)
+    const {
+        getWindowWidth,
+        getWindowHeight,
+        envelope,
+        updateEnvelope,
+        currentRoute,
+        actions
+    } = Snow.useSnowContext(props)
+    const { clientOptions } = useAppContext()
+
+    const routeParams = currentRoute?.routeParams || {}
+    const isTranscode = playerSelectors.isTranscode(envelope, routeParams, clientOptions)
+
     const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
     const [availableTextTracks, setAvailableTextTracks] = React.useState([])
@@ -42,29 +54,47 @@ export default function RnvVideoView(props) {
     let userClickedPlay = () => { }
     if (isWeb) {
         userClickedPlay = () => {
-            Player.action.onVideoReady()
+            updateEnvelope({ isVideoViewReady: true, isPlaying: true })
             setUserPlayed(true)
         }
     }
 
     const onError = (err) => {
-        err.kind = 'rnv'
-        Player.action.onVideoError(err)
+        const errorPayload = { ...err, kind: 'rnv' }
+        actions?.addLog?.(errorPayload)
+
+        const code = errorPayload?.error?.code || errorPayload?.error?.errorCode
+        if ([4, '4', 24001, '24001', 24003, '24003'].includes(code)) {
+            actions?.onCriticalError?.(errorPayload)
+        }
     }
 
     const onRnvEvent = (kind) => {
         return (payload) => {
-            Player.action.onVideoUpdate({
-                kind: 'rnvevent',
-                data: {
-                    event: kind,
-                    data: payload
+            if (kind === 'onProgress' && payload?.currentTime !== undefined) {
+                if (!envelope?.isSeekable) {
+                    updateEnvelope({ isSeekable: true })
                 }
-            })
+                let adjustedSeconds = payload.currentTime
+                if (isTranscode) {
+                    adjustedSeconds += routeParams?.seekToSeconds ?? 0
+                }
+                actions?.onProgress?.(adjustedSeconds, 'player-event')
+            } else if (kind === 'onEnd') {
+                actions?.onPlaybackComplete?.()
+            } else {
+                actions?.addLog?.({
+                    kind: 'rnvevent',
+                    data: {
+                        event: kind,
+                        data: payload
+                    }
+                })
+            }
         }
     }
 
-    const safeUrl = playerState.videoUrl ? encodeURI(playerState.videoUrl) : ''
+    const safeUrl = envelope?.videoUrl ? encodeURI(envelope.videoUrl) : ''
 
     const nativePlayer = useVideoPlayer(safeUrl, (instance) => {
         if (!instance) return
@@ -82,12 +112,12 @@ export default function RnvVideoView(props) {
     }
 
     React.useEffect(() => {
-        if (!isWeb && !playerState.isVideoViewReady) {
-            Player.action.onVideoReady()
+        if (!isWeb && !envelope?.isVideoViewReady) {
+            updateEnvelope({ isVideoViewReady: true, isPlaying: true })
         }
 
         if (isWeb && !requestTranscode) {
-            if (!playerState.isTranscode && (playerState.audioTrackIndex > 0 || playerState.subtitleTrackIndex > 0)) {
+            if (!isTranscode && (envelope?.audioTrackIndex > 0 || envelope?.subtitleTrackIndex > 0)) {
                 setRequestTranscode(true)
                 onError({ message: 'web video player cannot select tracks', error: { code: 4 } })
             }
@@ -97,18 +127,18 @@ export default function RnvVideoView(props) {
     React.useEffect(() => {
         if (!nativePlayer) return
 
-        if (playerState.isPlaying) {
+        if (envelope?.isPlaying) {
             nativePlayer.play()
         } else {
             nativePlayer.pause()
         }
-    }, [playerState.isPlaying, nativePlayer])
+    }, [envelope?.isPlaying, nativePlayer])
 
     React.useEffect(() => {
-        if (playerState.seekToSeconds > -1 && nativePlayer) {
-            nativePlayer.seekTo(playerState.seekToSeconds)
+        if (envelope?.seekToSeconds > -1 && nativePlayer) {
+            nativePlayer.seekTo(envelope.seekToSeconds)
         }
-    }, [playerState.seekToSeconds, nativePlayer])
+    }, [envelope?.seekToSeconds, nativePlayer])
 
     React.useEffect(() => {
         if (!nativePlayer || isWeb) return
@@ -117,8 +147,8 @@ export default function RnvVideoView(props) {
             ? availableTextTracks
             : nativePlayer.getAvailableTextTracks()
 
-        if (playerState.subtitleTrackIndex >= 0) {
-            const track = textTracks[playerState.subtitleTrackIndex]
+        if (envelope?.subtitleTrackIndex >= 0) {
+            const track = textTracks[envelope.subtitleTrackIndex]
 
             if (track) {
                 nativePlayer.selectTextTrack(track)
@@ -129,7 +159,7 @@ export default function RnvVideoView(props) {
     }, [
         nativePlayer,
         availableTextTracks,
-        playerState.subtitleTrackIndex
+        envelope?.subtitleTrackIndex
     ])
 
     React.useEffect(() => {
@@ -180,16 +210,16 @@ export default function RnvVideoView(props) {
             )
         }
 
-        if (!playerState.isTranscode && (playerState.audioTrackIndex > 0 || playerState.subtitleTrackIndex > 0)) {
+        if (!isTranscode && (envelope?.audioTrackIndex > 0 || envelope?.subtitleTrackIndex > 0)) {
             return <Snow.Text>Waiting on transcode...</Snow.Text>
         }
 
-        if (requestTranscode && !playerState.isTranscode) {
+        if (requestTranscode && !isTranscode) {
             return <Snow.Text>Waiting on transcode...</Snow.Text>
         }
     }
 
-    if (!playerState.videoUrl) {
+    if (!envelope?.videoUrl) {
         return null
     }
 

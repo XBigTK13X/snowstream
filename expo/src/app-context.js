@@ -2,8 +2,6 @@ import React from 'react';
 import Snow from 'expo-snowui'
 import uuid from 'react-native-uuid';
 
-import { useSnapshot } from 'valtio'
-import { playerState } from './player/player-state'
 import CONST from './constant'
 import util from './util'
 import { config } from './settings'
@@ -21,7 +19,7 @@ export function useAppContext() {
 }
 
 export function AppContextProvider(props) {
-    const { navReset } = Snow.useSnowContext()
+    const { navReset, getEnvelope } = Snow.useSnowContext()
     const { SnowStyle, navPush, pushModal, popModal } = Snow.useSnowContext(props)
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
@@ -127,8 +125,8 @@ export function AppContextProvider(props) {
     }
 
     const onApiError = (err) => {
-        const player = useSnapshot(playerState)
-        if (!player.isPlaying) {
+        const currentEnvelope = getEnvelope ? getEnvelope() : {}
+        if (!currentEnvelope?.isPlaying) {
             setApiError(err)
         }
     }

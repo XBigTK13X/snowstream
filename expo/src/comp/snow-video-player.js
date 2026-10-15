@@ -6,16 +6,38 @@ import {
     View
 } from 'react-native'
 import { useKeepAwake } from 'expo-keep-awake'
-import Player from 'snowstream-player'
 import util from '../util'
 import SnowVideoControls from './snow-video-controls'
 import { useAppContext } from '../app-context'
+import { playerSelectors } from '../player/player-envelope'
+
+function resolveVideoView(kind) {
+    if (kind === 'null') {
+        return require('../comp/null-video-view').default
+    }
+    if (kind === 'rnv') {
+        return require('../comp/rnv-video-view').default
+    }
+    return require('../comp/mpv-video-view').default
+}
 
 export default function SnowVideoPlayer(props) {
-    const { pushModal, popModal, openOverlay, closeOverlay } = Snow.useLayerContext()
-    const player = Player.useSnapshot(Player.state)
+    const {
+        pushModal,
+        popModal,
+        openOverlay,
+        closeOverlay,
+        envelope,
+        getEnvelope,
+        updateEnvelope,
+        currentRoute,
+        actions
+    } = Snow.useSnowContext()
 
-    const { config } = useAppContext()
+    const { config, clientOptions } = useAppContext()
+    const routeParams = currentRoute?.routeParams || {}
+
+    const playerKind = playerSelectors.playerKind(envelope, routeParams, clientOptions)
 
     if (Platform.OS !== 'web') {
         useKeepAwake()
@@ -24,32 +46,32 @@ export default function SnowVideoPlayer(props) {
     React.useEffect(() => {
         const appStateSubscription = AppState.addEventListener('change', appState => {
             if (appState === 'background') {
-                Player.action.onStopVideo()
+                actions?.onStopVideo?.()
             }
         })
 
         return () => {
             appStateSubscription.remove()
         }
-    }, [])
+    }, [actions])
 
     // Video View Modal
     React.useEffect(() => {
-        if (player.settingsLoaded && player.videoUrl) {
-            Player.action.onAddLog({ kind: 'snowstream', message: 'Showing video content modal' })
+        if (envelope?.videoUrl) {
+            actions?.addLog?.({ kind: 'snowstream', message: 'Showing video content modal' })
             pushModal({
                 props: {
                     assignFocus: false,
                     onRequestClose: () => {
-                        const current = Player.snapshot(Player.state)
-                        if (!current.controlsVisible && !current.logsVisible) {
-                            Player.action.onStopVideo()
+                        const current = getEnvelope()
+                        if (!current?.controlsVisible && !current?.logsVisible) {
+                            actions?.onStopVideo?.()
                         }
                     }
                 },
                 render: () => {
-                    const VideoView = Player.action.getVideoView()
-                    if (player.clientOptions.nightFilter) {
+                    const VideoView = resolveVideoView(playerKind)
+                    if (clientOptions?.nightFilter) {
                         return (
                             <>
                                 <VideoView />
@@ -66,16 +88,16 @@ export default function SnowVideoPlayer(props) {
             })
 
             return () => {
-                Player.action.onAddLog({ kind: 'snowstream', message: 'Closing video content modal' })
+                actions?.addLog?.({ kind: 'snowstream', message: 'Closing video content modal' })
                 popModal()
             }
         }
-    }, [player.settingsLoaded, player.videoUrl])
+    }, [envelope?.videoUrl, playerKind, clientOptions?.nightFilter])
 
     // Touch Overlay for Pause
     React.useEffect(() => {
-        if (player.settingsLoaded && player.videoUrl && !player.controlsVisible) {
-            Player.action.onAddLog({ kind: 'snowstream', message: 'Enabling video pause touch overlay' })
+        if (envelope?.videoUrl && !envelope?.controlsVisible) {
+            actions?.addLog?.({ kind: 'snowstream', message: 'Enabling video pause touch overlay' })
             openOverlay({
                 props: {
                     canFocus: true,
@@ -83,7 +105,7 @@ export default function SnowVideoPlayer(props) {
                     boundary: 'video-player',
                     focusKey: 'video-player',
                     onPress: () => {
-                        Player.action.onPauseVideo()
+                        actions?.onPauseVideo?.()
                     }
                 }
             })
@@ -94,43 +116,43 @@ export default function SnowVideoPlayer(props) {
         } else {
             closeOverlay()
         }
-    }, [player.controlsVisible, player.settingsLoaded, player.videoUrl])
+    }, [envelope?.controlsVisible, envelope?.videoUrl])
 
     // Playback Controls Modal
     React.useEffect(() => {
-        if (player.controlsVisible && player.settingsLoaded && player.videoUrl) {
-            Player.action.onAddLog({ kind: 'snowstream', message: 'Showing playback controls modal' })
+        if (envelope?.controlsVisible && envelope?.videoUrl) {
+            actions?.addLog?.({ kind: 'snowstream', message: 'Showing playback controls modal' })
             pushModal({
                 props: {
                     transparent: true,
                     boundary: 'video-controls',
                     scroll: true,
                     onRequestClose: () => {
-                        Player.action.onResumeVideo()
+                        actions?.onResumeVideo?.()
                     }
                 },
                 render: (modalProps) => {
-                    return <SnowVideoControls {...modalProps} />
+                    return <SnowVideoControls {...modalProps} actions={actions} />
                 }
             })
 
             return () => {
-                Player.action.onAddLog({ kind: 'snowstream', message: 'Closing playback controls.' })
+                actions?.addLog?.({ kind: 'snowstream', message: 'Closing playback controls.' })
                 popModal()
             }
         }
-    }, [player.controlsVisible, player.settingsLoaded, player.videoUrl])
+    }, [envelope?.controlsVisible, envelope?.videoUrl])
 
     // Logs Modal
     React.useEffect(() => {
-        if (player.logsVisible && player.settingsLoaded && player.videoUrl) {
-            Player.action.onAddLog({ kind: 'snowstream', message: 'Opening video log viewer modal' })
+        if (envelope?.logsVisible && envelope?.videoUrl) {
+            actions?.addLog?.({ kind: 'snowstream', message: 'Opening video log viewer modal' })
             pushModal({
                 props: {
                     black: true,
                     scroll: true,
                     onRequestClose: () => {
-                        Player.action.setVideoLogsVisible(false)
+                        updateEnvelope({ logsVisible: false })
                     }
                 },
                 render: () => {
@@ -140,7 +162,7 @@ export default function SnowVideoPlayer(props) {
                             focusKey="log-entry"
                             itemsPerRow={1}
                             itemsPerPage={1}
-                            items={player.logs}
+                            items={envelope?.logs || []}
                             renderItem={(log) => {
                                 return (
                                     <Snow.View>
@@ -153,19 +175,19 @@ export default function SnowVideoPlayer(props) {
                 }
             })
             return () => {
-                Player.action.onAddLog({ kind: 'snowstream', message: 'Closing video log viewer modal' })
+                actions?.addLog?.({ kind: 'snowstream', message: 'Closing video log viewer modal' })
                 popModal()
             }
         }
-    }, [player.logsVisible, player.settingsLoaded, player.videoUrl])
+    }, [envelope?.logsVisible, envelope?.videoUrl, envelope?.logs])
 
-    if (config.debugVideoPlayer) {
-        util.log(player.videoUrl)
+    if (config?.debugVideoPlayer) {
+        util.log(envelope?.videoUrl)
     }
 
     return (
         <Snow.FillView>
-            <Snow.Header center>{player.videoLoaded ? null : "Preparing the video."}</Snow.Header>
+            <Snow.Header center>{envelope?.videoLoaded ? null : "Preparing the video."}</Snow.Header>
         </Snow.FillView>
     )
 }

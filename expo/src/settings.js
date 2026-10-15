@@ -23,7 +23,6 @@ class Config {
         const transcodeUrl = '/auth/wrap/details/movie?shelfId=1&movieId=928'
 
         this.debugVideoUrl = null
-        this.debugValtio = false
         this.debugSnowui = false
         this.debugFocus = false
     }

@@ -11,7 +11,7 @@
         "expo-libmpv": "^0.6.2",
         "expo-linking": "57.0.5",
         "expo-secure-store": "57.0.1",
-        "expo-snowui": "^1.8.10",
+        "expo-snowui": "^1.8.16",
         "expo-splash-screen": "57.0.5",
         "react": "19.2.8",
         "react-dom": "19.2.8",
@@ -22,8 +22,7 @@
         "react-native-uuid": "2.0.4",
         "react-native-video": "7.0.0-beta.11",
         "react-native-web": "0.21.2",
-        "use-debounce": "10.1.1",
-        "valtio": "2.1.8"
+        "use-debounce": "10.1.1"
     },
     "devDependencies": {
         "@babel/core": "7.29.0",

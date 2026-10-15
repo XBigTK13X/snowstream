@@ -1,31 +1,47 @@
+import React from 'react'
+import Snow from 'expo-snowui'
 import { C } from 'snowstream'
 import SnowVideoPlayer from '../../../comp/snow-video-player'
-import Player from 'snowstream-player'
-import _ from 'lodash'
+import { playerSelectors } from '../../../player/player-envelope'
+import { useAppContext } from '../../../app-context'
 
 export function PlayMediaPage(props) {
-    const player = Player.useSnapshot(Player.state)
+    const { envelope, resetEnvelope, registerHandlers, currentRoute } = Snow.useSnowContext()
+    const { clientOptions } = useAppContext()
 
-    C.React.useEffect(() => {
-        Player.action.effectSetVideoHandlers(
-            props
-        )
+    const routeParams = currentRoute?.routeParams || {}
+    const isTranscode = playerSelectors.isTranscode(envelope, routeParams, clientOptions)
+
+    // Keep handlers updated imperatively without triggering store re-renders
+    React.useEffect(() => {
+        registerHandlers({
+            loadVideo: props.loadVideo,
+            loadTranscode: props.loadTranscode,
+            onComplete: props.onComplete,
+            onStopVideo: props.onStopVideo,
+            updateProgress: props.updateProgress,
+            increaseWatchCount: props.increaseWatchCount
+        })
+    })
+
+    // Wipe playback state strictly when leaving the page
+    React.useEffect(() => {
         return () => {
-            Player.action.reset()
+            resetEnvelope()
         }
     }, [])
 
-    if (player.playbackFailed) {
+    if (envelope?.playbackFailed) {
         return (
             <C.FillView>
                 <C.SnowHeader center>Unable to play the video.</C.SnowHeader>
-                <C.SnowText>Error: {C.Snow.stringifySafe(player.playbackFailed)}</C.SnowText>
+                <C.SnowText>Error: {Snow.stringifySafe(envelope.playbackFailed)}</C.SnowText>
             </C.FillView>
         )
     }
 
-    if (!player.videoUrl) {
-        if (player.isTranscode) {
+    if (!envelope?.videoUrl) {
+        if (isTranscode) {
             return (
                 <C.FillView>
                     <C.SnowHeader style={{ flex: 1 }} center>Preparing a transcode.</C.SnowHeader>
@@ -41,9 +57,7 @@ export function PlayMediaPage(props) {
         )
     }
 
-    return (
-        <SnowVideoPlayer />
-    )
+    return <SnowVideoPlayer />
 }
 
 export default PlayMediaPage

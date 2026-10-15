@@ -1,13 +1,16 @@
-import _ from 'lodash'
 import React from 'react'
 import Snow from 'expo-snowui'
-import { subscribe, snapshot } from 'valtio'
-
 import { useAppContext } from '../app-context'
-import { playerState } from './player-state'
-import { playerActions } from './player-actions'
+import { usePlayerActions } from './player-actions'
+import { playerSelectors } from './player-envelope'
 
 export function PlayerManager(props) {
+    const {
+        apiClient,
+        clientOptions,
+        routes
+    } = useAppContext()
+
     const {
         addActionListener,
         removeActionListener,
@@ -17,81 +20,78 @@ export function PlayerManager(props) {
         clearModals,
         closeOverlay,
         currentRoute,
-        toast
+        getEnvelope,
+        updateEnvelope,
+        resetEnvelope,
+        getHandlers
     } = Snow.useSnowContext()
-    const {
-        apiClient,
-        clientOptions,
-        routes
-    } = useAppContext()
 
-    React.useEffect(() => {
-        playerActions.importContexts({
-            apiClient,
-            clearModals,
-            clientOptions,
-            closeOverlay,
-            currentRoute,
-            navPop,
-            navPush,
-            navReset,
-            routes,
-        })
-    }, [
+    const actions = usePlayerActions({
         apiClient,
-        clearModals,
         clientOptions,
-        closeOverlay,
-        currentRoute,
-        navPop,
-        navPush,
-        navReset,
         routes,
-    ])
+        currentRoute,
+        navPush,
+        navPop,
+        navReset,
+        clearModals,
+        closeOverlay,
+        updateEnvelope,
+        getEnvelope,
+        resetEnvelope,
+        get handlers() {
+            return getHandlers ? getHandlers() : {}
+        }
+    })
 
-    const warn = () => {
-        toast.show('Remote shortcut buttons disabled during transcode.', {
-            duration: 1000,
-            position: 'bottom',
-        });
-    }
+    const actionsRef = React.useRef(actions)
+    actionsRef.current = actions
 
+    const envelope = getEnvelope()
+
+    // Auto-load video when parameters are mounted
+    React.useEffect(() => {
+        if (!envelope?.videoUrl && !envelope?.videoLoading) {
+            actionsRef.current.loadVideo()
+        }
+    }, [envelope?.videoUrl, envelope?.videoLoading, currentRoute])
+
+    // Cleanup envelope on route unmount
+    React.useEffect(() => {
+        return () => {
+            actionsRef.current.onStopVideo()
+            resetEnvelope()
+        }
+    }, [])
+
+    // Register remote listeners once on mount
     React.useEffect(() => {
         addActionListener('player-controls', {
             onRight: () => {
-                const handlerState = snapshot(playerState)
-                if (handlerState.allowShortcuts) {
-                    playerActions.onProgress(handlerState.progressSeconds + 85, 'manual-seek')
-                }
-                if (handlerState.isTranscode) {
-                    //warn()
+                const current = getEnvelope()
+                if (playerSelectors.allowShortcuts(current)) {
+                    actionsRef.current.onProgress((current.progressSeconds || 0) + 85, 'manual-seek')
                 }
             },
             onLeft: () => {
-                const handlerState = snapshot(playerState)
-                if (handlerState.allowShortcuts) {
-                    playerActions.onProgress(handlerState.progressSeconds - 7, 'manual-seek')
-                }
-                if (handlerState.isTranscode) {
-                    //warn()
+                const current = getEnvelope()
+                if (playerSelectors.allowShortcuts(current)) {
+                    actionsRef.current.onProgress((current.progressSeconds || 0) - 7, 'manual-seek')
                 }
             },
             onDown: () => {
-                const handlerState = snapshot(playerState)
-                if (handlerState.allowShortcuts) {
-                    playerActions.changeSubtitleFontScale(-1)
-                }
-                if (handlerState.isTranscode) {
-                    //warn()
+                const current = getEnvelope()
+                if (playerSelectors.allowShortcuts(current)) {
+                    updateEnvelope((prev) => ({ subtitleFontScale: prev.subtitleFontScale - 0.1 }))
                 }
             },
             onUp: () => {
-                const handlerState = snapshot(playerState)
-                if (handlerState.allowShortcuts) {
-                    playerActions.changeSubtitleColor(-1)
-                }
-                if (handlerState.isTranscode) {
-                    //warn()
+                const current = getEnvelope()
+                if (playerSelectors.allowShortcuts(current)) {
+                    updateEnvelope((prev) => {
+                        const nextShade = Math.min(1.0, Math.max(0.0, prev.subtitleColor.shade - 0.15))
+                        return { subtitleColor: { ...prev.subtitleColor, shade: nextShade } }
+                    })
                 }
             },
         })
@@ -99,15 +99,6 @@ export function PlayerManager(props) {
         return () => {
             removeActionListener('player-controls')
         }
-    }, [])
-
-    React.useEffect(() => {
-        const unsubscribe = subscribe(playerState, () => {
-            if (playerState.readyToLoad && !playerState.videoUrl) {
-                playerActions.effectLoadVideo()
-            }
-        })
-        return () => { unsubscribe() }
     }, [])
 
     return props.children

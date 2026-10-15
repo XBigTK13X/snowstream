@@ -78,7 +78,6 @@ export default function MediaTracksPage(props) {
     }, [player, forcePlayer, media, videoFileIndex, subtitleTrack, audioTrack, shelfId, shouldTranscode])
 
     C.React.useEffect(() => {
-        Player.action.reset()
         props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
             if (response?.video_files) {
                 setMedia(response)
