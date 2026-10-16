@@ -1,9 +1,8 @@
 import { C, useAppContext } from 'snowstream'
-import Player from 'snowstream-player'
 
 export function WatchableListPage(props) {
-    const { navPush, currentRoute } = C.useSnowContext()
-    const { isAdmin, apiClient, routes, } = useAppContext()
+    const { navPush, currentRoute, resetHub } = C.useSnowContext()
+    const { isAdmin, apiClient, routes } = useAppContext()
 
     const [shelf, setShelf] = C.React.useState(null)
     const [items, setItems] = C.React.useState(null)
@@ -23,13 +22,13 @@ export function WatchableListPage(props) {
             props.loadItems(apiClient, shelfId, showPlaylisted)
                 .then((response) => {
                     setItems(response)
-                    if (response.length == 0) {
+                    if (response.length === 0) {
                         if (!showPlaylisted) {
                             setTogglePlaylistedEnabled(false)
                             setShowPlaylisted(true)
                             props.loadItems(apiClient, shelfId, true)
-                                .then((response) => {
-                                    setItems(response)
+                                .then((innerResponse) => {
+                                    setItems(innerResponse)
                                 })
                         }
                     }
@@ -44,38 +43,33 @@ export function WatchableListPage(props) {
         }
 
         const watchAll = () => {
-            Player.action.reset()
-                .then(() => {
-                    return props.watchAll(apiClient, shelfId)
+            resetHub()
+            props.watchAll(apiClient, shelfId).then((response) => {
+                navPush({
+                    path: routes.playingQueuePlay,
+                    params: {
+                        playingQueueSource: response.queue.source
+                    },
+                    func: false
                 })
-                .then((response) => {
-                    navPush({
-                        path: routes.playingQueuePlay,
-                        params: {
-                            playingQueueSource: response.queue.source
-                        },
-                        func: false
-                    })
-                })
+            })
         }
 
         const shuffleAll = () => {
-            Player.action.reset()
-                .then(() => {
-                    return props.shuffleAll(apiClient, shelfId)
-                }).then((response) => {
-                    navPush({
-                        path: routes.playingQueuePlay,
-                        params: {
-                            playingQueueSource: response.queue.source
-                        },
-                        func: false
-                    })
+            resetHub()
+            props.shuffleAll(apiClient, shelfId).then((response) => {
+                navPush({
+                    path: routes.playingQueuePlay,
+                    params: {
+                        playingQueueSource: response.queue.source
+                    },
+                    func: false
                 })
+            })
         }
 
         let Grid = C.SnowPosterGrid
-        if (props.gridKind == 'screencap') {
+        if (props.gridKind === 'screencap') {
             Grid = C.SnowScreencapGrid
         }
 
@@ -84,24 +78,26 @@ export function WatchableListPage(props) {
             remoteId = props.getRemoteId(items[0])
         }
 
-        let buttons = []
+        const buttons = []
         if (togglePlaylistedEnabled && props.toggleShowPlaylisted) {
             buttons.push((
                 <C.SnowTextButton
-                    title={showPlaylisted == true ? 'Hide Playlisted' : 'Show Playlisted'}
+                    key="toggle-playlisted"
+                    title={showPlaylisted === true ? 'Hide Playlisted' : 'Show Playlisted'}
                     onPress={() => { props.toggleShowPlaylisted(routes, navPush, shelfId, showPlaylisted === true ? false : true) }}
                 />
             ))
         }
         if (props.watchAll) {
-            buttons.push(<C.SnowTextButton title="Watch All" onPress={watchAll} />)
+            buttons.push(<C.SnowTextButton key="watch-all" title="Watch All" onPress={watchAll} />)
         }
         if (props.shuffleAll) {
-            buttons.push(<C.SnowTextButton title="Shuffle All" onPress={shuffleAll} />)
+            buttons.push(<C.SnowTextButton key="shuffle-all" title="Shuffle All" onPress={shuffleAll} />)
         }
         if (isAdmin) {
             buttons.push((
                 <C.SnowCreateJobButton
+                    key="create-job"
                     title="Create Job"
                     jobDetails={{
                         metadataId: remoteId,
@@ -109,6 +105,7 @@ export function WatchableListPage(props) {
                     }} />
             ))
         }
+
         return (
             <C.SnowView>
                 <C.SnowText center>{pageTitle}</C.SnowText>
@@ -119,6 +116,7 @@ export function WatchableListPage(props) {
             </C.SnowView>
         )
     }
+
     return <C.SnowLabel center>Loading {shelfName}.</C.SnowLabel>
 }
 

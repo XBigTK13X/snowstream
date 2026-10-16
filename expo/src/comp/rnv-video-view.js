@@ -1,38 +1,25 @@
 import React from 'react'
-import { Platform } from 'react-native'
 import Snow from 'expo-snowui'
 import { useVideoPlayer, VideoView } from 'react-native-video'
-
-const isWeb = Platform.OS === 'web'
 
 export default function RnvVideoView(props) {
     const {
         getWindowWidth,
         getWindowHeight,
-        envelope,
-        updateEnvelope,
-        dispatchEnvelopeAction
+        emitHubEvent,
+        sendHubData,
+        useHubState
     } = Snow.useSnowContext(props)
 
-    const [userPlayed, setUserPlayed] = React.useState(false)
-    const [requestTranscode, setRequestTranscode] = React.useState(false)
+    const videoUrl = useHubState((state) => state?.videoUrl)
+    const isPlaying = useHubState((state) => state?.isPlaying)
+    const isVideoViewReady = useHubState((state) => state?.isVideoViewReady)
+    const subtitleTrackIndex = useHubState((state) => state?.subtitleTrackIndex)
+    const seekToSeconds = useHubState((state) => state?.seekToSeconds)
+
     const [availableTextTracks, setAvailableTextTracks] = React.useState([])
 
-    const fontSize = getWindowHeight() * 0.033
-
     const styles = {
-        wrapper: {
-            width: getWindowWidth(),
-            height: getWindowHeight(),
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'black'
-        },
         video: {
             alignSelf: 'center',
             position: 'absolute',
@@ -44,32 +31,25 @@ export default function RnvVideoView(props) {
         }
     }
 
-    const safeUrl = envelope?.videoUrl ? encodeURI(envelope.videoUrl) : ''
+    const safeUrl = videoUrl ? encodeURI(videoUrl) : ''
 
     const nativePlayer = useVideoPlayer(safeUrl, (instance) => {
-        if (!instance) return
+        if (!instance) {
+            return
+        }
         instance.loop = false
         instance.staysActiveInBackground = false
         instance.preservesPitch = true
     })
 
-    const userClickedPlay = () => {
-        updateEnvelope({ isVideoViewReady: true, isPlaying: true })
-        dispatchEnvelopeAction('onVideoReady')
-        setUserPlayed(true)
-        if (nativePlayer) {
-            nativePlayer.play()
-        }
-    }
-
     const onError = (err) => {
         err.kind = 'rnv'
-        dispatchEnvelopeAction('onVideoError', err)
+        emitHubEvent('player.error', err)
     }
 
     const onRnvEvent = (kind) => {
         return (payload) => {
-            dispatchEnvelopeAction('onVideoUpdate', {
+            emitHubEvent('player.update', {
                 kind: 'rnvevent',
                 data: {
                     event: kind,
@@ -80,66 +60,61 @@ export default function RnvVideoView(props) {
     }
 
     const updateAvailableTracks = () => {
-        if (!nativePlayer) return
-
+        if (!nativePlayer) {
+            return
+        }
         const textTracks = nativePlayer.getAvailableTextTracks()
         setAvailableTextTracks(textTracks)
     }
 
     React.useEffect(() => {
-        if (!isWeb && !envelope?.isVideoViewReady) {
-            updateEnvelope({ isVideoViewReady: true, isPlaying: true })
-            dispatchEnvelopeAction('onVideoReady')
+        if (!isVideoViewReady) {
+            sendHubData({ isVideoViewReady: true, isPlaying: true }, 'player.ready')
+            emitHubEvent('player.ready')
         }
-
-        if (isWeb && !requestTranscode) {
-            if (!envelope?.isTranscode && (envelope?.audioTrackIndex > 0 || envelope?.subtitleTrackIndex > 0)) {
-                setRequestTranscode(true)
-                onError({ message: 'web video player cannot select tracks', error: { code: 4 } })
-            }
-        }
-    }, [])
+    }, [isVideoViewReady, sendHubData, emitHubEvent])
 
     React.useEffect(() => {
-        if (!nativePlayer) return
+        if (!nativePlayer) {
+            return
+        }
 
-        if (envelope?.isPlaying) {
+        if (isPlaying) {
             nativePlayer.play()
         } else {
             nativePlayer.pause()
         }
-    }, [envelope?.isPlaying, nativePlayer])
+    }, [isPlaying, nativePlayer])
 
     React.useEffect(() => {
-        if (envelope?.seekToSeconds > -1 && nativePlayer) {
-            nativePlayer.seekTo(envelope.seekToSeconds)
+        if (seekToSeconds > -1 && nativePlayer) {
+            nativePlayer.seekTo(seekToSeconds)
         }
-    }, [envelope?.seekToSeconds, nativePlayer])
+    }, [seekToSeconds, nativePlayer])
 
     React.useEffect(() => {
-        if (!nativePlayer || isWeb) return
+        if (!nativePlayer) {
+            return
+        }
 
         const textTracks = availableTextTracks.length > 0
             ? availableTextTracks
             : nativePlayer.getAvailableTextTracks()
 
-        if (envelope?.subtitleTrackIndex >= 0) {
-            const track = textTracks[envelope.subtitleTrackIndex]
-
+        if (subtitleTrackIndex >= 0) {
+            const track = textTracks[subtitleTrackIndex]
             if (track) {
                 nativePlayer.selectTextTrack(track)
             }
         } else {
             nativePlayer.selectTextTrack(null)
         }
-    }, [
-        nativePlayer,
-        availableTextTracks,
-        envelope?.subtitleTrackIndex
-    ])
+    }, [nativePlayer, availableTextTracks, subtitleTrackIndex])
 
     React.useEffect(() => {
-        if (!nativePlayer) return
+        if (!nativePlayer) {
+            return
+        }
 
         const subProgress = nativePlayer.addEventListener('onProgress', (data) => {
             onRnvEvent('onProgress')(data)
@@ -179,23 +154,7 @@ export default function RnvVideoView(props) {
         }
     }, [nativePlayer])
 
-    if (isWeb) {
-        if (!userPlayed) {
-            return (
-                <Snow.TextButton title="Web requires this button be pressed" onPress={userClickedPlay} />
-            )
-        }
-
-        if (!envelope?.isTranscode && (envelope?.audioTrackIndex > 0 || envelope?.subtitleTrackIndex > 0)) {
-            return <Snow.Text>Waiting on transcode...</Snow.Text>
-        }
-
-        if (requestTranscode && !envelope?.isTranscode) {
-            return <Snow.Text>Waiting on transcode...</Snow.Text>
-        }
-    }
-
-    if (!envelope?.videoUrl) {
+    if (!videoUrl) {
         return null
     }
 

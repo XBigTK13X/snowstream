@@ -1,11 +1,12 @@
-
-import { initialPlayerEnvelope, playerSelectors } from './player-envelope'
-import { playerActions } from './player-actions'
+import { initialPlayerHubState, resolvePlaybackConfig } from './player-hub'
+import { usePlayerActions } from './player-actions'
 import PlayerManager from './player-manager'
+
 export const Player = {
-    initialPlayerEnvelope: initialPlayerEnvelope,
-    selectors: playerSelectors,
-    action: playerActions,
+    initialState: initialPlayerHubState,
+    resolvePlaybackConfig,
+    useActions: usePlayerActions,
     Manager: PlayerManager
 }
+
 export default Player

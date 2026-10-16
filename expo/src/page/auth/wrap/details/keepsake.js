@@ -1,6 +1,5 @@
 import { C, useAppContext } from 'snowstream'
 import { util } from 'expo-snowui'
-import Player from 'snowstream-player'
 
 export default function KeepsakeDetailsPage(props) {
     const {
@@ -10,7 +9,8 @@ export default function KeepsakeDetailsPage(props) {
         openOverlay,
         clearModals,
         closeOverlay,
-        SnowStyle
+        SnowStyle,
+        resetHub
     } = C.useSnowContext(props)
 
 
@@ -19,7 +19,7 @@ export default function KeepsakeDetailsPage(props) {
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
     C.React.useEffect(() => {
-        Player.action.reset()
+        resetHub()
     }, [])
 
     C.React.useEffect(() => {

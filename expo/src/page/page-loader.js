@@ -62,7 +62,7 @@ export default function PageLoader() {
     return (
         <SnowApp
             DEBUG_SNOW={config.debugSnowui}
-            DEBUG_ENVELOPE={true}
+            DEBUG_HUB={true}
             DEBUG_NAVIGATION={false}
             DEBUG_FOCUS={!!config.debugFocus}
             DEBUG_FOCUS_TREE={config.debugFocus === 'verbose'}

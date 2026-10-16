@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 import Snow from 'expo-snowui'
-import uuid from 'react-native-uuid';
+import uuid from 'react-native-uuid'
 
 import CONST from './constant'
 import util from './util'
@@ -8,19 +8,25 @@ import { config } from './settings'
 import { routes } from './routes'
 import { ApiClient } from './api-client'
 
-const AppContext = React.createContext({});
+const AppContext = React.createContext({})
 
 export function useAppContext() {
-    const value = React.useContext(AppContext);
+    const value = React.useContext(AppContext)
     if (!value) {
-        throw new Error('appContext must be wrapped in a <AppContextProvider />');
+        throw new Error('appContext must be wrapped in a <AppContextProvider />')
     }
-    return value;
+    return value
 }
 
 export function AppContextProvider(props) {
-    const { navReset, getEnvelope } = Snow.useSnowContext()
-    const { SnowStyle, navPush, pushModal, popModal } = Snow.useSnowContext(props)
+    const {
+        navReset,
+        navPush,
+        pushModal,
+        popModal,
+        getHubState
+    } = Snow.useSnowContext(props)
+
     const [apiError, setApiError] = React.useState(null)
     const [apiClient, setApiClient] = React.useState(null)
     const [apiClientKey, setApiClientKey] = React.useState(1)
@@ -125,8 +131,8 @@ export function AppContextProvider(props) {
     }
 
     const onApiError = (err) => {
-        const currentEnvelope = getEnvelope ? getEnvelope() : {}
-        if (!currentEnvelope?.isPlaying) {
+        const hubState = getHubState ? getHubState() : {}
+        if (!hubState?.isPlaying) {
             setApiError(err)
         }
     }
@@ -135,7 +141,7 @@ export function AppContextProvider(props) {
         return Snow.saveData(CONST.storageKey.webApiUrl, webApiUrl)
             .then(() => {
                 setApiClient(null)
-                setApiClientKey((prev) => { return prev + 1 })
+                setApiClientKey((prev) => prev + 1)
             })
     }
 
@@ -158,7 +164,7 @@ export function AppContextProvider(props) {
                         setIsAdmin(loginResponse.isAdmin)
                         Snow.saveData(CONST.storageKey.displayName, loginResponse.displayName)
                             .then(() => {
-                                return Snow.saveData(CONST.storageKey.session, loginResponse.authToken);
+                                return Snow.saveData(CONST.storageKey.session, loginResponse.authToken)
                             }).then(() => {
                                 return Snow.saveData(CONST.storageKey.isAdmin, loginResponse.isAdmin)
                             }).then(() => {
@@ -201,9 +207,9 @@ export function AppContextProvider(props) {
     }
 
     const changeClientOptions = (options) => {
-        let shouldLogout = false;
+        let shouldLogout = false
         if (clientOptions.deviceId !== options.deviceId) {
-            shouldLogout = true;
+            shouldLogout = true
         }
         let stored = options
         if (options) {
@@ -212,7 +218,7 @@ export function AppContextProvider(props) {
         Snow.saveData(CONST.storageKey.clientOptions, stored)
         setClientOptions(options)
         if (shouldLogout) {
-            logout();
+            logout()
         }
     }
 
@@ -233,7 +239,7 @@ export function AppContextProvider(props) {
                     onApiError: onApiError,
                     onLogout: logout
                 }))
-                setApiClientKey((prev) => { return prev + 1 })
+                setApiClientKey((prev) => prev + 1)
             }
             setSessionLoaded(true)
         }
@@ -246,8 +252,7 @@ export function AppContextProvider(props) {
                 storedOptions = JSON.parse(storedOptions)
             }
             if (!storedOptions) {
-                storedOptions = {
-                }
+                storedOptions = {}
             }
             if (!storedOptions.hasOwnProperty('resolutionKind')) {
                 storedOptions.resolutionKind = 'Video File'
@@ -286,7 +291,7 @@ export function AppContextProvider(props) {
                 },
                 render: () => {
                     return (
-                        <Snow.FillView >
+                        <Snow.FillView>
                             <Snow.Label center>Unable to communicate with Snowstream.</Snow.Label>
                             <Snow.Label center>Check if your Wi-Fi is disconnected, ethernet unplugged, or if the Snowstream server is down.</Snow.Label>
                             <Snow.Grid focusStart focusKey="error-buttons" itemsPerRow={2}>
@@ -302,7 +307,6 @@ export function AppContextProvider(props) {
             popModal()
         }
     }, [apiError])
-
 
     const appContext = {
         config,
@@ -325,7 +329,7 @@ export function AppContextProvider(props) {
         <AppContext.Provider value={appContext}>
             {props.children}
         </AppContext.Provider>
-    );
+    )
 }
 
 export default AppContextProvider

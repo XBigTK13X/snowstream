@@ -5,8 +5,29 @@ import CONST from '../constant'
 import { useAppContext } from '../app-context'
 
 export default function MpvVideoView(props) {
-    const { envelope, updateEnvelope, actions } = Snow.useSnowContext()
+    const {
+        sendHubData,
+        emitHubEvent,
+        useHubState
+    } = Snow.useSnowContext()
     const { clientOptions } = useAppContext()
+
+    const videoUrl = useHubState((state) => state?.videoUrl)
+    const isPlaying = useHubState((state) => state?.isPlaying)
+    const isVideoViewReady = useHubState((state) => state?.isVideoViewReady)
+    const isTranscode = useHubState((state) => state?.isTranscode)
+    const isSeekable = useHubState((state) => state?.isSeekable)
+    const seekToSeconds = useHubState((state) => state?.seekToSeconds)
+    const videoWidthState = useHubState((state) => state?.videoWidth)
+    const videoHeightState = useHubState((state) => state?.videoHeight)
+    const playbackPlan = useHubState((state) => state?.playbackPlan)
+    const mpvDecodingMode = useHubState((state) => state?.mpvDecodingMode)
+    const audioTrackIndex = useHubState((state) => state?.audioTrackIndex)
+    const subtitleTrackIndex = useHubState((state) => state?.subtitleTrackIndex)
+    const audioDelaySeconds = useHubState((state) => state?.audioDelaySeconds)
+    const subtitleDelaySeconds = useHubState((state) => state?.subtitleDelaySeconds)
+    const subtitleFontScale = useHubState((state) => state?.subtitleFontScale)
+    const subtitleColor = useHubState((state) => state?.subtitleColor)
 
     const forwardRef = React.useRef(null)
 
@@ -14,46 +35,45 @@ export default function MpvVideoView(props) {
         if (!clientOptions) {
             return
         }
-        if (!envelope?.isVideoViewReady && forwardRef.current?.runCommand) {
+        if (!isVideoViewReady && forwardRef.current?.runCommand) {
             if (clientOptions.audioCompression) {
                 forwardRef.current.runCommand('set|af|acompressor=ratio=4,loudnorm').catch(() => { })
             } else {
                 forwardRef.current.runCommand('set|del-af|@').catch(() => { })
             }
-            updateEnvelope({ isVideoViewReady: true, isPlaying: true })
-            actions?.addLog?.({ kind: 'snowstream', message: 'low level video player reports that it is ready to play' })
+            sendHubData({ isVideoViewReady: true, isPlaying: true }, 'player.ready')
         }
     })
 
     const disableHeavyAss = () => {
-        forwardRef.current.runCommand('set|sub-ass-override|force').catch(() => { })
+        forwardRef.current?.runCommand?.('set|sub-ass-override|force').catch(() => { })
     }
 
     React.useEffect(() => {
-        if (forwardRef.current?.runCommand && envelope?.isVideoViewReady) {
+        if (forwardRef.current?.runCommand && isVideoViewReady && subtitleFontScale !== undefined) {
             disableHeavyAss()
-            forwardRef.current.runCommand(`set|sub-scale|${envelope.subtitleFontScale}`).catch(() => { })
+            forwardRef.current.runCommand(`set|sub-scale|${subtitleFontScale}`).catch(() => { })
         }
-    }, [envelope?.subtitleFontScale, envelope?.isVideoViewReady])
+    }, [subtitleFontScale, isVideoViewReady])
 
     React.useEffect(() => {
-        if (forwardRef.current?.runCommand && envelope?.isVideoViewReady && envelope?.subtitleColor) {
+        if (forwardRef.current?.runCommand && isVideoViewReady && subtitleColor) {
             disableHeavyAss()
-            forwardRef.current.runCommand(`set|sub-color|${envelope.subtitleColor.shade}/${envelope.subtitleColor.alpha}`).catch(() => { })
+            forwardRef.current.runCommand(`set|sub-color|${subtitleColor.shade}/${subtitleColor.alpha}`).catch(() => { })
         }
-    }, [envelope?.subtitleColor, envelope?.isVideoViewReady])
+    }, [subtitleColor, isVideoViewReady])
 
     React.useEffect(() => {
-        if (envelope?.audioDelaySeconds !== undefined && forwardRef.current?.runCommand && envelope?.isVideoViewReady) {
-            forwardRef.current.runCommand(`set|audio-delay|${envelope.audioDelaySeconds}`).catch(() => { })
+        if (audioDelaySeconds !== undefined && forwardRef.current?.runCommand && isVideoViewReady) {
+            forwardRef.current.runCommand(`set|audio-delay|${audioDelaySeconds}`).catch(() => { })
         }
-    }, [envelope?.audioDelaySeconds, envelope?.isVideoViewReady])
+    }, [audioDelaySeconds, isVideoViewReady])
 
     React.useEffect(() => {
-        if (envelope?.subtitleDelaySeconds !== undefined && forwardRef.current?.runCommand && envelope?.isVideoViewReady) {
-            forwardRef.current.runCommand(`set|sub-delay|${envelope.subtitleDelaySeconds}`).catch(() => { })
+        if (subtitleDelaySeconds !== undefined && forwardRef.current?.runCommand && isVideoViewReady) {
+            forwardRef.current.runCommand(`set|sub-delay|${subtitleDelaySeconds}`).catch(() => { })
         }
-    }, [envelope?.subtitleDelaySeconds, envelope?.isVideoViewReady])
+    }, [subtitleDelaySeconds, isVideoViewReady])
 
     const eventHandler = (libmpvEvent) => {
         if (!libmpvEvent?.property) {
@@ -62,46 +82,54 @@ export default function MpvVideoView(props) {
 
         if (libmpvEvent.property === 'time-pos') {
             let adjustedSeconds = Math.floor(libmpvEvent.value)
-            if (envelope?.isTranscode) {
-                adjustedSeconds += envelope?.seekToSeconds ?? 0
+            if (isTranscode) {
+                adjustedSeconds += seekToSeconds ?? 0
             }
-            actions?.onProgress?.(adjustedSeconds, 'player-event')
+            emitHubEvent('player.progress', {
+                seconds: adjustedSeconds,
+                source: 'player-event'
+            })
         } else if (libmpvEvent.property === 'seekable') {
-            updateEnvelope({ isSeekable: true })
+            sendHubData({ isSeekable: true }, 'player.seekable')
         } else if (!['demuxer-cache-time', 'track-list'].includes(libmpvEvent.property)) {
-            actions?.addLog?.({ kind: 'mpvevent', libmpvEvent })
+            emitHubEvent('player.log', { kind: 'mpvevent', libmpvEvent })
         }
 
-        if (libmpvEvent.property === 'eof-reached' && envelope?.isSeekable) {
-            actions?.onPlaybackComplete?.()
+        if (libmpvEvent.property === 'eof-reached' && isSeekable) {
+            emitHubEvent('player.update', {
+                kind: 'rnvevent',
+                data: {
+                    event: 'onEnd'
+                }
+            })
         }
     }
 
     const logHandler = (libmpvLog) => {
         if (libmpvLog?.text && !libmpvLog.text.includes('Description:')) {
-            actions?.addLog?.({ kind: 'mpvlog', libmpvLog })
+            emitHubEvent('player.log', { kind: 'mpvlog', libmpvLog })
         }
     }
 
-    if (!clientOptions || !envelope?.videoUrl) {
+    if (!clientOptions || !videoUrl) {
         return null
     }
 
-    let videoWidth = CONST.resolution.fullHd.width
-    let videoHeight = CONST.resolution.fullHd.height
+    let resolvedWidth = CONST.resolution.fullHd.width
+    let resolvedHeight = CONST.resolution.fullHd.height
     if (clientOptions.resolutionKind === '2160p') {
-        videoWidth = CONST.resolution.ultraHd.width
-        videoHeight = CONST.resolution.ultraHd.height
+        resolvedWidth = CONST.resolution.ultraHd.width
+        resolvedHeight = CONST.resolution.ultraHd.height
     }
     if (clientOptions.resolutionKind === 'Video File') {
-        videoWidth = envelope.videoWidth
-        videoHeight = envelope.videoHeight
+        resolvedWidth = videoWidthState
+        resolvedHeight = videoHeightState
     }
 
-    let videoOutput = envelope.playbackPlan?.mpv_video_output || 'gpu'
-    let decodingMode = envelope.mpvDecodingMode || envelope.playbackPlan?.mpv_decoding_mode || 'mediacodec'
-    let acceleratedCodecs = envelope.playbackPlan?.mpv_accelerated_codecs || 'h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1'
-    let videoSync = envelope.playbackPlan?.mpv_video_sync || 'audio'
+    let videoOutput = playbackPlan?.mpv_video_output || 'gpu'
+    let decodingMode = mpvDecodingMode || playbackPlan?.mpv_decoding_mode || 'mediacodec'
+    let acceleratedCodecs = playbackPlan?.mpv_accelerated_codecs || 'h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1'
+    let videoSync = playbackPlan?.mpv_video_sync || 'audio'
 
     return (
         <LibmpvView
@@ -110,15 +138,15 @@ export default function MpvVideoView(props) {
             decodingMode={decodingMode}
             acceleratedCodecs={acceleratedCodecs}
             videoSync={videoSync}
-            playUrl={envelope.videoUrl}
-            isPlaying={envelope.isPlaying}
-            surfaceWidth={videoWidth}
-            surfaceHeight={videoHeight}
+            playUrl={videoUrl}
+            isPlaying={isPlaying}
+            surfaceWidth={resolvedWidth}
+            surfaceHeight={resolvedHeight}
             onLibmpvEvent={eventHandler}
             onLibmpvLog={logHandler}
-            selectedAudioTrack={envelope.audioTrackIndex}
-            selectedSubtitleTrack={envelope.subtitleTrackIndex}
-            seekToSeconds={envelope.seekToSeconds}
+            selectedAudioTrack={audioTrackIndex}
+            selectedSubtitleTrack={subtitleTrackIndex}
+            seekToSeconds={seekToSeconds}
         />
     )
 }

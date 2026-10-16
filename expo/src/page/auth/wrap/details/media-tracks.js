@@ -1,5 +1,4 @@
 import { C, useAppContext } from 'snowstream'
-import Player from 'snowstream-player'
 
 const styles = {
     image: {

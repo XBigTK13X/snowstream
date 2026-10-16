@@ -1,16 +1,15 @@
 import { C, useAppContext } from 'snowstream'
-import { util } from 'expo-snowui'
 import PlayMediaPage from './media'
-import Player from 'snowstream-player'
 
 export default function PlayPlayingQueuePage(props) {
-    const { routes } = useAppContext()
-    const { currentRoute, navReset, navPop } = C.useSnowContext(props)
+    const { currentRoute, navReset, navPop, resetHub } = C.useSnowContext(props)
+
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
     const [isTransitioning, setIsTransitioning] = C.React.useState(false)
     const [queueIndex, setQueueIndex] = C.React.useState(
         currentRoute?.routeParams?.queueIndex ?? null
     )
+
     const playingQueueRef = C.React.useRef(playingQueue)
     const queueIndexRef = C.React.useRef(queueIndex)
     const isTransitioningRef = C.React.useRef(false)
@@ -20,11 +19,13 @@ export default function PlayPlayingQueuePage(props) {
     const loadVideo = (apiClient, routeParams, deviceProfile) => {
         return apiClient.getPlayingQueue({
             source: routeParams.playingQueueSource
-        }).then(queueResponse => {
+        }).then((queueResponse) => {
             setPlayingQueue(queueResponse)
             playingQueueRef.current = queueResponse
+
             const targetIndex = queueIndexRef.current ?? queueResponse.queue.progress
-            let entry = queueResponse.queue.content[targetIndex]
+            const entry = queueResponse.queue.content[targetIndex]
+
             if (entry.kind === 'm') {
                 return apiClient.getMovie(entry.id, deviceProfile).then((movieResponse) => {
                     const videoFile = movieResponse.video_files[routeParams.videoFileIndex ?? 0]
@@ -41,9 +42,10 @@ export default function PlayPlayingQueuePage(props) {
                     }
                 })
             }
-            else if (entry.kind === 'e') {
+
+            if (entry.kind === 'e') {
                 return apiClient.getEpisode(entry.id, deviceProfile).then((episodeResponse) => {
-                    let name = `${episodeResponse.season.show.name} - ${C.util.formatEpisodeTitle(episodeResponse)}`
+                    let name = `${episodeResponse.season.show.name}\n${C.util.formatEpisodeTitle(episodeResponse)}`
                     name = `Queue [${targetIndex + 1}/${queueResponse.queue.length}] - ${name}`
                     const videoFile = episodeResponse.video_files[routeParams.videoFileIndex ?? 0]
                     return {
@@ -58,10 +60,9 @@ export default function PlayPlayingQueuePage(props) {
                     }
                 })
             }
-            else {
-                C.util.log("Unhandled playing queue entry")
-                C.util.log({ entry })
-            }
+
+            C.util.log('Unhandled playing queue entry')
+            C.util.log({ entry })
         })
     }
 
@@ -71,10 +72,10 @@ export default function PlayPlayingQueuePage(props) {
         }
         isTransitioningRef.current = true
 
-        Player.action.reset()
+        resetHub()
         setIsTransitioning(true)
 
-        const queue = playingQueueRef?.current
+        const queue = playingQueueRef.current
         const currentIndex = queueIndexRef.current ?? queue?.queue?.progress ?? 0
         const totalItems = queue?.queue?.content?.length ?? 1
         let nextProgress = currentIndex + 1
@@ -100,15 +101,14 @@ export default function PlayPlayingQueuePage(props) {
         })
     }
 
-    const onStopVideo = (apiClient, routes, navPush, navPop, toHome) => {
+    const onStopVideo = (apiClient, routesNav, navPushNav, navPopNav, toHome) => {
+        resetHub()
         if (toHome) {
             navPop()
             navReset()
-            Player.action.reset()
             return
         }
         navPop()
-        Player.action.reset()
     }
 
     if (isTransitioning) {

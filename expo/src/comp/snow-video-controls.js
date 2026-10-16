@@ -1,30 +1,46 @@
 import React from 'react'
 import Snow from 'expo-snowui'
+import util from '../util'
 import { useAppContext } from '../app-context'
-import Player from 'snowstream-player'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
     const {
         SnowStyle,
-        envelope,
-        updateEnvelope,
-        dispatchEnvelopeAction,
-        currentRoute
+        sendHubData,
+        emitHubEvent,
+        useHubState
     } = Snow.useSnowContext()
 
-    const { clientOptions, apiClient } = useAppContext()
-    const routeParams = currentRoute?.routeParams || {}
+    const { apiClient } = useAppContext()
 
-    const playerKind = Player.selectors.playerKind(envelope, routeParams, clientOptions)
-    const isTranscode = Player.selectors.isTranscode(envelope, routeParams, clientOptions)
-    const progressPercent = Player.selectors.progressPercent(envelope)
-    const progressDisplay = Player.selectors.progressDisplay(envelope)
-    const durationDisplay = Player.selectors.durationDisplay(envelope)
+    const videoTitle = useHubState((state) => state?.videoTitle)
+    const durationSeconds = useHubState((state) => state?.durationSeconds) || 0.0
+    const progressSeconds = useHubState((state) => state?.progressSeconds)
+    const isTranscode = useHubState((state) => state?.isTranscode)
+    const playerKind = useHubState((state) => state?.playerKind) || 'mpv'
+    const mediaTracks = useHubState((state) => state?.mediaTracks)
+    const audioDelaySeconds = useHubState((state) => state?.audioDelaySeconds) || 0
+    const subtitleDelaySeconds = useHubState((state) => state?.subtitleDelaySeconds) || 0
+    const audioTrackIndex = useHubState((state) => state?.audioTrackIndex)
+    const subtitleTrackIndex = useHubState((state) => state?.subtitleTrackIndex)
+    const logs = useHubState((state) => state?.logs)
 
     const [logTitle, setLogTitle] = React.useState('Persist Logs')
     const [localPercent, setLocalPercent] = React.useState(null)
     const isInteractingRef = React.useRef(false)
+
+    const progressPercent = durationSeconds > 0 && progressSeconds != null
+        ? progressSeconds / durationSeconds
+        : 0
+
+    const progressDisplay = durationSeconds > 0 && progressSeconds != null
+        ? util.secondsToTimestamp(progressSeconds)
+        : null
+
+    const durationDisplay = durationSeconds > 0
+        ? util.secondsToTimestamp(durationSeconds)
+        : null
 
     const styles = {
         progress: {
@@ -40,19 +56,19 @@ export default function SnowVideoControls(props) {
 
     const persistLogs = () => {
         if (apiClient?.savePlaybackLogs) {
-            apiClient.savePlaybackLogs(envelope?.logs || []).then((response) => {
+            apiClient.savePlaybackLogs(logs || []).then((response) => {
                 setLogTitle(response.cache_key)
             })
         }
     }
 
     const tabs = ['Playback', 'Style']
-    if (envelope?.mediaTracks) {
+    if (mediaTracks) {
         tabs.push('Track')
     }
 
     let slider = null
-    if (envelope?.durationSeconds > 0) {
+    if (durationSeconds > 0) {
         const activePercent = isInteractingRef.current && localPercent !== null
             ? localPercent
             : progressPercent
@@ -60,7 +76,11 @@ export default function SnowVideoControls(props) {
         const onPercentChange = (percentValue) => {
             isInteractingRef.current = true
             setLocalPercent(percentValue)
-            dispatchEnvelopeAction('onProgress', null, 'manual-seek', percentValue)
+            emitHubEvent('player.progress', {
+                seconds: null,
+                source: 'manual-seek',
+                percent: percentValue
+            })
             isInteractingRef.current = false
             setLocalPercent(null)
         }
@@ -85,19 +105,19 @@ export default function SnowVideoControls(props) {
         <Snow.Grid itemsPerRow={2}>
             <Snow.TextButton
                 title="Resume"
-                onPress={() => dispatchEnvelopeAction('onResumeVideo')}
+                onPress={() => emitHubEvent('player.resume')}
             />
             <Snow.TextButton
                 title="Hide Controls"
-                onPress={() => updateEnvelope({ controlsVisible: false })}
+                onPress={() => sendHubData({ controlsVisible: false }, 'player.controlsHidden')}
             />
             <Snow.TextButton
                 title="Stop"
-                onPress={() => dispatchEnvelopeAction('onStopVideo', false)}
+                onPress={() => emitHubEvent('player.stop', { goHome: false })}
             />
             <Snow.TextButton
                 title="Home"
-                onPress={() => dispatchEnvelopeAction('onStopVideo', true)}
+                onPress={() => emitHubEvent('player.stop', { goHome: true })}
             />
         </Snow.Grid>
     )
@@ -107,64 +127,72 @@ export default function SnowVideoControls(props) {
             <Snow.TextButton
                 title="Sub Smaller"
                 onPress={() => {
-                    updateEnvelope((prev) => ({ subtitleFontScale: (prev?.subtitleFontScale || 1.0) - 0.1 }))
+                    sendHubData((prevState) => ({
+                        subtitleFontScale: (prevState?.subtitleFontScale || 1.0) - 0.1
+                    }), 'player.subtitleScaleChanged')
                 }}
             />
             <Snow.TextButton
                 title="Sub Bigger"
                 onPress={() => {
-                    updateEnvelope((prev) => ({ subtitleFontScale: (prev?.subtitleFontScale || 1.0) + 0.1 }))
+                    sendHubData((prevState) => ({
+                        subtitleFontScale: (prevState?.subtitleFontScale || 1.0) + 0.1
+                    }), 'player.subtitleScaleChanged')
                 }}
             />
             <Snow.TextButton
                 title="Sub Darker"
                 onPress={() => {
-                    updateEnvelope((prev) => {
-                        const nextShade = Math.min(1.0, Math.max(0.0, (prev?.subtitleColor?.shade || 1.0) - 0.15))
-                        return { subtitleColor: { ...(prev?.subtitleColor || {}), shade: nextShade } }
-                    })
+                    sendHubData((prevState) => {
+                        const nextShade = Math.min(1.0, Math.max(0.0, (prevState?.subtitleColor?.shade || 1.0) - 0.15))
+                        return {
+                            subtitleColor: { ...(prevState?.subtitleColor || {}), shade: nextShade }
+                        }
+                    }, 'player.subtitleColorChanged')
                 }}
             />
             <Snow.TextButton
                 title="Sub Lighter"
                 onPress={() => {
-                    updateEnvelope((prev) => {
-                        const nextShade = Math.min(1.0, Math.max(0.0, (prev?.subtitleColor?.shade || 1.0) + 0.15))
-                        return { subtitleColor: { ...(prev?.subtitleColor || {}), shade: nextShade } }
-                    })
+                    sendHubData((prevState) => {
+                        const nextShade = Math.min(1.0, Math.max(0.0, (prevState?.subtitleColor?.shade || 1.0) + 0.15))
+                        return {
+                            subtitleColor: { ...(prevState?.subtitleColor || {}), shade: nextShade }
+                        }
+                    }, 'player.subtitleColorChanged')
                 }}
             />
         </Snow.Grid>
     )
 
-    const trackControls = envelope?.mediaTracks ? (
+    const trackControls = mediaTracks ? (
         <SnowTrackSelector
             focusKey="track-selector"
             showDelay={true}
-            audioDelaySeconds={envelope?.audioDelaySeconds}
-            setAudioDelaySeconds={(val) => updateEnvelope({ audioDelaySeconds: val })}
-            subtitleDelaySeconds={envelope?.subtitleDelaySeconds}
-            setSubtitleDelaySeconds={(val) => updateEnvelope({ subtitleDelaySeconds: val })}
-            tracks={envelope.mediaTracks}
+            audioDelaySeconds={audioDelaySeconds}
+            setAudioDelaySeconds={(val) => sendHubData({ audioDelaySeconds: val }, 'player.audioDelayChanged')}
+            subtitleDelaySeconds={subtitleDelaySeconds}
+            setSubtitleDelaySeconds={(val) => sendHubData({ subtitleDelaySeconds: val }, 'player.subtitleDelayChanged')}
+            tracks={mediaTracks}
             selectTrack={(track) => {
                 if (track.kind === 'audio') {
-                    updateEnvelope((prev) => ({
-                        audioTrackIndex: prev?.audioTrackIndex === track.audio_index ? -1 : track.audio_index
-                    }))
+                    sendHubData((prevState) => ({
+                        audioTrackIndex: prevState?.audioTrackIndex === track.audio_index ? -1 : track.audio_index
+                    }), 'player.audioTrackChanged')
                 } else if (track.kind === 'subtitle') {
-                    updateEnvelope((prev) => ({
-                        subtitleTrackIndex: prev?.subtitleTrackIndex === track.subtitle_index ? -1 : track.subtitle_index
-                    }))
+                    sendHubData((prevState) => ({
+                        subtitleTrackIndex: prevState?.subtitleTrackIndex === track.subtitle_index ? -1 : track.subtitle_index
+                    }), 'player.subtitleTrackChanged')
                 }
             }}
-            audioTrack={envelope?.audioTrackIndex}
-            subtitleTrack={envelope?.subtitleTrackIndex}
+            audioTrack={audioTrackIndex}
+            subtitleTrack={subtitleTrackIndex}
         />
     ) : null
 
     return (
         <Snow.View parentPath={props.parentPath} style={styles.player}>
-            <Snow.Label center>{envelope?.videoTitle}</Snow.Label>
+            <Snow.Label center>{videoTitle}</Snow.Label>
             {slider}
             <Snow.Tabs yy={2} focusStart focusKey="control-tabs" headers={tabs}>
                 {playbackControls}

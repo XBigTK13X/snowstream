@@ -1,9 +1,7 @@
 import React from 'react'
 import Snow from 'expo-snowui'
 import util from '../util'
-import CONST from '../constant'
 import { config } from '../settings'
-import { playerSelectors } from './player-envelope'
 
 const MAX_LOGS = 300
 
@@ -17,9 +15,10 @@ export function usePlayerActions({
     navReset,
     clearModals,
     closeOverlay,
-    updateEnvelope,
-    getEnvelope,
-    resetEnvelope
+    sendHubData,
+    getHubState,
+    resetHub,
+    emitHubEvent
 }) {
     const routeParams = currentRoute?.routeParams || {}
     const handlersRef = React.useRef({})
@@ -32,34 +31,45 @@ export function usePlayerActions({
         return !!(handlersRef.current.loadVideo || handlersRef.current.loadTranscode)
     }
 
+    const logsRef = React.useRef([])
+
     const addLog = (logEvent) => {
-        const envelope = getEnvelope()
         const logPlayback = clientOptions?.logPlayback || routeParams?.logPlayback
-        if (!logPlayback) return
+        if (!logPlayback) {
+            return
+        }
 
         const serialized = Snow.stringifySafe(logEvent)
-        updateEnvelope((prev) => {
-            const nextLogs = [...(prev.logs || []), serialized]
-            if (nextLogs.length > MAX_LOGS) nextLogs.shift()
-            return { logs: nextLogs }
-        })
+        logsRef.current.push(serialized)
+        if (logsRef.current.length > MAX_LOGS) {
+            logsRef.current.shift()
+        }
+        // Keep in hub state without broadcasting state changes to the UI
+        getHubState().logs = logsRef.current
+    }
+
+    const savePlaybackLogs = () => {
+        if (!apiClient) {
+            return Promise.resolve()
+        }
+        return apiClient.savePlaybackLogs(logsRef.current)
     }
 
     const onCriticalError = (error) => {
-        const envelope = getEnvelope()
-        const isTranscode = playerSelectors.isTranscode(envelope, routeParams, clientOptions)
+        const currentState = getHubState()
 
-        if (!isTranscode && navPush) {
+        if (!currentState.isTranscode && navPush) {
             const nextParams = { ...routeParams, transcode: true }
-            updateEnvelope({
+            sendHubData({
                 videoLoaded: false,
                 videoLoading: false,
-                forceTranscode: true
-            })
+                isTranscode: true
+            }, 'player.fallbackTranscode')
             navPush({ params: nextParams, func: false })
-        } else {
-            updateEnvelope({ playbackFailed: error })
+            return
         }
+
+        sendHubData({ playbackFailed: error }, 'player.failed')
     }
 
     const parseVideoPayload = async (response) => {
@@ -73,12 +83,11 @@ export function usePlayerActions({
             return onCriticalError(response.error)
         }
 
-        const envelope = getEnvelope()
-        const isTranscode = playerSelectors.isTranscode(envelope, routeParams, clientOptions)
-
+        const currentState = getHubState()
         let targetUrl = response.url
+
         if (targetUrl) {
-            const exists = await util.urlExists(targetUrl, isTranscode)
+            const exists = await util.urlExists(targetUrl, currentState.isTranscode)
             if (!exists) {
                 targetUrl = targetUrl.replace(
                     /^([^:]+:\/\/[^/]+)(\/.*)?$/,
@@ -92,13 +101,13 @@ export function usePlayerActions({
             videoUrl: targetUrl,
             videoLoaded: true,
             videoLoading: false,
-            videoTitle: response.name || envelope.videoTitle,
-            durationSeconds: response.durationSeconds || envelope.durationSeconds,
-            mediaTracks: response.tracks || envelope.mediaTracks,
-            playbackPlan: response.plan || envelope.playbackPlan,
-            mpvDecodingMode: response.mpvDecodingMode || envelope.mpvDecodingMode,
-            audioTrackIndex: response.audio_index ?? envelope.audioTrackIndex,
-            subtitleTrackIndex: response.subtitle_index ?? envelope.subtitleTrackIndex,
+            videoTitle: response.name || currentState.videoTitle,
+            durationSeconds: response.durationSeconds || currentState.durationSeconds,
+            mediaTracks: response.tracks || currentState.mediaTracks,
+            playbackPlan: response.plan || currentState.playbackPlan,
+            mpvDecodingMode: response.mpvDecodingMode || currentState.mpvDecodingMode,
+            audioTrackIndex: response.audio_index ?? currentState.audioTrackIndex,
+            subtitleTrackIndex: response.subtitle_index ?? currentState.subtitleTrackIndex
         }
 
         if (response.tracks?.video) {
@@ -107,30 +116,30 @@ export function usePlayerActions({
         }
 
         if (response.transcodeId) {
-            if (envelope.transcodeId && apiClient) {
-                apiClient.closeTranscodeSession(envelope.transcodeId)
+            if (currentState.transcodeId && apiClient) {
+                apiClient.closeTranscodeSession(currentState.transcodeId)
             }
             patch.transcodeId = response.transcodeId
         }
 
-        updateEnvelope(patch)
+        sendHubData(patch, 'player.videoLoaded')
     }
 
     const loadVideo = () => {
-        const envelope = getEnvelope()
-        const isTranscode = playerSelectors.isTranscode(envelope, routeParams, clientOptions)
-        const loadHandler = isTranscode ? handlersRef.current.loadTranscode : handlersRef.current.loadVideo
+        const currentState = getHubState()
+        const loadHandler = currentState.isTranscode
+            ? handlersRef.current.loadTranscode
+            : handlersRef.current.loadVideo
 
-        if (!apiClient || !loadHandler || envelope.videoUrl || envelope.videoLoading) {
+        if (!apiClient || !loadHandler || currentState.videoUrl || currentState.videoLoading) {
             return
         }
 
-        const kind = playerSelectors.playerKind(envelope, routeParams, clientOptions)
-        updateEnvelope({ videoLoading: true })
+        sendHubData({ videoLoading: true }, 'player.loading')
 
-        const args = isTranscode
-            ? [apiClient, routeParams, clientOptions?.deviceProfile, routeParams?.seekToSeconds ?? 0, kind]
-            : [apiClient, routeParams, clientOptions?.deviceProfile, kind]
+        const args = currentState.isTranscode
+            ? [apiClient, routeParams, clientOptions?.deviceProfile, routeParams?.seekToSeconds ?? 0, currentState.playerKind]
+            : [apiClient, routeParams, clientOptions?.deviceProfile, currentState.playerKind]
 
         loadHandler(...args)
             .then(parseVideoPayload)
@@ -138,113 +147,121 @@ export function usePlayerActions({
     }
 
     const onPauseVideo = () => {
-        updateEnvelope({ controlsVisible: true, isPlaying: false })
+        sendHubData({ controlsVisible: true, isPlaying: false }, 'player.paused')
     }
 
     const onResumeVideo = () => {
         Snow.hideSystemUi()
-        const envelope = getEnvelope()
-        updateEnvelope({ controlsVisible: false, isPlaying: true })
+        const currentState = getHubState()
+        sendHubData({ controlsVisible: false, isPlaying: true }, 'player.resumed')
 
-        if (envelope.completeOnResume) {
+        if (currentState.completeOnResume) {
             onPlaybackComplete()
         }
-        if (envelope.transcodeOnResume) {
+        if (currentState.transcodeOnResume) {
             onTranscodeSeek()
         }
     }
 
     const onTranscodeSeek = () => {
-        const envelope = getEnvelope()
-        addLog({ kind: 'snowstream', message: `transcode triggered seek to ${envelope.manualSeekSeconds}s` })
-        updateEnvelope({
+        const currentState = getHubState()
+        addLog({ kind: 'snowstream', message: `transcode triggered seek to ${currentState.manualSeekSeconds}s` })
+
+        sendHubData({
             videoLoaded: false,
             videoLoading: false,
             videoUrl: null,
             transcodeOnResume: false
-        })
+        }, 'player.transcodeSeeking')
 
         if (handlersRef.current.loadTranscode && apiClient) {
-            const kind = playerSelectors.playerKind(envelope, routeParams, clientOptions)
             handlersRef.current.loadTranscode(
                 apiClient,
                 routeParams,
                 clientOptions?.deviceProfile,
-                envelope.manualSeekSeconds,
-                kind
+                currentState.manualSeekSeconds,
+                currentState.playerKind
             ).then(parseVideoPayload)
         }
     }
 
     const onProgress = async (nextProgressSeconds, source, nextProgressPercent) => {
-        const envelope = getEnvelope()
-        const isTranscode = playerSelectors.isTranscode(envelope, routeParams, clientOptions)
+        const currentState = getHubState()
         let resolvedSeconds = nextProgressSeconds
 
         if (source === 'manual-seek') {
-            if (resolvedSeconds == null && nextProgressPercent != null && envelope.durationSeconds != null) {
-                resolvedSeconds = nextProgressPercent * envelope.durationSeconds
+            if (resolvedSeconds == null && nextProgressPercent != null && currentState.durationSeconds != null) {
+                resolvedSeconds = nextProgressPercent * currentState.durationSeconds
             }
-            if (resolvedSeconds < 0) resolvedSeconds = 0
-            if (envelope.durationSeconds && resolvedSeconds > envelope.durationSeconds) {
-                resolvedSeconds = envelope.durationSeconds
+            if (resolvedSeconds < 0) {
+                resolvedSeconds = 0
+            }
+            if (currentState.durationSeconds && resolvedSeconds > currentState.durationSeconds) {
+                resolvedSeconds = currentState.durationSeconds
             }
         }
 
-        const enoughDiff = !envelope.progressSeconds || Math.abs(resolvedSeconds - envelope.progressSeconds) >= config.progressMinDeltaSeconds
+        const enoughDiff = !currentState.progressSeconds ||
+            Math.abs(resolvedSeconds - currentState.progressSeconds) >= config.progressMinDeltaSeconds
 
         const patch = { videoLoaded: true }
 
         if (source === 'manual-seek') {
             patch.manualSeekSeconds = resolvedSeconds
             patch.completeOnResume = nextProgressPercent >= 1.0
-            if (!isTranscode) {
+            if (!currentState.isTranscode) {
                 patch.seekToSeconds = resolvedSeconds
             }
-            if (isTranscode && handlersRef.current.loadTranscode) {
+            if (currentState.isTranscode && handlersRef.current.loadTranscode) {
                 patch.transcodeOnResume = true
             }
         }
 
         if (source === 'manual-seek' || enoughDiff) {
             patch.progressSeconds = resolvedSeconds
-            if (envelope.durationSeconds > 0 && resolvedSeconds > 0 && handlersRef.current.updateProgress && apiClient) {
+            if (currentState.durationSeconds > 0 && resolvedSeconds > 0 && handlersRef.current.updateProgress && apiClient) {
                 const isWatched = await handlersRef.current.updateProgress(
                     apiClient,
                     routeParams,
                     resolvedSeconds,
-                    envelope.durationSeconds
+                    currentState.durationSeconds
                 )
-                if (isWatched && !envelope.countedWatch && handlersRef.current.increaseWatchCount) {
+                if (isWatched && !currentState.countedWatch && handlersRef.current.increaseWatchCount) {
                     patch.countedWatch = true
                     await handlersRef.current.increaseWatchCount(apiClient, routeParams)
                 }
             }
         }
 
-        updateEnvelope(patch)
+        sendHubData(patch, 'player.progressUpdated')
     }
 
     const onPlaybackComplete = () => {
-        const envelope = getEnvelope()
-        onProgress(envelope.durationSeconds, 'playback-complete').then(() => {
+        const currentState = getHubState()
+        onProgress(currentState.durationSeconds, 'playback-complete').then(() => {
             if (handlersRef.current.onComplete && apiClient) {
                 return handlersRef.current.onComplete(apiClient, routes, navPush)
-            } else if (navPop) {
-                return navPop().then(() => resetEnvelope())
+            }
+            if (navPop) {
+                return navPop().then(() => {
+                    handlersRef.current = {}
+                    resetHub()
+                })
             }
         })
     }
 
     const onStopVideo = (goHome = false) => {
-        const envelope = getEnvelope()
-        if (envelope.transcodeId && apiClient) {
-            apiClient.closeTranscodeSession(envelope.transcodeId)
+        const currentState = getHubState()
+        if (currentState.transcodeId && apiClient) {
+            apiClient.closeTranscodeSession(currentState.transcodeId)
         }
 
-        updateEnvelope({ controlsVisible: false, isPlaying: false })
+        sendHubData({ controlsVisible: false, isPlaying: false }, 'player.stopped')
         clearModals?.()
         closeOverlay?.()
+
+        handlersRef.current = {}
 
         if (handlersRef.current.onStopVideo && apiClient) {
             handlersRef.current.onStopVideo(apiClient, routes, navPush, navPop, goHome)
@@ -262,18 +279,18 @@ export function usePlayerActions({
 
     const onVideoReady = () => {
         addLog({ kind: 'snowstream', message: 'low level video player reports that it is ready to play' })
-        updateEnvelope({ isVideoViewReady: true, isPlaying: true })
+        sendHubData({ isVideoViewReady: true, isPlaying: true }, 'player.viewReady')
     }
 
     const onVideoUpdate = (eventInfo) => {
         if (eventInfo?.kind === 'rnvevent' && eventInfo?.data) {
             if (eventInfo?.data?.data?.currentTime !== undefined) {
-                const current = getEnvelope()
+                const current = getHubState()
                 if (!current.isSeekable) {
-                    updateEnvelope({ isSeekable: true })
+                    sendHubData({ isSeekable: true }, 'player.seekable')
                 }
                 let adjustedSeconds = eventInfo.data.data.currentTime
-                if (playerSelectors.isTranscode(current, routeParams, clientOptions)) {
+                if (current.isTranscode) {
                     adjustedSeconds += routeParams?.seekToSeconds ?? 0
                 }
                 onProgress(adjustedSeconds, 'player-event')
@@ -288,16 +305,10 @@ export function usePlayerActions({
 
     const onVideoError = (error) => {
         addLog(error)
-        const code = error?.error?.code || error?.error?.errorCode
-        if ([4, '4', 24001, '24001', 24003, '24003'].includes(code)) {
+        const errorCode = error?.error?.code || error?.error?.errorCode
+        if ([4, '4', 24001, '24001', 24003, '24003'].includes(errorCode)) {
             onCriticalError(error)
         }
-    }
-
-    const savePlaybackLogs = () => {
-        if (!apiClient) return Promise.resolve()
-        const envelope = getEnvelope()
-        return apiClient.savePlaybackLogs(envelope.logs || [])
     }
 
     return {
@@ -316,6 +327,6 @@ export function usePlayerActions({
         savePlaybackLogs,
         addLog,
         parseVideoPayload,
-        resetPlayer: resetEnvelope
+        resetPlayer: resetHub
     }
 }
