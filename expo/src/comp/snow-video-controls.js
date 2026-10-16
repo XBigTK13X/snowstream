@@ -95,7 +95,7 @@ export default function SnowVideoControls(props) {
                     onValueChange={onPercentChange}
                 />
                 <Snow.Text style={styles.progress}>
-                    {progressDisplay ?? ''} / {durationDisplay} {isTranscode ? 'transcoding' : 'direct play'} via {playerKind === 'rnv' ? 'exo' : 'mpv'}
+                    {progressDisplay ?? ''} / {durationDisplay} {isTranscode ? 'transcoding' : 'direct play'} via {playerKind === 'exo' ? 'exo' : 'mpv'}
                 </Snow.Text>
             </Snow.View>
         )

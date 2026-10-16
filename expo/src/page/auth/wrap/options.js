@@ -1,11 +1,18 @@
 import { C, useAppContext } from 'snowstream'
 
-const players = [
+let players = [
     'all',
     'mpv',
-    'exo',
-    'null'
+    'exo'
 ]
+
+if (C.isWeb) {
+    players = [
+        'all',
+        'web',
+        'null'
+    ]
+}
 
 const resolutions = [
     'Video File',

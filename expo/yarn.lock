@@ -1453,66 +1453,6 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.4.0.tgz#5e2e1374c0a30b5a42e8b083523a225c6945f88a"
   integrity sha512-1mEZtMKPM09vDmQt5y7YvmN2+DFTP7Tg0EWXdic8/C6VRnpb33e4ghisCIE3WZjsE2N8mf+QV1Zqh7ZFYLWInQ==
 
-"@videojs/core@10.1.0":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@videojs/core/-/core-10.1.0.tgz#b9ae9325391e152eaca81002cd73f09af158febd"
-  integrity sha512-jETPa4qmI5JzKRj0FoMSuh7hNwY4BQMvLVrwjZ8vW3tC00f2TzBsiilSAtg5GPy6DIdupWCd9x0MlPTAzomhiw==
-  dependencies:
-    "@videojs/media" "10.1.0"
-    "@videojs/store" "10.1.0"
-    "@videojs/utils" "10.1.0"
-
-"@videojs/media@10.1.0":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@videojs/media/-/media-10.1.0.tgz#2d19c8f9b39103a5fc7598a3a774a87dfb5f2997"
-  integrity sha512-Ene6V7Es+Wddcj/Pzy+7+SbZq5H6M3L3ZdhwWHtoP6AULVt096Pn/PJl4L4W1Vypx9xxRP//ZftVv52eu5clww==
-  dependencies:
-    "@videojs/utils" "10.1.0"
-
-"@videojs/native-hls-video@10.1.0":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@videojs/native-hls-video/-/native-hls-video-10.1.0.tgz#314c5b4c0019e2da69b7fdd0cf718bd3e757f4c3"
-  integrity sha512-0Kfngb1iczF/vEPH0nOpcYveb4J6SyPBbWQNXgWBbBDS1ZGFZKpJ8YPo8zvyyHmnZQIatheEeUGCJaRPfVOYwQ==
-  dependencies:
-    "@videojs/media" "10.1.0"
-    "@videojs/spf" "10.1.0"
-    "@videojs/utils" "10.1.0"
-
-"@videojs/react@^10.0.0-beta.11":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@videojs/react/-/react-10.1.0.tgz#ba4c39e7d95a1c3c5bce7d3adb03b2a9835abea3"
-  integrity sha512-s49Y8TlPLCgxz6TciIFdCF38liN9TnHVmbup/e/xmsXb79ljGumvtqN5GOrgByDvylin2bvgfXz/T2fxdq0xkQ==
-  dependencies:
-    "@videojs/core" "10.1.0"
-    "@videojs/media" "10.1.0"
-    "@videojs/native-hls-video" "10.1.0"
-    "@videojs/spf" "10.1.0"
-    "@videojs/store" "10.1.0"
-    "@videojs/utils" "10.1.0"
-    react-compiler-runtime "^1.0.0"
-
-"@videojs/spf@10.1.0":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@videojs/spf/-/spf-10.1.0.tgz#aa960a57f2e42675fb75a91bd088133f8253f59a"
-  integrity sha512-RLfhkIJ81mAKO8d0/yNfEUVIxASl/WxEih0Kix9S5MKI5GCiJTjVtIGsqN+C8T2a3OZ1+GT5wTTPewnDshGDbw==
-  dependencies:
-    "@videojs/media" "10.1.0"
-    "@videojs/utils" "10.1.0"
-    signal-polyfill "^0.2.2"
-
-"@videojs/store@10.1.0":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@videojs/store/-/store-10.1.0.tgz#74cb1d74f5373df87f899029e5c129616d1eb987"
-  integrity sha512-73oWIql+pECjlr4mBPUfgZyvAXJ4wNT1Me4ZgCIzeUUMUqns5OqJSIaRj1jcoWemwROLvKQUVhOVY5JgQ1nDww==
-  dependencies:
-    "@videojs/utils" "10.1.0"
-    react-compiler-runtime "^1.0.0"
-
-"@videojs/utils@10.1.0":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@videojs/utils/-/utils-10.1.0.tgz#c089bc161e50c6076c3831f973e440d1b6e41d31"
-  integrity sha512-2Nd5Wzf27ioxEGIJ8u/9jzFSuqNiB1XfCH6fny2XicbCNhsAWnwQrwtyPM6kRvkJbtIHLdQvRwnWpxke20ia0w==
-
 "@xmldom/xmldom@^0.8.8":
   version "0.8.15"
   resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.15.tgz#71ebf80729e4e95221d519ac9b1e1eaea7784907"
@@ -2114,9 +2054,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.5.439:
-  version "1.5.456"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.456.tgz#cfa8b3b4c44450b8a28df4a7bc8be377cae1b691"
-  integrity sha512-8hboqI6xesozteFb8aa7OGknvxUtTeRJLz0FoePysUEh/oWbddykIGdgpEJRbPRg/nIMfBf2DFos+H2MtvJl2A==
+  version "1.5.458"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.458.tgz#fdc608c8ee26eeb4fa20b3447378c6c83a806a76"
+  integrity sha512-/hIH2gRSmxrf4/X4Nw/t/Wc8PVS22l8/3HnWjWTWsTOM5dsnMUPZF/+u+yr3LqweNuTBJE1rq6qAQzKkZVwMfA==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -2228,6 +2168,11 @@ expo-constants@^57.0.9, expo-constants@~57.0.2, expo-constants@~57.0.22, expo-co
   dependencies:
     "@expo/env" "~2.4.3"
 
+expo-exoplayer@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/expo-exoplayer/-/expo-exoplayer-1.0.0.tgz#83acdc6e7180b78e4baf323101d60a837db1ef55"
+  integrity sha512-zq4QfY5+gt1BdTEjfOQ3dWzwHOWp/25CEjupmykpqA84Zlts7/+qUWS/mR3nJiNzkOhDx+qcOVZCKtfXqv94cQ==
+
 expo-file-system@~57.0.0, expo-file-system@~57.0.2:
   version "57.0.7"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-57.0.7.tgz#03c4587c0027f65f7e04d88796aefcfe74b03cae"
@@ -2318,10 +2263,10 @@ expo-server@^57.0.3:
   resolved "https://registry.yarnpkg.com/expo-server/-/expo-server-57.0.3.tgz#02e038a85453f1f4eb00024256b4b3cab949cace"
   integrity sha512-aK+LdKzauHSGmsOStZtyxdzv0zWssCkxTw3m4QuOhfDSJsZaMRTd9O41d8ixU/QfELTbaJ0oRNcF7JFV/7O9YQ==
 
-expo-snowui@1.8.19:
-  version "1.8.19"
-  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.8.19.tgz#0f54a93ecd00bc4691098c43a0df96460a909256"
-  integrity sha512-L42xf+xawUwUx8WairQzLPprmCelPNMHebifnoGaxu6Q5Cf+q1XAQsjDPOOCQChC6t521LOWtFn8EP1PQmSqxw==
+expo-snowui@1.8.20:
+  version "1.8.20"
+  resolved "https://registry.yarnpkg.com/expo-snowui/-/expo-snowui-1.8.20.tgz#0368229db08e4314170b6b904cf068650fbd60ab"
+  integrity sha512-QkOGbKCKRpbnRwxGLMn+rgKk/frNsLkfb84sG5wN1+jBUWSTGFq37ZzBwYZtudIxkDQ6QUvfqBnTeFoocEBThA==
   dependencies:
     "@sentry/react-native" "^7.11.0"
     expo "57.0.11"
@@ -3732,11 +3677,6 @@ range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-react-compiler-runtime@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-compiler-runtime/-/react-compiler-runtime-1.0.0.tgz#ee565c2cd3437a41e7fc31d8ab6c662f6b568fc0"
-  integrity sha512-rRfjYv66HlG8896yPUDONgKzG5BxZD1nV9U6rkm+7VCuvQc903C4MjcoZR4zPw53IKSOX9wMQVpA1IAbRtzQ7w==
-
 react-devtools-core@^6.1.5:
   version "6.1.5"
   resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-6.1.5.tgz#c5eca79209dab853a03b2158c034c5166975feee"
@@ -3762,11 +3702,6 @@ react-is@^18.0.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.3.1.tgz#e83557dc12eae63a99e003a46388b1dcbb44db7e"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
 
-react-native-nitro-modules@^0.36.5:
-  version "0.36.5"
-  resolved "https://registry.yarnpkg.com/react-native-nitro-modules/-/react-native-nitro-modules-0.36.5.tgz#438c77e4f1e77bd1d3e901eb5b4953762e68a078"
-  integrity sha512-SJby84+hovD70JmQ1fq+56tw3oapJeChehUqXA4Gqjm+ktJhMAcj8LGwoAjStSOUwRaK7czbzBPB0Widj+EDoQ==
-
 react-native-safe-area-context@5.7.0:
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-5.7.0.tgz#035699d5ec17fefb98cc1fa44a9ec852c7d530d0"
@@ -3784,13 +3719,6 @@ react-native-uuid@2.0.4, react-native-uuid@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/react-native-uuid/-/react-native-uuid-2.0.4.tgz#0c4f345523c5feac0282d3a51fe19887727df988"
   integrity sha512-LSJNeh559qC17fgVPBsWuTSW/OygFp2dwTcf94IQBLYft5FzIQS9pCsuT36OPvyvDOMb6yiGr6TafaJDnz9PPQ==
-
-react-native-video@7.0.0-beta.11:
-  version "7.0.0-beta.11"
-  resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-7.0.0-beta.11.tgz#926a38bb7c333a8db4c32fde0b4961b9012bca9a"
-  integrity sha512-EJkW+40lzX/qjclGW5sHeQkNlYKYjaqulh5ryalqU5tBs+rOF72kvrNjL4c3NKoGeGhzB5SZuUBj8m3xXTBbOQ==
-  dependencies:
-    "@videojs/react" "^10.0.0-beta.11"
 
 react-native-web@0.21.2:
   version "0.21.2"
@@ -4033,11 +3961,6 @@ signal-exit@^4.0.1:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-4.1.0.tgz#952188c1cbd546070e2dd20d0f41c0ae0530cb04"
   integrity sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==
-
-signal-polyfill@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/signal-polyfill/-/signal-polyfill-0.2.2.tgz#722e2cd272cbd6cdc5fcc741459bd066f93d0264"
-  integrity sha512-p63Y4Er5/eMQ9RHg0M0Y64NlsQKpiu6MDdhBXpyywRuWiPywhJTpKJ1iB5K2hJEbFZ0BnDS7ZkJ+0AfTuL37Rg==
 
 simple-plist@^1.1.0:
   version "1.3.1"

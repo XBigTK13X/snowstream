@@ -13,9 +13,10 @@ from db import db
 from database import db_models as dm
 from settings import config
 
+
 class TranscodeSessions:
     def __init__(self):
-        parts = config.transcode_port_range.split('-')
+        parts = config.transcode_port_range.split("-")
         self.port_start = int(parts[0])
         self.port_end = int(parts[1])
 
@@ -34,16 +35,18 @@ class TranscodeSessions:
 
     def create_session(
         self,
-        ticket:db.Ticket,
-        player_kind:str,
-        device_profile:str=None,
-        video_file_id:int=None,
-        streamable_id:int=None,
-        audio_track_index:int=None,
-        subtitle_track_index:int=None,
-        seek_to_seconds:int=None
+        ticket: db.Ticket,
+        player_kind: str,
+        device_profile: str = None,
+        video_file_id: int = None,
+        streamable_id: int = None,
+        audio_track_index: int = None,
+        subtitle_track_index: int = None,
+        seek_to_seconds: int = None,
     ):
-        existing = db.op.get_transcode_session(cduid=ticket.cduid,video_file_id=video_file_id,streamable_id=streamable_id)
+        existing = db.op.get_transcode_session(
+            cduid=ticket.cduid, video_file_id=video_file_id, streamable_id=streamable_id
+        )
         if existing:
             self.refresh_known_processes()
             if self.process_is_running(existing):
@@ -73,9 +76,9 @@ class TranscodeSessions:
             cduid=ticket.cduid,
             video_file_id=video_file_id,
             streamable_id=streamable_id,
-            stream_port=stream_port
+            stream_port=stream_port,
         )
-        command,streaming_url = snow_media.transcode_cli.build_command(
+        command, streaming_url = snow_media.transcode_cli.build_command(
             device_profile=device_profile,
             input_url=input_path,
             snowstream_info=snowstream_info,
@@ -83,32 +86,36 @@ class TranscodeSessions:
             player_kind=player_kind,
             audio_track_index=audio_track_index,
             subtitle_track_index=subtitle_track_index,
-            seek_to_seconds=seek_to_seconds
+            seek_to_seconds=seek_to_seconds,
         )
         client_device = ticket.client.client_device.reported_name
-        log_name = f'{transcode_session.id}-{client_device}-'
+        log_name = f"{transcode_session.id}-{client_device}-"
         if video_file_id:
-            log_name += f'v-{video_file_id}'
+            log_name += f"v-{video_file_id}"
         elif streamable_id:
-            log_name += f's-{streamable_id}'
-        log_name += '.log'
-        log_path = os.path.join(config.transcode_log_dir,log_name)
-        log.info("Logging to "+log_path)
+            log_name += f"s-{streamable_id}"
+        log_name += ".log"
+        log_path = os.path.join(config.transcode_log_dir, log_name)
+        log.info("Logging to " + log_path)
         transcode_process = util.run_cli(command, background=True, log_path=log_path)
-        db.op.set_transcode_process_id(transcode_session_id=transcode_session.id,process_id=transcode_process.pid)
+        db.op.set_transcode_process_id(
+            transcode_session_id=transcode_session.id, process_id=transcode_process.pid
+        )
 
         time.sleep(5)
 
-        if player_kind == 'rnv':
-            streaming_url = f'{config.web_api_url}/api/transcode/stream?transcode_session_id={transcode_session.id}'
+        if player_kind == "exo":
+            streaming_url = f"{config.web_api_url}/api/transcode/stream?transcode_session_id={transcode_session.id}"
 
         return {
-            'transcode_url': streaming_url,
-            'transcode_session_id': transcode_session.id
+            "transcode_url": streaming_url,
+            "transcode_session_id": transcode_session.id,
         }
 
-    def get_playlist_content(self, transcode_session_id:int):
-        transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
+    def get_playlist_content(self, transcode_session_id: int):
+        transcode_session = db.op.get_transcode_session_by_id(
+            transcode_session_id=transcode_session_id
+        )
         if not transcode_session:
             return None
         binary_data = None
@@ -123,7 +130,9 @@ class TranscodeSessions:
         return binary_data
 
     def get_stream_segment(self, segment_file: str, transcode_session_id: int):
-        transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
+        transcode_session = db.op.get_transcode_session_by_id(
+            transcode_session_id=transcode_session_id
+        )
         if not transcode_session:
             return None
         binary_data = None
@@ -138,24 +147,34 @@ class TranscodeSessions:
 
     def refresh_known_processes(self):
         self.pid_is_ffmpeg = {}
-        result = util.run_cli('jc -p ps aux',raw_output=True)
-        processes = json.loads(result['stdout'])
+        result = util.run_cli("jc -p ps aux", raw_output=True)
+        processes = json.loads(result["stdout"])
         for process in processes:
-            if 'ffmpeg' in process['command']:
-                self.pid_is_ffmpeg[process['pid']] = process['command']
+            if "ffmpeg" in process["command"]:
+                self.pid_is_ffmpeg[process["pid"]] = process["command"]
 
     @util.debounce(config.transcode_disconnect_seconds)
-    def close_on_disconnect(self, transcode_session:dm.TranscodeSession):
+    def close_on_disconnect(self, transcode_session: dm.TranscodeSession):
         self.refresh_known_processes()
         self.close(transcode_session=transcode_session)
 
     def process_is_running(self, transcode_session):
-        return transcode_session.process_id in self.pid_is_ffmpeg and f'{transcode_session.stream_port}' in self.pid_is_ffmpeg[transcode_session.process_id]
+        return (
+            transcode_session.process_id in self.pid_is_ffmpeg
+            and f"{transcode_session.stream_port}"
+            in self.pid_is_ffmpeg[transcode_session.process_id]
+        )
 
-    def close(self, transcode_session:dm.TranscodeSession=None,transcode_session_id:int=None):
+    def close(
+        self,
+        transcode_session: dm.TranscodeSession = None,
+        transcode_session_id: int = None,
+    ):
         try:
             if transcode_session_id:
-                transcode_session = db.op.get_transcode_session_by_id(transcode_session_id=transcode_session_id)
+                transcode_session = db.op.get_transcode_session_by_id(
+                    transcode_session_id=transcode_session_id
+                )
                 if not transcode_session:
                     return True
             try:
@@ -163,13 +182,19 @@ class TranscodeSessions:
                     os.kill(transcode_session.process_id, signal.SIGTERM)
             except Exception as e:
                 log.error(f"{traceback.format_exc()}")
-                log.error(f"Unable to kill transcode session process {transcode_session.process_id}")
+                log.error(
+                    f"Unable to kill transcode session process {transcode_session.process_id}"
+                )
             try:
                 if transcode_session.transcode_directory:
-                    shutil.rmtree(transcode_session.transcode_directory,ignore_errors=True)
+                    shutil.rmtree(
+                        transcode_session.transcode_directory, ignore_errors=True
+                    )
             except Exception as e:
                 log.error(f"{traceback.format_exc()}")
-                log.error(f"Unable to remove transcode session directory {transcode_session.transcode_directory}")
+                log.error(
+                    f"Unable to remove transcode session directory {transcode_session.transcode_directory}"
+                )
             db.op.delete_transcode_session(transcode_session_id=transcode_session.id)
         except Exception as e:
             log.error(f"{traceback.format_exc()}")
@@ -183,7 +208,8 @@ class TranscodeSessions:
             for transcode_session in transcode_sessions:
                 self.close(transcode_session=transcode_session)
         db.op.delete_all_transcode_sessions()
-        shutil.rmtree(config.transcode_log_dir,ignore_errors=True)
+        shutil.rmtree(config.transcode_log_dir, ignore_errors=True)
         os.makedirs(config.transcode_log_dir)
+
 
 transcode_sessions = TranscodeSessions()

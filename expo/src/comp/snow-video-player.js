@@ -12,15 +12,15 @@ import { useAppContext } from '../app-context'
 
 function resolveVideoView(kind) {
     if (kind === 'web') {
-        return require('./web-video-view').default
+        return require('./video/web-video-view').default
     }
     if (kind === 'null') {
-        return require('../comp/null-video-view').default
+        return require('./video/null-video-view').default
     }
-    if (kind === 'rnv') {
-        return require('../comp/rnv-video-view').default
+    if (kind === 'exo') {
+        return require('./video/exo-video-view').default
     }
-    return require('../comp/mpv-video-view').default
+    return require('./video/mpv-video-view').default
 }
 
 export default function SnowVideoPlayer(props) {

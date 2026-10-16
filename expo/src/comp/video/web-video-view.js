@@ -127,7 +127,7 @@ export default function WebVideoView(props) {
                 autoPlay
                 onTimeUpdate={(event) => {
                     emitHubEvent('player.update', {
-                        kind: 'rnvevent',
+                        kind: 'exoevent',
                         data: {
                             event: 'onProgress',
                             data: {
@@ -143,7 +143,7 @@ export default function WebVideoView(props) {
                 }}
                 onEnded={() => {
                     emitHubEvent('player.update', {
-                        kind: 'rnvevent',
+                        kind: 'exoevent',
                         data: {
                             event: 'onEnd'
                         }

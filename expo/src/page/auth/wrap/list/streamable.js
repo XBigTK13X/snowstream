@@ -53,7 +53,7 @@ function StreamableButton(props) {
         streamableId: props.streamable.id,
     }
     if (props.streamSource.kind === "TubeArchivist") {
-        navParams.forcePlayer = 'rnv'
+        navParams.forcePlayer = 'exo'
     }
 
     return (

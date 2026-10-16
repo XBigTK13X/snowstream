@@ -283,7 +283,7 @@ export function usePlayerActions({
     }
 
     const onVideoUpdate = (eventInfo) => {
-        if (eventInfo?.kind === 'rnvevent' && eventInfo?.data) {
+        if ((eventInfo?.kind === 'exoevent' || eventInfo?.kind === 'mpvevent') && eventInfo?.data) {
             if (eventInfo?.data?.data?.currentTime !== undefined) {
                 const current = getHubState()
                 if (!current.isSeekable) {

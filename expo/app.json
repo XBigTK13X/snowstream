@@ -24,7 +24,6 @@
         }
       ],
       "expo-secure-store",
-      "react-native-video",
       [
         "expo-navigation-bar"
       ],

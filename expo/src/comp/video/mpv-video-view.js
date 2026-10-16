@@ -1,8 +1,8 @@
 import React from 'react'
 import LibmpvView from 'expo-libmpv'
 import Snow from 'expo-snowui'
-import CONST from '../constant'
-import { useAppContext } from '../app-context'
+import CONST from '../../constant'
+import { useAppContext } from '../../app-context'
 
 export default function MpvVideoView(props) {
     const {
@@ -97,7 +97,7 @@ export default function MpvVideoView(props) {
 
         if (libmpvEvent.property === 'eof-reached' && isSeekable) {
             emitHubEvent('player.update', {
-                kind: 'rnvevent',
+                kind: 'mpvevent',
                 data: {
                     event: 'onEnd'
                 }

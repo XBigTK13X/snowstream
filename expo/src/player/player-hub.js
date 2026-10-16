@@ -56,7 +56,6 @@ export function resolvePlaybackConfig(routeParams = {}, clientOptions = {}) {
 
     const forceExo = (
         routeParams?.forcePlayer === 'exo' ||
-        routeParams?.forcePlayer === 'rnv' ||
         (routeParams?.videoIsHdr && routeParams?.forcePlayer !== 'mpv') ||
         clientOptions?.alwaysUsePlayer === 'exo'
     )
@@ -65,7 +64,7 @@ export function resolvePlaybackConfig(routeParams = {}, clientOptions = {}) {
     if (clientOptions?.alwaysUsePlayer === 'null') {
         playerKind = 'null'
     } else if (forceExo) {
-        playerKind = 'rnv'
+        playerKind = 'exo'
     }
 
     return { playerKind, isTranscode }
