@@ -10,9 +10,10 @@ export default function SnowVideoControls(props) {
         sendHubData,
         emitHubEvent,
         useHubState
-    } = Snow.useSnowContext()
+    } = Snow.useSnowContext(props)
 
-    const { apiClient } = useAppContext()
+    const appContext = useAppContext()
+    const apiClient = props.apiClient || appContext?.apiClient
 
     const videoTitle = useHubState((state) => state?.videoTitle)
     const durationSeconds = useHubState((state) => state?.durationSeconds) || 0.0

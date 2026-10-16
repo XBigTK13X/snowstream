@@ -35,7 +35,7 @@ export default function SnowVideoPlayer(props) {
         useHubState
     } = Snow.useSnowContext()
 
-    const { config, clientOptions } = useAppContext()
+    const { apiClient, config, clientOptions } = useAppContext()
 
     const videoUrl = useHubState((state) => state?.videoUrl)
     const videoLoaded = useHubState((state) => state?.videoLoaded)
@@ -63,7 +63,6 @@ export default function SnowVideoPlayer(props) {
         }
     }, [emitHubEvent])
 
-    // Video View Modal
     React.useEffect(() => {
         if (videoUrl) {
             pushModal({
@@ -81,16 +80,23 @@ export default function SnowVideoPlayer(props) {
                     if (clientOptions?.nightFilter) {
                         return (
                             <>
-                                <VideoView />
-                                <View style={{
-                                    flex: 1,
-                                    backgroundColor: 'rgb(10, 10, 25)',
-                                    opacity: 0.45
-                                }} />
+                                <VideoView clientOptions={clientOptions} />
+                                <View
+                                    pointerEvents="none"
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        backgroundColor: 'rgb(10, 10, 25)',
+                                        opacity: 0.45
+                                    }}
+                                />
                             </>
                         )
                     }
-                    return <VideoView />
+                    return <VideoView clientOptions={clientOptions} />
                 }
             })
 
@@ -98,9 +104,8 @@ export default function SnowVideoPlayer(props) {
                 popModal()
             }
         }
-    }, [videoUrl, playerKind, clientOptions?.nightFilter])
+    }, [videoUrl, playerKind, clientOptions])
 
-    // Touch Overlay for Pause
     React.useEffect(() => {
         if (videoUrl && isVideoViewReady && isPlaying && !controlsVisible) {
             openOverlay({
@@ -123,7 +128,6 @@ export default function SnowVideoPlayer(props) {
         }
     }, [videoUrl, isVideoViewReady, isPlaying, controlsVisible])
 
-    // Playback Controls Modal
     React.useEffect(() => {
         if (controlsVisible && videoUrl) {
             pushModal({
@@ -136,7 +140,7 @@ export default function SnowVideoPlayer(props) {
                     }
                 },
                 render: (modalProps) => {
-                    return <SnowVideoControls {...modalProps} />
+                    return <SnowVideoControls {...modalProps} apiClient={apiClient} />
                 }
             })
 
@@ -144,9 +148,8 @@ export default function SnowVideoPlayer(props) {
                 popModal()
             }
         }
-    }, [controlsVisible, videoUrl])
+    }, [controlsVisible, videoUrl, apiClient])
 
-    // Logs Modal
     React.useEffect(() => {
         if (logsVisible && videoUrl) {
             const currentLogs = getHubState().logs || []

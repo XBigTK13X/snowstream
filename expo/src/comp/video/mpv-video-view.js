@@ -9,8 +9,9 @@ export default function MpvVideoView(props) {
         sendHubData,
         emitHubEvent,
         useHubState
-    } = Snow.useSnowContext()
-    const { clientOptions } = useAppContext()
+    } = Snow.useSnowContext(props)
+    const appContext = useAppContext()
+    const clientOptions = props.clientOptions || appContext?.clientOptions || {}
 
     const videoUrl = useHubState((state) => state?.videoUrl)
     const isPlaying = useHubState((state) => state?.isPlaying)
@@ -32,18 +33,18 @@ export default function MpvVideoView(props) {
     const forwardRef = React.useRef(null)
 
     React.useEffect(() => {
-        if (!clientOptions) {
+        if (!videoUrl || isVideoViewReady) {
             return
         }
-        if (!isVideoViewReady && forwardRef.current?.runCommand) {
-            if (clientOptions.audioCompression) {
+        if (forwardRef.current?.runCommand) {
+            if (clientOptions?.audioCompression) {
                 forwardRef.current.runCommand('set|af|acompressor=ratio=4,loudnorm').catch(() => { })
             } else {
                 forwardRef.current.runCommand('set|del-af|@').catch(() => { })
             }
-            sendHubData({ isVideoViewReady: true, isPlaying: true }, 'player.ready')
         }
-    })
+        emitHubEvent('player.ready')
+    }, [videoUrl, isVideoViewReady, clientOptions, emitHubEvent])
 
     const disableHeavyAss = () => {
         forwardRef.current?.runCommand?.('set|sub-ass-override|force').catch(() => { })
@@ -75,7 +76,8 @@ export default function MpvVideoView(props) {
         }
     }, [subtitleDelaySeconds, isVideoViewReady])
 
-    const eventHandler = (libmpvEvent) => {
+    const eventHandler = (rawEvent) => {
+        const libmpvEvent = rawEvent?.nativeEvent || rawEvent
         if (!libmpvEvent?.property) {
             return
         }
@@ -105,23 +107,24 @@ export default function MpvVideoView(props) {
         }
     }
 
-    const logHandler = (libmpvLog) => {
+    const logHandler = (rawLog) => {
+        const libmpvLog = rawLog?.nativeEvent || rawLog
         if (libmpvLog?.text && !libmpvLog.text.includes('Description:')) {
             emitHubEvent('player.log', { kind: 'mpvlog', libmpvLog })
         }
     }
 
-    if (!clientOptions || !videoUrl) {
+    if (!videoUrl) {
         return null
     }
 
     let resolvedWidth = CONST.resolution.fullHd.width
     let resolvedHeight = CONST.resolution.fullHd.height
-    if (clientOptions.resolutionKind === '2160p') {
+    if (clientOptions?.resolutionKind === '2160p') {
         resolvedWidth = CONST.resolution.ultraHd.width
         resolvedHeight = CONST.resolution.ultraHd.height
     }
-    if (clientOptions.resolutionKind === 'Video File') {
+    if (clientOptions?.resolutionKind === 'Video File') {
         resolvedWidth = videoWidthState
         resolvedHeight = videoHeightState
     }
@@ -131,14 +134,17 @@ export default function MpvVideoView(props) {
     let acceleratedCodecs = playbackPlan?.mpv_accelerated_codecs || 'h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1'
     let videoSync = playbackPlan?.mpv_video_sync || 'audio'
 
+    const safeUrl = encodeURI(decodeURI(videoUrl))
+
     return (
         <LibmpvView
             ref={forwardRef}
+            style={{ flex: 1, width: '100%', height: '100%' }}
             videoOutput={videoOutput}
             decodingMode={decodingMode}
             acceleratedCodecs={acceleratedCodecs}
             videoSync={videoSync}
-            playUrl={videoUrl}
+            playUrl={safeUrl}
             isPlaying={isPlaying}
             surfaceWidth={resolvedWidth}
             surfaceHeight={resolvedHeight}

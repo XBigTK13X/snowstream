@@ -10,7 +10,8 @@ export default function ExoVideoView(props) {
         emitHubEvent,
         useHubState
     } = Snow.useSnowContext(props)
-    const { clientOptions } = useAppContext()
+    const appContext = useAppContext()
+    const clientOptions = props.clientOptions || appContext?.clientOptions || {}
 
     const videoUrl = useHubState((state) => state?.videoUrl)
     const isPlaying = useHubState((state) => state?.isPlaying)
@@ -27,13 +28,11 @@ export default function ExoVideoView(props) {
     const forwardRef = React.useRef(null)
 
     React.useEffect(() => {
-        if (!clientOptions) {
+        if (!videoUrl || isVideoViewReady) {
             return
         }
-        if (!isVideoViewReady && forwardRef.current) {
-            sendHubData({ isVideoViewReady: true, isPlaying: true }, 'player.ready')
-        }
-    })
+        emitHubEvent('player.ready')
+    }, [videoUrl, isVideoViewReady, emitHubEvent])
 
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && isVideoViewReady && playbackSpeed !== undefined) {
@@ -41,7 +40,8 @@ export default function ExoVideoView(props) {
         }
     }, [playbackSpeed, isVideoViewReady])
 
-    const eventHandler = (exoPlayerEvent) => {
+    const eventHandler = (rawEvent) => {
+        const exoPlayerEvent = rawEvent?.nativeEvent || rawEvent
         if (!exoPlayerEvent?.property) {
             return
         }
@@ -71,7 +71,8 @@ export default function ExoVideoView(props) {
         }
     }
 
-    const logHandler = (exoPlayerLog) => {
+    const logHandler = (rawLog) => {
+        const exoPlayerLog = rawLog?.nativeEvent || rawLog
         if (exoPlayerLog?.text && exoPlayerLog.text.includes('Playback failure')) {
             emitHubEvent('player.error', {
                 kind: 'exoplayer',
@@ -84,26 +85,27 @@ export default function ExoVideoView(props) {
         }
     }
 
-    if (!clientOptions || !videoUrl) {
+    if (!videoUrl) {
         return null
     }
 
     let resolvedWidth = CONST.resolution.fullHd.width
     let resolvedHeight = CONST.resolution.fullHd.height
-    if (clientOptions.resolutionKind === '2160p') {
+    if (clientOptions?.resolutionKind === '2160p') {
         resolvedWidth = CONST.resolution.ultraHd.width
         resolvedHeight = CONST.resolution.ultraHd.height
     }
-    if (clientOptions.resolutionKind === 'Video File') {
+    if (clientOptions?.resolutionKind === 'Video File') {
         resolvedWidth = videoWidthState
         resolvedHeight = videoHeightState
     }
 
-    const safeUrl = encodeURI(videoUrl)
+    const safeUrl = encodeURI(decodeURI(videoUrl))
 
     return (
         <ExoPlayerView
             ref={forwardRef}
+            style={{ flex: 1, width: '100%', height: '100%' }}
             playUrl={safeUrl}
             isPlaying={isPlaying}
             surfaceWidth={resolvedWidth}

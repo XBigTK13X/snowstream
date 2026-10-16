@@ -5,6 +5,7 @@ import SnowVideoPlayer from '../../../comp/snow-video-player'
 
 export function PlayMediaPage(props) {
     const {
+        currentRoute,
         emitHubEvent,
         resetHub,
         useHubState
@@ -21,7 +22,7 @@ export function PlayMediaPage(props) {
         return () => {
             resetHub()
         }
-    }, [])
+    }, [resetHub])
 
     React.useEffect(() => {
         emitHubEvent('player.setHandlers', {
@@ -34,7 +35,7 @@ export function PlayMediaPage(props) {
         })
 
         emitHubEvent('player.loadVideo')
-    }, [])
+    }, [currentRoute?.routeParams?.transcode, emitHubEvent])
 
     if (playbackFailed) {
         return (

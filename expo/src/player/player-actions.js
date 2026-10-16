@@ -2,6 +2,7 @@ import React from 'react'
 import Snow from 'expo-snowui'
 import util from '../util'
 import { config } from '../settings'
+import { initialPlayerHubState, resolvePlaybackConfig } from './player-hub'
 
 const MAX_LOGS = 300
 
@@ -44,7 +45,6 @@ export function usePlayerActions({
         if (logsRef.current.length > MAX_LOGS) {
             logsRef.current.shift()
         }
-        // Keep in hub state without broadcasting state changes to the UI
         getHubState().logs = logsRef.current
     }
 
@@ -63,6 +63,7 @@ export function usePlayerActions({
             sendHubData({
                 videoLoaded: false,
                 videoLoading: false,
+                videoUrl: null,
                 isTranscode: true
             }, 'player.fallbackTranscode')
             navPush({ params: nextParams, func: false })
@@ -101,6 +102,7 @@ export function usePlayerActions({
             videoUrl: targetUrl,
             videoLoaded: true,
             videoLoading: false,
+            isPlaying: currentState.playerKind !== 'web',
             videoTitle: response.name || currentState.videoTitle,
             durationSeconds: response.durationSeconds || currentState.durationSeconds,
             mediaTracks: response.tracks || currentState.mediaTracks,
@@ -127,19 +129,32 @@ export function usePlayerActions({
 
     const loadVideo = () => {
         const currentState = getHubState()
-        const loadHandler = currentState.isTranscode
-            ? handlersRef.current.loadTranscode
-            : handlersRef.current.loadVideo
-
-        if (!apiClient || !loadHandler || currentState.videoUrl || currentState.videoLoading) {
+        if (currentState.videoUrl || currentState.videoLoading) {
             return
         }
 
-        sendHubData({ videoLoading: true }, 'player.loading')
+        const playbackConfig = resolvePlaybackConfig(routeParams, clientOptions)
+        const isTranscode = playbackConfig.isTranscode
+        const playerKind = playbackConfig.playerKind
+        const seekToSeconds = playbackConfig.seekToSeconds
 
-        const args = currentState.isTranscode
-            ? [apiClient, routeParams, clientOptions?.deviceProfile, routeParams?.seekToSeconds ?? 0, currentState.playerKind]
-            : [apiClient, routeParams, clientOptions?.deviceProfile, currentState.playerKind]
+        const loadHandler = isTranscode
+            ? handlersRef.current.loadTranscode
+            : handlersRef.current.loadVideo
+
+        if (!apiClient || !loadHandler) {
+            return
+        }
+
+        sendHubData({
+            ...initialPlayerHubState,
+            ...playbackConfig,
+            videoLoading: true
+        }, 'player.loading')
+
+        const args = isTranscode
+            ? [apiClient, routeParams, clientOptions?.deviceProfile, seekToSeconds, playerKind]
+            : [apiClient, routeParams, clientOptions?.deviceProfile, playerKind]
 
         loadHandler(...args)
             .then(parseVideoPayload)
@@ -204,6 +219,10 @@ export function usePlayerActions({
         const enoughDiff = !currentState.progressSeconds ||
             Math.abs(resolvedSeconds - currentState.progressSeconds) >= config.progressMinDeltaSeconds
 
+        if (source !== 'manual-seek' && !enoughDiff) {
+            return
+        }
+
         const patch = { videoLoaded: true }
 
         if (source === 'manual-seek') {
@@ -245,7 +264,7 @@ export function usePlayerActions({
             if (navPop) {
                 return navPop().then(() => {
                     handlersRef.current = {}
-                    resetHub()
+                    resetHub(initialPlayerHubState)
                 })
             }
         })
@@ -261,10 +280,11 @@ export function usePlayerActions({
         clearModals?.()
         closeOverlay?.()
 
+        const customStopHandler = handlersRef.current.onStopVideo
         handlersRef.current = {}
 
-        if (handlersRef.current.onStopVideo && apiClient) {
-            handlersRef.current.onStopVideo(apiClient, routes, navPush, navPop, goHome)
+        if (customStopHandler && apiClient) {
+            customStopHandler(apiClient, routes, navPush, navPop, goHome)
             return
         }
 
@@ -291,7 +311,7 @@ export function usePlayerActions({
                 }
                 let adjustedSeconds = eventInfo.data.data.currentTime
                 if (current.isTranscode) {
-                    adjustedSeconds += routeParams?.seekToSeconds ?? 0
+                    adjustedSeconds += Number(routeParams?.seekToSeconds ?? 0)
                 }
                 onProgress(adjustedSeconds, 'player-event')
             } else {
@@ -327,6 +347,6 @@ export function usePlayerActions({
         savePlaybackLogs,
         addLog,
         parseVideoPayload,
-        resetPlayer: resetHub
+        resetPlayer: () => resetHub(initialPlayerHubState)
     }
 }

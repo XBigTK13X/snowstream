@@ -1,6 +1,8 @@
 import { Platform } from 'react-native'
 import CONST from '../constant'
 
+const isTruthyParam = (val) => val === true || val === 'true' || val === 1 || val === '1'
+
 export const initialPlayerHubState = {
     videoUrl: null,
     videoTitle: null,
@@ -26,7 +28,7 @@ export const initialPlayerHubState = {
 
     progressSeconds: null,
     durationSeconds: 0.0,
-    seekToSeconds: 1,
+    seekToSeconds: 0,
     manualSeekSeconds: null,
 
     mediaTracks: null,
@@ -45,18 +47,37 @@ export const initialPlayerHubState = {
 
 export function resolvePlaybackConfig(routeParams = {}, clientOptions = {}) {
     const isTranscode = !!(
-        routeParams?.transcode === 'true' ||
-        routeParams?.transcode === true ||
+        isTruthyParam(routeParams?.transcode) ||
         clientOptions?.alwaysTranscode
     )
 
+    const seekToSeconds = routeParams?.seekToSeconds != null
+        ? Number(routeParams.seekToSeconds)
+        : 0
+
+    const audioTrackIndex = routeParams?.audioTrack != null
+        ? Number(routeParams.audioTrack)
+        : 0
+
+    const subtitleTrackIndex = routeParams?.subtitleTrack != null
+        ? Number(routeParams.subtitleTrack)
+        : 0
+
     if (Platform.OS === 'web') {
-        return { playerKind: 'web', isTranscode }
+        return {
+            playerKind: 'web',
+            isTranscode,
+            seekToSeconds,
+            audioTrackIndex,
+            subtitleTrackIndex
+        }
     }
+
+    const videoIsHdr = isTruthyParam(routeParams?.videoIsHdr)
 
     const forceExo = (
         routeParams?.forcePlayer === 'exo' ||
-        (routeParams?.videoIsHdr && routeParams?.forcePlayer !== 'mpv') ||
+        (videoIsHdr && routeParams?.forcePlayer !== 'mpv') ||
         clientOptions?.alwaysUsePlayer === 'exo'
     )
 
@@ -67,5 +88,11 @@ export function resolvePlaybackConfig(routeParams = {}, clientOptions = {}) {
         playerKind = 'exo'
     }
 
-    return { playerKind, isTranscode }
+    return {
+        playerKind,
+        isTranscode,
+        seekToSeconds,
+        audioTrackIndex,
+        subtitleTrackIndex
+    }
 }

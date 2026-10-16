@@ -2,7 +2,6 @@ import React from 'react'
 import Snow from 'expo-snowui'
 import { useAppContext } from '../app-context'
 import { usePlayerActions } from './player-actions'
-import { initialPlayerHubState, resolvePlaybackConfig } from './player-hub'
 
 const canShortcut = (state) => {
     return !!(
@@ -66,14 +65,6 @@ export function PlayerManager(props) {
     const videoLoading = useHubState((state) => state?.videoLoading)
 
     React.useEffect(() => {
-        const config = resolvePlaybackConfig(currentRoute?.routeParams, clientOptions)
-        resetHub({
-            ...initialPlayerHubState,
-            ...config
-        })
-    }, [currentRoute?.routeParams?.videoId, resetHub, clientOptions])
-
-    React.useEffect(() => {
         const subscriptions = [
             onHubEvent('player.setHandlers', (handlers) => actionsRef.current.setHandlers(handlers)),
             onHubEvent('player.loadVideo', () => actionsRef.current.loadVideo()),
@@ -84,6 +75,7 @@ export function PlayerManager(props) {
             onHubEvent('player.ready', () => actionsRef.current.onVideoReady()),
             onHubEvent('player.update', (eventInfo) => actionsRef.current.onVideoUpdate(eventInfo)),
             onHubEvent('player.error', (error) => actionsRef.current.onVideoError(error)),
+            onHubEvent('player.log', (logInfo) => actionsRef.current.addLog(logInfo)),
             onHubEvent('player.saveLogs', () => actionsRef.current.savePlaybackLogs())
         ]
 
