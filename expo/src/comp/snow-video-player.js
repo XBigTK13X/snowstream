@@ -63,6 +63,12 @@ export default function SnowVideoPlayer(props) {
         }
     }, [emitHubEvent])
 
+    React.useEffect(() => {
+        if (controlsVisible && isPlaying) {
+            emitHubEvent('player.pause')
+        }
+    }, [controlsVisible, isPlaying, emitHubEvent])
+
     // Video content
     React.useEffect(() => {
         if (videoUrl) {

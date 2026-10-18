@@ -323,7 +323,6 @@ export function usePlayerActions({
     }
 
     const onVideoError = (error) => {
-        console.log({ error })
         addLog(error)
         const errorCode = error?.error?.code || error?.error?.errorCode
         if ([4, '4', 24001, '24001', 24003, '24003'].includes(errorCode)) {
