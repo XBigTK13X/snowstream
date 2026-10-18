@@ -63,6 +63,7 @@ export default function SnowVideoPlayer(props) {
         }
     }, [emitHubEvent])
 
+    // Video content
     React.useEffect(() => {
         if (videoUrl) {
             pushModal({
@@ -106,6 +107,7 @@ export default function SnowVideoPlayer(props) {
         }
     }, [videoUrl, playerKind, clientOptions])
 
+    // Input overlay
     React.useEffect(() => {
         if (videoUrl && isVideoViewReady && isPlaying && !controlsVisible) {
             openOverlay({
@@ -128,6 +130,8 @@ export default function SnowVideoPlayer(props) {
         }
     }, [videoUrl, isVideoViewReady, isPlaying, controlsVisible])
 
+
+    // Controls GUI
     React.useEffect(() => {
         if (controlsVisible && videoUrl) {
             pushModal({
@@ -149,6 +153,8 @@ export default function SnowVideoPlayer(props) {
             }
         }
     }, [controlsVisible, videoUrl, apiClient])
+
+    // Logs GUI
 
     React.useEffect(() => {
         if (logsVisible && videoUrl) {
