@@ -3,62 +3,42 @@ import { View } from 'react-native'
 import Snow from 'expo-snowui'
 import util from '../util'
 
-function TrackList(props) {
-    if (!props.tracks) {
+function TrackButtons(props) {
+    if (!props.tracks || !props.tracks.length) {
         return null
     }
 
     let activeTrack = props.activeTrack === -1 ? null : props.tracks.filter((track) => {
         return props.isAudio ? track.audio_index === props.activeTrack : track.subtitle_index === props.activeTrack
     })[0]
-    let activeBitRate = null;
+    let activeBitRate = null
     if (activeTrack) {
         activeBitRate = `[${util.bitsToPretty(activeTrack.bit_rate)}/s]`
     }
-    let header = (
-        <Snow.Text>
-            {props.title} ({props.tracks.length}) {activeBitRate}
-        </Snow.Text>
-    )
-    let gridProps = {}
-    if (props.showDelay) {
-        gridProps.focusKey = `${props.focusKey}-${props.kind}-buttons`
-        header = (
-            <Snow.Grid
-                assignFocus={false}
-                itemsPerRow={3}
-                shrink
-                parentPath={props.parentPath}
-                xx={props.xx}
-                yy={props.yy}
-            >
-                <Snow.Text>
-                    {props.title} ({props.tracks.length}) {activeBitRate}
-                </Snow.Text>
-                <Snow.Input
-                    value={props.delay}
-                    onValueChange={props.setDelay}
-                />
-                <Snow.Text>Seconds Delay</Snow.Text>
-            </Snow.Grid>
-        )
 
-    }
     return (
         <>
-            {header}
-            <Snow.Grid {...gridProps} short shrink itemsPerRow={4} yy={props.yy}>
+            <Snow.Text>
+                {props.title} ({props.tracks.length}) {activeBitRate}
+            </Snow.Text>
+            <Snow.Grid
+                focusKey={`${props.focusKey}-${props.kind}-buttons`}
+                short
+                shrink
+                itemsPerRow={4}
+                parentPath={props.parentPath}
+                yy={props.yy}
+            >
                 {props.tracks.map((track, trackKey) => {
                     let display = track.language ? track.language + ' - ' : ''
                     display += `${(!track.title.includes('.') && track.title) ? track.title + ' - ' : ''}`
                     if (props.isAudio) {
-                        display += `${track.codec.replace('A_', '')} - `
+                        display += `${track.codec.replace('A_', '')}`
                         display += `${track.channel_count}ch`
                         if (track.is_lossless) {
                             display += ` L`
                         }
-                    }
-                    else {
+                    } else {
                         display += `${track.format_full ? track.format_full : track.format}`
                     }
                     if (display.length > 30) {
@@ -78,6 +58,29 @@ function TrackList(props) {
                 })}
             </Snow.Grid>
         </>
+    )
+}
+
+function TrackDelay(props) {
+    if (!props.showDelay || !props.hasTracks) {
+        return null
+    }
+    return (
+        <Snow.Grid
+            assignFocus={false}
+            itemsPerRow={3}
+            shrink
+            parentPath={props.parentPath}
+            xx={props.xx}
+            yy={props.yy}
+        >
+            <Snow.Text>{props.title} Delay</Snow.Text>
+            <Snow.Input
+                value={props.delay}
+                onValueChange={props.setDelay}
+            />
+            <Snow.Text>Seconds Delay</Snow.Text>
+        </Snow.Grid>
     )
 }
 
@@ -103,33 +106,49 @@ export default function SnowTrackSelector(props) {
     }
     return (
         <Snow.View>
-            {props.tracks.audio.length ? <TrackList
-                yy={0}
+            {audioTracks.length ? <TrackButtons
+                yy={1}
                 parentPath={props.parentPath}
                 focusKey={props.focusKey}
                 kind="audio"
                 title="Audio"
-                showDelay={props.showDelay}
-                delay={props.audioDelaySeconds}
-                setDelay={props.setAudioDelaySeconds}
                 isAudio={true}
                 tracks={audioTracks}
                 selectTrack={props.selectTrack}
                 activeTrack={props.audioTrack}
             /> : null}
-            {props.tracks.subtitle.length ? <TrackList
-                yy={1}
+
+            {subtitleTracks.length ? <TrackButtons
+                yy={2}
                 parentPath={props.parentPath}
                 focusKey="subtitle-tracks"
                 kind="subtitle"
                 title="Subtitles"
-                showDelay={props.showDelay}
-                delay={props.subtitleDelaySeconds}
-                setDelay={props.setSubtitleDelaySeconds}
+                isAudio={false}
                 tracks={subtitleTracks}
                 selectTrack={props.selectTrack}
                 activeTrack={props.subtitleTrack}
             /> : null}
+
+            <TrackDelay
+                yy={3}
+                parentPath={props.parentPath}
+                title="Audio"
+                hasTracks={audioTracks.length > 0}
+                showDelay={props.showDelay}
+                delay={props.audioDelaySeconds}
+                setDelay={props.setAudioDelaySeconds}
+            />
+
+            <TrackDelay
+                yy={4}
+                parentPath={props.parentPath}
+                title="Subtitle"
+                hasTracks={subtitleTracks.length > 0}
+                showDelay={props.showDelay}
+                delay={props.subtitleDelaySeconds}
+                setDelay={props.setSubtitleDelaySeconds}
+            />
         </Snow.View>
     )
 }

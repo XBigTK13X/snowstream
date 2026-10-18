@@ -3,7 +3,7 @@ const path = require('path')
 
 const config = getSentryExpoConfig(__dirname)
 
-const localSnowuiDir = "/home/kretst/develop/library/expo-snowui"
+const localSnowuiDir = null
 
 const snowuiOverride = localSnowuiDir ? {
   "expo-snowui": path.resolve(localSnowuiDir, 'src/index.tsx'), // or src/index.js

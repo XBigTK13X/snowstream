@@ -3,6 +3,15 @@ import Snow from 'expo-snowui'
 import { C } from 'snowstream'
 import SnowVideoPlayer from '../../../comp/snow-video-player'
 
+const HANDLER_KEYS = [
+    'loadVideo',
+    'loadTranscode',
+    'onComplete',
+    'onStopVideo',
+    'updateProgress',
+    'increaseWatchCount'
+]
+
 export function PlayMediaPage(props) {
     const {
         currentRoute,
@@ -26,14 +35,17 @@ export function PlayMediaPage(props) {
     }, [resetHub])
 
     React.useEffect(() => {
-        emitHubEvent('player.setHandlers', {
-            loadVideo: (...args) => propsRef.current.loadVideo?.(...args),
-            loadTranscode: (...args) => propsRef.current.loadTranscode?.(...args),
-            onComplete: (...args) => propsRef.current.onComplete?.(...args),
-            onStopVideo: (...args) => propsRef.current.onStopVideo?.(...args),
-            updateProgress: (...args) => propsRef.current.updateProgress?.(...args),
-            increaseWatchCount: (...args) => propsRef.current.increaseWatchCount?.(...args)
-        })
+        const activeHandlers = {}
+
+        for (const handlerKey of HANDLER_KEYS) {
+            if (typeof propsRef.current[handlerKey] === 'function') {
+                activeHandlers[handlerKey] = (...args) => propsRef.current[handlerKey]?.(...args)
+            }
+        }
+
+        if (Object.keys(activeHandlers).length > 0) {
+            emitHubEvent('player.setHandlers', activeHandlers)
+        }
 
         emitHubEvent('player.loadVideo')
     }, [currentRoute?.routeParams?.transcode, emitHubEvent])

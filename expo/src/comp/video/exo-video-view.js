@@ -24,6 +24,8 @@ export default function ExoVideoView(props) {
     const audioTrackIndex = useHubState((state) => state?.audioTrackIndex)
     const subtitleTrackIndex = useHubState((state) => state?.subtitleTrackIndex)
     const playbackSpeed = useHubState((state) => state?.playbackSpeed)
+    const subtitleFontScale = useHubState((state) => state?.subtitleFontScale)
+    const subtitleColor = useHubState((state) => state?.subtitleColor)
 
     const forwardRef = React.useRef(null)
 
@@ -39,6 +41,18 @@ export default function ExoVideoView(props) {
             forwardRef.current.runCommand(`speed|${playbackSpeed}`)
         }
     }, [playbackSpeed, isVideoViewReady])
+
+    React.useEffect(() => {
+        if (forwardRef.current?.runCommand && isVideoViewReady && subtitleFontScale !== undefined) {
+            forwardRef.current.runCommand(`set|sub-scale|${subtitleFontScale}`)
+        }
+    }, [subtitleFontScale, isVideoViewReady])
+
+    React.useEffect(() => {
+        if (forwardRef.current?.runCommand && isVideoViewReady && subtitleColor) {
+            forwardRef.current.runCommand(`set|sub-color|${subtitleColor.shade}/${subtitleColor.alpha}`)
+        }
+    }, [subtitleColor, isVideoViewReady])
 
     const eventHandler = (rawEvent) => {
         const exoPlayerEvent = rawEvent?.nativeEvent || rawEvent

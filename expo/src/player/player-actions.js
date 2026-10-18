@@ -284,7 +284,7 @@ export function usePlayerActions({
         handlersRef.current = {}
 
         if (customStopHandler && apiClient) {
-            customStopHandler(apiClient, routes, navPush, navPop, goHome)
+            return customStopHandler(apiClient, routes, navPush, navPop, goHome)
         }
 
         if (goHome && navReset) {
