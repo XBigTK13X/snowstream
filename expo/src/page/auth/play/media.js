@@ -28,6 +28,8 @@ export function PlayMediaPage(props) {
     const propsRef = React.useRef(props)
     propsRef.current = props
 
+    const mediaId = currentRoute?.routeParams?.id || currentRoute?.routeParams?.videoId
+
     React.useEffect(() => {
         return () => {
             resetHub()
@@ -35,6 +37,8 @@ export function PlayMediaPage(props) {
     }, [resetHub])
 
     React.useEffect(() => {
+        resetHub()
+
         const activeHandlers = {}
 
         for (const handlerKey of HANDLER_KEYS) {
@@ -48,7 +52,7 @@ export function PlayMediaPage(props) {
         }
 
         emitHubEvent('player.loadVideo')
-    }, [currentRoute?.routeParams?.transcode, emitHubEvent])
+    }, [mediaId, currentRoute?.routeParams?.transcode, emitHubEvent, resetHub])
 
     if (playbackFailed) {
         return (

@@ -1494,10 +1494,10 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.12.tgz#0cacd3cff047a32936b1ace47ea7c86eaab60a7f"
   integrity sha512-hhyNJ+nbR6ZR7pToHvllEFun9TL0sbL+tk/ON75lo+Xas054uez98qRbsuNt7MBCyZKK4+8Yli/OAGZhmfBZ/g==
 
-"@snowsuite/expo-snowui@^1.8.20":
-  version "1.8.20"
-  resolved "http://beast.9914.us:4873/@snowsuite/expo-snowui/-/expo-snowui-1.8.20.tgz#06c50c0728d1aaf9a9bd06408cddf9ce37faadb4"
-  integrity sha512-kRYzM/fgL9OCE/P4xBElElrQ4nLDdyEZlXfunFxcX5nnGnClXCIsb1Mz7kQ3bwIaZB2Kk0tsTViELDfVOO1YMw==
+"@snowsuite/expo-snowui@^1.8.26":
+  version "1.8.26"
+  resolved "http://beast.9914.us:4873/@snowsuite/expo-snowui/-/expo-snowui-1.8.26.tgz#a63292c589eba76172e7416589b8701d89435bc7"
+  integrity sha512-OVwyMT6lFEIT6snRXpVwi4e9huX1+TFENTlFO33YKDfUmBiGNd9EVhuu+cGTGlJPQ/BIwI2caDzZMiIFxuw8QQ==
   dependencies:
     "@sentry/react-native" "^7.11.0"
     expo "57.0.11"
@@ -2278,10 +2278,10 @@ expo-constants@^57.0.9, expo-constants@~57.0.2, expo-constants@~57.0.22, expo-co
   dependencies:
     "@expo/env" "~2.4.3"
 
-expo-exoplayer@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/expo-exoplayer/-/expo-exoplayer-1.0.2.tgz#180bc09b2830ab7cae6ab612a8c6928678cf749e"
-  integrity sha512-UsIu6Djlwb0llTXwNWx6CImYGDn52mtwwOSPNLDnhGEQt3zvo14ee+x49SCFPTj8GJda6lyLKClxbIK9tKecYA==
+expo-exoplayer@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/expo-exoplayer/-/expo-exoplayer-1.0.4.tgz#de1a4caa8b023bf07f56c9a86a085976896c3f20"
+  integrity sha512-e5/0TH8hmHLIDIxnh0Wh6CA1REQ971qUFMERkkecDszbZXj4Wzwd52H0Qk7Ky5+yvKsMdnq7KhPf+27MaoOhYg==
 
 expo-file-system@~57.0.0, expo-file-system@~57.0.2:
   version "57.0.7"
