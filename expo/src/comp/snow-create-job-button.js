@@ -1,4 +1,4 @@
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 import { useAppContext } from '../app-context'
 
 export function SnowCreateJobButton(props) {

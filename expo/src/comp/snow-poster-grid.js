@@ -1,5 +1,5 @@
 import React from 'react'
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 import { Asset } from '../asset'
 import { useAppContext } from '../app-context'
 

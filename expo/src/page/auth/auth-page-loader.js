@@ -4,7 +4,7 @@ import Snow, {
     SnowTextButton,
     SnowGrid,
     SnowBreak
-} from 'expo-snowui'
+} from '@snowsuite/expo-snowui'
 
 const styles = {
     header: {

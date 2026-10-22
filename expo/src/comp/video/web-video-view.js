@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 
 export default function WebVideoView(props) {
     const {

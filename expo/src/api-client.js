@@ -1,6 +1,6 @@
 import axios from 'axios'
 import util from './util'
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 
 const JOB_PROPERTIES = [
     ['targetKind', 'target_kind'],

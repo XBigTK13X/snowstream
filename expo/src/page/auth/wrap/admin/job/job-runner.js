@@ -1,4 +1,4 @@
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 import { C, useAppContext } from 'snowstream'
 
 const parseBoolParam = (paramValue, defaultValue) => {

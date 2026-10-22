@@ -1,4 +1,4 @@
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 import { C, useAppContext } from 'snowstream'
 
 export default function UserEditPage() {

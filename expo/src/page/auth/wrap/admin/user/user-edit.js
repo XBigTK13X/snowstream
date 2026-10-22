@@ -1,6 +1,6 @@
 import AdminFormPage from '../admin-form-page'
 
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 
 export default function UserEditPage() {
     return (

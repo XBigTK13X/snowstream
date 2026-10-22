@@ -1,6 +1,6 @@
 import React from 'react'
 import ExoPlayerView from 'expo-exoplayer'
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 import CONST from '../../constant'
 import { useAppContext } from '../../app-context'
 

@@ -1,5 +1,5 @@
 import { C, useAppContext } from 'snowstream'
-import { util } from 'expo-snowui'
+import { util } from '@snowsuite/expo-snowui'
 
 export default function KeepsakeDetailsPage(props) {
     const {

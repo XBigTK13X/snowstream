@@ -1,5 +1,5 @@
 import React from 'react'
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 import util from '../util'
 import { useAppContext } from '../app-context'
 import SnowTrackSelector from './snow-track-selector'

@@ -6,7 +6,7 @@ const config = getSentryExpoConfig(__dirname)
 const localSnowuiDir = null
 
 const snowuiOverride = localSnowuiDir ? {
-  "expo-snowui": path.resolve(localSnowuiDir, 'src/index.tsx'), // or src/index.js
+  "@snowuite/expo-snowui": path.resolve(localSnowuiDir, 'src/index.tsx'), // or src/index.js
   react: path.resolve(__dirname, 'node_modules/react'),
   'react-native': path.resolve(__dirname, 'node_modules/react-native')
 } : {}

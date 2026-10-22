@@ -39,7 +39,7 @@ import Snow, {
     SnowVersion,
     SnowView,
     useSnowContext
-} from 'expo-snowui'
+} from '@snowsuite/expo-snowui'
 
 import SnowCreateJobButton from './comp/snow-create-job-button'
 import SnowPosterGrid from './comp/snow-poster-grid'

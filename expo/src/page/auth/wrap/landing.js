@@ -1,5 +1,5 @@
 import { C, useAppContext } from 'snowstream'
-import Snow from 'expo-snowui'
+import Snow from '@snowsuite/expo-snowui'
 
 export default function LandingPage(props) {
     const { apiClient, routes, config } = useAppContext()
