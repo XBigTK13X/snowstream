@@ -32,9 +32,10 @@ export function PlayMediaPage(props) {
 
     React.useEffect(() => {
         return () => {
+            emitHubEvent('player.setHandlers', {})
             resetHub()
         }
-    }, [resetHub])
+    }, [resetHub, emitHubEvent])
 
     React.useEffect(() => {
         resetHub()

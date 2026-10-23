@@ -1,5 +1,5 @@
 import React from 'react'
-import LibmpvView from 'expo-libmpv'
+import LibmpvView from '@snowsuite/expo-libmpv'
 import Snow from '@snowsuite/expo-snowui'
 import CONST from '../../constant'
 import { useAppContext } from '../../app-context'

@@ -302,9 +302,13 @@ export function usePlayerActions({
     }
 
     const onVideoUpdate = (eventInfo) => {
+        const current = getHubState()
+        if (!current.videoUrl || !current.videoLoading && !current.isPlaying && !current.isVideoViewReady) {
+            return
+        }
+
         if ((eventInfo?.kind === 'exoevent' || eventInfo?.kind === 'mpvevent') && eventInfo?.data) {
             if (eventInfo?.data?.data?.currentTime !== undefined) {
-                const current = getHubState()
                 if (!current.isSeekable) {
                     sendHubData({ isSeekable: true }, 'player.seekable')
                 }
