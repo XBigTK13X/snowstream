@@ -8,7 +8,13 @@ export function WatchableListPage(props) {
     const [items, setItems] = C.React.useState(null)
 
     const shelfId = currentRoute.routeParams.shelfId
-    const shelfName = currentRoute.routeParams?.shelfName ?? shelfId
+    let loadingName = currentRoute.routeParams?.shelfName ?? shelfId
+    if (currentRoute.routeParams?.showName) {
+        loadingName = currentRoute.routeParams?.showName
+        if (currentRoute.routeParams?.seasonOrder) {
+            loadingName += ` - Season ${currentRoute.routeParams?.seasonOrder}`
+        }
+    }
     const [showPlaylisted, setShowPlaylisted] = C.React.useState(
         currentRoute.routeParams.showPlaylisted ? currentRoute.routeParams.showPlaylisted === 'true' : false
     )
@@ -117,7 +123,7 @@ export function WatchableListPage(props) {
         )
     }
 
-    return <C.SnowLabel center>Loading {shelfName}.</C.SnowLabel>
+    return <C.SnowLabel center>Loading {loadingName}.</C.SnowLabel>
 }
 
 export default WatchableListPage

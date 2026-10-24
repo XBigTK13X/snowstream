@@ -556,9 +556,24 @@ export default function MediaTracksPage(props) {
             </C.SnowView>
         )
     }
+
+    let loadingName = props.mediaKind
+    if (currentRoute.routeParams?.movieName) {
+        loadingName = `movie ${currentRoute.routeParams?.movieName}`
+    }
+    if (currentRoute.routeParams?.showName) {
+        loadingName = `${currentRoute.routeParams?.showName}`
+        if (currentRoute.routeParams?.seasonOrder) {
+            loadingName = `${loadingName} - Season ${currentRoute.routeParams?.seasonOrder}`
+            if (currentRoute.routeParams?.episodeOrder) {
+                loadingName = `${loadingName} - Episode ${currentRoute.routeParams?.episodeOrder}`
+            }
+        }
+    }
+
     return (
         <C.SnowLabel center>
-            Loading {props.mediaKind} {currentRoute.routeParams.movieId ? currentRoute.routeParams.movieId : currentRoute.routeParams.episodeId}.
+            Loading {loadingName}.
         </C.SnowLabel>
     )
 }
