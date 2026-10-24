@@ -13,46 +13,30 @@ export default function WebVideoView(props) {
 
     const videoUrl = useHubState((state) => state?.videoUrl)
     const isPlaying = useHubState((state) => state?.isPlaying)
+    const isVideoViewReady = useHubState((state) => state?.isVideoViewReady)
     const isTranscode = useHubState((state) => state?.isTranscode)
+    const isSeekable = useHubState((state) => state?.isSeekable)
     const audioTrackIndex = useHubState((state) => state?.audioTrackIndex)
     const subtitleTrackIndex = useHubState((state) => state?.subtitleTrackIndex)
     const seekToSeconds = useHubState((state) => state?.seekToSeconds)
+    const isMuted = useHubState((state) => state?.isMuted) ?? true
 
-    const [userPlayed, setUserPlayed] = React.useState(false)
     const [requestTranscode, setRequestTranscode] = React.useState(false)
     const videoRef = React.useRef(null)
+    const firstFrameFiredRef = React.useRef(false)
+    const lastAppliedSeekRef = React.useRef(seekToSeconds)
 
-    const styles = {
-        wrapper: {
-            width: getWindowWidth(),
-            height: getWindowHeight(),
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'black'
-        },
-        video: {
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            backgroundColor: 'black'
+    React.useEffect(() => {
+        firstFrameFiredRef.current = false
+        lastAppliedSeekRef.current = seekToSeconds
+    }, [videoUrl])
+
+    React.useEffect(() => {
+        if (!videoUrl || isVideoViewReady) {
+            return
         }
-    }
-
-    const safeUrl = videoUrl ? encodeURI(videoUrl) : ''
-
-    const userClickedPlay = () => {
-        sendHubData({ isVideoViewReady: true, isPlaying: true }, 'player.ready')
         emitHubEvent('player.ready')
-        setUserPlayed(true)
-        if (videoRef.current) {
-            videoRef.current.play().catch(() => { })
-        }
-    }
+    }, [videoUrl, isVideoViewReady, emitHubEvent])
 
     React.useEffect(() => {
         if (!requestTranscode) {
@@ -68,7 +52,7 @@ export default function WebVideoView(props) {
     }, [isTranscode, audioTrackIndex, subtitleTrackIndex, requestTranscode, emitHubEvent])
 
     React.useEffect(() => {
-        if (!videoRef.current || !userPlayed) {
+        if (!videoRef.current) {
             return
         }
         if (isPlaying) {
@@ -76,41 +60,69 @@ export default function WebVideoView(props) {
         } else {
             videoRef.current.pause()
         }
-    }, [isPlaying, userPlayed])
+    }, [isPlaying])
 
     React.useEffect(() => {
-        if (seekToSeconds > -1 && videoRef.current) {
-            videoRef.current.currentTime = seekToSeconds
+        if (videoRef.current) {
+            videoRef.current.muted = isMuted
         }
-    }, [seekToSeconds])
+    }, [isMuted])
 
-    if (!userPlayed) {
-        return (
-            <View style={styles.wrapper}>
-                <Snow.TextButton
-                    focusStart
-                    focusKey="web-play-button"
-                    title="Press to Begin Web Playback"
-                    onPress={userClickedPlay}
-                />
-            </View>
-        )
+    React.useEffect(() => {
+        if (seekToSeconds == null || isTranscode) {
+            return
+        }
+        if (seekToSeconds !== lastAppliedSeekRef.current) {
+            lastAppliedSeekRef.current = seekToSeconds
+            if (videoRef.current) {
+                videoRef.current.currentTime = seekToSeconds
+            }
+        }
+    }, [seekToSeconds, isTranscode])
+
+    const handleVideoClick = () => {
+        if (!videoRef.current) {
+            return
+        }
+
+        if (isMuted) {
+            videoRef.current.muted = false
+            sendHubData({ isMuted: false }, 'player.unmuted')
+        }
     }
 
-    if (!isTranscode && (audioTrackIndex > 0 || subtitleTrackIndex > 0)) {
-        return (
-            <View style={styles.wrapper}>
-                <Snow.Text>Waiting on transcode...</Snow.Text>
-            </View>
-        )
-    }
+    const safeUrl = videoUrl ? encodeURI(videoUrl) : ''
 
-    if (requestTranscode && !isTranscode) {
-        return (
-            <View style={styles.wrapper}>
-                <Snow.Text>Waiting on transcode...</Snow.Text>
-            </View>
-        )
+    const styles = {
+        wrapper: {
+            width: getWindowWidth ? getWindowWidth() : '100%',
+            height: getWindowHeight ? getWindowHeight() : '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'black'
+        },
+        video: {
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            backgroundColor: 'black',
+            cursor: isMuted ? 'pointer' : 'default'
+        },
+        muteIndicator: {
+            position: 'absolute',
+            bottom: 32,
+            right: 32,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderRadius: 6,
+            pointerEvents: 'none'
+        }
     }
 
     if (!safeUrl) {
@@ -125,21 +137,43 @@ export default function WebVideoView(props) {
                 style={styles.video}
                 playsInline
                 autoPlay
-                onTimeUpdate={(event) => {
-                    emitHubEvent('player.update', {
-                        kind: 'exoevent',
-                        data: {
-                            event: 'onProgress',
-                            data: {
-                                currentTime: event.target.currentTime,
-                                playableDuration: event.target.duration,
-                                seekableDuration: event.target.duration
-                            }
-                        }
+                muted={isMuted}
+                onClick={handleVideoClick}
+                onLoadedMetadata={() => {
+                    if (!isTranscode && seekToSeconds && seekToSeconds > 0 && videoRef.current) {
+                        videoRef.current.currentTime = seekToSeconds
+                    }
+                }}
+                onPlaying={() => {
+                    if (!firstFrameFiredRef.current) {
+                        firstFrameFiredRef.current = true
+                        emitHubEvent('player.firstFrame')
+                    }
+                }}
+                onTimeUpdate={(eventInfo) => {
+                    const rawPosition = eventInfo.target.currentTime
+                    if (!firstFrameFiredRef.current && rawPosition > 0.05) {
+                        firstFrameFiredRef.current = true
+                        emitHubEvent('player.firstFrame')
+                    }
+
+                    if (!isSeekable) {
+                        sendHubData({ isSeekable: true }, 'player.seekable')
+                    }
+
+                    let adjustedSeconds = Math.floor(rawPosition)
+                    if (isTranscode) {
+                        adjustedSeconds += seekToSeconds ?? 0
+                    }
+                    emitHubEvent('player.progress', {
+                        seconds: adjustedSeconds,
+                        source: 'player-event'
                     })
                 }}
                 onCanPlay={() => {
-                    sendHubData({ isSeekable: true }, 'player.seekable')
+                    if (!isSeekable) {
+                        sendHubData({ isSeekable: true }, 'player.seekable')
+                    }
                 }}
                 onEnded={() => {
                     emitHubEvent('player.update', {
@@ -149,14 +183,21 @@ export default function WebVideoView(props) {
                         }
                     })
                 }}
-                onError={(event) => {
+                onError={(eventInfo) => {
                     emitHubEvent('player.error', {
                         kind: 'web',
                         message: 'HTML5 video playback error',
-                        error: event
+                        error: eventInfo
                     })
                 }}
             />
+            {isMuted ? (
+                <View style={styles.muteIndicator}>
+                    <Snow.Text style={{ fontSize: 13, opacity: 0.85 }}>
+                        Click anywhere to unmute
+                    </Snow.Text>
+                </View>
+            ) : null}
         </View>
     )
 }

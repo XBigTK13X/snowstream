@@ -29,7 +29,26 @@ function VideoContent({ playerKind, clientOptions }) {
     const videoUrl = useHubState((state) => state?.videoUrl)
     const playbackSettled = useHubState((state) => state?.playbackSettled)
     const rawMessages = useHubState((state) => state?.statusMessages)
-    const videoTitle = useHubState((state) => state?.videoTitle)
+
+    const [pulseDots, setPulseDots] = React.useState('.')
+
+    React.useEffect(() => {
+        if (playbackSettled) {
+            return
+        }
+
+        const intervalId = setInterval(() => {
+            setPulseDots((prev) => {
+                if (prev === '.') return '..'
+                if (prev === '..') return '...'
+                return '.'
+            })
+        }, 350)
+
+        return () => {
+            clearInterval(intervalId)
+        }
+    }, [playbackSettled])
 
     const statusMessages = rawMessages?.length > 0 ? rawMessages : ['Preparing the video']
     const VideoView = videoUrl ? resolveVideoView(playerKind) : null
@@ -60,30 +79,27 @@ function VideoContent({ playerKind, clientOptions }) {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        justifyContent: 'center',
+                        justifyContent: 'flex-start',
                         alignItems: 'center',
                         backgroundColor: 'black',
-                        padding: 32
+                        paddingTop: 64,
+                        paddingHorizontal: 32
                     }}
                 >
-                    {videoTitle ? (
-                        <Snow.Header center style={{ marginBottom: 16 }}>
-                            {videoTitle}
-                        </Snow.Header>
-                    ) : null}
                     <View style={{ alignItems: 'center' }}>
                         {statusMessages.map((msg, index) => {
                             const isLatest = index === statusMessages.length - 1
+                            const textContent = isLatest ? `${msg}${pulseDots}` : msg
                             return (
                                 <Snow.Text
                                     key={index}
                                     style={{
                                         fontSize: 15,
                                         opacity: isLatest ? 0.95 : 0.45,
-                                        marginVertical: 2
+                                        marginVertical: 3
                                     }}
                                 >
-                                    {msg}
+                                    {textContent}
                                 </Snow.Text>
                             )
                         })}
@@ -113,6 +129,7 @@ export default function SnowVideoPlayer(props) {
     const isPlaying = useHubState((state) => state?.isPlaying)
     const controlsVisible = useHubState((state) => state?.controlsVisible)
     const logsVisible = useHubState((state) => state?.logsVisible)
+    const isMuted = useHubState((state) => state?.isMuted) ?? (Platform.OS === 'web')
 
     const hubPlayerKind = useHubState((state) => state?.playerKind)
     const playerKind = Platform.OS === 'web' ? 'web' : (hubPlayerKind || 'mpv')
@@ -161,7 +178,9 @@ export default function SnowVideoPlayer(props) {
     }, [playerKind, clientOptions])
 
     React.useEffect(() => {
-        if (videoUrl && isVideoViewReady && isPlaying && !controlsVisible) {
+        const canShowOverlay = Platform.OS === 'web' ? !isMuted : true
+
+        if (videoUrl && isVideoViewReady && isPlaying && !controlsVisible && canShowOverlay) {
             openOverlay({
                 props: {
                     canFocus: true,
@@ -180,7 +199,7 @@ export default function SnowVideoPlayer(props) {
         } else {
             closeOverlay()
         }
-    }, [videoUrl, isVideoViewReady, isPlaying, controlsVisible])
+    }, [videoUrl, isVideoViewReady, isPlaying, controlsVisible, isMuted])
 
     React.useEffect(() => {
         if (controlsVisible && videoUrl) {

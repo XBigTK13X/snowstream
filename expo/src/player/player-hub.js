@@ -18,6 +18,7 @@ export const initialPlayerHubState = {
     isVideoViewReady: false,
     isPlaying: false,
     isSeekable: false,
+    isMuted: Platform.OS === 'web',
     playbackFailed: null,
     playbackSettled: false,
     statusMessages: ['Preparing the video'],
