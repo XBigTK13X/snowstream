@@ -19,6 +19,8 @@ export const initialPlayerHubState = {
     isPlaying: false,
     isSeekable: false,
     playbackFailed: null,
+    playbackSettled: false,
+    statusMessages: [],
     controlsVisible: false,
     logsVisible: false,
 

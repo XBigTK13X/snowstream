@@ -74,6 +74,7 @@ export function PlayerManager(props) {
             onHubEvent('player.stop', (payload) => actionsRef.current.onStopVideo(payload?.goHome)),
             onHubEvent('player.progress', (payload) => actionsRef.current.onProgress(payload?.seconds, payload?.source, payload?.percent)),
             onHubEvent('player.ready', () => actionsRef.current.onVideoReady()),
+            onHubEvent('player.firstFrame', () => actionsRef.current.onFirstFrameRendered()),
             onHubEvent('player.update', (eventInfo) => actionsRef.current.onVideoUpdate(eventInfo)),
             onHubEvent('player.error', (error) => actionsRef.current.onVideoError(error)),
             onHubEvent('player.log', (logInfo) => actionsRef.current.addLog(logInfo)),

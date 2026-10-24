@@ -28,6 +28,15 @@ export default function ExoVideoView(props) {
     const subtitleColor = useHubState((state) => state?.subtitleColor)
 
     const forwardRef = React.useRef(null)
+    const firstFrameFiredRef = React.useRef(false)
+    const initialPosRef = React.useRef(null)
+    const lastAppliedSeekRef = React.useRef(seekToSeconds)
+
+    React.useEffect(() => {
+        firstFrameFiredRef.current = false
+        initialPosRef.current = null
+        lastAppliedSeekRef.current = seekToSeconds
+    }, [videoUrl])
 
     React.useEffect(() => {
         if (!videoUrl || isVideoViewReady) {
@@ -35,6 +44,18 @@ export default function ExoVideoView(props) {
         }
         emitHubEvent('player.ready')
     }, [videoUrl, isVideoViewReady, emitHubEvent])
+
+    React.useEffect(() => {
+        if (!isVideoViewReady || isTranscode || seekToSeconds == null) {
+            return
+        }
+        if (seekToSeconds !== lastAppliedSeekRef.current) {
+            lastAppliedSeekRef.current = seekToSeconds
+            if (forwardRef.current?.runCommand) {
+                forwardRef.current.runCommand(`seek|${seekToSeconds}`).catch(() => { })
+            }
+        }
+    }, [seekToSeconds, isVideoViewReady, isTranscode])
 
     React.useEffect(() => {
         if (forwardRef.current?.runCommand && isVideoViewReady && playbackSpeed !== undefined) {
@@ -61,6 +82,24 @@ export default function ExoVideoView(props) {
         }
 
         if (exoPlayerEvent.property === 'time-pos') {
+            const rawPos = Number(exoPlayerEvent.value)
+
+            if (!firstFrameFiredRef.current && !isNaN(rawPos)) {
+                const targetPos = isTranscode ? 0 : (seekToSeconds || 0)
+                if (targetPos > 0 && rawPos < targetPos - 2) {
+                    // Waiting on initial seek to settle
+                } else if (initialPosRef.current === null) {
+                    initialPosRef.current = rawPos
+                    if (rawPos > targetPos + 0.1) {
+                        firstFrameFiredRef.current = true
+                        emitHubEvent('player.firstFrame')
+                    }
+                } else if (rawPos > initialPosRef.current + 0.03) {
+                    firstFrameFiredRef.current = true
+                    emitHubEvent('player.firstFrame')
+                }
+            }
+
             if (!isSeekable) {
                 sendHubData({ isSeekable: true }, 'player.seekable')
             }

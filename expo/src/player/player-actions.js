@@ -57,6 +57,12 @@ export function usePlayerActions({
         return apiClient.savePlaybackLogs(logsRef.current)
     }
 
+    const appendStatus = (message) => {
+        const current = getHubState()
+        const nextMessages = [...(current.statusMessages || []), message]
+        sendHubData({ statusMessages: nextMessages }, 'player.statusAppended')
+    }
+
     const onCriticalError = (error, sessionId) => {
         if (sessionId !== undefined && sessionId !== activeSessionRef.current) {
             return
@@ -67,17 +73,23 @@ export function usePlayerActions({
 
         if (!currentState.isTranscode && navPush) {
             const nextParams = { ...routeParams, transcode: true }
+            const nextMessages = [...(currentState.statusMessages || []), 'Direct play failed, switching to transcode...']
             sendHubData({
                 videoLoaded: false,
                 videoLoading: false,
                 videoUrl: null,
-                isTranscode: true
+                isTranscode: true,
+                statusMessages: nextMessages
             }, 'player.fallbackTranscode')
             navPush({ params: nextParams, func: false })
             return
         }
 
-        sendHubData({ playbackFailed: error, videoLoading: false }, 'player.failed')
+        sendHubData({
+            playbackFailed: error,
+            videoLoading: false,
+            playbackSettled: false
+        }, 'player.failed')
     }
 
     const parseVideoPayload = async (response, sessionId) => {
@@ -112,6 +124,11 @@ export function usePlayerActions({
             }
         }
 
+        const nextMessages = [...(currentState.statusMessages || []), 'Stream info loaded']
+        if (currentState.seekToSeconds > 0) {
+            nextMessages.push(`Resuming from ${util.secondsToTimestamp(currentState.seekToSeconds)}`)
+        }
+
         const patch = {
             videoUrl: targetUrl,
             videoLoaded: true,
@@ -123,7 +140,8 @@ export function usePlayerActions({
             playbackPlan: response.plan || {},
             mpvDecodingMode: response.mpvDecodingMode || null,
             audioTrackIndex: response.audio_index ?? currentState.audioTrackIndex,
-            subtitleTrackIndex: response.subtitle_index ?? currentState.subtitleTrackIndex
+            subtitleTrackIndex: response.subtitle_index ?? currentState.subtitleTrackIndex,
+            statusMessages: nextMessages
         }
 
         if (response.tracks?.video) {
@@ -161,12 +179,18 @@ export function usePlayerActions({
             return
         }
 
+        const initialStatus = isTranscode
+            ? 'Requesting transcode stream'
+            : 'Requesting direct stream'
+
         sendHubData({
             ...initialPlayerHubState,
             ...playbackConfig,
             sessionId: currentSession,
             progressSeconds: initialSeekSeconds,
-            videoLoading: true
+            videoLoading: true,
+            playbackSettled: false,
+            statusMessages: [initialStatus]
         }, 'player.loading')
 
         const args = isTranscode
@@ -210,7 +234,9 @@ export function usePlayerActions({
             videoLoading: true,
             videoUrl: null,
             transcodeOnResume: false,
-            seekToSeconds: seekTarget
+            seekToSeconds: seekTarget,
+            playbackSettled: false,
+            statusMessages: [...(currentState.statusMessages || []), `Seeking transcode to ${util.secondsToTimestamp(seekTarget)}`]
         }, 'player.transcodeSeeking')
 
         if (handlersRef.current.loadTranscode && apiClient) {
@@ -228,17 +254,6 @@ export function usePlayerActions({
         const currentState = getHubState()
         let resolvedSeconds = nextProgressSeconds
 
-        if (source === 'player-event') {
-            if (!playbackSettledRef.current) {
-                if (targetSeekRef.current > 0) {
-                    if (resolvedSeconds < targetSeekRef.current - 3) {
-                        return
-                    }
-                }
-                playbackSettledRef.current = true
-            }
-        }
-
         if (source === 'manual-seek') {
             if (resolvedSeconds == null && nextProgressPercent != null && currentState.durationSeconds != null) {
                 resolvedSeconds = nextProgressPercent * currentState.durationSeconds
@@ -251,6 +266,15 @@ export function usePlayerActions({
             }
             targetSeekRef.current = resolvedSeconds
             playbackSettledRef.current = true
+        }
+
+        if (source === 'player-event') {
+            if (!playbackSettledRef.current) {
+                if (targetSeekRef.current > 0 && resolvedSeconds < targetSeekRef.current - 3) {
+                    return
+                }
+                playbackSettledRef.current = true
+            }
         }
 
         const isTerminalEvent = source === 'playback-complete' || source === 'manual-seek'
@@ -266,6 +290,8 @@ export function usePlayerActions({
         if (source === 'manual-seek') {
             patch.manualSeekSeconds = resolvedSeconds
             patch.completeOnResume = nextProgressPercent >= 1.0
+            patch.playbackSettled = true
+            patch.statusMessages = []
             if (!currentState.isTranscode) {
                 patch.seekToSeconds = resolvedSeconds
             }
@@ -370,7 +396,12 @@ export function usePlayerActions({
 
     const onVideoReady = () => {
         addLog({ kind: 'snowstream', message: 'low level video player reports that it is ready to play' })
-        sendHubData({ isVideoViewReady: true, isPlaying: true }, 'player.viewReady')
+        const currentState = getHubState()
+        const readyStatus = currentState.seekToSeconds > 0
+            ? `Seeking to ${util.secondsToTimestamp(currentState.seekToSeconds)}`
+            : 'Buffering frames'
+        const nextMessages = [...(currentState.statusMessages || []), 'Player engine ready', readyStatus]
+        sendHubData({ isVideoViewReady: true, isPlaying: true, statusMessages: nextMessages }, 'player.viewReady')
     }
 
     const onVideoUpdate = (eventInfo) => {
@@ -416,6 +447,14 @@ export function usePlayerActions({
         resetHub(nextState)
     }
 
+    const onFirstFrameRendered = () => {
+        playbackSettledRef.current = true
+        sendHubData({
+            playbackSettled: true,
+            statusMessages: []
+        }, 'player.frameRendered')
+    }
+
     return {
         setHandlers,
         hasHandlers,
@@ -427,6 +466,7 @@ export function usePlayerActions({
         onPlaybackComplete,
         onCriticalError,
         onVideoReady,
+        onFirstFrameRendered,
         onVideoUpdate,
         onVideoError,
         savePlaybackLogs,

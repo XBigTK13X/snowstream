@@ -23,6 +23,74 @@ function resolveVideoView(kind) {
     return require('./video/mpv-video-view').default
 }
 
+function VideoContent({ playerKind, clientOptions }) {
+    const { useHubState } = Snow.useSnowContext()
+    const VideoView = resolveVideoView(playerKind)
+
+    const playbackSettled = useHubState((state) => state?.playbackSettled)
+    const statusMessages = useHubState((state) => state?.statusMessages) || []
+    const videoTitle = useHubState((state) => state?.videoTitle)
+
+    return (
+        <View style={{ flex: 1, width: '100%', height: '100%', backgroundColor: 'black' }}>
+            <VideoView clientOptions={clientOptions} />
+            {clientOptions?.nightFilter ? (
+                <View
+                    pointerEvents="none"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgb(10, 10, 25)',
+                        opacity: 0.45
+                    }}
+                />
+            ) : null}
+            {!playbackSettled && statusMessages.length > 0 ? (
+                <View
+                    pointerEvents="none"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                        padding: 32
+                    }}
+                >
+                    {videoTitle ? (
+                        <Snow.Header center style={{ marginBottom: 16 }}>
+                            {videoTitle}
+                        </Snow.Header>
+                    ) : null}
+                    <View style={{ alignItems: 'center' }}>
+                        {statusMessages.map((msg, index) => {
+                            const isLatest = index === statusMessages.length - 1
+                            return (
+                                <Snow.Text
+                                    key={index}
+                                    style={{
+                                        fontSize: 15,
+                                        opacity: isLatest ? 0.95 : 0.45,
+                                        marginVertical: 2
+                                    }}
+                                >
+                                    {msg}
+                                </Snow.Text>
+                            )
+                        })}
+                    </View>
+                </View>
+            ) : null}
+        </View>
+    )
+}
+
 export default function SnowVideoPlayer(props) {
     const {
         pushModal,
@@ -69,7 +137,6 @@ export default function SnowVideoPlayer(props) {
         }
     }, [controlsVisible, isPlaying, emitHubEvent])
 
-    // Video content
     React.useEffect(() => {
         if (videoUrl) {
             pushModal({
@@ -83,27 +150,7 @@ export default function SnowVideoPlayer(props) {
                     }
                 },
                 render: () => {
-                    const VideoView = resolveVideoView(playerKind)
-                    if (clientOptions?.nightFilter) {
-                        return (
-                            <>
-                                <VideoView clientOptions={clientOptions} />
-                                <View
-                                    pointerEvents="none"
-                                    style={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        left: 0,
-                                        right: 0,
-                                        bottom: 0,
-                                        backgroundColor: 'rgb(10, 10, 25)',
-                                        opacity: 0.45
-                                    }}
-                                />
-                            </>
-                        )
-                    }
-                    return <VideoView clientOptions={clientOptions} />
+                    return <VideoContent playerKind={playerKind} clientOptions={clientOptions} />
                 }
             })
 
@@ -113,7 +160,6 @@ export default function SnowVideoPlayer(props) {
         }
     }, [videoUrl, playerKind, clientOptions])
 
-    // Input overlay
     React.useEffect(() => {
         if (videoUrl && isVideoViewReady && isPlaying && !controlsVisible) {
             openOverlay({
@@ -136,8 +182,6 @@ export default function SnowVideoPlayer(props) {
         }
     }, [videoUrl, isVideoViewReady, isPlaying, controlsVisible])
 
-
-    // Controls GUI
     React.useEffect(() => {
         if (controlsVisible && videoUrl) {
             pushModal({
@@ -159,8 +203,6 @@ export default function SnowVideoPlayer(props) {
             }
         }
     }, [controlsVisible, videoUrl, apiClient])
-
-    // Logs GUI
 
     React.useEffect(() => {
         if (logsVisible && videoUrl) {
