@@ -190,7 +190,7 @@ export function usePlayerActions({
             progressSeconds: initialSeekSeconds,
             videoLoading: true,
             playbackSettled: false,
-            statusMessages: [initialStatus]
+            statusMessages: [...(initialPlayerHubState.statusMessages || []), initialStatus]
         }, 'player.loading')
 
         const args = isTranscode

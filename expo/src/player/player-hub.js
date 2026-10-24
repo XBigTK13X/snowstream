@@ -20,7 +20,7 @@ export const initialPlayerHubState = {
     isSeekable: false,
     playbackFailed: null,
     playbackSettled: false,
-    statusMessages: [],
+    statusMessages: ['Preparing the video'],
     controlsVisible: false,
     logsVisible: false,
 

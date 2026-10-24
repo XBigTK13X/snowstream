@@ -1,6 +1,6 @@
 {
     "name": "snowstream",
-    "version": "1.7.5",
+    "version": "1.7.6",
     "dependencies": {
         "@react-native-tvos/config-tv": "0.1.6",
         "@sentry/react-native": "7.11.0",

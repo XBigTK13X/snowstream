@@ -25,16 +25,19 @@ function resolveVideoView(kind) {
 
 function VideoContent({ playerKind, clientOptions }) {
     const { useHubState } = Snow.useSnowContext()
-    const VideoView = resolveVideoView(playerKind)
 
+    const videoUrl = useHubState((state) => state?.videoUrl)
     const playbackSettled = useHubState((state) => state?.playbackSettled)
-    const statusMessages = useHubState((state) => state?.statusMessages) || []
+    const rawMessages = useHubState((state) => state?.statusMessages)
     const videoTitle = useHubState((state) => state?.videoTitle)
+
+    const statusMessages = rawMessages?.length > 0 ? rawMessages : ['Preparing the video']
+    const VideoView = videoUrl ? resolveVideoView(playerKind) : null
 
     return (
         <View style={{ flex: 1, width: '100%', height: '100%', backgroundColor: 'black' }}>
-            <VideoView clientOptions={clientOptions} />
-            {clientOptions?.nightFilter ? (
+            {VideoView ? <VideoView clientOptions={clientOptions} /> : null}
+            {clientOptions?.nightFilter && VideoView ? (
                 <View
                     pointerEvents="none"
                     style={{
@@ -59,7 +62,7 @@ function VideoContent({ playerKind, clientOptions }) {
                         bottom: 0,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                        backgroundColor: 'black',
                         padding: 32
                     }}
                 >
@@ -106,7 +109,6 @@ export default function SnowVideoPlayer(props) {
     const { apiClient, config, clientOptions } = useAppContext()
 
     const videoUrl = useHubState((state) => state?.videoUrl)
-    const videoLoaded = useHubState((state) => state?.videoLoaded)
     const isVideoViewReady = useHubState((state) => state?.isVideoViewReady)
     const isPlaying = useHubState((state) => state?.isPlaying)
     const controlsVisible = useHubState((state) => state?.controlsVisible)
@@ -138,27 +140,25 @@ export default function SnowVideoPlayer(props) {
     }, [controlsVisible, isPlaying, emitHubEvent])
 
     React.useEffect(() => {
-        if (videoUrl) {
-            pushModal({
-                props: {
-                    assignFocus: false,
-                    onRequestClose: () => {
-                        const current = getHubState()
-                        if (!current?.controlsVisible && !current?.logsVisible) {
-                            emitHubEvent('player.stop')
-                        }
+        pushModal({
+            props: {
+                assignFocus: false,
+                onRequestClose: () => {
+                    const current = getHubState()
+                    if (!current?.controlsVisible && !current?.logsVisible) {
+                        emitHubEvent('player.stop')
                     }
-                },
-                render: () => {
-                    return <VideoContent playerKind={playerKind} clientOptions={clientOptions} />
                 }
-            })
-
-            return () => {
-                popModal()
+            },
+            render: () => {
+                return <VideoContent playerKind={playerKind} clientOptions={clientOptions} />
             }
+        })
+
+        return () => {
+            popModal()
         }
-    }, [videoUrl, playerKind, clientOptions])
+    }, [playerKind, clientOptions])
 
     React.useEffect(() => {
         if (videoUrl && isVideoViewReady && isPlaying && !controlsVisible) {
@@ -245,9 +245,5 @@ export default function SnowVideoPlayer(props) {
         util.log(videoUrl)
     }
 
-    return (
-        <Snow.FillView>
-            <Snow.Header center>{videoLoaded ? null : "Preparing the video."}</Snow.Header>
-        </Snow.FillView>
-    )
+    return <View style={{ flex: 1, backgroundColor: 'black' }} />
 }
