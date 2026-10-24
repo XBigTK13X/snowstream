@@ -10,7 +10,7 @@ export default function KeepsakeDetailsPage(props) {
         clearModals,
         closeOverlay,
         SnowStyle,
-        resetHub
+        emitHubEvent
     } = C.useSnowContext(props)
 
 
@@ -19,8 +19,8 @@ export default function KeepsakeDetailsPage(props) {
     const [zoomedItem, setZoomedItem] = C.React.useState(null)
 
     C.React.useEffect(() => {
-        resetHub()
-    }, [])
+        emitHubEvent('player.reset')
+    }, [emitHubEvent])
 
     C.React.useEffect(() => {
         if (keepsake) {

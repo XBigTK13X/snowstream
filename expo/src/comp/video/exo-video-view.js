@@ -61,6 +61,9 @@ export default function ExoVideoView(props) {
         }
 
         if (exoPlayerEvent.property === 'time-pos') {
+            if (!isSeekable) {
+                sendHubData({ isSeekable: true }, 'player.seekable')
+            }
             let adjustedSeconds = Math.floor(exoPlayerEvent.value)
             if (isTranscode) {
                 adjustedSeconds += seekToSeconds ?? 0
@@ -75,7 +78,7 @@ export default function ExoVideoView(props) {
             emitHubEvent('player.log', { kind: 'exoevent', exoPlayerEvent })
         }
 
-        if (exoPlayerEvent.property === 'eof-reached' && isSeekable) {
+        if (exoPlayerEvent.property === 'eof-reached') {
             emitHubEvent('player.update', {
                 kind: 'exoevent',
                 data: {

@@ -2,7 +2,7 @@ import { C, useAppContext } from 'snowstream'
 import PlayMediaPage from './media'
 
 export default function PlayPlayingQueuePage(props) {
-    const { currentRoute, navReset, navPop, resetHub } = C.useSnowContext(props)
+    const { currentRoute, navReset, navPop, emitHubEvent } = C.useSnowContext(props)
 
     const [playingQueue, setPlayingQueue] = C.React.useState(null)
     const [isTransitioning, setIsTransitioning] = C.React.useState(false)
@@ -72,7 +72,7 @@ export default function PlayPlayingQueuePage(props) {
         }
         isTransitioningRef.current = true
 
-        resetHub()
+        emitHubEvent('player.reset')
         setIsTransitioning(true)
 
         const queue = playingQueueRef.current
@@ -102,7 +102,7 @@ export default function PlayPlayingQueuePage(props) {
     }
 
     const onStopVideo = (apiClient, routesNav, navPushNav, navPopNav, toHome) => {
-        resetHub()
+        emitHubEvent('player.reset')
         if (toHome) {
             navPop()
             navReset()

@@ -16,7 +16,6 @@ export function PlayMediaPage(props) {
     const {
         currentRoute,
         emitHubEvent,
-        resetHub,
         useHubState
     } = Snow.useSnowContext()
 
@@ -33,12 +32,12 @@ export function PlayMediaPage(props) {
     React.useEffect(() => {
         return () => {
             emitHubEvent('player.setHandlers', {})
-            resetHub()
+            emitHubEvent('player.reset')
         }
-    }, [resetHub, emitHubEvent])
+    }, [emitHubEvent])
 
     React.useEffect(() => {
-        resetHub()
+        emitHubEvent('player.reset')
 
         const activeHandlers = {}
 
@@ -53,7 +52,7 @@ export function PlayMediaPage(props) {
         }
 
         emitHubEvent('player.loadVideo')
-    }, [mediaId, currentRoute?.routeParams?.transcode, emitHubEvent, resetHub])
+    }, [mediaId, currentRoute?.routeParams?.transcode, emitHubEvent])
 
     if (playbackFailed) {
         return (

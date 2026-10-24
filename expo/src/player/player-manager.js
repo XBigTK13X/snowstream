@@ -68,6 +68,7 @@ export function PlayerManager(props) {
         const subscriptions = [
             onHubEvent('player.setHandlers', (handlers) => actionsRef.current.setHandlers(handlers)),
             onHubEvent('player.loadVideo', () => actionsRef.current.loadVideo()),
+            onHubEvent('player.reset', (overrides) => actionsRef.current.resetPlayer(overrides)),
             onHubEvent('player.pause', () => actionsRef.current.onPauseVideo()),
             onHubEvent('player.resume', () => actionsRef.current.onResumeVideo()),
             onHubEvent('player.stop', (payload) => actionsRef.current.onStopVideo(payload?.goHome)),

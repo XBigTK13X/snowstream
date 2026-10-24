@@ -83,6 +83,9 @@ export default function MpvVideoView(props) {
         }
 
         if (libmpvEvent.property === 'time-pos') {
+            if (!isSeekable) {
+                sendHubData({ isSeekable: true }, 'player.seekable')
+            }
             let adjustedSeconds = Math.floor(libmpvEvent.value)
             if (isTranscode) {
                 adjustedSeconds += seekToSeconds ?? 0
@@ -97,13 +100,19 @@ export default function MpvVideoView(props) {
             emitHubEvent('player.log', { kind: 'mpvevent', libmpvEvent })
         }
 
-        if (libmpvEvent.property === 'eof-reached' && isSeekable) {
-            emitHubEvent('player.update', {
-                kind: 'mpvevent',
-                data: {
-                    event: 'onEnd'
-                }
-            })
+        const isEof = libmpvEvent.property === 'eof-reached' &&
+            (libmpvEvent.value === true || libmpvEvent.value === 'yes' || (libmpvEvent.value === undefined && isVideoViewReady))
+
+        if (isEof) {
+            const currentPosition = forwardRef.current?.getProperty ? forwardRef.current.getProperty('time-pos') : null
+            if (currentPosition === null || currentPosition > 5) {
+                emitHubEvent('player.update', {
+                    kind: 'mpvevent',
+                    data: {
+                        event: 'onEnd'
+                    }
+                })
+            }
         }
     }
 

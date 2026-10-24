@@ -4,6 +4,7 @@ import CONST from '../constant'
 const isTruthyParam = (val) => val === true || val === 'true' || val === 1 || val === '1'
 
 export const initialPlayerHubState = {
+    sessionId: 0,
     videoUrl: null,
     videoTitle: null,
     videoLoading: false,
@@ -26,7 +27,7 @@ export const initialPlayerHubState = {
     transcodeId: null,
     countedWatch: false,
 
-    progressSeconds: null,
+    progressSeconds: 0,
     durationSeconds: 0.0,
     seekToSeconds: 0,
     manualSeekSeconds: null,
@@ -95,4 +96,16 @@ export function resolvePlaybackConfig(routeParams = {}, clientOptions = {}) {
         audioTrackIndex,
         subtitleTrackIndex
     }
+}
+
+export function resetPlayerHub(resetHub, overrides = {}) {
+    if (typeof resetHub !== 'function') {
+        return
+    }
+
+    const nextState = typeof overrides === 'function'
+        ? overrides(initialPlayerHubState)
+        : { ...initialPlayerHubState, ...overrides }
+
+    resetHub(nextState)
 }

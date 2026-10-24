@@ -1,7 +1,7 @@
 import { C, useAppContext } from 'snowstream'
 
 export function WatchableListPage(props) {
-    const { navPush, currentRoute, resetHub } = C.useSnowContext()
+    const { navPush, currentRoute, emitHubEvent } = C.useSnowContext()
     const { isAdmin, apiClient, routes } = useAppContext()
 
     const [shelf, setShelf] = C.React.useState(null)
@@ -43,7 +43,7 @@ export function WatchableListPage(props) {
         }
 
         const watchAll = () => {
-            resetHub()
+            emitHubEvent('player.reset')
             props.watchAll(apiClient, shelfId).then((response) => {
                 navPush({
                     path: routes.playingQueuePlay,
@@ -56,7 +56,7 @@ export function WatchableListPage(props) {
         }
 
         const shuffleAll = () => {
-            resetHub()
+            emitHubEvent('player.reset')
             props.shuffleAll(apiClient, shelfId).then((response) => {
                 navPush({
                     path: routes.playingQueuePlay,
