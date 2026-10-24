@@ -139,12 +139,14 @@ export default function MpvVideoView(props) {
             emitHubEvent('player.log', { kind: 'mpvevent', libmpvEvent })
         }
 
-        const isEof = libmpvEvent.property === 'eof-reached' &&
-            (libmpvEvent.value === true || libmpvEvent.value === 'yes' || (libmpvEvent.value === undefined && isVideoViewReady))
+        if (libmpvEvent.property === 'eof-reached' && firstFrameFiredRef.current) {
+            const isNotFalse = libmpvEvent.value !== false &&
+                libmpvEvent.value !== 'false' &&
+                libmpvEvent.value !== 0 &&
+                libmpvEvent.value !== '0' &&
+                libmpvEvent.value !== 'no'
 
-        if (isEof) {
-            const currentPosition = forwardRef.current?.getProperty ? forwardRef.current.getProperty('time-pos') : null
-            if (currentPosition === null || currentPosition > 5) {
+            if (isNotFalse) {
                 emitHubEvent('player.update', {
                     kind: 'mpvevent',
                     data: {
