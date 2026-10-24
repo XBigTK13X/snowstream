@@ -1,7 +1,6 @@
 import React from 'react'
 import Snow from '@snowsuite/expo-snowui'
 import util from '../util'
-import { useAppContext } from '../app-context'
 import SnowTrackSelector from './snow-track-selector'
 
 export default function SnowVideoControls(props) {
@@ -12,8 +11,10 @@ export default function SnowVideoControls(props) {
         useHubState
     } = Snow.useSnowContext(props)
 
-    const appContext = useAppContext()
-    const apiClient = props.apiClient || appContext?.apiClient
+
+    // This is a modal outside the app context tree
+    // The client and options get passed as props instead
+    const { apiClient, clientOptions } = props
 
     const videoTitle = useHubState((state) => state?.videoTitle)
     const durationSeconds = useHubState((state) => state?.durationSeconds) || 0.0
@@ -66,6 +67,9 @@ export default function SnowVideoControls(props) {
     const tabs = ['Playback', 'Style']
     if (mediaTracks) {
         tabs.push('Track')
+    }
+    if (clientOptions?.logPlayback) {
+        tabs.push('Logs')
     }
 
     let slider = null
@@ -191,6 +195,13 @@ export default function SnowVideoControls(props) {
         />
     ) : null
 
+    const logControls = clientOptions?.logPlayback ? (
+        <Snow.Grid>
+            <Snow.TextButton title="Show Logs" onPress={() => { sendHubData((prevState) => { logsVisible: true }) }} />
+            <Snow.TextButton title={logTitle} onPress={persistLogs} />
+        </Snow.Grid>
+    ) : null
+
     return (
         <Snow.View parentPath={props.parentPath} style={styles.player}>
             <Snow.Label center>{videoTitle}</Snow.Label>
@@ -199,6 +210,7 @@ export default function SnowVideoControls(props) {
                 {playbackControls}
                 {subtitleControls}
                 {trackControls}
+                {logControls}
             </Snow.Tabs>
         </Snow.View>
     )

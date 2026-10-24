@@ -213,7 +213,7 @@ export default function SnowVideoPlayer(props) {
                     }
                 },
                 render: (modalProps) => {
-                    return <SnowVideoControls {...modalProps} apiClient={apiClient} />
+                    return <SnowVideoControls {...modalProps} apiClient={apiClient} clientOptions={clientOptions} />
                 }
             })
 

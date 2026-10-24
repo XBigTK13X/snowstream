@@ -140,20 +140,12 @@ export default function MpvVideoView(props) {
         }
 
         if (libmpvEvent.property === 'eof-reached' && firstFrameFiredRef.current) {
-            const isNotFalse = libmpvEvent.value !== false &&
-                libmpvEvent.value !== 'false' &&
-                libmpvEvent.value !== 0 &&
-                libmpvEvent.value !== '0' &&
-                libmpvEvent.value !== 'no'
-
-            if (isNotFalse) {
-                emitHubEvent('player.update', {
-                    kind: 'mpvevent',
-                    data: {
-                        event: 'onEnd'
-                    }
-                })
-            }
+            emitHubEvent('player.update', {
+                kind: 'mpvevent',
+                data: {
+                    event: 'onEnd'
+                }
+            })
         }
     }
 

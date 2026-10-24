@@ -1,10 +1,10 @@
 {
     "name": "snowstream",
-    "version": "1.7.8",
+    "version": "1.7.9",
     "dependencies": {
         "@react-native-tvos/config-tv": "0.1.6",
         "@sentry/react-native": "7.11.0",
-        "@snowsuite/expo-exoplayer": "^1.0.5",
+        "@snowsuite/expo-exoplayer": "^1.0.6",
         "@snowsuite/expo-libmpv": "^0.6.3",
         "@snowsuite/expo-snowui": "^1.8.27",
         "axios": "1.19.0",
