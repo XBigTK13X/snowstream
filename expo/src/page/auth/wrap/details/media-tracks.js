@@ -478,8 +478,15 @@ export default function MediaTracksPage(props) {
                         style={styles.image}>
                         <C.SnowLabel>Discussion</C.SnowLabel>
                         <C.SnowImageButton
+                            wrapperStyle={{
+                                width: 300,
+                                height: 300
+                            }}
+                            imageStyle={{
+                                width: 275,
+                                height: 275
+                            }}
                             focusKey="discussion-button"
-                            title="Discussion"
                             imageSource={{ uri: media.discussion_image_url }}
                             onPress={() => {
                                 C.Linking.openURL(media.discussion_url)

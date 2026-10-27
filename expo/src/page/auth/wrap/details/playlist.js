@@ -49,17 +49,13 @@ export default function PlaylistDetailsPage() {
     }
 
     return (
-        <>
-            <>
-                <C.SnowText>Found {playlistItems.length} items from playlist {tagName}.</C.SnowText>
-                <C.SnowGrid focusKey="page-entry" itemsPerRow={2}>
-                    <C.SnowTextButton title="Watch All" onPress={watchAll} />
-                    <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
-                </C.SnowGrid>
-            </>
-            <>
-                <C.SnowPosterGrid focusStart focusKey="playlist-list" items={playlistItems} />
-            </>
-        </>
+        <C.SnowView>
+            <C.SnowText>Found {playlistItems.length} items from playlist {tagName}.</C.SnowText>
+            <C.SnowGrid focusKey="page-entry" itemsPerRow={2}>
+                <C.SnowTextButton title="Watch All" onPress={watchAll} />
+                <C.SnowTextButton title="Shuffle" onPress={shuffleAll} />
+            </C.SnowGrid>
+            <C.SnowPosterGrid focusStart focusKey="playlist-list" items={playlistItems} />
+        </C.SnowView>
     )
 }

@@ -25,7 +25,7 @@ export function RecentlyAddedListPage(props) {
     if (itemList) {
         return (
             <C.SnowView>
-                <C.SnowPosterGrid disableWatched items={itemList} />
+                <C.SnowPosterGrid focusStart disableWatched items={itemList} />
             </C.SnowView>
         )
     }

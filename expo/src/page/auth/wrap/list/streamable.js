@@ -58,9 +58,8 @@ function StreamableButton(props) {
 
     return (
         <C.SnowTextButton
-            tall
-            key={props.streamable.id}
             {...props}
+            tall
             title={name}
             onPress={props.navPush({
                 path: props.routes.streamablePlay,
@@ -112,7 +111,7 @@ export default function StreamableListPage(props) {
                 setStreamableList(streamSource.streamables)
             }
         }
-    }, [currentRoute, streamSource])
+    }, [currentRoute?.routeParams?.group, streamSource])
 
     if (!streamSource) {
         return <C.SnowLabel center>Loading {currentRoute.routeParams.streamSourceName}.</C.SnowLabel>
@@ -133,14 +132,13 @@ export default function StreamableListPage(props) {
         return (
             <C.SnowGrid
                 focusStart
-                focusKey={'page-entry'}
+                focusKey={'groups'}
                 items={groupList}
                 renderItem={renderItem}
             />
         )
     }
 
-    let itemList = null
     if (streamSource.has_guide) {
         const renderItem = (item) => {
             return (
@@ -153,11 +151,10 @@ export default function StreamableListPage(props) {
                 />
             )
         }
-        itemList = (
+        return (
             <C.SnowGrid
-                {...props}
                 focusStart
-                focusKey={'page-entry'}
+                focusKey={'guided-streamables'}
                 itemsPerRow={1}
                 items={streamableList}
                 renderItem={renderItem}
@@ -175,15 +172,13 @@ export default function StreamableListPage(props) {
                 />
             )
         }
-        itemList = (
+        return (
             <C.SnowGrid
-                {...props}
                 focusStart
-                focusKey={'page-entry'}
+                focusKey={'simple-streamables'}
                 items={streamableList}
                 renderItem={renderItem}
             />
         )
     }
-    return itemList
 }
