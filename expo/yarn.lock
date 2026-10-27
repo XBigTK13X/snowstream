@@ -1415,10 +1415,10 @@
   dependencies:
     expo-build-properties "57.0.9"
 
-"@snowsuite/expo-snowui@^1.8.27":
-  version "1.8.27"
-  resolved "http://beast.9914.us:4873/@snowsuite/expo-snowui/-/expo-snowui-1.8.27.tgz#1bf29d1b7ac2eb4728e3bb8159ff0ea38ef4746a"
-  integrity sha512-FA5qrsnPd2deRnvQscY8Nt6ofI4dZMMqBNyDXdNCg24yRmpORDXLjRE3RZORwO4JpWf9JmGJZNwRDrMc5I91IQ==
+"@snowsuite/expo-snowui@^1.8.32":
+  version "1.8.32"
+  resolved "http://beast.9914.us:4873/@snowsuite/expo-snowui/-/expo-snowui-1.8.32.tgz#de8219455878c256b8f0eb498de63f005de7e2f3"
+  integrity sha512-uMRPuTO0ZepC7R2ssgzoOYLP0P6mLcbk0rjYl9q5ZHTMMT6HB/bl0bivZvWc9rXklNjuKIYryk3nFNQj0LqLaw==
   dependencies:
     "@sentry/react-native" "^7.11.0"
     expo "57.0.11"
