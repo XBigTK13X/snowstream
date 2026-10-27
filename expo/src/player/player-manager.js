@@ -14,43 +14,20 @@ const canShortcut = (state) => {
 
 export function PlayerManager(props) {
     const {
-        apiClient,
-        clientOptions,
-        routes
+        apiClient
     } = useAppContext()
 
     const {
         addActionListener,
         removeActionListener,
-        navPush,
-        navPop,
-        navReset,
-        clearModals,
-        closeOverlay,
         currentRoute,
         getHubState,
         sendHubData,
-        emitHubEvent,
         onHubEvent,
-        resetHub,
         useHubState
     } = Snow.useSnowContext()
 
-    const actions = usePlayerActions({
-        apiClient,
-        clientOptions,
-        routes,
-        currentRoute,
-        navPush,
-        navPop,
-        navReset,
-        clearModals,
-        closeOverlay,
-        sendHubData,
-        getHubState,
-        resetHub,
-        emitHubEvent
-    })
+    const actions = usePlayerActions()
 
     const actionsRef = React.useRef(actions)
     actionsRef.current = actions

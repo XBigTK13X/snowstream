@@ -176,7 +176,9 @@ export default function MpvVideoView(props) {
     let acceleratedCodecs = playbackPlan?.mpv_accelerated_codecs || 'h264,hevc,mpeg4,mpeg2video,vp8,vp9,av1'
     let videoSync = playbackPlan?.mpv_video_sync || 'audio'
 
-    const safeUrl = encodeURI(decodeURI(videoUrl))
+    const safeUrl = videoUrl.includes('%')
+        ? videoUrl
+        : encodeURI(videoUrl).replace(/#/g, '%23')
 
     return (
         <LibmpvView

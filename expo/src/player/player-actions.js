@@ -2,25 +2,30 @@ import React from 'react'
 import Snow from '@snowsuite/expo-snowui'
 import util from '../util'
 import { config } from '../settings'
+import { useAppContext } from '../app-context'
 import { initialPlayerHubState, resolvePlaybackConfig } from './player-hub'
 
 const MAX_LOGS = 300
 
-export function usePlayerActions({
-    apiClient,
-    clientOptions,
-    routes,
-    currentRoute,
-    navPush,
-    navPop,
-    navReset,
-    clearModals,
-    closeOverlay,
-    sendHubData,
-    getHubState,
-    resetHub,
-    emitHubEvent
-}) {
+export function usePlayerActions() {
+    const {
+        apiClient,
+        clientOptions,
+        routes
+    } = useAppContext()
+
+    const {
+        navPush,
+        navPop,
+        navReset,
+        clearModals,
+        closeOverlay,
+        currentRoute,
+        getHubState,
+        sendHubData,
+        resetHub
+    } = Snow.useSnowContext()
+
     const routeParams = currentRoute?.routeParams || {}
     const handlersRef = React.useRef({})
     const logsRef = React.useRef([])
@@ -178,6 +183,8 @@ export function usePlayerActions({
         if (!apiClient || !loadHandler) {
             return
         }
+
+        addLog({ kind: 'snowstream', 'message': "loadVideo route params", routeParams })
 
         const initialStatus = isTranscode
             ? 'Requesting transcode stream'

@@ -156,7 +156,9 @@ export default function ExoVideoView(props) {
         resolvedHeight = videoHeightState
     }
 
-    const safeUrl = encodeURI(decodeURI(videoUrl))
+    const safeUrl = videoUrl.includes('%')
+        ? videoUrl
+        : encodeURI(videoUrl).replace(/#/g, '%23')
 
     return (
         <ExoPlayerView
