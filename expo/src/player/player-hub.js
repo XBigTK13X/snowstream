@@ -6,6 +6,7 @@ const isTruthyParam = (val) => val === true || val === 'true' || val === 1 || va
 export const initialPlayerHubState = {
     sessionId: 0,
     videoUrl: null,
+    videoFile: null,
     videoTitle: null,
     videoLoading: false,
     videoLoaded: false,

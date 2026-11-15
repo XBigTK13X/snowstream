@@ -21,14 +21,20 @@ export default function MediaTracksPage(props) {
     const [media, setMedia] = C.React.useState(null)
     const mediaRef = C.React.useRef(null)
     const [audioTrack, setAudioTrack] = C.React.useState(0)
+    const audioTrackRef = C.React.useRef(0)
     const [audioLanguage, setAudioLanguage] = C.React.useState(null)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
+    const subtitleTrackRef = C.React.useRef(0)
     const [videoFileIndex, setVideoFileIndex] = C.React.useState(0)
+    const videoFileIndexRef = C.React.useRef(0)
     const videoFileRef = C.React.useRef(null)
     const [player, setPlayer] = C.React.useState(null)
+    const playerRef = C.React.useRef(null)
     const [forcePlayer, setForcePlayer] = C.React.useState(null)
+    const forcePlayerRef = C.React.useRef(null)
     const [showInfoModal, setShowInfoModal] = C.React.useState(false)
     const [shouldTranscode, setShouldTranscode] = C.React.useState(false)
+    const shouldTranscodeRef = C.React.useRef(false)
     const [playParams, setPlayParams] = C.React.useState({})
     const [resumeParams, setResumeParams] = C.React.useState({})
     const [loadError, setLoadError] = C.React.useState(null)
@@ -39,6 +45,42 @@ export default function MediaTracksPage(props) {
 
     const shelfId = currentRoute.routeParams.shelfId
 
+    const updatePlaybackParams = () => {
+        if (!mediaRef.current) return
+
+        const playDestination = {
+            videoFileIndex: videoFileIndexRef.current,
+            audioTrack: audioTrackRef.current,
+            subtitleTrack: subtitleTrackRef.current,
+            shelfId: shelfId,
+            videoIsHdr: videoFileRef.current?.is_hdr ?? false
+        }
+        const mediaDestination = props.getPlayParameters(currentRoute.routeParams)
+        let combinedPlayDestination = {
+            ...playDestination,
+            ...mediaDestination,
+            transcode: shouldTranscodeRef.current
+        }
+        if (forcePlayerRef.current !== null) {
+            combinedPlayDestination.forcePlayer = playerRef.current
+        }
+        else {
+            delete combinedPlayDestination.forcePlayer
+        }
+
+        setPlayParams(combinedPlayDestination)
+
+        if (mediaRef.current?.in_progress?.played_seconds) {
+            setResumeParams({
+                ...combinedPlayDestination,
+                seekToSeconds: mediaRef.current.in_progress.played_seconds
+            })
+        }
+        else {
+            setResumeParams({})
+        }
+    }
+
     C.React.useEffect(() => {
         const savedDir = C.Snow.loadData('video_download_dir')
         if (savedDir && typeof savedDir === 'string') {
@@ -47,44 +89,12 @@ export default function MediaTracksPage(props) {
     }, [])
 
     C.React.useEffect(() => {
-        if (mediaRef.current) {
-            const playDestination = {
-                videoFileIndex: videoFileIndex,
-                audioTrack: audioTrack,
-                subtitleTrack: subtitleTrack,
-                shelfId: shelfId,
-                videoIsHdr: videoFileRef.current?.is_hdr ?? false
-            }
-            const mediaDestination = props.getPlayParameters(currentRoute.routeParams)
-            let combinedPlayDestination = { ...playDestination, ...mediaDestination, transcode: shouldTranscode }
-            if (forcePlayer !== null) {
-                combinedPlayDestination.forcePlayer = player
-            }
-            else {
-                delete combinedPlayDestination.forcePlayer
-            }
-            setPlayParams(combinedPlayDestination)
-            if (mediaRef.current?.in_progress?.played_seconds) {
-                setResumeParams({
-                    ...combinedPlayDestination,
-                    seekToSeconds: mediaRef.current.in_progress.played_seconds
-                })
-            }
-        }
-    }, [player, forcePlayer, media, videoFileIndex, subtitleTrack, audioTrack, shelfId, shouldTranscode])
-
-    C.React.useEffect(() => {
-        mediaRef.current = media
-        if (media) {
-            videoFileRef.current = media.video_files[videoFileIndex]
-        }
-    }, [media])
-
-    C.React.useEffect(() => {
         props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
             if (response?.video_files) {
                 setMedia(response)
                 mediaRef.current = response
+                videoFileRef.current = response.video_files[videoFileIndexRef.current]
+
                 if (response?.tags?.length) {
                     for (let tag of response.tags) {
                         if (tag?.name?.includes('AudioLanguage:')) {
@@ -93,29 +103,47 @@ export default function MediaTracksPage(props) {
                         }
                     }
                 }
-                chooseVideoFile(videoFileIndex)
-                let plan = response.video_files[videoFileIndex].plan
+
+                let tracks = videoFileRef.current.info.tracks
+                if (tracks.audio.length) {
+                    audioTrackRef.current = tracks.audio[0].audio_index
+                    setAudioTrack(audioTrackRef.current)
+                }
+                if (tracks.subtitle.length) {
+                    subtitleTrackRef.current = tracks.subtitle[0].subtitle_index
+                    setSubtitleTrack(subtitleTrackRef.current)
+                }
+
+                let plan = videoFileRef.current.plan
                 if (plan) {
                     if (plan.player) {
+                        playerRef.current = plan.player
+                        forcePlayerRef.current = plan.player
                         setPlayer(plan.player)
                         setForcePlayer(plan.player)
                     }
                     else {
+                        playerRef.current = 'mpv'
                         setPlayer('mpv')
-
                     }
                     if (plan.video_requires_transcode) {
+                        shouldTranscodeRef.current = true
                         setShouldTranscode(true)
                     } else {
-                        if (plan.audio_requires_transcode[audioTrack]) {
+                        if (plan.audio_requires_transcode[audioTrackRef.current]) {
+                            shouldTranscodeRef.current = true
                             setShouldTranscode(true)
                         }
-                        if (plan.audio_requires_passthrough[audioTrack]) {
+                        if (plan.audio_requires_passthrough[audioTrackRef.current]) {
+                            playerRef.current = 'exo'
+                            forcePlayerRef.current = 'exo'
                             setPlayer('exo')
                             setForcePlayer('exo')
                         }
                     }
                 }
+
+                updatePlaybackParams()
             } else {
                 setLoadError(true)
             }
@@ -135,7 +163,6 @@ export default function MediaTracksPage(props) {
         const ext = videoFileRef.current?.network_path.split('.').pop() || 'mkv'
         const fileName = `${mediaName.replace(/[/\\?%*:|"<>]/g, '-')}.${ext}`
 
-        // Assumes apiClient handles token injection or returns a formatted download url string
         const downloadUrl = apiClient.getVideoDownloadUrl
             ? apiClient.getVideoDownloadUrl(media.id, videoFileRef.current?.file_index)
             : videoFileRef.current?.network_path
@@ -171,42 +198,39 @@ export default function MediaTracksPage(props) {
 
     const selectTrack = (track) => {
         if (track.kind === 'audio') {
-            if (audioTrack == track.audio_index) {
-                setAudioTrack(-1)
-            } else {
-                setAudioTrack(track.audio_index)
-            }
+            audioTrackRef.current = audioTrackRef.current == track.audio_index ? -1 : track.audio_index
+            setAudioTrack(audioTrackRef.current)
         }
         if (track.kind === 'subtitle') {
-            if (subtitleTrack == track.subtitle_index) {
-                setSubtitleTrack(-1)
-            } else {
-                setSubtitleTrack(track.subtitle_index)
-            }
+            subtitleTrackRef.current = subtitleTrackRef.current == track.subtitle_index ? -1 : track.subtitle_index
+            setSubtitleTrack(subtitleTrackRef.current)
         }
+        updatePlaybackParams()
     }
 
     const chooseVideoFile = (fileIndex) => {
+        videoFileIndexRef.current = fileIndex
         setVideoFileIndex(fileIndex)
         videoFileRef.current = mediaRef.current.video_files[fileIndex]
         let tracks = videoFileRef.current.info.tracks
         if (tracks.audio.length) {
-            setAudioTrack(tracks.audio[0].audio_index)
+            audioTrackRef.current = tracks.audio[0].audio_index
+            setAudioTrack(audioTrackRef.current)
         }
         if (tracks.subtitle.length) {
-            setSubtitleTrack(tracks.subtitle[0].subtitle_index)
+            subtitleTrackRef.current = tracks.subtitle[0].subtitle_index
+            setSubtitleTrack(subtitleTrackRef.current)
         }
+        updatePlaybackParams()
     }
 
     const togglePlayer = () => {
-        if (player === 'exo') {
-            setPlayer('mpv')
-            setForcePlayer('mpv')
-        }
-        else {
-            setPlayer('exo')
-            setForcePlayer('exo')
-        }
+        const nextPlayer = playerRef.current === 'exo' ? 'mpv' : 'exo'
+        playerRef.current = nextPlayer
+        forcePlayerRef.current = nextPlayer
+        setPlayer(nextPlayer)
+        setForcePlayer(nextPlayer)
+        updatePlaybackParams()
     }
 
     const showInfo = () => {
@@ -214,7 +238,9 @@ export default function MediaTracksPage(props) {
     }
 
     const toggleTranscode = () => {
-        setShouldTranscode(!shouldTranscode)
+        shouldTranscodeRef.current = !shouldTranscodeRef.current
+        setShouldTranscode(shouldTranscodeRef.current)
+        updatePlaybackParams()
     }
 
     C.React.useEffect(() => {
@@ -576,9 +602,9 @@ export default function MediaTracksPage(props) {
     if (currentRoute.routeParams?.showName) {
         loadingName = `${currentRoute.routeParams?.showName}`
         if (currentRoute.routeParams?.seasonOrder) {
-            loadingName = `${loadingName} - Season ${currentRoute.routeParams?.seasonOrder}`
+            loadingName = `${loadingName} Season ${currentRoute.routeParams?.seasonOrder}`
             if (currentRoute.routeParams?.episodeOrder) {
-                loadingName = `${loadingName} - Episode ${currentRoute.routeParams?.episodeOrder}`
+                loadingName = `${loadingName} Episode ${currentRoute.routeParams?.episodeOrder}`
             }
         }
     }

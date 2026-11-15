@@ -17,7 +17,7 @@ export default function SnowVideoControls(props) {
     const { apiClient, clientOptions } = props
 
     const videoTitle = useHubState((state) => state?.videoTitle)
-    const videoUrl = useHubState((state) => state?.videoUrl)
+    const videoFile = useHubState((state) => state?.videoFile)
     const durationSeconds = useHubState((state) => state?.durationSeconds) || 0.0
     const progressSeconds = useHubState((state) => state?.progressSeconds)
     const isTranscode = useHubState((state) => state?.isTranscode)
@@ -32,8 +32,6 @@ export default function SnowVideoControls(props) {
     const [logTitle, setLogTitle] = React.useState('Persist Logs')
     const [localPercent, setLocalPercent] = React.useState(null)
     const isInteractingRef = React.useRef(false)
-
-    const videoFile = videoUrl?.split('/').at(-1)
 
     const progressPercent = durationSeconds > 0 && progressSeconds != null
         ? progressSeconds / durationSeconds

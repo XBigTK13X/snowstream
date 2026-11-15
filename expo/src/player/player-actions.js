@@ -77,6 +77,7 @@ export function usePlayerActions() {
                 videoLoaded: false,
                 videoLoading: false,
                 videoUrl: null,
+                videoFile: null,
                 isTranscode: true,
                 statusMessages: nextMessages
             }, 'player.fallbackTranscode')
@@ -123,13 +124,20 @@ export function usePlayerActions() {
             }
         }
 
+        let videoFile = targetUrl
+        if (videoFile.includes('/')) {
+            videoFile = videoFile.split('/').at(-1)
+        }
+
         const nextMessages = [...(currentState.statusMessages || []), 'Stream info loaded']
+        nextMessages.push(videoFile)
         if (currentState.seekToSeconds > 0) {
             nextMessages.push(`Resuming from ${util.secondsToTimestamp(currentState.seekToSeconds)}`)
         }
 
         const patch = {
             videoUrl: targetUrl,
+            videoFile: videoFile,
             videoLoaded: true,
             videoLoading: false,
             isPlaying: currentState.playerKind !== 'web',
@@ -198,17 +206,8 @@ export function usePlayerActions() {
             ? [apiClient, routeParams, clientOptions?.deviceProfile, initialSeekSeconds, playerKind]
             : [apiClient, routeParams, clientOptions?.deviceProfile, playerKind]
 
-        const resFunc = (response) => {
-            const currentState = getHubState()
-            let videoUrl = response?.url ?? '[unknown url]'
-            sendHubData({
-                statusMessages: [...currentState?.statusMessages || [], videoUrl]
-            })
-            return parseVideoPayload(response, currentSession)
-        }
-
         loadHandler(...args)
-            .then(resFunc)
+            .then((response) => parseVideoPayload(response, currentSession))
             .catch((error) => onCriticalError(error, currentSession))
     }
 
@@ -243,6 +242,7 @@ export function usePlayerActions() {
             videoLoaded: false,
             videoLoading: true,
             videoUrl: null,
+            videoFile: null,
             transcodeOnResume: false,
             seekToSeconds: seekTarget,
             playbackSettled: false,
