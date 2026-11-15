@@ -19,10 +19,12 @@ export default function MediaTracksPage(props) {
     } = useAppContext()
 
     const [media, setMedia] = C.React.useState(null)
+    const mediaRef = C.React.useRef(null)
     const [audioTrack, setAudioTrack] = C.React.useState(0)
     const [audioLanguage, setAudioLanguage] = C.React.useState(null)
     const [subtitleTrack, setSubtitleTrack] = C.React.useState(0)
     const [videoFileIndex, setVideoFileIndex] = C.React.useState(0)
+    const videoFileRef = C.React.useRef(null)
     const [player, setPlayer] = C.React.useState(null)
     const [forcePlayer, setForcePlayer] = C.React.useState(null)
     const [showInfoModal, setShowInfoModal] = C.React.useState(false)
@@ -37,11 +39,6 @@ export default function MediaTracksPage(props) {
 
     const shelfId = currentRoute.routeParams.shelfId
 
-    let videoFile = null
-    if (media) {
-        videoFile = media.video_files[videoFileIndex]
-    }
-
     C.React.useEffect(() => {
         const savedDir = C.Snow.loadData('video_download_dir')
         if (savedDir && typeof savedDir === 'string') {
@@ -50,13 +47,13 @@ export default function MediaTracksPage(props) {
     }, [])
 
     C.React.useEffect(() => {
-        if (media) {
+        if (mediaRef.current) {
             const playDestination = {
                 videoFileIndex: videoFileIndex,
                 audioTrack: audioTrack,
                 subtitleTrack: subtitleTrack,
                 shelfId: shelfId,
-                videoIsHdr: videoFile.is_hdr
+                videoIsHdr: videoFileRef.current?.is_hdr ?? false
             }
             const mediaDestination = props.getPlayParameters(currentRoute.routeParams)
             let combinedPlayDestination = { ...playDestination, ...mediaDestination, transcode: shouldTranscode }
@@ -67,19 +64,27 @@ export default function MediaTracksPage(props) {
                 delete combinedPlayDestination.forcePlayer
             }
             setPlayParams(combinedPlayDestination)
-            if (media?.in_progress?.played_seconds) {
+            if (mediaRef.current?.in_progress?.played_seconds) {
                 setResumeParams({
                     ...combinedPlayDestination,
-                    seekToSeconds: media.in_progress.played_seconds
+                    seekToSeconds: mediaRef.current.in_progress.played_seconds
                 })
             }
         }
     }, [player, forcePlayer, media, videoFileIndex, subtitleTrack, audioTrack, shelfId, shouldTranscode])
 
     C.React.useEffect(() => {
+        mediaRef.current = media
+        if (media) {
+            videoFileRef.current = media.video_files[videoFileIndex]
+        }
+    }, [media])
+
+    C.React.useEffect(() => {
         props.loadMedia(apiClient, currentRoute.routeParams, clientOptions.deviceProfile).then((response) => {
             if (response?.video_files) {
                 setMedia(response)
+                mediaRef.current = response
                 if (response?.tags?.length) {
                     for (let tag of response.tags) {
                         if (tag?.name?.includes('AudioLanguage:')) {
@@ -88,7 +93,7 @@ export default function MediaTracksPage(props) {
                         }
                     }
                 }
-                chooseVideoFile(videoFileIndex, response)
+                chooseVideoFile(videoFileIndex)
                 let plan = response.video_files[videoFileIndex].plan
                 if (plan) {
                     if (plan.player) {
@@ -127,13 +132,13 @@ export default function MediaTracksPage(props) {
         }
 
         const mediaName = props.getMediaName ? props.getMediaName(currentRoute.routeParams, media) : media.name
-        const ext = videoFile.network_path.split('.').pop() || 'mkv'
+        const ext = videoFileRef.current?.network_path.split('.').pop() || 'mkv'
         const fileName = `${mediaName.replace(/[/\\?%*:|"<>]/g, '-')}.${ext}`
 
         // Assumes apiClient handles token injection or returns a formatted download url string
         const downloadUrl = apiClient.getVideoDownloadUrl
-            ? apiClient.getVideoDownloadUrl(media.id, videoFile.file_index)
-            : videoFile.network_path
+            ? apiClient.getVideoDownloadUrl(media.id, videoFileRef.current?.file_index)
+            : videoFileRef.current?.network_path
 
         setDownloadProgress(0)
 
@@ -181,16 +186,15 @@ export default function MediaTracksPage(props) {
         }
     }
 
-    const chooseVideoFile = (fileIndex, target) => {
-        if (!target) {
-            target = media
-        }
+    const chooseVideoFile = (fileIndex) => {
         setVideoFileIndex(fileIndex)
-        if (target.video_files[fileIndex].info.tracks.audio.length) {
-            setAudioTrack(target.video_files[fileIndex].info.tracks.audio[0].audio_index)
+        videoFileRef.current = mediaRef.current.video_files[fileIndex]
+        let tracks = videoFileRef.current.info.tracks
+        if (tracks.audio.length) {
+            setAudioTrack(tracks.audio[0].audio_index)
         }
-        if (target.video_files[fileIndex].info.tracks.subtitle.length) {
-            setSubtitleTrack(target.video_files[fileIndex].info.tracks.subtitle[0].subtitle_index)
+        if (tracks.subtitle.length) {
+            setSubtitleTrack(tracks.subtitle[0].subtitle_index)
         }
     }
 
@@ -216,7 +220,7 @@ export default function MediaTracksPage(props) {
     C.React.useEffect(() => {
         if (showInfoModal) {
             let fileInfos = []
-            for (const [key, value] of Object.entries(videoFile.info)) {
+            for (const [key, value] of Object.entries(videoFileRef.current?.info)) {
                 if (key !== 'tracks') {
                     fileInfos.push(`${key} [${value}]`)
                 }
@@ -224,7 +228,7 @@ export default function MediaTracksPage(props) {
             let videoInfos = []
             let audioInfos = []
             let subtitleInfos = []
-            for (const [kind, tracks] of Object.entries(videoFile.info.tracks)) {
+            for (const [kind, tracks] of Object.entries(videoFileRef.current?.info.tracks)) {
                 for (const track of tracks) {
                     let entry = []
                     for (const [trackKey, trackValue] of Object.entries(track)) {
@@ -295,10 +299,10 @@ export default function MediaTracksPage(props) {
     }
 
     if (media) {
-        if (!videoFile) {
+        if (!videoFileRef.current) {
             return <C.SnowText>No video file found for this selection.</C.SnowText>
         }
-        const videoTrack = videoFile.info.tracks.video[0]
+        const videoTrack = videoFileRef.current?.info.tracks.video[0]
 
         let watchBase = media.watched
         if (watchOverride !== null) {
@@ -417,7 +421,7 @@ export default function MediaTracksPage(props) {
         const trackTab = (
             <C.SnowView>
                 <C.SnowTrackSelector
-                    tracks={videoFile.info.tracks}
+                    tracks={videoFileRef.current?.info.tracks}
                     selectTrack={selectTrack}
                     audioTrack={audioTrack}
                     audioLanguage={audioLanguage}
@@ -466,12 +470,12 @@ export default function MediaTracksPage(props) {
                 <C.SnowGrid focusKey="inspection-top" itemsPerRow={infoActions.length}>
                     {infoActions}
                 </C.SnowGrid>
-                <C.SnowText center>Path: {videoFile.network_path}</C.SnowText>
+                <C.SnowText center>Path: {videoFileRef.current?.network_path}</C.SnowText>
                 <C.SnowGrid itemsPerRow={2}>
                     <C.SnowView>
-                        <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFile.info.bit_rate)}/s</C.SnowText>
+                        <C.SnowText>Overall Quality: {C.util.bitsToPretty(videoFileRef.current?.info.bit_rate)}/s</C.SnowText>
                         <C.SnowText>Video Quality: {C.util.bitsToPretty(videoTrack.bit_rate, true)}/s {videoTrack.is_hdr ? 'HDR' : 'SDR'}</C.SnowText>
-                        <C.SnowText>File Size: {C.util.bitsToPretty(videoFile.info.bit_file_size, false)}</C.SnowText>
+                        <C.SnowText>File Size: {C.util.bitsToPretty(videoFileRef.current?.info.bit_file_size, false)}</C.SnowText>
                         <C.SnowText>Times Watched: {media.watch_count ? media.watch_count.amount : 0}</C.SnowText>
                     </C.SnowView>
                     <C.SnowView
@@ -502,7 +506,7 @@ export default function MediaTracksPage(props) {
         const planTab = (
             <C.SnowGrid itemsPerRow={2}>
                 <C.SnowTextButton title="Plan" />
-                <C.SnowText >Plan: {C.Snow.stringifySafe(videoFile.plan, null, 4)}</C.SnowText>
+                <C.SnowText >Plan: {C.Snow.stringifySafe(videoFileRef.current?.plan, null, 4)}</C.SnowText>
                 <C.SnowTextButton title="Params" />
                 <C.SnowText >Params: {C.Snow.stringifySafe(currentRoute.routeParams, null, 4)}</C.SnowText>
                 <C.SnowTextButton title="Options" />
@@ -516,9 +520,10 @@ export default function MediaTracksPage(props) {
                     <C.SnowLabel center>
                         {props.getMediaName ? props.getMediaName(currentRoute.routeParams, media) : media.name}
                     </C.SnowLabel>
-                    {videoFile?.info?.duration_seconds ? (
+                    {videoFileRef.current?.info?.duration_seconds ? (
                         <C.SnowText center>
-                            Runtime {C.util.secondsToTimestamp(videoFile?.info?.duration_seconds, true)}
+                            Runtime {C.util.secondsToTimestamp(videoFileRef.current?.info?.duration_seconds, true)}
+                            {mediaRef.current?.has_versions ? ` - Version [${videoFileRef.current?.version}]` : null}
                         </C.SnowText>
                     ) : null}
                     <C.SnowGrid

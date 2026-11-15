@@ -62,12 +62,6 @@ export function usePlayerActions() {
         return apiClient.savePlaybackLogs(logsRef.current)
     }
 
-    const appendStatus = (message) => {
-        const current = getHubState()
-        const nextMessages = [...(current.statusMessages || []), message]
-        sendHubData({ statusMessages: nextMessages }, 'player.statusAppended')
-    }
-
     const onCriticalError = (error, sessionId) => {
         if (sessionId !== undefined && sessionId !== activeSessionRef.current) {
             return
@@ -204,8 +198,17 @@ export function usePlayerActions() {
             ? [apiClient, routeParams, clientOptions?.deviceProfile, initialSeekSeconds, playerKind]
             : [apiClient, routeParams, clientOptions?.deviceProfile, playerKind]
 
+        const resFunc = (response) => {
+            const currentState = getHubState()
+            let videoUrl = response?.url ?? '[unknown url]'
+            sendHubData({
+                statusMessages: [...currentState?.statusMessages || [], videoUrl]
+            })
+            return parseVideoPayload(response, currentSession)
+        }
+
         loadHandler(...args)
-            .then((response) => parseVideoPayload(response, currentSession))
+            .then(resFunc)
             .catch((error) => onCriticalError(error, currentSession))
     }
 
