@@ -64,6 +64,16 @@ def get_transcode_session_list():
     with dbi.session() as db:
         return db.query(dbi.dm.TranscodeSession).all()
 
+def get_transcode_sessions_by_cduid(
+    cduid:int
+):
+    with dbi.session() as db:
+        return (
+            db.query(dbi.dm.TranscodeSession)
+            .filter(dbi.dm.TranscodeSession.client_device_user_id == cduid)
+            .all()
+        )
+
 def delete_transcode_session(
     transcode_session_id:int
 ):

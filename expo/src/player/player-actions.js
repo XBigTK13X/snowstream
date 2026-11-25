@@ -41,6 +41,12 @@ export function usePlayerActions() {
         return !!(handlersRef.current.loadVideo || handlersRef.current.loadTranscode)
     }
 
+    const closeActiveTranscode = (transcodeId) => {
+        if (transcodeId && apiClient) {
+            apiClient.closeTranscodeSession(transcodeId)
+        }
+    }
+
     const addLog = (logEvent) => {
         const logPlayback = clientOptions?.logPlayback || routeParams?.logPlayback
         if (!logPlayback) {
@@ -157,8 +163,8 @@ export function usePlayerActions() {
         }
 
         if (response.transcodeId) {
-            if (currentState.transcodeId && apiClient) {
-                apiClient.closeTranscodeSession(currentState.transcodeId)
+            if (currentState.transcodeId && currentState.transcodeId !== response.transcodeId) {
+                closeActiveTranscode(currentState.transcodeId)
             }
             patch.transcodeId = response.transcodeId
         }
@@ -369,8 +375,9 @@ export function usePlayerActions() {
             handlersRef.current.updateProgress &&
             apiClient
 
-        if (currentState.transcodeId && apiClient) {
-            apiClient.closeTranscodeSession(currentState.transcodeId)
+        if (currentState.transcodeId) {
+            closeActiveTranscode(currentState.transcodeId)
+            sendHubData({ transcodeId: null }, 'player.transcodeClosed')
         }
 
         if (shouldSyncProgress) {
@@ -448,6 +455,10 @@ export function usePlayerActions() {
     }
 
     const resetPlayer = (overrides = {}) => {
+        const currentState = getHubState()
+        if (currentState?.transcodeId) {
+            closeActiveTranscode(currentState.transcodeId)
+        }
         activeSessionRef.current += 1
         playbackSettledRef.current = false
         targetSeekRef.current = 0

@@ -1,3 +1,4 @@
+import asyncio
 import cache
 import json
 import util
@@ -853,6 +854,7 @@ def auth_required(router):
     def get_session_list(
         auth_user: Annotated[am.User, Security(get_current_user, scopes=[])],
     ):
+        transcode_sessions.prune_dead_sessions()
         transcodes = db.op.get_transcode_session_list()
         return {"transcodes": transcodes}
 
@@ -866,19 +868,27 @@ def auth_required(router):
 
     @router.get("/transcode/stream", tags=["Unauthed Video"])
     @router.head("/transcode/stream", tags=["Unauthed Video"])
-    async def stream_transcode(transcode_session_id: int):
+    async def stream_transcode(request: Request, transcode_session_id: int):
         session = db.op.get_transcode_session_by_id(
             transcode_session_id=transcode_session_id
         )
         if not session:
             return Response(status_code=404)
+        if request.method == "HEAD":
+            return Response(status_code=200, media_type="video/x-matroska")
         ffmpeg_url = f"http://{config.transcode_ffmpeg_host}:{session.stream_port}/stream.matroska"
 
         async def iterfile():
-            async with httpx.AsyncClient() as client:
-                async with client.stream("GET", ffmpeg_url) as r:
-                    async for chunk in r.aiter_bytes(65536):
-                        yield chunk
+            try:
+                async with httpx.AsyncClient(timeout=None) as client:
+                    async with client.stream("GET", ffmpeg_url) as stream_response:
+                        async for chunk in stream_response.aiter_bytes(65536):
+                            yield chunk
+            finally:
+                await asyncio.to_thread(
+                    transcode_sessions.close,
+                    transcode_session_id=transcode_session_id,
+                )
 
         return StreamingResponse(iterfile(), media_type="video/x-matroska")
 

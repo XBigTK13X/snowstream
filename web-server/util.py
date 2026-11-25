@@ -17,13 +17,23 @@ def run_cli(command, raw_output=False, background=False, log_path=None):
         stderr_target = open(log_path+'.stderr', 'w')
         stderr_target.write(command)
     if background:
-        return subprocess.Popen(
-            command,
+        process = subprocess.Popen(
+            f"exec {command}",
             shell=True,
             stdout=stdout_target,
             stderr=stderr_target,
             executable="/bin/bash",
+            start_new_session=True,
         )
+
+        def reap_process():
+            process.wait()
+            if log_path:
+                stdout_target.close()
+                stderr_target.close()
+
+        threading.Thread(target=reap_process, daemon=True).start()
+        return process
     process = subprocess.Popen(
         command,
         shell=True,

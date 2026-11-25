@@ -27,15 +27,16 @@ export default function PlayStreamablePage() {
                             url: response.transcode_url,
                             name: streamable.name,
                             durationSeconds: streamable.duration_seconds,
-                            mpvDecodingMode: response.stream_source.kind === 'FrigateNvr' ? 'no' : null,
-                            plan: response.plan,
-                            info: response.info
+                            mpvDecodingMode: streamable.stream_source.kind === 'FrigateNvr' ? 'no' : null,
+                            plan: streamable.plan,
+                            info: streamable.info,
+                            transcodeId: response.transcode_session_id
                         }
                     })
                     .catch((err) => {
-                        return resolve({
+                        return {
                             error: err
-                        })
+                        }
                     })
             })
     }
