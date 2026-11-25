@@ -79,7 +79,10 @@ export default function SearchPage() {
                                     <C.SnowTextButton title={item.display} onPress={navPush({
                                         path: routes.keepsakeDetails,
                                         params: {
-                                            shelfId: item.shelf.id
+                                            shelfId: item.shelf.id,
+                                            shelfName: item.shelf.name,
+                                            subdirectory: item.directory,
+                                            subdirectory64: C.Snow.toBase64(item.directory)
                                         }
                                     })} />
                                 )
