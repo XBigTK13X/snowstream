@@ -15,19 +15,23 @@ BaseModel.updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 def set_primary_images(model):
     model.screencap_image = None
     model.poster_image = None
-    screencap_is_meta = False
-    poster_is_meta = False
     if not model.image_files:
         return model
-    for image_file in model.image_files:
-        if not model.poster_image or poster_is_meta:
-            if 'poster' in image_file.kind:
-                model.poster_image = image_file
-                poster_is_meta = '/metadata/' in image_file.local_path
-        if not model.screencap_image or screencap_is_meta:
-            if 'screencap' in image_file.kind:
-                model.screencap_image = image_file
-                screencap_is_meta = '/metadata/' in image_file.local_path
+    ordered_images = sorted(
+        model.image_files,
+        key=lambda image_file: (
+            '/metadata/' in (image_file.local_path or ''),
+            image_file.local_path or '',
+            image_file.id or 0,
+        ),
+    )
+    for image_file in ordered_images:
+        if not model.poster_image and 'poster' in image_file.kind:
+            model.poster_image = image_file
+        if not model.screencap_image and 'screencap' in image_file.kind:
+            model.screencap_image = image_file
+        if model.poster_image and model.screencap_image:
+            break
     return model
 
 class Stub:
@@ -345,7 +349,7 @@ class Movie(BaseModel):
     in_progress: orm.Mapped["WatchProgress"] = orm.relationship(overlaps="movie", back_populates="movie")
     tags: orm.Mapped[List["Tag"]] = orm.relationship(secondary="movie_tag",back_populates="movies")
     video_files: orm.Mapped[List["VideoFile"]] = orm.relationship(secondary="movie_video_file",back_populates="movie",overlaps="movie_video_file")
-    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="movie_image_file",back_populates="movie",overlaps="movie_image_file")
+    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="movie_image_file",back_populates="movie",overlaps="movie_image_file",order_by="ImageFile.id")
     metadata_files: orm.Mapped[List["MetadataFile"]] = orm.relationship(secondary="movie_metadata_file",back_populates="movie",overlaps="movie_metadata_file")
     shelf: orm.Mapped["Shelf"] = orm.relationship(secondary="movie_shelf")
     watch_count: orm.Mapped['WatchCount'] = orm.relationship(overlaps="movie")
@@ -411,7 +415,7 @@ class Show(BaseModel):
     remote_metadata_source = sa.Column(sa.Text)
     shelf: orm.Mapped["Shelf"] = orm.relationship(secondary="show_shelf",back_populates="shows")
     seasons: orm.Mapped[List["ShowSeason"]] = orm.relationship(back_populates='show',order_by="ShowSeason.season_order_counter")
-    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="show_image_file",back_populates="show",overlaps="show_image_file")
+    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="show_image_file",back_populates="show",overlaps="show_image_file",order_by="ImageFile.id")
     metadata_files: orm.Mapped[List["MetadataFile"]] = orm.relationship(secondary="show_metadata_file",back_populates="show",overlaps="show_metadata_file")
     tags: orm.Mapped[List['Tag']] = orm.relationship(secondary="show_tag",back_populates="shows")
 
@@ -454,7 +458,7 @@ class ShowSeason(BaseModel):
     show_id: orm.Mapped[int] = sa.Column(sa.Integer, sa.ForeignKey("show.id"))
     show: orm.Mapped["Show"] = orm.relationship(back_populates="seasons")
     episodes: orm.Mapped[List["ShowEpisode"]] = orm.relationship(back_populates="season",order_by="ShowEpisode.episode_order_counter")
-    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="show_season_image_file",back_populates="show_season",overlaps="show_season_image_file")
+    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="show_season_image_file",back_populates="show_season",overlaps="show_season_image_file",order_by="ImageFile.id")
     metadata_files: orm.Mapped[List["MetadataFile"]] = orm.relationship(secondary="show_season_metadata_file",back_populates="show_season",overlaps="show_season_metadata_file")
     tags: orm.Mapped[List["Tag"]] = orm.relationship(secondary="show_season_tag",back_populates="show_seasons")
 
@@ -495,7 +499,7 @@ class ShowEpisode(BaseModel):
     show_season_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("show_season.id"))
     in_progress: orm.Mapped["WatchProgress"] = orm.relationship(overlaps="show_episode", back_populates="show_episode")
     video_files: orm.Mapped[List["VideoFile"]] = orm.relationship(secondary="show_episode_video_file",back_populates="show_episode",overlaps="show_episode_video_file")
-    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="show_episode_image_file",back_populates="show_episode",overlaps="show_episode_image_file")
+    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="show_episode_image_file",back_populates="show_episode",overlaps="show_episode_image_file",order_by="ImageFile.id")
     metadata_files: orm.Mapped[List["MetadataFile"]] = orm.relationship(secondary="show_episode_metadata_file",back_populates="show_episode",overlaps="show_episode_metadata_file")
     season: orm.Mapped["ShowSeason"] = orm.relationship(back_populates="episodes")
     tags: orm.Mapped[List["Tag"]] = orm.relationship(secondary="show_episode_tag",back_populates="show_episodes")
@@ -639,7 +643,7 @@ class Keepsake(BaseModel):
     __tablename__ = "keepsake"
     directory = sa.Column(sa.Text)
     video_files: orm.Mapped[List["VideoFile"]] = orm.relationship(secondary="keepsake_video_file",back_populates="keepsake",overlaps="keepsake_video_file")
-    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="keepsake_image_file",back_populates="keepsake",overlaps="keepsake_image_file")
+    image_files: orm.Mapped[List["ImageFile"]] = orm.relationship(secondary="keepsake_image_file",back_populates="keepsake",overlaps="keepsake_image_file",order_by="ImageFile.id")
     shelf: orm.Mapped["Shelf"] = orm.relationship(secondary="keepsake_shelf")
 
 class KeepsakeShelf(BaseModel):
