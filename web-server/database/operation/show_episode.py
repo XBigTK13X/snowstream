@@ -67,6 +67,7 @@ def sql_row_to_api_result(
     episode.season.show.id = row.show_id
     episode.season.show.name = row.show_name
     episode.season.show.remote_metadata_id = row.show_remote_metadata_id
+    episode.season.show.remote_metadata_source = row.show_remote_metadata_source
 
     episode.season.show.shelf = dbi.dm.Stub()
     episode.season.show.shelf.model_kind = "shelf"
@@ -261,6 +262,7 @@ def get_show_episode_list(
         show.id as show_id,
         show.name as show_name,
         show.remote_metadata_id as show_remote_metadata_id,
+        show.remote_metadata_source as show_remote_metadata_source,
 
         shelf.id as shelf_id,
         shelf.name as shelf_name,

@@ -7,10 +7,11 @@ class Show(MediaUpdater):
     def __init__(self,job_id,scope):
         super().__init__(job_id,"Show",scope)
         db.op.update_job(job_id=self.job_id, message=f"Updating media for show {scope.target_id}")
-        self.media_provider = scope.get_show_media_provider()
         self.show_id = scope.target_id
-        self.metadata_id = scope.metadata_id
         self.show = self.db.op.get_show_by_id(ticket=self.ticket,show_id=self.show_id)
+        self.sync_show_remote_metadata(self.show)
+        self.metadata_id = self.scope.metadata_id
+        self.media_provider = self.scope.get_show_media_provider()
 
     def has_nfo(self):
         return len(self.show.metadata_files) > 0

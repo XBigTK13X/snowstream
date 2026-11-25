@@ -10,6 +10,9 @@ export default function EpisodeDetailsPage() {
             getRemoteMetadataId={(media) => {
                 return media.season.show.remote_metadata_id
             }}
+            getRemoteMetadataSource={(media) => {
+                return media.season.show.remote_metadata_source
+            }}
             getMediaName={(routeParams, media) => {
                 return `${routeParams.showName} - ${media.name}`
             }}

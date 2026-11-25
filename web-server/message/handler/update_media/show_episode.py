@@ -9,10 +9,11 @@ class ShowEpisode(MediaUpdater):
     def __init__(self, job_id, scope):
         super().__init__(job_id,"ShowEpisode",scope)
         db.op.update_job(job_id=self.job_id, message=f"Updating media for episode {scope.target_id}")
-        self.media_provider = scope.get_show_media_provider()
         self.show_episode_id = scope.target_id
-        self.show_metadata_id = scope.metadata_id
         self.show_episode = self.db.op.get_show_episode_by_id(ticket=self.ticket,episode_id=self.show_episode_id)
+        self.sync_show_remote_metadata(self.show_episode.season.show)
+        self.show_metadata_id = self.scope.metadata_id
+        self.media_provider = self.scope.get_show_media_provider()
         self.episode_video_file = self.show_episode.video_files[0]
 
     def has_nfo(self):

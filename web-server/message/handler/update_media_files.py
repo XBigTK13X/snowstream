@@ -14,10 +14,6 @@ def handle(scope):
         db.op.update_job(job_id=scope.job_id, message="update_media_files must be scoped when run")
         return False
 
-    if not scope.metadata_id and not scope.extract_only:
-        db.op.update_job(job_id=scope.job_id, message="update_media_files must be scoped with a metadata_id or be limited to extract_only")
-        return False
-
     if not scope.update_metadata and not scope.update_images:
         db.op.update_job(job_id=scope.job_id, message="update_media_files requires either update_images or update_metadata")
         return False
@@ -36,6 +32,10 @@ def handle(scope):
         handler = update_episode.ShowEpisode(job_id=scope.job_id,scope=scope)
     else:
         db.op.update_job(job_id=scope.job_id, message=f"Unhandled target of kind {scope.target_kind}")
+        return False
+
+    if not scope.metadata_id and not scope.extract_only:
+        db.op.update_job(job_id=scope.job_id, message="update_media_files must be scoped with a metadata_id or be limited to extract_only")
         return False
 
     if scope.update_metadata:

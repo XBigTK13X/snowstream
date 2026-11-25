@@ -18,11 +18,15 @@ def update_show_release_year(show_id:int, release_year:int):
         db.commit()
         return show
 
-def update_show_remote_metadata_id(show_id:int, remote_metadata_id:int, remote_metadata_source:str='thetvdb'):
+def update_show_remote_metadata_id(show_id:int, remote_metadata_id:int=None, remote_metadata_source:str=None):
     with dbi.session() as db:
         show = db.query(dbi.dm.Show).filter(dbi.dm.Show.id == show_id).first()
-        show.remote_metadata_id = remote_metadata_id
-        show.remote_metadata_source = remote_metadata_source
+        if remote_metadata_id is not None:
+            show.remote_metadata_id = remote_metadata_id
+        if remote_metadata_source is not None:
+            show.remote_metadata_source = remote_metadata_source
+        elif not show.remote_metadata_source:
+            show.remote_metadata_source = 'thetvdb'
         db.commit()
         return show
 

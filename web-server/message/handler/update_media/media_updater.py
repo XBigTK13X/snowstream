@@ -25,6 +25,29 @@ class MediaUpdater:
         self.FileStub = FileStub
         self.metadata = None
 
+    def sync_show_remote_metadata(self, show):
+        if not show:
+            return
+        should_update = (
+            self.scope.metadata_id is not None
+            and show.remote_metadata_id != self.scope.metadata_id
+        ) or (
+            self.scope.metadata_source is not None
+            and show.remote_metadata_source != self.scope.metadata_source
+        )
+        if should_update:
+            updated_show = self.db.op.update_show_remote_metadata_id(
+                show_id=show.id,
+                remote_metadata_id=self.scope.metadata_id,
+                remote_metadata_source=self.scope.metadata_source,
+            )
+            show.remote_metadata_id = updated_show.remote_metadata_id
+            show.remote_metadata_source = updated_show.remote_metadata_source
+        if not self.scope.metadata_id and show.remote_metadata_id:
+            self.scope.metadata_id = show.remote_metadata_id
+        if not self.scope.metadata_source and show.remote_metadata_source:
+            self.scope.metadata_source = show.remote_metadata_source
+
 
     def download_image(self,image_url:str,local_path:str):
         if not image_url:

@@ -40,9 +40,18 @@ export default function SeasonListPage() {
         return item.show.remote_metadata_id
     }
 
+    const getRemoteSource = (item) => {
+        if (!item) {
+            return null
+        }
+
+        return item.show.remote_metadata_source
+    }
+
     return (
         <WatchableListPage
             getRemoteId={getRemoteId}
+            getRemoteSource={getRemoteSource}
             kind="Show"
             getPageTitle={getPageTitle}
             loadItems={loadItems}

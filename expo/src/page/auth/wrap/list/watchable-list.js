@@ -84,6 +84,11 @@ export function WatchableListPage(props) {
             remoteId = props.getRemoteId(items[0])
         }
 
+        let remoteSource = null
+        if (props.getRemoteSource && items) {
+            remoteSource = props.getRemoteSource(items[0])
+        }
+
         const buttons = []
         if (togglePlaylistedEnabled && props.toggleShowPlaylisted) {
             buttons.push((
@@ -107,6 +112,7 @@ export function WatchableListPage(props) {
                     title="Create Job"
                     jobDetails={{
                         metadataId: remoteId,
+                        metadataSource: remoteSource,
                         ...props.getJobTarget(shelfId)
                     }} />
             ))

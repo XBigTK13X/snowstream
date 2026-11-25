@@ -38,9 +38,17 @@ export default function EpisodeListPage() {
         return item.season.show.remote_metadata_id
     }
 
+    const getRemoteSource = (item) => {
+        if (!item) {
+            return null
+        }
+        return item.season.show.remote_metadata_source
+    }
+
     return (
         <WatchableListPage
             getRemoteId={getRemoteId}
+            getRemoteSource={getRemoteSource}
             kind="Season"
             getPageTitle={getPageTitle}
             loadItems={loadItems}

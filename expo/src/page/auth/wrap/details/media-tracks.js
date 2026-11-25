@@ -344,6 +344,14 @@ export default function MediaTracksPage(props) {
             remoteMetadataId = props.getRemoteMetadataId(media)
         }
 
+        let remoteMetadataSource = ''
+        if (media.remote_metadata_source) {
+            remoteMetadataSource = media.remote_metadata_source
+        }
+        else if (props.getRemoteMetadataSource) {
+            remoteMetadataSource = props.getRemoteMetadataSource(media)
+        }
+
         let playTitle = 'Play'
         let resumeControls = null
         if (media?.in_progress?.played_seconds) {
@@ -485,6 +493,7 @@ export default function MediaTracksPage(props) {
                     title="Create Job"
                     jobDetails={{
                         metadataId: remoteMetadataId,
+                        metadataSource: remoteMetadataSource,
                         ...props.getJobTarget(currentRoute.routeParams)
                     }}
                 />
