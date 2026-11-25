@@ -2,6 +2,7 @@ import React from 'react'
 import Snow from '@snowsuite/expo-snowui'
 import { Asset } from '../asset'
 import { useAppContext } from '../app-context'
+import util from '../util'
 
 
 export function SnowPosterGrid(props) {
@@ -26,6 +27,15 @@ export function SnowPosterGrid(props) {
     }
     const getItemToggleStatus = (item) => {
         return !props.disableWatched && item.watched
+    }
+    const getItemName = (item) => {
+        if (item?.name) {
+            return item.name
+        }
+        if (item?.model_kind === 'show_episode' && item?.season?.show?.name) {
+            return `${item.season.show.name} - ${util.formatEpisodeTitle(item)}`
+        }
+        return item?.name
     }
 
     let scaleProps = {}
@@ -55,7 +65,7 @@ export function SnowPosterGrid(props) {
                 wideImage={false}
                 longPressToggle={true}
                 disableToggle={props.disableWatched}
-                getItemName={(item) => { return item.name }}
+                getItemName={getItemName}
                 getItemImageUrl={getImageUrl}
                 getItemImageFallback={getItemImageFallback}
                 getItemToggleStatus={getItemToggleStatus}

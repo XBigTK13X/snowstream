@@ -1,4 +1,5 @@
 from database.operation.db_internal import dbi
+import util
 
 import database.operation.shelf as db_shelf
 import database.operation.movie as db_movie
@@ -60,6 +61,9 @@ def get_continue_watching_list(ticket: dbi.Ticket):
                 show = episode.season.show
                 show = dbi.dm.set_primary_images(show)
                 progress.show_episode.poster_image = show.poster_image
+                if not episode.name:
+                    db.expunge(episode)
+                    episode.name = f"{show.name} - {util.get_episode_slug(episode)}"
                 in_progress.append(episode)
                 show_dedupe[progress.show_episode.season.show.id] = True
             if delete_progress:
