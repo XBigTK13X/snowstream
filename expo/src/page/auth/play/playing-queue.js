@@ -9,84 +9,35 @@ export default function PlayPlayingQueuePage(props) {
     const [queueIndex, setQueueIndex] = C.React.useState(
         currentRoute?.routeParams?.queueIndex ?? null
     )
+    const [playGeneration, setPlayGeneration] = C.React.useState(0)
 
     const playingQueueRef = C.React.useRef(playingQueue)
     const queueIndexRef = C.React.useRef(queueIndex)
     const isTransitioningRef = C.React.useRef(false)
 
-    queueIndexRef.current = queueIndex
-
-    const getTargetEntry = (queueResponse, routeParams) => {
+    const getTargetEntry = (queueResponse) => {
         const targetIndex = queueIndexRef.current ?? queueResponse.queue.progress ?? 0
         const entry = queueResponse.queue.content[targetIndex]
         return { targetIndex, entry }
     }
 
-    const loadVideo = (apiClient, routeParams, deviceProfile, playerKind) => {
+    const loadQueueItem = (apiClient, routeParams, deviceProfile, singleLineTitle) => {
         return apiClient.getPlayingQueue({
             source: routeParams.playingQueueSource
         }).then((queueResponse) => {
             setPlayingQueue(queueResponse)
             playingQueueRef.current = queueResponse
 
-            const { targetIndex, entry } = getTargetEntry(queueResponse, routeParams)
-            const videoFileIndex = routeParams.videoFileIndex ?? 0
-
-            if (entry.kind === 'm') {
-                return apiClient.getMovie(entry.id, deviceProfile).then((movieResponse) => {
-                    const videoFile = movieResponse.video_files[videoFileIndex] || movieResponse.video_files[0]
-                    const name = `Queue [${targetIndex + 1}/${queueResponse.queue.content.length}] - ${movieResponse.name}`
-                    const audioTracks = videoFile?.info?.tracks?.audio || []
-                    const subtitleTracks = videoFile?.info?.tracks?.subtitle || []
-
-                    return {
-                        url: videoFile.network_path,
-                        name: name,
-                        durationSeconds: videoFile.info.duration_seconds,
-                        tracks: videoFile.info.tracks,
-                        audio_index: audioTracks.length > 0 ? audioTracks[0].audio_index : -1,
-                        subtitle_index: subtitleTracks.length > 0 ? subtitleTracks[0].subtitle_index : -1,
-                        plan: videoFile.plan,
-                        info: videoFile.info
-                    }
-                })
+            const { targetIndex, entry } = getTargetEntry(queueResponse)
+            if (!entry) {
+                return Promise.reject(new Error('Playing queue entry not found'))
             }
+            queueIndexRef.current = targetIndex
 
-            if (entry.kind === 'e') {
-                return apiClient.getEpisode(entry.id, deviceProfile).then((episodeResponse) => {
-                    let name = `${episodeResponse.season.show.name}\n${C.util.formatEpisodeTitle(episodeResponse)}`
-                    name = `Queue [${targetIndex + 1}/${queueResponse.queue.content.length}] - ${name}`
-                    const videoFile = episodeResponse.video_files[videoFileIndex] || episodeResponse.video_files[0]
-                    const audioTracks = videoFile?.info?.tracks?.audio || []
-                    const subtitleTracks = videoFile?.info?.tracks?.subtitle || []
-
-                    return {
-                        url: videoFile.network_path,
-                        name: name,
-                        durationSeconds: videoFile.info.duration_seconds,
-                        tracks: videoFile.info.tracks,
-                        audio_index: audioTracks.length > 0 ? audioTracks[0].audio_index : -1,
-                        subtitle_index: subtitleTracks.length > 0 ? subtitleTracks[0].subtitle_index : -1,
-                        plan: videoFile.plan,
-                        info: videoFile.info
-                    }
-                })
-            }
-
-            return Promise.reject(new Error('Unhandled playing queue entry type'))
-        })
-    }
-
-    const loadTranscode = (apiClient, routeParams, deviceProfile, progressSeconds, playerKind) => {
-        return apiClient.getPlayingQueue({
-            source: routeParams.playingQueueSource
-        }).then((queueResponse) => {
-            setPlayingQueue(queueResponse)
-            playingQueueRef.current = queueResponse
-
-            const { targetIndex, entry } = getTargetEntry(queueResponse, routeParams)
             const videoFileIndex = routeParams.videoFileIndex ?? 0
-            const seekSeconds = progressSeconds ?? routeParams.seekToSeconds ?? 0
+            if (entry.kind !== 'm' && entry.kind !== 'e') {
+                return Promise.reject(new Error('Unhandled playing queue entry type'))
+            }
 
             const fetchEntity = entry.kind === 'm'
                 ? apiClient.getMovie(entry.id, deviceProfile)
@@ -94,34 +45,61 @@ export default function PlayPlayingQueuePage(props) {
 
             return fetchEntity.then((entityResponse) => {
                 const videoFile = entityResponse.video_files[videoFileIndex] || entityResponse.video_files[0]
-                const displayName = entry.kind === 'm'
+                const titleSeparator = singleLineTitle ? ' - ' : '\n'
+                const itemTitle = entry.kind === 'm'
                     ? entityResponse.name
-                    : `${entityResponse.season.show.name} - ${C.util.formatEpisodeTitle(entityResponse)}`
+                    : `${entityResponse.season.show.name}${titleSeparator}${C.util.formatEpisodeTitle(entityResponse)}`
+                const name = `Queue [${targetIndex + 1}/${queueResponse.queue.content.length}] - ${itemTitle}`
+                return { videoFile, name }
+            })
+        })
+    }
 
-                return apiClient.createVideoFileTranscodeSession({
-                    videoFileId: videoFile.id,
-                    audioTrackIndex: routeParams.audioTrack,
-                    subtitleTrackIndex: routeParams.subtitleTrack,
-                    deviceProfile: deviceProfile,
-                    seekToSeconds: seekSeconds,
-                    playerKind: playerKind
-                }).then((transcodeSession) => {
-                    return {
-                        name: `Queue [${targetIndex + 1}/${queueResponse.queue.content.length}] - ${displayName}`,
-                        url: transcodeSession.transcode_url,
-                        durationSeconds: videoFile.info.duration_seconds,
-                        transcodeId: transcodeSession.transcode_session_id,
-                        plan: videoFile.plan,
-                        info: videoFile.info
-                    }
-                })
+    const loadVideo = (apiClient, routeParams, deviceProfile) => {
+        return loadQueueItem(apiClient, routeParams, deviceProfile, false).then(({ videoFile, name }) => {
+            const audioTracks = videoFile?.info?.tracks?.audio || []
+            const subtitleTracks = videoFile?.info?.tracks?.subtitle || []
+
+            return {
+                url: videoFile.network_path,
+                name: name,
+                durationSeconds: videoFile.info.duration_seconds,
+                tracks: videoFile.info.tracks,
+                audio_index: audioTracks.length > 0 ? audioTracks[0].audio_index : -1,
+                subtitle_index: subtitleTracks.length > 0 ? subtitleTracks[0].subtitle_index : -1,
+                plan: videoFile.plan,
+                info: videoFile.info
+            }
+        })
+    }
+
+    const loadTranscode = (apiClient, routeParams, deviceProfile, progressSeconds, playerKind) => {
+        return loadQueueItem(apiClient, routeParams, deviceProfile, true).then(({ videoFile, name }) => {
+            const seekSeconds = progressSeconds ?? routeParams.seekToSeconds ?? 0
+
+            return apiClient.createVideoFileTranscodeSession({
+                videoFileId: videoFile.id,
+                audioTrackIndex: routeParams.audioTrack,
+                subtitleTrackIndex: routeParams.subtitleTrack,
+                deviceProfile: deviceProfile,
+                seekToSeconds: seekSeconds,
+                playerKind: playerKind
+            }).then((transcodeSession) => {
+                return {
+                    name: name,
+                    url: transcodeSession.transcode_url,
+                    durationSeconds: videoFile.info.duration_seconds,
+                    transcodeId: transcodeSession.transcode_session_id,
+                    plan: videoFile.plan,
+                    info: videoFile.info
+                }
             })
         }).catch((err) => {
             return { error: err }
         })
     }
 
-    const onComplete = (apiClient, routesContext, navPushContext) => {
+    const onComplete = (apiClient) => {
         if (isTransitioningRef.current) {
             return Promise.resolve()
         }
@@ -146,6 +124,7 @@ export default function PlayPlayingQueuePage(props) {
         ).then(() => {
             queueIndexRef.current = nextProgress
             setQueueIndex(nextProgress)
+            setPlayGeneration((prev) => prev + 1)
             setTimeout(() => {
                 isTransitioningRef.current = false
                 setIsTransitioning(false)
@@ -176,11 +155,9 @@ export default function PlayPlayingQueuePage(props) {
         )
     }
 
-    const activeIndex = queueIndex ?? playingQueue?.queue?.progress ?? 0
-
     return (
         <PlayMediaPage
-            key={activeIndex}
+            key={playGeneration}
             loadVideo={loadVideo}
             loadTranscode={loadTranscode}
             onComplete={onComplete}

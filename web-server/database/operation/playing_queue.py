@@ -70,13 +70,13 @@ def get_playing_queue(
     else:
         if '-shuffle' in source:
             shuffle = True
-        source = source.replace('-shuffle','')
-        if 'show-' in source:
-            show_id = int(source.replace('show-',''))
-        elif 'show_season-' in source:
-            show_season_id = int(source.replace('show_season-',''))
-        elif 'tag-' in source:
-            tag_id = int(source.replace('tag-',''))
+        parsed_source = source.replace('-shuffle','')
+        if 'show-' in parsed_source:
+            show_id = int(parsed_source.replace('show-',''))
+        elif 'show_season-' in parsed_source:
+            show_season_id = int(parsed_source.replace('show_season-',''))
+        elif 'tag-' in parsed_source:
+            tag_id = int(parsed_source.replace('tag-',''))
     with dbi.session() as db:
         existing = (
             db.query(dbi.dm.PlayingQueue).filter(

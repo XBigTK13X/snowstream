@@ -75,7 +75,7 @@ export function usePlayerActions() {
             const nextMessages = [...(currentState.statusMessages || []), 'Direct play failed, switching to transcode...']
             sendHubData({
                 videoLoaded: false,
-                videoLoading: false,
+                videoLoading: true,
                 videoUrl: null,
                 videoFile: null,
                 isTranscode: true,
