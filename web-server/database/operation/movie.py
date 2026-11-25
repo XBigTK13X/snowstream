@@ -67,6 +67,14 @@ def get_movie_by_id(ticket: dbi.dm.Ticket, movie_id: int):
             return None
 
         movie = dbi.dm.set_primary_images(movie)
+        if movie.video_files:
+            movie.video_files.sort(
+                key=lambda video_file: (
+                    "main_feature" not in (video_file.kind or ""),
+                    "extra" in (video_file.kind or ""),
+                    video_file.id or 0,
+                )
+            )
         if not movie.watch_count:
             movie.watch_count = dbi.dm.WatchCount()
             movie.watch_count.amount = 0
