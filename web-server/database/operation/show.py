@@ -225,16 +225,37 @@ def upsert_show_tag(show_id: int, tag_id: int):
         db.refresh(dbm)
         return dbm
 
+def _get_shelf_episode_ids(db, ticket: dbi.dm.Ticket, shelf_id: int):
+    if not ticket.has_tag_restrictions():
+        rows = (
+            db.query(dbi.dm.ShowEpisode.id)
+            .join(dbi.dm.ShowSeason, dbi.dm.ShowSeason.id == dbi.dm.ShowEpisode.show_season_id)
+            .join(dbi.dm.Show, dbi.dm.Show.id == dbi.dm.ShowSeason.show_id)
+            .join(dbi.dm.ShowShelf, dbi.dm.ShowShelf.show_id == dbi.dm.Show.id)
+            .filter(dbi.dm.ShowShelf.shelf_id == shelf_id)
+            .all()
+        )
+        return [row[0] for row in rows]
+    episodes = db_episode.get_show_episode_list(
+        ticket=ticket,
+        shelf_id=shelf_id,
+        load_episode_files=False,
+        include_specials=True,
+    )
+    return [episode.id for episode in episodes]
+
+
 def set_show_shelf_watched(ticket:dbi.dm.Ticket,shelf_id:int,is_watched:bool=True):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return False
-    episodes = db_episode.get_show_episode_list(ticket=ticket,shelf_id=shelf_id,load_episode_files=False,include_specials=True)
-    episode_ids = [xx.id for xx in episodes]
     with dbi.session() as db:
+        episode_ids = _get_shelf_episode_ids(db, ticket, shelf_id)
+        if not episode_ids:
+            return False
         db.query(dbi.dm.Watched).filter(
             dbi.dm.Watched.client_device_user_id.in_(ticket.watch_group),
             dbi.dm.Watched.show_episode_id.in_(episode_ids)
-        ).delete()
+        ).delete(synchronize_session=False)
         db.commit()
         if is_watched:
             return db_episode.set_show_episode_list_watched(ticket=ticket,episode_ids=episode_ids)
@@ -243,8 +264,19 @@ def set_show_shelf_watched(ticket:dbi.dm.Ticket,shelf_id:int,is_watched:bool=Tru
 def get_show_shelf_watched(ticket:dbi.dm.Ticket,shelf_id:int):
     if not ticket.is_allowed(shelf_id=shelf_id):
         return False
-    episodes = db_episode.get_show_episode_list(ticket=ticket,shelf_id=shelf_id,load_episode_files=False,include_specials=True)
-    return all(xx.watched for xx in episodes)
+    with dbi.session() as db:
+        episode_ids = _get_shelf_episode_ids(db, ticket, shelf_id)
+        if not episode_ids:
+            return False
+        watched_count = (
+            db.query(dbi.func.count(dbi.func.distinct(dbi.dm.Watched.show_episode_id)))
+            .filter(
+                dbi.dm.Watched.client_device_user_id.in_(ticket.watch_group),
+                dbi.dm.Watched.show_episode_id.in_(episode_ids),
+            )
+            .scalar()
+        )
+        return watched_count == len(episode_ids)
 
 def set_show_watched(ticket:dbi.dm.Ticket,show_id:int,is_watched:bool=True):
     show_episodes = db_episode.get_show_episode_list(ticket=ticket,show_id=show_id,include_specials=True)
